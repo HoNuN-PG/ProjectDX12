@@ -19,8 +19,8 @@ ID3D12Device* GetDevice();
 ID3D12GraphicsCommandList* GetCommandList();
 D3D12_CPU_DESCRIPTOR_HANDLE GetRTV();
 
-void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV);
 void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV);
+void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV);
 void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV);
 
 #endif

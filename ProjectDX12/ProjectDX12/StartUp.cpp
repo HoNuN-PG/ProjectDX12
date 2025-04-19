@@ -15,11 +15,12 @@
 #pragma comment(lib,"winmm.lib")
 
 std::shared_ptr<DescriptorHeap> g_pHeapIMGUI;
-
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
 LRESULT WinProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wparam, lparam))
+		return true;
 	switch (msg)
 	{
 	default: break;
@@ -27,7 +28,6 @@ LRESULT WinProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		PostQuitMessage(0);
 		return 0;
 	}
-	ImGui_ImplWin32_WndProcHandler(hWnd, msg, wparam, lparam);
 	return DefWindowProc(hWnd,msg,wparam,lparam);
 }
 
@@ -61,7 +61,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 
 	// ウィンドウの作成
 	RECT wndRect = { 0,0,WINDOW_WIDTH,WINDOW_HEIGHT };
-	AdjustWindowRect(&wndRect, WS_OVERLAPPEDWINDOW, false);
+	// ウィンドウサイズを調整
+	auto style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU;
+	AdjustWindowRect(&wndRect, style, FALSE);
 	HWND hWnd = CreateWindow(
 		wc.lpszClassName, _T("DirectX12"),WS_OVERLAPPEDWINDOW,CW_USEDEFAULT,CW_USEDEFAULT,
 		wndRect.right - wndRect.left,wndRect.bottom - wndRect.top,NULL,NULL,hInstance,NULL
@@ -87,6 +89,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 		g_pHeapIMGUI = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ImGUIの初期化
+	// 実行ファイルの設定から高DPI項目の編集をする事でマウスポインタのズレ等を修正できる
 	{
 		if (ImGui::CreateContext() == nullptr) {
 			MessageBox(hWnd, _T("Error"), _T("Failed [Imgui]."), MB_OK);
@@ -106,16 +109,16 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 			}
 		}
 	}
+
+	// ゲームループ
 	while (msg.message != WM_QUIT) {
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 		else {
-			// Update
-			UpdateScene();
 			Input::Update();
-			// Draw
+			UpdateScene();
 			DrawDirectX(Draw, clear);
 		}
 	}

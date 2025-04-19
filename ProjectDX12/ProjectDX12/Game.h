@@ -61,11 +61,11 @@ private:
 	static std::shared_ptr<ConstantBuffer>				m_pObjectCB_Camera;
 	static std::shared_ptr<RootSignature>				m_pRootSignature;
 	static std::shared_ptr<RootSignature>				m_pRootSignatureDeffered;
-	static std::shared_ptr<Pipeline>					m_pPipelineDefferedWrite;
-	static std::shared_ptr<Pipeline>					m_pPipelineDeffered;
 	static std::shared_ptr<Pipeline>					m_pPipeline;
 	static std::shared_ptr<Pipeline>					m_pSkyPipeline;
 	static std::shared_ptr<Pipeline>					m_pBlurPipeline;
+	static std::shared_ptr<Pipeline>					m_pPipelineDefferedWrite;
+	static std::shared_ptr<Pipeline>					m_pPipelineDeffered;
 	static std::shared_ptr<cTexture>					m_pTexture;
 	static std::shared_ptr<cRenderTarget>				m_pRTV[4];
 	static std::shared_ptr<DescriptorHeap>				m_pHeap;

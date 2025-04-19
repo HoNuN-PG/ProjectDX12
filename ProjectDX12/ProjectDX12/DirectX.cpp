@@ -37,7 +37,8 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	if (FAILED(hr)) { return hr; }
 
 	// コマンドリスト/コマンドキュー/コマンドアロケーター
-	D3D12_COMMAND_LIST_TYPE cmdListType = D3D12_COMMAND_LIST_TYPE_DIRECT; // コマンドの種類
+	// コマンドの種類
+	D3D12_COMMAND_LIST_TYPE cmdListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	
 	hr = g_pDevice->CreateCommandAllocator(cmdListType, IID_PPV_ARGS(&g_pCmdAllocator));
 	if (FAILED(hr)) { return hr; }
@@ -63,14 +64,18 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	if (FAILED(hr)) { return hr; }
 
 	DXGI_SWAP_CHAIN_DESC1 scDesc = {};
+	// 解像度
 	scDesc.Width				= width;
 	scDesc.Height				= height;
 	scDesc.Format				= DXGI_FORMAT_R8G8B8A8_UNORM;
 	scDesc.Stereo				= false;
+	// ピクセルあたりのサンプル数
 	scDesc.SampleDesc.Count		= 1;
 	scDesc.SampleDesc.Quality	= 0;
+	// バックバッファのフラグ
 	scDesc.BufferUsage			= DXGI_USAGE_BACK_BUFFER;
 	scDesc.BufferCount			= 2;
+	// バッファ出力とターゲット出力の一致の為サイズ変更を行う
 	scDesc.Scaling				= DXGI_SCALING_STRETCH;
 	scDesc.SwapEffect			= DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	scDesc.AlphaMode			= DXGI_ALPHA_MODE_UNSPECIFIED;
@@ -83,7 +88,8 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 
 	// ディスクリプタヒープ
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDHDesc = {};
-	rtvDHDesc.Type				= D3D12_DESCRIPTOR_HEAP_TYPE_RTV; // ディスクリプタヒープの種類
+	// ディスクリプタヒープの種類
+	rtvDHDesc.Type				= D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvDHDesc.NumDescriptors	= 2;
 	rtvDHDesc.Flags				= D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	rtvDHDesc.NodeMask			= 0;
@@ -164,12 +170,13 @@ void DrawDirectX(void(func)(void), const float clearColor[4])
 
 	// 画面出力準備
 	barrierDesc.Transition.StateBefore	= D3D12_RESOURCE_STATE_RENDER_TARGET;
+	// 画面への出力リソース
 	barrierDesc.Transition.StateAfter	= D3D12_RESOURCE_STATE_PRESENT;
 	g_pCmdList->ResourceBarrier(1, &barrierDesc);
 
 	// 描画命令発行停止
-	g_pCmdList->Close();
-	g_pCmdQueue->ExecuteCommandLists(1, pCmdList);
+	g_pCmdList->Close();							// コマンドリストからの描画命令の発行を停止
+	g_pCmdQueue->ExecuteCommandLists(1, pCmdList);	// コマンドリストに紐づくアロケータから描画命令を送信
 
 	// 画面出力
 	g_pSwapChain->Present(1, 0);
@@ -180,9 +187,9 @@ void DrawDirectX(void(func)(void), const float clearColor[4])
 	{
 		// Windowsのイベントで処理を待つ
 		auto hWait = CreateEvent(nullptr, false, false, nullptr);
-		g_pFence->SetEventOnCompletion(g_fenceLevel, hWait);
-		WaitForSingleObject(hWait, INFINITE);
-		CloseHandle(hWait);
+		g_pFence->SetEventOnCompletion(g_fenceLevel, hWait);		// 終了値に到達した際に通知するイベントを設定
+		WaitForSingleObject(hWait, INFINITE);						// イベントが発行されるまで待機
+		CloseHandle(hWait);											// イベントの破棄
 	}
 }
 
@@ -205,16 +212,16 @@ D3D12_CPU_DESCRIPTOR_HANDLE GetRTV()
 	return hRTV;
 }
 
-void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV)
-{
-	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
-	pCmdList->OMSetRenderTargets(num, hRTV, FALSE, nullptr);
-}
-
 void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV)
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	pCmdList->OMSetRenderTargets(1, &hRTV, FALSE, hDSV.ptr ? &hDSV : nullptr);
+}
+
+void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV)
+{
+	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
+	pCmdList->OMSetRenderTargets(num, hRTV, FALSE, nullptr);
 }
 
 void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV)

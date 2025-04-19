@@ -27,7 +27,7 @@ public:
 private:
 	ID3D12DescriptorHeap*		m_pHeap;		// ヒープのデータ
 	D3D12_DESCRIPTOR_HEAP_TYPE	m_type;			// ディスクリプタヒープの種類
-	UINT						m_allocCout;	// 確保してディスクリプタ数
+	UINT						m_allocCout;	// 確保したディスクリプタ数
 };
 
 #endif
