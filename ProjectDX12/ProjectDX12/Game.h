@@ -21,7 +21,7 @@
 #include "CameraBase.h"
 #include "LightBase.h"
 
-enum OBJECT_WVP
+enum WVP_TYPE
 {
 	MODEL = 0,
 	SKY_SPHERE,
@@ -54,7 +54,7 @@ private:
 	static std::unique_ptr<cLightBase>					m_pLight;
 private:
 	static std::shared_ptr<MeshBuffer>					m_pScreen;
-	static std::vector<std::shared_ptr<MeshBuffer>>	m_pModel;
+	static std::vector<std::shared_ptr<MeshBuffer>>		m_pModel;
 	static std::shared_ptr<ConstantBuffer>				m_pObjectCB_WVP[MAX_WVP];
 	static std::shared_ptr<ConstantBuffer>				m_pObjectCB_WVP_Gbuffer[3];
 	static std::shared_ptr<ConstantBuffer>				m_pObjectCB_IBL;

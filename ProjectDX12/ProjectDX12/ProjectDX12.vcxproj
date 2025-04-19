@@ -225,6 +225,7 @@
     <ClInclude Include="SceneLSystem.h" />
     <ClInclude Include="SceneLSystemNEO.h" />
     <ClInclude Include="SceneProcedural.h" />
+    <ClInclude Include="StartUp.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>

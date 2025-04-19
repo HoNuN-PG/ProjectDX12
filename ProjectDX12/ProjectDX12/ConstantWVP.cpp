@@ -64,7 +64,7 @@ void * cConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, 
 	return &wvp;
 }
 
-DirectX::XMFLOAT4X4 cConstantWVP::CalcInversVP()
+DirectX::XMFLOAT4X4 cConstantWVP::CalcInversVPMatric()
 {
 	// ビューマトリクス
 	DirectX::XMFLOAT3 pos = { cCameraDebug::m_MainPos.x,cCameraDebug::m_MainPos.y,cCameraDebug::m_MainPos.z };

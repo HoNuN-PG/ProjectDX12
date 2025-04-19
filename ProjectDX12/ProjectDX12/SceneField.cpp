@@ -15,7 +15,7 @@ HRESULT SceneField::Init()
 {
 	m_pCamera = new cCameraDebug();
 
-	// ～～ 頂点データ作成 ～～
+	// 頂点データ作成
 	struct Vertex
 	{
 		float pos[3];

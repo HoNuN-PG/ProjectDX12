@@ -51,8 +51,7 @@ void cCameraDebug::Update()
 	ProcDCC(arg);
 
 	// メインカメラパラメータの設定
-	if (m_IsMain)
-		SetMainParams();
+	if (m_IsMain) SetMainParams();
 }
 
 void cCameraDebug::Draw()

@@ -15,35 +15,37 @@
 #include "ConstantLighting.h"
 
 #include "imgui/imgui.h"
+#include "StartUp.h"
 
 std::unique_ptr<cCameraDebug>				cGame::m_pCamera;
 std::unique_ptr<cLightBase>					cGame::m_pLight;
 
-std::shared_ptr<MeshBuffer>				cGame::m_pScreen;
+std::shared_ptr<MeshBuffer>					cGame::m_pScreen;
 std::vector<std::shared_ptr<MeshBuffer>>	cGame::m_pModel;
-std::shared_ptr<ConstantBuffer>			cGame::m_pObjectCB_WVP[MAX_WVP];
-std::shared_ptr<ConstantBuffer>			cGame::m_pObjectCB_WVP_Gbuffer[3];
-std::shared_ptr<ConstantBuffer>			cGame::m_pObjectCB_IBL;
+std::shared_ptr<ConstantBuffer>				cGame::m_pObjectCB_WVP[MAX_WVP];
+std::shared_ptr<ConstantBuffer>				cGame::m_pObjectCB_WVP_Gbuffer[3];
+std::shared_ptr<ConstantBuffer>				cGame::m_pObjectCB_IBL;
 std::shared_ptr<RootSignature>				cGame::m_pRootSignature;
 std::shared_ptr<RootSignature>				cGame::m_pRootSignatureDeffered;
-std::shared_ptr<Pipeline>					cGame::m_pPipelineDefferedWrite;
-std::shared_ptr<Pipeline>					cGame::m_pPipelineDeffered;
 std::shared_ptr<Pipeline>					cGame::m_pPipeline;
 std::shared_ptr<Pipeline>					cGame::m_pSkyPipeline;
 std::shared_ptr<Pipeline>					cGame::m_pBlurPipeline;
+std::shared_ptr<Pipeline>					cGame::m_pPipelineDefferedWrite;
+std::shared_ptr<Pipeline>					cGame::m_pPipelineDeffered;
 std::shared_ptr<cTexture>					cGame::m_pTexture;
 std::shared_ptr<cRenderTarget>				cGame::m_pRTV[4];
-std::shared_ptr<DescriptorHeap>			cGame::m_pHeap;
-std::shared_ptr<DescriptorHeap>			cGame::m_pRTVHeap;
-std::shared_ptr<DescriptorHeap>			cGame::m_pDSVHeap;
+std::shared_ptr<DescriptorHeap>				cGame::m_pHeap;
+std::shared_ptr<DescriptorHeap>				cGame::m_pRTVHeap;
+std::shared_ptr<DescriptorHeap>				cGame::m_pDSVHeap;
 std::shared_ptr<DepthStencil>				cGame::m_pDSV;
-std::shared_ptr<MeshBuffer>				cGame::m_pSkySphere;
+std::shared_ptr<MeshBuffer>					cGame::m_pSkySphere;
 std::shared_ptr<cTexture>					cGame::m_pHDRI;
 
 HRESULT cGame::InitGame()
 {
 	// カメラ
 	m_pCamera = std::make_unique<cCameraDebug>();
+	// ライト
 	m_pLight = std::make_unique<cLightBase>();
 
 	// スクリーン頂点
@@ -234,9 +236,9 @@ HRESULT cGame::InitGame()
 	{
 		// ディファードパイプライン
 		Pipeline::InputLayout layout[] = {
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"NORMAL", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
+			{"POSITION",	0,DXGI_FORMAT_R32G32B32_FLOAT},
+			{"NORMAL",		0,DXGI_FORMAT_R32G32B32_FLOAT},
+			{"TEXCOORD",	0,DXGI_FORMAT_R32G32_FLOAT},
 		};
 		Pipeline::Description desc	= {};
 		desc.pInputLayout				= layout;
@@ -345,7 +347,7 @@ HRESULT cGame::InitGame()
 		desc.width = 1280 * 0.25f;
 		desc.height = 720 * 0.25f;
 		desc.pRTVHeap = m_pRTVHeap.get();
-		desc.pSRVHeap = m_pHeap.get();
+		desc.pSRVHeap = GetHeapImGUI().get(); // ImGUI表示用として作成
 		m_pRTV[3] = std::make_shared<cRenderTarget>(desc);
 	}
 	{
@@ -391,7 +393,7 @@ void cGame::DrawGame()
 
 	const float clearColor[4] = { 1.0f,0.0f,1.0f,0 };
 
-	// ディファード用レンダーターゲットの切り替え
+	// ディファード用レンダーターゲットに切り替え
 	for (int i = 0; i < 3; i++)
 	{
 		m_pRTV[i]->ResourceBarrier(
@@ -411,6 +413,7 @@ void cGame::DrawGame()
 
 	{
 		// モデルを描画
+		// パイプラインのバインド
 		m_pPipelineDefferedWrite->Bind();
 
 		// モデルデバッグ
@@ -423,6 +426,7 @@ void cGame::DrawGame()
 		ImGui::End();
 #endif
 
+		// 定数バッファの設定
 		m_pObjectCB_WVP[MODEL]->Write(cConstantWVP::Calc3DMatrix(
 			{ 0,0,0 },
 			{ DirectX::XMConvertToRadians(rot[0]),DirectX::XMConvertToRadians(rot[1]),DirectX::XMConvertToRadians(rot[2]) },
@@ -431,7 +435,9 @@ void cGame::DrawGame()
 			m_pObjectCB_WVP[MODEL]->GetHandle().hGPU,
 			m_pTexture->GetHandle().hGPU
 		};
+		// ヒープのバインド
 		m_pHeap->Bind();
+		// ルートシグネチャのバインド
 		m_pRootSignature->Bind(handle, _countof(handle));
 		auto it = m_pModel.begin();
 		while (it != m_pModel.end())
@@ -441,7 +447,7 @@ void cGame::DrawGame()
 		}
 	}
 
-	// ブラー用レンダーターゲットの切り替え
+	// ブラー用のレンダーターゲットに切り替え
 	for (int i = 0; i < 3; i++)
 	{
 		m_pRTV[i]->ResourceBarrier(
@@ -460,6 +466,7 @@ void cGame::DrawGame()
 		vp.Height = 720 * 0.25f;
 		pCmdList->RSSetViewports(1, &vp);
 		// 天球描画
+		// パイプラインのバインド
 		m_pBlurPipeline->Bind();
 		// シェーダーに渡す定数バッファ&テクスチャを指定
 		m_pObjectCB_WVP[BLUR]->Write(cConstantWVP::Calc3DMatrix(
@@ -489,6 +496,7 @@ void cGame::DrawGame()
 
 	{
 		// スカイスフィア描画
+		// パイプラインのバインド
 		m_pSkyPipeline->Bind();
 		// シェーダーに渡す定数バッファ&テクスチャを指定
 		m_pObjectCB_WVP[SKY_SPHERE]->Write(cConstantWVP::Calc3DMatrix(
@@ -511,6 +519,7 @@ void cGame::DrawGame()
 	ImGui::Begin("Gbuffer");
 	{
 		ImGui::Checkbox("ViewGbuffer", &isGbuffer);
+		ImGui::Image((ImTextureID)m_pRTV[3]->GetHandleSRV().hGPU.ptr,{480,270});
 	}
 	ImGui::End();
 #endif
@@ -518,6 +527,7 @@ void cGame::DrawGame()
 	if (isGbuffer)
 	{
 		// レンダーターゲット（GBuffer）の内容を描画
+		// パイプラインのバインド
 		m_pPipeline->Bind();
 		for (int i = 0; i < 3; i++)
 		{
@@ -556,7 +566,7 @@ void cGame::DrawGame()
 		// IBL情報
 		DirectX::XMFLOAT4X4 param[2];
 		// VP逆行列
-		param[0] = cConstantWVP::CalcInversVP();
+		param[0] = cConstantWVP::CalcInversVPMatric();
 		// ライトの設定
 		param[1]._11 = m_pLight->GetDir().x;
 		param[1]._12 = m_pLight->GetDir().y;

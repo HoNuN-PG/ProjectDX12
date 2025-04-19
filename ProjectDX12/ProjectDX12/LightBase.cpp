@@ -5,7 +5,6 @@
 DirectX::XMFLOAT4X4 cLightBase::m_ViewMatrix;
 DirectX::XMFLOAT4X4 cLightBase::m_ProjectionMatrix;
 
-
 const float LIG_SPEED_X = 3.0f;			// ‰ñ“]‘¬“x
 const float LIG_SPEED_Y = 2.5f;
 const float LIG_LATE_SPEED_X = 1.0f;	// •âŠÔ‹­“x
@@ -83,8 +82,8 @@ void cLightBase::Draw()
 #ifdef _DEBUG
 	ImGui::Begin("Light");
 	{
-		ImGui::SliderFloat("LightIntensity", &m_Power, 0, 10);
 		ImGui::ColorEdit4("LightColor", (float*)&m_Color);
+		ImGui::SliderFloat("LightIntensity", &m_Power, 0, 10);
 		ImGui::SliderFloat("Ambient", &m_Ambient, 0, 1);
 	}
 	ImGui::End();

@@ -28,9 +28,6 @@
     <Filter Include="ヘッダー ファイル\System\Constant">
       <UniqueIdentifier>{a8ebc9bb-5377-41c2-9d7b-70d0ec4f7ba7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\System\Constant">
-      <UniqueIdentifier>{833d7d4f-e9bf-470e-a525-a1f0fa8c36b5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\Game">
       <UniqueIdentifier>{159d47c0-1c94-4825-96bb-6c344cd41b13}</UniqueIdentifier>
     </Filter>
@@ -85,6 +82,9 @@
     <Filter Include="リソース ファイル\PS\Procedural\Noise">
       <UniqueIdentifier>{4fc010c4-f800-480f-84d3-863bfb142c52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\System\ConstantBuffer">
+      <UniqueIdentifier>{833d7d4f-e9bf-470e-a525-a1f0fa8c36b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StartUp.cpp">
@@ -118,10 +118,10 @@
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
     <ClCompile Include="ConstantBuffer.cpp">
-      <Filter>ソース ファイル\System\Constant</Filter>
+      <Filter>ソース ファイル\System\ConstantBuffer</Filter>
     </ClCompile>
     <ClCompile Include="ConstantWVP.cpp">
-      <Filter>ソース ファイル\System\Constant</Filter>
+      <Filter>ソース ファイル\System\ConstantBuffer</Filter>
     </ClCompile>
     <ClCompile Include="CameraDebug.cpp">
       <Filter>ソース ファイル\Game\Camera</Filter>
@@ -259,6 +259,9 @@
     </ClInclude>
     <ClInclude Include="SceneField.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="StartUp.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

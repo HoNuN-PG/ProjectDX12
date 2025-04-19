@@ -1,4 +1,6 @@
 
+#include "StartUp.h"
+
 #include <Windows.h>
 #include <tchar.h>
 
@@ -6,15 +8,17 @@
 #include "Scene.h"
 #include "Input.h"
 
-#include <memory>
-#include "DescriptorHeap.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx12.h"
 
 #pragma comment(lib,"winmm.lib")
 
-std::shared_ptr<DescriptorHeap> g_pHeapIMGUI;
+std::shared_ptr<DescriptorHeap> g_pHeapImGUI;
+std::shared_ptr<DescriptorHeap> GetHeapImGUI()
+{
+	return g_pHeapImGUI;
+}
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
 LRESULT WinProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -43,7 +47,7 @@ void Draw()
 
 #ifdef _DEBUG
 	ImGui::Render();
-	ID3D12DescriptorHeap* heap = g_pHeapIMGUI->Get();
+	ID3D12DescriptorHeap* heap = g_pHeapImGUI->Get();
 	GetCommandList()->SetDescriptorHeaps(1, &heap);
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), GetCommandList());
 #endif
@@ -76,8 +80,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	// Init
 	srand((unsigned int)timeGetTime());
 	InitDirectX(hWnd,WINDOW_WIDTH,WINDOW_HEIGHT,false);
-	InitScene();
-	Input::Init();
 
 	MSG msg = {};
 
@@ -85,8 +87,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		desc.num = 1;
-		g_pHeapIMGUI = std::make_shared<DescriptorHeap>(desc);
+		desc.num = 5;
+		g_pHeapImGUI = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ImGUIの初期化
 	// 実行ファイルの設定から高DPI項目の編集をする事でマウスポインタのズレ等を修正できる
@@ -103,12 +105,15 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 			}
 			else {
 				// DirectX用のimguiの初期化
-				auto handle = g_pHeapIMGUI->Allocate();
+				auto handle = g_pHeapImGUI->Allocate();
 				ImGui_ImplDX12_Init(GetDevice(), 3,
-					DXGI_FORMAT_R8G8B8A8_UNORM, g_pHeapIMGUI->Get(), handle.hCPU, handle.hGPU);
+					DXGI_FORMAT_R8G8B8A8_UNORM, g_pHeapImGUI->Get(), handle.hCPU, handle.hGPU);
 			}
 		}
 	}
+
+	InitScene();
+	Input::Init();
 
 	// ゲームループ
 	while (msg.message != WM_QUIT) {

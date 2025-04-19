@@ -16,7 +16,7 @@ public:
 	static void* Calc3DMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rot, DirectX::XMFLOAT3 scale);
 	static void* Calc2DMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rot, DirectX::XMFLOAT3 scale);
 
-	static DirectX::XMFLOAT4X4 CalcInversVP();
+	static DirectX::XMFLOAT4X4 CalcInversVPMatric();
 };
 
 #endif
