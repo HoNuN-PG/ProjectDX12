@@ -1,5 +1,5 @@
 
-#include "Game.h"
+#include "SceneIBL.h"
 
 #include <DirectXTex.h>
 #include <TextureLoad.h>
@@ -17,31 +17,7 @@
 #include "imgui/imgui.h"
 #include "StartUp.h"
 
-std::unique_ptr<cCameraDebug>				cGame::m_pCamera;
-std::unique_ptr<cLightBase>					cGame::m_pLight;
-
-std::shared_ptr<MeshBuffer>					cGame::m_pScreen;
-std::vector<std::shared_ptr<MeshBuffer>>	cGame::m_pModel;
-std::shared_ptr<ConstantBuffer>				cGame::m_pObjectCB_WVP[MAX_WVP];
-std::shared_ptr<ConstantBuffer>				cGame::m_pObjectCB_WVP_Gbuffer[3];
-std::shared_ptr<ConstantBuffer>				cGame::m_pObjectCB_IBL;
-std::shared_ptr<RootSignature>				cGame::m_pRootSignature;
-std::shared_ptr<RootSignature>				cGame::m_pRootSignatureDeffered;
-std::shared_ptr<Pipeline>					cGame::m_pPipeline;
-std::shared_ptr<Pipeline>					cGame::m_pSkyPipeline;
-std::shared_ptr<Pipeline>					cGame::m_pBlurPipeline;
-std::shared_ptr<Pipeline>					cGame::m_pPipelineDefferedWrite;
-std::shared_ptr<Pipeline>					cGame::m_pPipelineDeffered;
-std::shared_ptr<cTexture>					cGame::m_pTexture;
-std::shared_ptr<cRenderTarget>				cGame::m_pRTV[4];
-std::shared_ptr<DescriptorHeap>				cGame::m_pHeap;
-std::shared_ptr<DescriptorHeap>				cGame::m_pRTVHeap;
-std::shared_ptr<DescriptorHeap>				cGame::m_pDSVHeap;
-std::shared_ptr<DepthStencil>				cGame::m_pDSV;
-std::shared_ptr<MeshBuffer>					cGame::m_pSkySphere;
-std::shared_ptr<cTexture>					cGame::m_pHDRI;
-
-HRESULT cGame::InitGame()
+HRESULT SceneIBL::Init()
 {
 	// ÉJÉÅÉâ
 	m_pCamera = std::make_unique<cCameraDebug>();
@@ -368,18 +344,18 @@ HRESULT cGame::InitGame()
 	return HRESULT();
 }
 
-void cGame::UninitGame()
+void SceneIBL::Uninit()
 {
 
 }
 
-void cGame::UpdateGame()
+void SceneIBL::Update()
 {
 	m_pCamera->Update();
 	m_pLight->Update();
 }
 
-void cGame::DrawGame()
+void SceneIBL::Draw()
 {
 	m_pCamera->Draw();
 	m_pLight->Draw();

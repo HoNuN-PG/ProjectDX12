@@ -174,7 +174,7 @@
     <ClCompile Include="DepthStencil.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="DirectX.cpp" />
-    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="SceneIBL.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_impl_dx12.cpp" />
@@ -187,7 +187,7 @@
     <ClCompile Include="Pipeline.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="RootSignature.cpp" />
-    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SceneField.cpp" />
     <ClCompile Include="SceneFractal.cpp" />
     <ClCompile Include="SceneLSystem.cpp" />
@@ -204,7 +204,8 @@
     <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="DirectX.h" />
-    <ClInclude Include="Game.h" />
+    <ClInclude Include="SceneBase.h" />
+    <ClInclude Include="SceneIBL.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_dx12.h" />
@@ -219,7 +220,7 @@
     <ClInclude Include="Pipeline.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="RootSignature.h" />
-    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SceneField.h" />
     <ClInclude Include="SceneFractal.h" />
     <ClInclude Include="SceneLSystem.h" />

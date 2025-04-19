@@ -14,10 +14,14 @@
 
 #pragma comment(lib,"winmm.lib")
 
-std::shared_ptr<DescriptorHeap> g_pHeapImGUI;
+#include "SceneManager.h"
+
+std::unique_ptr<SceneManager> gSceneManager;
+
+std::shared_ptr<DescriptorHeap> gpHeapImGUI;
 std::shared_ptr<DescriptorHeap> GetHeapImGUI()
 {
-	return g_pHeapImGUI;
+	return gpHeapImGUI;
 }
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
@@ -43,11 +47,11 @@ void Draw()
 	ImGui::NewFrame();
 #endif
 
-	DrawScene();
+	gSceneManager->Draw();
 
 #ifdef _DEBUG
 	ImGui::Render();
-	ID3D12DescriptorHeap* heap = g_pHeapImGUI->Get();
+	ID3D12DescriptorHeap* heap = gpHeapImGUI->Get();
 	GetCommandList()->SetDescriptorHeaps(1, &heap);
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), GetCommandList());
 #endif
@@ -88,7 +92,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = 5;
-		g_pHeapImGUI = std::make_shared<DescriptorHeap>(desc);
+		gpHeapImGUI = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ImGUIの初期化
 	// 実行ファイルの設定から高DPI項目の編集をする事でマウスポインタのズレ等を修正できる
@@ -105,14 +109,15 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 			}
 			else {
 				// DirectX用のimguiの初期化
-				auto handle = g_pHeapImGUI->Allocate();
+				auto handle = gpHeapImGUI->Allocate();
 				ImGui_ImplDX12_Init(GetDevice(), 3,
-					DXGI_FORMAT_R8G8B8A8_UNORM, g_pHeapImGUI->Get(), handle.hCPU, handle.hGPU);
+					DXGI_FORMAT_R8G8B8A8_UNORM, gpHeapImGUI->Get(), handle.hCPU, handle.hGPU);
 			}
 		}
 	}
 
-	InitScene();
+	gSceneManager = std::make_unique<SceneManager>();
+	gSceneManager->Init();
 	Input::Init();
 
 	// ゲームループ
@@ -123,14 +128,15 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 		}
 		else {
 			Input::Update();
-			UpdateScene();
+			gSceneManager->Update();
 			DrawDirectX(Draw, clear);
 		}
 	}
 
 	// Uninit
 	Input::Uninit();
-	UninitScene();
+	gSceneManager->Uninit();
+	gSceneManager.release();
 	UninitDirectX();
 
 	UnregisterClass(wc.lpszClassName,hInstance);

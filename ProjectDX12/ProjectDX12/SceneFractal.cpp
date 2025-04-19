@@ -156,6 +156,9 @@ void SceneFractal::Uninit()
 	delete m_pCube;
 	delete m_pTriangle;
 }
+void SceneFractal::Update()
+{
+}
 void SceneFractal::Draw()
 {
 	m_rad += 0.01f;

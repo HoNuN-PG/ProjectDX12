@@ -1,6 +1,8 @@
 #ifndef __SCENE_LSYSTEM_H__
 #define __SCENE_LSYSTEM_H__
 
+#include "SceneBase.h"
+
 #include "MeshBuffer.h"
 #include "DescriptorHeap.h"
 #include "ConstantBuffer.h"
@@ -10,7 +12,7 @@
 
 #include "CameraBase.h"
 
-class SceneLSystem
+class SceneLSystem : public SceneBase
 {
 public:
 	HRESULT Init();

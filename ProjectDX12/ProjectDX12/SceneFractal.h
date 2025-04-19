@@ -1,6 +1,8 @@
 #ifndef __SCENE_FRACTAL_H__
 #define __SCENE_FRACTAL_H__
 
+#include "SceneBase.h"
+
 #include "MeshBuffer.h"
 #include "DescriptorHeap.h"
 #include "ConstantBuffer.h"
@@ -9,11 +11,12 @@
 #include "DepthStencil.h"
 #include <vector>
 
-class SceneFractal
+class SceneFractal : public SceneBase
 {
 public:
 	HRESULT Init();
 	void Uninit();
+	void Update();
 	void Draw();
 
 private:

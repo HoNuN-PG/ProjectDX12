@@ -1,7 +1,7 @@
 
 #include "ConstantWVP.h"
 
-#include "Game.h"
+#include "StartUp.h"
 #include "CameraBase.h"
 
 void * cConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)

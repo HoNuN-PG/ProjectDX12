@@ -1,6 +1,8 @@
 #ifndef __SCENE_FIELD_H__
 #define __SCENE_FIELD_H__
 
+#include "SceneBase.h"
+
 #include "MeshBuffer.h"
 #include "DescriptorHeap.h"
 #include "ConstantBuffer.h"
@@ -11,7 +13,7 @@
 
 #include "CameraBase.h"
 
-class SceneField
+class SceneField : public SceneBase
 {
 public:
 	HRESULT Init();

@@ -1,6 +1,8 @@
 #ifndef __SCENE_LSYSTEM_NEO_H__
 #define __SCENE_LSYSTEM_NEO_H__
 
+#include "SceneBase.h"
+
 #include <vector>
 
 #include "MeshBuffer.h"
@@ -13,7 +15,7 @@
 #include "CameraBase.h"
 #include "LightBase.h"
 
-class SceneLSystemNEO
+class SceneLSystemNEO : public SceneBase
 {
 public:
 	HRESULT Init();

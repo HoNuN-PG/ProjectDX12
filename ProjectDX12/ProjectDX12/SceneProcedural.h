@@ -1,6 +1,8 @@
 #ifndef __SCENE_PROCEDURAL_H__
 #define __SCENE_PROCEDURAL_H__
 
+#include "SceneBase.h"
+
 #include "MeshBuffer.h"
 #include "DescriptorHeap.h"
 #include "ConstantBuffer.h"
@@ -9,7 +11,7 @@
 #include "DepthStencil.h"
 #include <vector>
 
-class SceneProcedural
+class SceneProcedural : public SceneBase
 {
 public:
 	HRESULT Init();
