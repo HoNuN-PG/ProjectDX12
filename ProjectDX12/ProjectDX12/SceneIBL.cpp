@@ -312,19 +312,19 @@ HRESULT SceneIBL::Init()
 		// レンダーターゲット
 		for (int i = 0; i < 3; i++)
 		{
-			cRenderTarget::sDescription desc = {};
+			RenderTarget::sDescription desc = {};
 			desc.width = 1280;
 			desc.height = 720;
 			desc.pRTVHeap = m_pRTVHeap.get();
 			desc.pSRVHeap = m_pHeap.get();
-			m_pRTV[i] = std::make_shared<cRenderTarget>(desc);
+			m_pRTV[i] = std::make_shared<RenderTarget>(desc);
 		}
-		cRenderTarget::sDescription desc = {};
+		RenderTarget::sDescription desc = {};
 		desc.width = 1280 * 0.25f;
 		desc.height = 720 * 0.25f;
 		desc.pRTVHeap = m_pRTVHeap.get();
-		desc.pSRVHeap = GetHeapImGUI().get(); // ImGUI表示用として作成
-		m_pRTV[3] = std::make_shared<cRenderTarget>(desc);
+		desc.pSRVHeap = m_pHeap.get();
+		m_pRTV[3] = std::make_shared<RenderTarget>(desc);
 	}
 	{
 		// ディスクリプターヒープ（深度バッファ)
@@ -463,15 +463,36 @@ void SceneIBL::Draw()
 		pCmdList->RSSetViewports(1, &vp);
 	}
 
-	// 通常レンダーターゲットの切り替え
+
 	m_pRTV[3]->ResourceBarrier(
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);
+
+	// 画面全体表示
+	m_pObjectCB_WVP[DEFFERED]->Write(cConstantWVP::Calc2DMatrix(
+		{ WINDOW_WIDTH / 2, -WINDOW_HEIGHT / 2, 0 },
+		{ 0,0,0 },
+		{ WINDOW_WIDTH	  ,  WINDOW_HEIGHT	  , 0 }));
+
+	// Gbuffer表示デバッグ
+#ifdef _DEBUG
+	static bool isGbuffer = false;
+	ImGui::Begin("Gbuffer");
+	{
+		ImGui::Checkbox("ViewGbuffer", &isGbuffer);
+		ImGui::Image(GetDebugImGUI()->GetImGUIImage(m_pHeap.get(), m_pObjectCB_WVP[DEFFERED].get(), m_pRTV[0].get()), { 480,270 });
+		ImGui::Image(GetDebugImGUI()->GetImGUIImage(m_pHeap.get(), m_pObjectCB_WVP[DEFFERED].get(), m_pRTV[1].get()), { 480,270 });
+		ImGui::Image(GetDebugImGUI()->GetImGUIImage(m_pHeap.get(), m_pObjectCB_WVP[DEFFERED].get(), m_pRTV[2].get()), { 480,270 });
+		ImGui::Image(GetDebugImGUI()->GetImGUIImage(m_pHeap.get(), m_pObjectCB_WVP[DEFFERED].get(), m_pRTV[3].get()), { 480,270 });
+	}
+	ImGui::End();
+#endif
+
+	// 通常レンダーターゲットの切り替え
 	auto hRTV = GetRTV();
 	pCmdList->OMSetRenderTargets(1, &hRTV, false, nullptr);
-
+	// スカイスフィア描画
 	{
-		// スカイスフィア描画
 		// パイプラインのバインド
 		m_pSkyPipeline->Bind();
 		// シェーダーに渡す定数バッファ&テクスチャを指定
@@ -488,21 +509,9 @@ void SceneIBL::Draw()
 		// 描画
 		m_pSkySphere->Draw();
 	}
-
-	// Gbuffer表示デバッグ
-#ifdef _DEBUG
-	static bool isGbuffer = false;
-	ImGui::Begin("Gbuffer");
-	{
-		ImGui::Checkbox("ViewGbuffer", &isGbuffer);
-		ImGui::Image((ImTextureID)m_pRTV[3]->GetHandleSRV().hGPU.ptr,{480,270});
-	}
-	ImGui::End();
-#endif
-
+	// レンダーターゲット（GBuffer）の内容を描画
 	if (isGbuffer)
 	{
-		// レンダーターゲット（GBuffer）の内容を描画
 		// パイプラインのバインド
 		m_pPipeline->Bind();
 		for (int i = 0; i < 3; i++)
@@ -520,25 +529,8 @@ void SceneIBL::Draw()
 			m_pScreen->Draw();
 		}
 	}
-
+	// ディファードライティング
 	{
-		// ディファードライティング
-		m_pPipelineDeffered->Bind();
-		if (isGbuffer)
-		{
-			m_pObjectCB_WVP[DEFFERED]->Write(cConstantWVP::Calc2DMatrix(
-				{ 320.0f + 640.0f * (int)(3 % 2), -180.0f - 360.0f * (int)(3 / 2), 0 },
-				{ 0,0,0 },
-				{ WINDOW_WIDTH / 2.5f, WINDOW_HEIGHT / 2.5f, 0 }));
-		}
-		else
-		{
-			m_pObjectCB_WVP[DEFFERED]->Write(cConstantWVP::Calc2DMatrix(
-				{ WINDOW_WIDTH / 2, -WINDOW_HEIGHT / 2, 0 },
-				{ 0,0,0 },
-				{ WINDOW_WIDTH	  ,  WINDOW_HEIGHT	  , 0 }));
-		}
-
 		// IBL情報
 		DirectX::XMFLOAT4X4 param[2];
 		// VP逆行列

@@ -85,11 +85,14 @@
     <Filter Include="ソース ファイル\System\ConstantBuffer">
       <UniqueIdentifier>{833d7d4f-e9bf-470e-a525-a1f0fa8c36b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\VS\Utillity">
+      <UniqueIdentifier>{b646d00e-f7b9-47c4-8fc4-f61d3ef32954}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\PS\Utillity">
+      <UniqueIdentifier>{63741e0c-fdf7-4f32-b1c7-b7efbf492c3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="StartUp.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="DescriptorHeap.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
@@ -170,6 +173,12 @@
     </ClCompile>
     <ClCompile Include="SceneIBL.cpp">
       <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugImGUI.cpp">
+      <Filter>ソース ファイル\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="StartUp.cpp">
+      <Filter>ソース ファイル\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -257,14 +266,17 @@
     <ClInclude Include="SceneField.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="StartUp.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="SceneIBL.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
     <ClInclude Include="SceneBase.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugImGUI.h">
+      <Filter>ヘッダー ファイル\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="StartUp.h">
+      <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -313,9 +325,6 @@
     <FxCompile Include="CommonFunction.hlsl">
       <Filter>リソース ファイル\Common</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Sprite.hlsl">
-      <Filter>リソース ファイル\VS\Procedural</Filter>
-    </FxCompile>
     <FxCompile Include="PS_Noise.hlsl">
       <Filter>リソース ファイル\PS\Procedural\Noise</Filter>
     </FxCompile>
@@ -357,6 +366,12 @@
     </FxCompile>
     <FxCompile Include="PS_AtmosphericScattering.hlsl">
       <Filter>リソース ファイル\PS\Procedural</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Sprite.hlsl">
+      <Filter>リソース ファイル\VS\Utillity</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Copy.hlsl">
+      <Filter>リソース ファイル\PS\Utillity</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

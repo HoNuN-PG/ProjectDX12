@@ -2,17 +2,17 @@
 
 struct VS_IN
 {
-    float3 pos : POSITION0;
-    float3 normal : NORMAL0;
-    float2 uv : TEXCOORD0;
+    float3 pos		: POSITION0;
+    float3 normal	: NORMAL0;
+    float2 uv		: TEXCOORD0;
 };
 
 struct VS_OUT
 {
-    float4 pos : SV_POSITION;
-    float3 normal : NORMAL0;
-    float2 uv : TEXCOORD0;
-	float y : TEXCOORD1;
+    float4 pos		: SV_POSITION;
+    float3 normal	: NORMAL0;
+    float2 uv		: TEXCOORD0;
+	float y			: TEXCOORD1;
 };
 
 cbuffer WVP : register(b0)

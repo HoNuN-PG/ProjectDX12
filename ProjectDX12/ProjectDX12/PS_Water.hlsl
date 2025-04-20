@@ -2,9 +2,9 @@
 
 struct PS_IN
 {
-	float4 pos : SV_POSITION;
-	float3 normal : NORMAL0;
-	float2 uv : TEXCOORD0;
+	float4 pos		: SV_POSITION;
+	float3 normal	: NORMAL0;
+	float2 uv		: TEXCOORD0;
 	float3 posWS	: TEXCOORD1;
 };
 

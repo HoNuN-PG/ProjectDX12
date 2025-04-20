@@ -1,7 +1,7 @@
 
 #include "RenderTarget.h"
 
-cRenderTarget::cRenderTarget(sDescription desc)
+RenderTarget::RenderTarget(sDescription desc)
 {
 	// レンダーターゲットの作成
 	// リソースのヒープ設定
@@ -55,12 +55,12 @@ cRenderTarget::cRenderTarget(sDescription desc)
 	GetDevice()->CreateShaderResourceView(m_pRenderTarget, &rtvsrvDesc, m_hSRV.hCPU);
 }
 
-cRenderTarget::~cRenderTarget()
+RenderTarget::~RenderTarget()
 {
 	m_pRenderTarget->Release();
 }
 
-void cRenderTarget::ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
+void RenderTarget::ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
 {
 	// レンダーターゲットのリソースバリア
 	D3D12_RESOURCE_BARRIER barrirDesc	= {};
@@ -73,14 +73,14 @@ void cRenderTarget::ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE
 	GetCommandList()->ResourceBarrier(1, &barrirDesc);
 }
 
-void cRenderTarget::Clear()
+void RenderTarget::Clear()
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	const float clearColor[4] = { 1,0,1,0 };
 	pCmdList->ClearRenderTargetView(m_hRTV.hCPU, clearColor, 0, nullptr);
 }
 
-void cRenderTarget::Clear(const float clearColor[])
+void RenderTarget::Clear(const float clearColor[])
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	pCmdList->ClearRenderTargetView(m_hRTV.hCPU, clearColor, 0, nullptr);

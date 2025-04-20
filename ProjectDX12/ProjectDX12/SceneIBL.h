@@ -69,7 +69,7 @@ private:
 	std::shared_ptr<Pipeline>					m_pPipelineDefferedWrite;
 	std::shared_ptr<Pipeline>					m_pPipelineDeffered;
 	std::shared_ptr<cTexture>					m_pTexture;
-	std::shared_ptr<cRenderTarget>				m_pRTV[4];
+	std::shared_ptr<RenderTarget>				m_pRTV[4];
 	std::shared_ptr<DescriptorHeap>				m_pHeap;
 	std::shared_ptr<DescriptorHeap>				m_pRTVHeap;
 	std::shared_ptr<DescriptorHeap>				m_pDSVHeap;

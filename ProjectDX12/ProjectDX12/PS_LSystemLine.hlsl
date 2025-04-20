@@ -1,8 +1,8 @@
 struct PS_IN
 {
-	float4 pos : SV_POSITION0;
-	float3 normal : NORMAL0;
-	float4 color : COLOR0;
+	float4 pos		: SV_POSITION0;
+	float3 normal	: NORMAL0;
+	float4 color	: COLOR0;
 };
 
 cbuffer Light:register(b0)

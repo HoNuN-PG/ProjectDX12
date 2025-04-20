@@ -1,11 +1,11 @@
 struct VS_IN {
-    float3 pos : POSITION0;
-    float4 color : COLOR0;
+    float3 pos      : POSITION0;
+    float4 color    : COLOR0;
 };
 struct VS_OUT
 {
-    float4 pos : SV_POSITION0;
-    float4 color : COLOR0;
+    float4 pos      : SV_POSITION0;
+    float4 color    : COLOR0;
 };
 cbuffer Matrix : register(b0) {
     float4x4 WVP;

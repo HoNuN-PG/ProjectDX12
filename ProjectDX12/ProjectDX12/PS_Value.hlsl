@@ -14,7 +14,7 @@ float4 main(PS_IN pin) : SV_TARGET
 {
 	int block = 10;
 	int2 i_uv = floor(pin.uv * block);	// ブロック番号
-	float2 f_uv = frac(pin.uv * block);		// ブロックごとの値
+	float2 f_uv = frac(pin.uv * block);	// ブロックごとの値
 
 	// バリューノイズの計算に使用する4箇所の位置を定義
 	int2 offset[] = {

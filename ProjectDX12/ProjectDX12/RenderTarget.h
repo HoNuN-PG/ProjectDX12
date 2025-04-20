@@ -3,7 +3,7 @@
 
 #include "DescriptorHeap.h"
 
-class cRenderTarget
+class RenderTarget
 {
 public:
 	struct sDescription
@@ -14,8 +14,8 @@ public:
 		DescriptorHeap* pSRVHeap;
 	};
 public:
-	cRenderTarget(sDescription desc);
-	~cRenderTarget();
+	RenderTarget(sDescription desc);
+	~RenderTarget();
 	void ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 	void Clear();
 	void Clear(const float clearColor[]);

@@ -2,8 +2,8 @@
 #define ___START_UP_H___
 
 #include <memory>
-#include "DescriptorHeap.h"
+#include "DebugImGUI.h"
 
-std::shared_ptr<DescriptorHeap> GetHeapImGUI();
+DebugImGUI* GetDebugImGUI();
 
 #endif

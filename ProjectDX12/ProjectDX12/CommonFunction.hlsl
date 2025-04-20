@@ -50,7 +50,29 @@ float PerlinNoise(float2 vec, int block)
 float TurbulenceNoise(float2 vec, int block)
 {
 	float noise = PerlinNoise(vec, block);
-	return 1 - abs(noise * 2.0f - 1.0f); // ƒ^[ƒrƒ…ƒ‰ƒ“ƒXƒmƒCƒY
+	return 1 - abs(noise * 2.0f - 1.0f);
+}
+
+/**
+ * @param(lacunarity)ƒmƒCƒY‚Ìk¬—¦
+ * @param(gain)‡¬‚ÌŒ¸Š—¦
+ * @param(amplitude)‰Šú‡¬—¦
+ * @param(roll)ŒJ‚è•Ô‚µ‰ñ”
+ */
+float PerlinFBM(float lacunarity, float gain, float amplitude, int roll,
+	float2 vec, int block)
+{
+    float n = 0.0f;
+
+    int i = 0;
+    for (i = 0; i < roll; ++i)
+    {
+        n += PerlinNoise(vec, block) * amplitude;
+        block *= lacunarity;
+        amplitude *= gain;
+    }
+
+    return n;
 }
 
 /** 
@@ -67,28 +89,6 @@ float TurbulenceFBM(float lacunarity,float gain,float amplitude,int roll,
 	for (i = 0; i < roll; ++i)
 	{
 		n += TurbulenceNoise(vec, block) * amplitude;
-		block *= lacunarity;
-		amplitude *= gain;
-	}
-
-	return n;
-}
-
-/**
- * @param(lacunarity)ƒmƒCƒY‚Ìk¬—¦
- * @param(gain)‡¬‚ÌŒ¸Š—¦
- * @param(amplitude)‰Šú‡¬—¦
- * @param(roll)ŒJ‚è•Ô‚µ‰ñ”
- */
-float PerlinFBM(float lacunarity, float gain, float amplitude, int roll,
-	float2 vec, int block)
-{
-	float n = 0.0f;
-
-	int i = 0;
-	for (i = 0; i < roll; ++i)
-	{
-		n += PerlinNoise(vec, block) * amplitude;
 		block *= lacunarity;
 		amplitude *= gain;
 	}

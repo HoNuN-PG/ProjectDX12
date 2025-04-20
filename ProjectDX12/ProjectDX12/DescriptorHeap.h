@@ -22,6 +22,7 @@ public:
 	DescriptorHeap(Description desc);
 	~DescriptorHeap();
 	ID3D12DescriptorHeap* Get() { return m_pHeap; }
+	// ディスクリプタのハンドルを取得
 	sHandle Allocate();
 	void Bind();
 private:

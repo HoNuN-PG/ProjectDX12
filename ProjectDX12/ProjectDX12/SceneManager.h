@@ -1,5 +1,5 @@
-#ifndef __SCENE_H__
-#define __SCENE_H__
+#ifndef __SCENE_MANAGER_H__
+#define __SCENE_MANAGER_H__
 
 #include <Windows.h>
 #include <vector>
