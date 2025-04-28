@@ -13,7 +13,7 @@ const int MaxConstBufNum = 3;
 
 HRESULT SceneField::Init()
 {
-	m_pCamera = new cCameraDebug();
+	m_pCamera = new CameraDebug();
 
 	// 頂点データ作成
 	struct Vertex
@@ -136,30 +136,30 @@ HRESULT SceneField::Init()
 	}
 
 	{	// ルートシグネチャ生成
-		RootSignature::Parameter param[] = {
+		RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 		};
-		RootSignature::Description desc = {};
+		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		m_pRootSignature = new RootSignature(desc);
 	}
 	{	// 水面用ルートシグネチャ生成
-		RootSignature::Parameter param[] = {
+		RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::Description desc = {};
+		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		m_pWaterRS = new RootSignature(desc);
 	}
 	{ // スカイルートシグネチャ
-		RootSignature::Parameter param[] = {
+		RootSignature::ParameterTable param[] = {
 		 {D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 		 {D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::Description desc = {};
+		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		m_pSkyRS = new RootSignature(desc);

@@ -33,6 +33,7 @@ private:
 	Pipeline* m_pPipeline;
 	DepthStencil* m_pDSV;
 	float m_rad;
+
 };
 
 #endif // __SCENE_FRACTAL_H__

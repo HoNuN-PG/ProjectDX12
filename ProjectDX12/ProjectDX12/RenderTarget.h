@@ -6,29 +6,32 @@
 class RenderTarget
 {
 public:
-	struct sDescription
+	struct Description
 	{
 		UINT width;
 		UINT height;
 		DescriptorHeap* pRTVHeap;
 		DescriptorHeap* pSRVHeap;
 	};
+
 public:
-	RenderTarget(sDescription desc);
+	RenderTarget(Description desc);
 	~RenderTarget();
 	void ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 	void Clear();
 	void Clear(const float clearColor[]);
-	DescriptorHeap::sHandle GetHandleRTV() {
+	DescriptorHeap::Handle GetHandleRTV() {
 		return m_hRTV;
 	}
-	DescriptorHeap::sHandle GetHandleSRV() {
+	DescriptorHeap::Handle GetHandleSRV() {
 		return m_hSRV;
 	}
+
 private:
-	ID3D12Resource*				m_pRenderTarget;
-	DescriptorHeap::sHandle	m_hRTV;
-	DescriptorHeap::sHandle	m_hSRV;
+	ID3D12Resource*			m_pRenderTarget;
+	DescriptorHeap::Handle	m_hRTV;
+	DescriptorHeap::Handle	m_hSRV;
+
 };
 
 #endif

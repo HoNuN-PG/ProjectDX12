@@ -1,0 +1,131 @@
+@startuml
+
+class SceneBase
+{
+    -GlobalResource Resources
+}
+
+class GlobalResource
+{
+    -map<string,ConstantBuffer> ConstantBuffers
+    -map<string,RootSignature> RootSignatures
+    -map<string,Pipeline> Pipelines
+    -static GlobalSceneResource* Instance
+    +GlobalSceneResource* GetInstance()
+}
+note left of GlobalResource{
+    基本的に変更されない（あるいは更新内で一度のみ変更される）リソース群
+}
+
+class DescriptorHeap
+{
+    +struct Description
+    +struct Handle
+    +DescriptorHeap(Description _desc)
+    +ID3D12DescriptorHeap* Get()
+    +Handle Allocate()
+    +void Bind()
+}
+note left of DescriptorHeap{
+    RTVやCBV,SRV,UAVの作成に必要
+}
+
+class RootSignature
+{
+    +struct Parameter
+    +struct Description
+    {Parameter* pParam ...}
+    +RootSignature(Description _desc)
+    +ID3D12RootSignature* Get()
+    +void Bind(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num)
+}
+note right of RootSignature{
+    シェーダーの構造を表す
+    Bindするリソース（ディスクリプタ）は同一のディスクリプタヒープから作成されている必要がある
+}
+
+class Pipeline
+{
+    +struct InputLayout
+    +struct Description
+    {ID3D12RootSignature* pRootSignature ...}
+    +Pipeline(Description _desc)
+    +void Bind()
+}
+note right of Pipeline{
+    シェーダーの作成に必要
+}
+
+class ConstantBuffer
+{
+    struct Description
+    {DescriptorHeap* pHeap ...}
+    +ConstantBuffer(Description _desc)
+    +void Write(const void* data)
+    +DescriptorHeap::sHandle GetHandle()
+}
+
+class Texture
+{
+    +struct sDescription
+    {const char* fileName, DescriptorHeap* _heap}
+    +Texture(Description _desc)
+    +DescriptorHeap::Handle GetHandle()
+}
+
+class RenderTarget
+{
+    +struct Description
+    {DescriptorHeap* pRTVHeap,DescriptorHeap* pSRVHeap}
+    +RenderTarget(Description desc)
+    +void ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
+    +void Clear()
+    +DescriptorHeap::Handle GetHandleRTV()
+    +DescriptorHeap::Handle GetHandleSRV()
+}
+
+class DepthStencil
+{
+    +struct Description 
+    {DescriptorHeap* pDSVHeap ...}
+    +DepthStencil(Description _desc)
+    +void Clear()
+    DescriptorHeap::Handle GetHandleDSV()
+}
+
+class Primitive
+{
+    +void Draw()
+}
+
+class Model
+{
+    +void Create(string _path)
+    +void Draw()
+}
+
+class GameObject
+{
+
+}
+
+class Component
+{
+    
+}
+
+'関係
+DescriptorHeap <--- ConstantBuffer   : have
+DescriptorHeap <--- Texture          : have
+DescriptorHeap <--- RenderTarget     : have
+DescriptorHeap <--- DepthStencil     : have
+
+RootSignature <-- Pipeline : have
+
+ConstantBuffer <-- GlobalResource   : have
+RootSignature <-- GlobalResource    : have
+Pipeline <-- GlobalResource         : have
+
+GlobalResource <-- SceneBase : have
+
+@enduml

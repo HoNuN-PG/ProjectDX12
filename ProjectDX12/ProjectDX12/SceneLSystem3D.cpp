@@ -1,11 +1,11 @@
-#include "SceneLSystemNEO.h"
+#include "SceneLSystem3D.h"
 #include <functional>
 #include <stack>
 #include <string>
 #include <map>
 #include <DirectXMath.h>
 
-class LSystemNEO
+class LSystem3D
 {
 	// LSystemNEOクラスの実装(プリント参照)
 public:
@@ -18,10 +18,10 @@ private:
 	std::map<char, std::function<void(void*)>> m_behavior;	// 文字の動作
 };
 
-HRESULT SceneLSystemNEO::Init()
+HRESULT SceneLSystem3D::Init()
 {
-	m_pCamera = new cCameraDebug();
-	m_pLight = new cLightBase();
+	m_pCamera = new CameraDebug();
+	m_pLight = new LightBase();
 
 	// LSystemを利用した頂点データの作成
 
@@ -271,7 +271,7 @@ HRESULT SceneLSystemNEO::Init()
 	};
 
 	// LSystemNEO を利用して図形を直線表示する
-	LSystemNEO lsystem;
+	LSystem3D lsystem;
 
 	// ルール追加
 	lsystem.AddRule('A', "S[B]-|[B]+|[B]");
@@ -443,11 +443,11 @@ HRESULT SceneLSystemNEO::Init()
 		}
 	}
 	{	// ルートシグネチャ生成
-		RootSignature::Parameter param[] = {
+		RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::Description desc = {};
+		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		m_pRootSignature = new RootSignature(desc);
@@ -483,7 +483,7 @@ HRESULT SceneLSystemNEO::Init()
 
 	return S_OK;
 }
-void SceneLSystemNEO::Uninit()
+void SceneLSystem3D::Uninit()
 {
 	delete m_pCamera;
 	delete m_pLight;
@@ -496,12 +496,12 @@ void SceneLSystemNEO::Uninit()
 	m_pWVP.clear();
 	m_pLightBuffer.clear();
 }
-void SceneLSystemNEO::Update()
+void SceneLSystem3D::Update()
 {
 	m_pCamera->Update();
 	m_pLight->Update();
 }
-void SceneLSystemNEO::Draw()
+void SceneLSystem3D::Draw()
 {
 	m_pCamera->Draw();
 	m_pLight->Draw();
@@ -531,8 +531,8 @@ void SceneLSystemNEO::Draw()
 	{
 		mat[0] = m_W[i];
 		mat[1] = DirectX::XMMatrixLookAtLH(
-			DirectX::XMVectorSet(cCameraDebug::m_MainPos.x, cCameraDebug::m_MainPos.y, cCameraDebug::m_MainPos.z, 0.0),
-			DirectX::XMVectorSet(cCameraDebug::m_MainTarget.x, cCameraDebug::m_MainTarget.y, cCameraDebug::m_MainTarget.z, 0.0),
+			DirectX::XMVectorSet(CameraDebug::m_MainPos.x, CameraDebug::m_MainPos.y, CameraDebug::m_MainPos.z, 0.0),
+			DirectX::XMVectorSet(CameraDebug::m_MainTarget.x, CameraDebug::m_MainTarget.y, CameraDebug::m_MainTarget.z, 0.0),
 			DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0)
 		);
 		mat[2] = DirectX::XMMatrixPerspectiveFovLH(
@@ -564,7 +564,7 @@ void SceneLSystemNEO::Draw()
 	}
 }
 
-void LSystemNEO::Execute(int iteration, const char * initValue, void * arg)
+void LSystem3D::Execute(int iteration, const char * initValue, void * arg)
 {
 	std::string::iterator it;
 	std::string base;				// 変換前文字列
@@ -593,12 +593,12 @@ void LSystemNEO::Execute(int iteration, const char * initValue, void * arg)
 	}
 }
 
-void LSystemNEO::AddRule(char key, const char * str)
+void LSystem3D::AddRule(char key, const char * str)
 {
 	m_rule.insert(std::pair<char, std::string>(key, str));
 }
 
-void LSystemNEO::AddBehavior(char key, std::function<void(void*)> func)
+void LSystem3D::AddBehavior(char key, std::function<void(void*)> func)
 {
 	m_behavior.insert(std::pair<char, std::function<void(void*)>>(key, func));
 }

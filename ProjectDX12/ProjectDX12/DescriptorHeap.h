@@ -13,22 +13,27 @@ public:
 		UINT						num;		// ディスクリプタの最大数
 	};
 	// ハンドル情報
-	struct sHandle
+	struct Handle
 	{
 		D3D12_CPU_DESCRIPTOR_HANDLE hCPU;
 		D3D12_GPU_DESCRIPTOR_HANDLE hGPU;
 	};
+
 public:
 	DescriptorHeap(Description desc);
 	~DescriptorHeap();
 	ID3D12DescriptorHeap* Get() { return m_pHeap; }
-	// ディスクリプタのハンドルを取得
-	sHandle Allocate();
+	// ディスクリプタを取得
+	Handle Allocate();
+	// ヒープの設定
 	void Bind();
+	static void Bind(ID3D12DescriptorHeap* _heaps, UINT _num);
+
 private:
 	ID3D12DescriptorHeap*		m_pHeap;		// ヒープのデータ
 	D3D12_DESCRIPTOR_HEAP_TYPE	m_type;			// ディスクリプタヒープの種類
 	UINT						m_allocCout;	// 確保したディスクリプタ数
+
 };
 
 #endif

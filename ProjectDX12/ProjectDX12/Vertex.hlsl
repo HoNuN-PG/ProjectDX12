@@ -13,7 +13,7 @@ struct VS_OUT
 	float4 color	: COLOR0;
 };
 
-cbuffer Matrix : register(b0)
+cbuffer WVP : register(b0)
 {
 	float4x4 world;
 	float4x4 view;
@@ -28,8 +28,8 @@ VS_OUT main(VS_IN input)
 	wvp = mul(wvp, world);
 	wvp = mul(wvp, view);
 	wvp = mul(wvp, proj);
-	output.pos = wvp;
-	output.uv = input.uv;
-	output.color = input.color;
+	output.pos		= wvp;
+	output.uv		= input.uv;
+	output.color	= input.color;
 	return output;
 }

@@ -19,9 +19,9 @@ void * cConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, 
 	DirectX::XMStoreFloat4x4(&(wvp.world), world);
 
 	// ビューマトリクス設定
-	DirectX::XMFLOAT3 pos = { cCameraDebug::m_MainPos.x,cCameraDebug::m_MainPos.y,cCameraDebug::m_MainPos.z };
-	DirectX::XMFLOAT3 target = { cCameraDebug::m_MainTarget.x,cCameraDebug::m_MainTarget.y,cCameraDebug::m_MainTarget.z };
-	DirectX::XMFLOAT3 up = { cCameraDebug::m_MainUp.x,cCameraDebug::m_MainUp.y,cCameraDebug::m_MainUp.z };
+	DirectX::XMFLOAT3 pos = { CameraDebug::m_MainPos.x,CameraDebug::m_MainPos.y,CameraDebug::m_MainPos.z };
+	DirectX::XMFLOAT3 target = { CameraDebug::m_MainTarget.x,CameraDebug::m_MainTarget.y,CameraDebug::m_MainTarget.z };
+	DirectX::XMFLOAT3 up = { CameraDebug::m_MainUp.x,CameraDebug::m_MainUp.y,CameraDebug::m_MainUp.z };
 	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&pos),
 		DirectX::XMLoadFloat3(&target), XMLoadFloat3(&up));
 	view = DirectX::XMMatrixTranspose(view);
@@ -64,12 +64,12 @@ void * cConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, 
 	return &wvp;
 }
 
-DirectX::XMFLOAT4X4 cConstantWVP::CalcInversVPMatric()
+DirectX::XMFLOAT4X4 cConstantWVP::CalcInversVPMatrix()
 {
 	// ビューマトリクス
-	DirectX::XMFLOAT3 pos = { cCameraDebug::m_MainPos.x,cCameraDebug::m_MainPos.y,cCameraDebug::m_MainPos.z };
-	DirectX::XMFLOAT3 target = { cCameraDebug::m_MainTarget.x,cCameraDebug::m_MainTarget.y,cCameraDebug::m_MainTarget.z };
-	DirectX::XMFLOAT3 up = { cCameraDebug::m_MainUp.x,cCameraDebug::m_MainUp.y,cCameraDebug::m_MainUp.z };
+	DirectX::XMFLOAT3 pos = { CameraDebug::m_MainPos.x,CameraDebug::m_MainPos.y,CameraDebug::m_MainPos.z };
+	DirectX::XMFLOAT3 target = { CameraDebug::m_MainTarget.x,CameraDebug::m_MainTarget.y,CameraDebug::m_MainTarget.z };
+	DirectX::XMFLOAT3 up = { CameraDebug::m_MainUp.x,CameraDebug::m_MainUp.y,CameraDebug::m_MainUp.z };
 	DirectX::XMMATRIX viewM = DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&pos),
 		DirectX::XMLoadFloat3(&target), XMLoadFloat3(&up));
 	viewM = DirectX::XMMatrixTranspose(viewM);

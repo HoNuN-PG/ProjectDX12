@@ -24,7 +24,7 @@ ConstantBuffer::ConstantBuffer(Description desc)
 	D3D12_RESOURCE_DESC res		= {};
 	res.Dimension				= D3D12_RESOURCE_DIMENSION_BUFFER;
 	res.Alignment				= 0;
-	res.Width					= (desc.size + 0xff) & ~0xff; // 定数バッファのサイズ(256バイトアライメント
+	res.Width					= (desc.size + 0xff) & ~0xff; // 256バイトアライメント
 	res.Height					= 1;
 	res.DepthOrArraySize		= 1;
 	res.MipLevels				= 1;

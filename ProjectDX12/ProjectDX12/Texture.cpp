@@ -4,7 +4,7 @@
 #include <DirectXTex.h>
 #include <TextureLoad.h>
 
-cTexture::cTexture(sDescription desc)
+Texture::Texture(Description desc)
 {
 	DirectX::TexMetadata info;
 	DirectX::ScratchImage image;
@@ -51,7 +51,7 @@ cTexture::cTexture(sDescription desc)
 	GetDevice()->CreateShaderResourceView(m_pTexture, &srvDesc, m_handle.hCPU);
 }
 
-cTexture::~cTexture()
+Texture::~Texture()
 {
 	m_pTexture->Release();
 }

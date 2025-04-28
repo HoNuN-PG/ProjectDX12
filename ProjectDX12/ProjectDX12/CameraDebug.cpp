@@ -6,7 +6,7 @@
 
 #include "imgui/imgui.h"
 
-cCameraDebug::cCameraDebug()
+CameraDebug::CameraDebug()
 {
 	m_IsMain = true;
 
@@ -20,7 +20,7 @@ cCameraDebug::cCameraDebug()
 	SetMainParams();
 }
 
-void cCameraDebug::Update()
+void CameraDebug::Update()
 {
 	// マウス入力
 	if (!Input::GetKeyPress(VK_RBUTTON))
@@ -54,7 +54,7 @@ void cCameraDebug::Update()
 	if (m_IsMain) SetMainParams();
 }
 
-void cCameraDebug::Draw()
+void CameraDebug::Draw()
 {
 #ifdef _DEBUG
 	ImGui::Begin("Camera");
@@ -66,7 +66,7 @@ void cCameraDebug::Draw()
 #endif
 }
 
-void cCameraDebug::ProcDCC(Argument & arg)
+void CameraDebug::ProcDCC(Argument & arg)
 {
 	// マウスの移動量 / 画面サイズ の比率から、画面全体でどれだけ回転するか指定する。
 	float angleX = 360.0f * arg.mouseMove.x / WINDOW_WIDTH * m_MouseSpeed;

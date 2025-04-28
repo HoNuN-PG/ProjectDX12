@@ -71,11 +71,11 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	}
 	// ルートシグネチャ
 	{
-		RootSignature::Parameter param[] = {
+		RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::Description desc = {};
+		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		mpRootSignature = std::make_unique<RootSignature>(desc);
@@ -107,7 +107,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	{
 		for (int i = 0; i < HEAP_NUM - 1; i++)
 		{
-			RenderTarget::sDescription desc = {};
+			RenderTarget::Description desc = {};
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
 			desc.pRTVHeap = mpRTVHeap.get();
@@ -119,7 +119,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	return msg;
 }
 
-ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* _heap, ConstantBuffer* _wvp, RenderTarget* _src)
+ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* _heap, ConstantBuffer* _wvp, RenderTarget* _srv)
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	// 表示領域の設定
@@ -154,7 +154,7 @@ ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* _heap, ConstantBuffer* _wv
 	mpPipeline->Bind();
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = {
 		_wvp->GetHandle().hGPU,
-		_src->GetHandleSRV().hGPU,
+		_srv->GetHandleSRV().hGPU,
 	};
 	_heap->Bind();
 	mpRootSignature->Bind(hScreen, _countof(hScreen));

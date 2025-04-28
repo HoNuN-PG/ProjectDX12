@@ -10,17 +10,22 @@
 class cCameraBase
 {
 public:
-
 	cCameraBase() {}
 	virtual ~cCameraBase() {}
 	virtual void Update() {}
 	virtual void Draw(){}
 
 	// 座標
-	DirectX::XMFLOAT3 GetPos() { return m_Pos; }
+	DirectX::XMFLOAT3 GetPos() 
+	{ return m_Pos; }
+
+public:
+	float m_MoveSpeed;
+	float m_MouseSpeed;
 
 protected:
-
+	void SetMainParams();
+protected:
 	bool m_IsMain;
 
 	DirectX::XMFLOAT3 m_Pos;			// カメラ座標
@@ -28,23 +33,13 @@ protected:
 	DirectX::XMFLOAT3 m_Target;			// 注視点
 
 public:
-
-	float m_MoveSpeed;
-	float m_MouseSpeed;
-
-protected:
-
-	void SetMainParams();
-
-public:
-
 	static DirectX::XMFLOAT3 m_MainPos;
 	static DirectX::XMFLOAT3 m_MainUp;
 	static DirectX::XMFLOAT3 m_MainTarget;
 
 };
 
-class cCameraDebug : public cCameraBase
+class CameraDebug : public cCameraBase
 {
 private:
 	struct Argument
@@ -57,15 +52,19 @@ private:
 		DirectX::XMVECTOR vCamLook;
 		float focus;
 	};
+
 public:
-	cCameraDebug();
-	~cCameraDebug() {}
+	CameraDebug();
+	~CameraDebug() {}
 	void Update() override;
 	void Draw() override;
+
 private:
 	void ProcDCC(Argument& arg);
+
 private:
 	POINT m_oldPos;
+
 };
 
 #endif

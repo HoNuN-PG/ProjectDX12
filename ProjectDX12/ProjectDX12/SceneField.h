@@ -33,8 +33,10 @@ private:
 	DepthStencil* m_pDSV;
 	MeshBuffer* m_pSphere;
 	RootSignature* m_pSkyRS;
+
 private:
-	cCameraDebug* m_pCamera;
+	CameraDebug* m_pCamera;
+
 };
 
 #endif // __SCENE_PROCEDURAL_H__

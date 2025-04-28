@@ -21,14 +21,17 @@ public:
 		UINT					InputLayoutNum;
 		UINT					RenderTargetNum;
 	};
+
 public:
 	Pipeline(Description desc);
 	~Pipeline();
 	void Bind() {
 		GetCommandList()->SetPipelineState(m_pPipeline);
 	}
+
 private:
 	ID3D12PipelineState* m_pPipeline;
+
 };
 
 #endif

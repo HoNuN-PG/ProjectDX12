@@ -21,7 +21,7 @@ private:
 
 HRESULT SceneLSystem::Init()
 {
-	m_pCamera = new cCameraDebug();
+	m_pCamera = new CameraDebug();
 
 	// LSystemを利用した頂点データの作成
 
@@ -268,11 +268,11 @@ HRESULT SceneLSystem::Init()
 		m_pWVP = new ConstantBuffer(desc);
 	}
 	{	// ルートシグネチャ生成
-		RootSignature::Parameter param[] = {
+		RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::Description desc = {};
+		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		m_pRootSignature = new RootSignature(desc);
@@ -344,8 +344,8 @@ void SceneLSystem::Draw()
 
 	mat[0] = DirectX::XMMatrixIdentity();
 	mat[1] = DirectX::XMMatrixLookAtLH(
-		DirectX::XMVectorSet(cCameraDebug::m_MainPos.x, cCameraDebug::m_MainPos.y, cCameraDebug::m_MainPos.z, 0.0),
-		DirectX::XMVectorSet(cCameraDebug::m_MainTarget.x, cCameraDebug::m_MainTarget.y, cCameraDebug::m_MainTarget.z, 0.0),
+		DirectX::XMVectorSet(CameraDebug::m_MainPos.x, CameraDebug::m_MainPos.y, CameraDebug::m_MainPos.z, 0.0),
+		DirectX::XMVectorSet(CameraDebug::m_MainTarget.x, CameraDebug::m_MainTarget.y, CameraDebug::m_MainTarget.z, 0.0),
 		DirectX::XMVectorSet(0.0f,  1.0f,   0.0f, 0.0)
 	);
 	mat[2] = DirectX::XMMatrixPerspectiveFovLH(

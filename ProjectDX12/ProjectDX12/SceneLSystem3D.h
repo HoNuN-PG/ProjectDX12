@@ -15,13 +15,14 @@
 #include "CameraBase.h"
 #include "LightBase.h"
 
-class SceneLSystemNEO : public SceneBase
+class SceneLSystem3D : public SceneBase
 {
 public:
 	HRESULT Init();
 	void Uninit();
 	void Update();
 	void Draw();
+
 private:
 	std::vector<MeshBuffer*> m_pTree;
 	DescriptorHeap* m_pShaderHeap;
@@ -32,9 +33,11 @@ private:
 	RootSignature* m_pRootSignature;
 	Pipeline* m_pPipeline;
 	DepthStencil* m_pDSV;
+
 private:
-	cCameraDebug* m_pCamera;
-	cLightBase* m_pLight;
+	CameraDebug* m_pCamera;
+	LightBase* m_pLight;
+
 };
 
 #endif // __SCENE_LSYSTEM_NEO_H__

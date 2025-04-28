@@ -48,7 +48,7 @@ void DepthStencil::Clear()
 	GetCommandList()->ClearDepthStencilView(m_hDSV.hCPU, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
-DescriptorHeap::sHandle DepthStencil::GetHandleDSV()
+DescriptorHeap::Handle DepthStencil::GetHandleDSV()
 {
 	return m_hDSV;
 }

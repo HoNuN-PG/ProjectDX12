@@ -3,23 +3,26 @@
 
 #include "DescriptorHeap.h"
 
-class cTexture
+class Texture
 {
 public:
-	struct sDescription
+	struct Description
 	{
-		const char*			fileName;
+		const char*		fileName;
 		DescriptorHeap*	pHeap;
 	};
+
 public:
-	cTexture(sDescription desc);
-	~cTexture();
-	DescriptorHeap::sHandle GetHandle() {
+	Texture(Description desc);
+	~Texture();
+	DescriptorHeap::Handle GetHandle() {
 		return m_handle;
 	}
+
 private:
-	ID3D12Resource*				m_pTexture;	// テクスチャリソース
-	DescriptorHeap::sHandle	m_handle;
+	ID3D12Resource*			m_pTexture;	// テクスチャリソース
+	DescriptorHeap::Handle	m_handle;
+
 };
 
 #endif

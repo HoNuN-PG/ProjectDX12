@@ -1,7 +1,7 @@
 
 #include "RenderTarget.h"
 
-RenderTarget::RenderTarget(sDescription desc)
+RenderTarget::RenderTarget(Description desc)
 {
 	// レンダーターゲットの作成
 	// リソースのヒープ設定

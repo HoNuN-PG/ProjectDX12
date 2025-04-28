@@ -23,7 +23,7 @@ DescriptorHeap::~DescriptorHeap()
 	m_pHeap->Release();
 }
 
-DescriptorHeap::sHandle DescriptorHeap::Allocate()
+DescriptorHeap::Handle DescriptorHeap::Allocate()
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE hCPU = m_pHeap->GetCPUDescriptorHandleForHeapStart();
 	D3D12_GPU_DESCRIPTOR_HANDLE hGPU = m_pHeap->GetGPUDescriptorHandleForHeapStart();
@@ -35,7 +35,7 @@ DescriptorHeap::sHandle DescriptorHeap::Allocate()
 	hGPU.ptr	+= increment;
 	++m_allocCout;
 
-	sHandle handle;
+	Handle handle;
 	handle.hCPU = hCPU;
 	handle.hGPU = hGPU;
 	return handle;
@@ -44,4 +44,9 @@ DescriptorHeap::sHandle DescriptorHeap::Allocate()
 void DescriptorHeap::Bind()
 {
 	GetCommandList()->SetDescriptorHeaps(1, &m_pHeap);
+}
+
+void DescriptorHeap::Bind(ID3D12DescriptorHeap* _heaps, UINT _num)
+{
+	GetCommandList()->SetDescriptorHeaps(_num, &_heaps);
 }

@@ -175,6 +175,8 @@
     <ClCompile Include="DepthStencil.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="DirectX.cpp" />
+    <ClCompile Include="primitive.cpp" />
+    <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="SceneIBL.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -192,8 +194,10 @@
     <ClCompile Include="SceneField.cpp" />
     <ClCompile Include="SceneFractal.cpp" />
     <ClCompile Include="SceneLSystem.cpp" />
-    <ClCompile Include="SceneLSystemNEO.cpp" />
+    <ClCompile Include="SceneLSystem3D.cpp" />
     <ClCompile Include="SceneProcedural.cpp" />
+    <ClCompile Include="SceneSandBoxDX12.cpp" />
+    <ClCompile Include="sphere.cpp" />
     <ClCompile Include="StartUp.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
@@ -206,6 +210,7 @@
     <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="DirectX.h" />
+    <ClInclude Include="primitive.h" />
     <ClInclude Include="SceneBase.h" />
     <ClInclude Include="SceneIBL.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -226,8 +231,10 @@
     <ClInclude Include="SceneField.h" />
     <ClInclude Include="SceneFractal.h" />
     <ClInclude Include="SceneLSystem.h" />
-    <ClInclude Include="SceneLSystemNEO.h" />
+    <ClInclude Include="SceneLSystem3D.h" />
     <ClInclude Include="SceneProcedural.h" />
+    <ClInclude Include="SceneSandBoxDX12.h" />
+    <ClInclude Include="sphere.h" />
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
@@ -359,6 +366,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="PS_Perlin.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="PS_SimpleLit.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>

@@ -15,13 +15,14 @@ private:
 		IBL = 0,
 		FRACTAL,
 		LSYSTEM,
-		LSYSTEMNEO,
+		LSYSTEM3D,
 		PROCEDURAL,
 		FIELD,
+		SANDBOXDX12,
 
 		MAX_SCENES
 	};
-	int mCurrentScene = IBL;
+	int mCurrentScene = SANDBOXDX12;
 	std::vector<std::unique_ptr<SceneBase>> mScenes;
 
 public:

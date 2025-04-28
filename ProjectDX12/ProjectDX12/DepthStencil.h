@@ -12,14 +12,17 @@ public:
 		UINT height;
 		DescriptorHeap* pDSVHeap;
 	};
+
 public:
 	DepthStencil(Description desc);
 	~DepthStencil() {}
 	void Clear();
-	DescriptorHeap::sHandle GetHandleDSV();
+	DescriptorHeap::Handle GetHandleDSV();
+
 private:
 	ID3D12Resource* m_pDepthStencil;
-	DescriptorHeap::sHandle m_hDSV;
+	DescriptorHeap::Handle m_hDSV;
+
 };
 
 #endif

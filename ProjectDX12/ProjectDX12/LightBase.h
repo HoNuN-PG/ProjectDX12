@@ -4,7 +4,7 @@
 #include "CameraBase.h"
 #include "imgui/imgui.h"
 
-class cLightBase
+class LightBase
 {
 private:
 	/**
@@ -15,10 +15,10 @@ private:
 		float radY, radXZ;		// 回り込み角度
 		float lateY, lateXZ;	// 補間角度（現在の角度）
 	};
-public:
 
-	cLightBase();
-	~cLightBase() {}
+public:
+	LightBase();
+	~LightBase() {}
 	void Update();
 	void Draw();
 
@@ -40,7 +40,6 @@ public:
 	static DirectX::XMFLOAT4X4 GetLightViewProjectionMat();
 
 private:
-
 	/**
 	 * ライトパラメータ
 	 */
@@ -57,6 +56,7 @@ private:
 private:
 	static DirectX::XMFLOAT4X4 m_ViewMatrix;
 	static DirectX::XMFLOAT4X4 m_ProjectionMatrix;
+
 };
 
 #endif

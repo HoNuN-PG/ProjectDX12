@@ -19,6 +19,7 @@ public:
 	void Uninit();
 	void Update();
 	void Draw();
+
 private:
 	MeshBuffer* m_pTree;
 	DescriptorHeap* m_pShaderHeap;
@@ -27,8 +28,10 @@ private:
 	RootSignature* m_pRootSignature;
 	Pipeline* m_pPipeline;
 	DepthStencil* m_pDSV;
+
 private:
-	cCameraDebug* m_pCamera;
+	CameraDebug* m_pCamera;
+
 };
 
 #endif // __SCENE_LSYSTEM_H__

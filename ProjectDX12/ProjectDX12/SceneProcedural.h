@@ -28,6 +28,7 @@ private:
 	RootSignature* m_pRootSignature;
 	std::vector<Pipeline*> m_pPipelines;
 	DepthStencil* m_pDSV;
+
 };
 
 #endif // __SCENE_PROCEDURAL_H__

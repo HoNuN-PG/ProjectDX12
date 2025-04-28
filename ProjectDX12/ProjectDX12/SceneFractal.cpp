@@ -103,10 +103,10 @@ HRESULT SceneFractal::Init()
 		}
 	}
 	{	// ルートシグネチャ生成
-		RootSignature::Parameter param[] = {
+		RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 		};
-		RootSignature::Description desc = {};
+		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		m_pRootSignature = new RootSignature(desc);

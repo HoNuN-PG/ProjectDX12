@@ -20,9 +20,9 @@
 HRESULT SceneIBL::Init()
 {
 	// カメラ
-	m_pCamera = std::make_unique<cCameraDebug>();
+	m_pCamera = std::make_unique<CameraDebug>();
 	// ライト
-	m_pLight = std::make_unique<cLightBase>();
+	m_pLight = std::make_unique<LightBase>();
 
 	// スクリーン頂点
 	Vertex screenVtx[] =
@@ -185,18 +185,18 @@ HRESULT SceneIBL::Init()
 	}
 	{ 
 		// ルートシグネチャ
-		RootSignature::Parameter param[] = {
+		RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::Description desc	= {};
+		RootSignature::DescriptionTable desc	= {};
 		desc.pParam							= param;
 		desc.paramNum						= _countof(param);
 		m_pRootSignature					= std::make_shared<RootSignature>(desc);
 	}
 	{
 		// ディファードルートシグネチャ
-		RootSignature::Parameter param[] = {
+		RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
@@ -204,7 +204,7 @@ HRESULT SceneIBL::Init()
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::Description desc = {};
+		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		m_pRootSignatureDeffered = std::make_shared<RootSignature>(desc);
@@ -289,17 +289,17 @@ HRESULT SceneIBL::Init()
 	}
 	{ 
 		// テクスチャ
-		cTexture::sDescription desc = {};
+		Texture::Description desc = {};
 		desc.fileName				= "assets/model/spot/spot_texture.png";
 		desc.pHeap					= m_pHeap.get();
-		m_pTexture					= std::make_shared<cTexture>(desc);
+		m_pTexture					= std::make_shared<Texture>(desc);
 	}
 	{
 		// 環境マップ
-		cTexture::sDescription desc = {};
+		Texture::Description desc = {};
 		desc.fileName				= "assets/texture/environmentMap.hdr";
 		desc.pHeap					= m_pHeap.get();
-		m_pHDRI						= std::make_shared<cTexture>(desc);
+		m_pHDRI						= std::make_shared<Texture>(desc);
 	}
 	{ 
 		// ディスクリプターヒープ(レンダーターゲット)
@@ -312,14 +312,14 @@ HRESULT SceneIBL::Init()
 		// レンダーターゲット
 		for (int i = 0; i < 3; i++)
 		{
-			RenderTarget::sDescription desc = {};
+			RenderTarget::Description desc = {};
 			desc.width = 1280;
 			desc.height = 720;
 			desc.pRTVHeap = m_pRTVHeap.get();
 			desc.pSRVHeap = m_pHeap.get();
 			m_pRTV[i] = std::make_shared<RenderTarget>(desc);
 		}
-		RenderTarget::sDescription desc = {};
+		RenderTarget::Description desc = {};
 		desc.width = 1280 * 0.25f;
 		desc.height = 720 * 0.25f;
 		desc.pRTVHeap = m_pRTVHeap.get();
@@ -342,6 +342,13 @@ HRESULT SceneIBL::Init()
 		m_pDSV								= std::make_shared<DepthStencil>(desc);
 	}
 	return HRESULT();
+
+	RootSignature::ParameterTables param[] = {
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+	};
+
 }
 
 void SceneIBL::Uninit()
@@ -534,7 +541,7 @@ void SceneIBL::Draw()
 		// IBL情報
 		DirectX::XMFLOAT4X4 param[2];
 		// VP逆行列
-		param[0] = cConstantWVP::CalcInversVPMatric();
+		param[0] = cConstantWVP::CalcInversVPMatrix();
 		// ライトの設定
 		param[1]._11 = m_pLight->GetDir().x;
 		param[1]._12 = m_pLight->GetDir().y;
@@ -545,9 +552,9 @@ void SceneIBL::Draw()
 		param[1]._23 = m_pLight->GetColor().z;
 		param[1]._24 = m_pLight->GetAmbient();
 		// カメラの設定
-		param[1]._31 = cCameraDebug::m_MainPos.x;
-		param[1]._32 = cCameraDebug::m_MainPos.y;
-		param[1]._33 = cCameraDebug::m_MainPos.z;
+		param[1]._31 = CameraDebug::m_MainPos.x;
+		param[1]._32 = CameraDebug::m_MainPos.y;
+		param[1]._33 = CameraDebug::m_MainPos.z;
 		param[1]._34 = 0.0f;
 		m_pObjectCB_IBL->Write(&param);
 		D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = {

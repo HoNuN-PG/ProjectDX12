@@ -91,6 +91,21 @@
     <Filter Include="リソース ファイル\PS\Utillity">
       <UniqueIdentifier>{63741e0c-fdf7-4f32-b1c7-b7efbf492c3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Primitive">
+      <UniqueIdentifier>{585c52db-8a6a-4581-9f00-2750b9c5ac2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Primitive">
+      <UniqueIdentifier>{33a8443c-13ec-4c65-a4b0-a77f0ec4533e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\PS\Deffered">
+      <UniqueIdentifier>{a95ea7ae-ea62-4a39-9d0c-70508852de95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\VS\Deffered">
+      <UniqueIdentifier>{ee44908c-5a25-4902-9001-43c6ec544a59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\PS\Lit">
+      <UniqueIdentifier>{15aabc8b-5dc5-41b7-9cb4-4751e0f7940f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DescriptorHeap.cpp">
@@ -165,7 +180,7 @@
     <ClCompile Include="SceneProcedural.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="SceneLSystemNEO.cpp">
+    <ClCompile Include="SceneLSystem3D.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
     <ClCompile Include="SceneField.cpp">
@@ -179,6 +194,18 @@
     </ClCompile>
     <ClCompile Include="StartUp.cpp">
       <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSandBoxDX12.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="sphere.cpp">
+      <Filter>ソース ファイル\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="primitive.cpp">
+      <Filter>ソース ファイル\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneBase.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -260,7 +287,7 @@
     <ClInclude Include="SceneProcedural.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="SceneLSystemNEO.h">
+    <ClInclude Include="SceneLSystem3D.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
     <ClInclude Include="SceneField.h">
@@ -278,11 +305,17 @@
     <ClInclude Include="StartUp.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
+    <ClInclude Include="SceneSandBoxDX12.h">
+      <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="primitive.h">
+      <Filter>ヘッダー ファイル\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere.h">
+      <Filter>ヘッダー ファイル\Primitive</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PS_DefferedWrite.hlsl">
-      <Filter>リソース ファイル\PS</Filter>
-    </FxCompile>
     <FxCompile Include="ModelPixel.hlsl">
       <Filter>リソース ファイル\PS\Sample</Filter>
     </FxCompile>
@@ -295,14 +328,8 @@
     <FxCompile Include="Vertex.hlsl">
       <Filter>リソース ファイル\VS\Sample</Filter>
     </FxCompile>
-    <FxCompile Include="VS_DefferedWrite.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
-    </FxCompile>
     <FxCompile Include="CommonLighting.hlsl">
       <Filter>リソース ファイル\Common</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Deffered.hlsl">
-      <Filter>リソース ファイル\PS</Filter>
     </FxCompile>
     <FxCompile Include="VS_Sphere.hlsl">
       <Filter>リソース ファイル\VS\SkySphere</Filter>
@@ -372,6 +399,18 @@
     </FxCompile>
     <FxCompile Include="PS_Copy.hlsl">
       <Filter>リソース ファイル\PS\Utillity</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Deffered.hlsl">
+      <Filter>リソース ファイル\PS\Deffered</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_DefferedWrite.hlsl">
+      <Filter>リソース ファイル\PS\Deffered</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_DefferedWrite.hlsl">
+      <Filter>リソース ファイル\VS\Deffered</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_SimpleLit.hlsl">
+      <Filter>リソース ファイル\PS\Lit</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

@@ -46,17 +46,20 @@ public:
 		DirectX::XMFLOAT3 normal;
 		DirectX::XMFLOAT2 uv;
 	};
+
 public:
 	HRESULT Init();
 	void Uninit();
 	void Update();
 	void Draw();
+
 private:
-	std::unique_ptr<cCameraDebug>				m_pCamera;
-	std::unique_ptr<cLightBase>					m_pLight;
+	std::unique_ptr<CameraDebug>				m_pCamera;
+	std::unique_ptr<LightBase>					m_pLight;
+
 private:
 	std::shared_ptr<MeshBuffer>					m_pScreen;
-	std::vector<std::shared_ptr<MeshBuffer>>		m_pModel;
+	std::vector<std::shared_ptr<MeshBuffer>>	m_pModel;
 	std::shared_ptr<ConstantBuffer>				m_pObjectCB_WVP[MAX_WVP];
 	std::shared_ptr<ConstantBuffer>				m_pObjectCB_WVP_Gbuffer[3];
 	std::shared_ptr<ConstantBuffer>				m_pObjectCB_IBL;
@@ -68,14 +71,15 @@ private:
 	std::shared_ptr<Pipeline>					m_pBlurPipeline;
 	std::shared_ptr<Pipeline>					m_pPipelineDefferedWrite;
 	std::shared_ptr<Pipeline>					m_pPipelineDeffered;
-	std::shared_ptr<cTexture>					m_pTexture;
+	std::shared_ptr<Texture>					m_pTexture;
 	std::shared_ptr<RenderTarget>				m_pRTV[4];
 	std::shared_ptr<DescriptorHeap>				m_pHeap;
 	std::shared_ptr<DescriptorHeap>				m_pRTVHeap;
 	std::shared_ptr<DescriptorHeap>				m_pDSVHeap;
 	std::shared_ptr<DepthStencil>				m_pDSV;
 	std::shared_ptr<MeshBuffer>					m_pSkySphere;
-	std::shared_ptr<cTexture>					m_pHDRI;
+	std::shared_ptr<Texture>					m_pHDRI;
+
 };
 
 #endif

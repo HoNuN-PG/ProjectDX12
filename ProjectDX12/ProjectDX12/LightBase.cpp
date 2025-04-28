@@ -2,8 +2,8 @@
 #include "LightBase.h"
 #include "Input.h"
 
-DirectX::XMFLOAT4X4 cLightBase::m_ViewMatrix;
-DirectX::XMFLOAT4X4 cLightBase::m_ProjectionMatrix;
+DirectX::XMFLOAT4X4 LightBase::m_ViewMatrix;
+DirectX::XMFLOAT4X4 LightBase::m_ProjectionMatrix;
 
 const float LIG_SPEED_X = 3.0f;			// 回転速度
 const float LIG_SPEED_Y = 2.5f;
@@ -14,7 +14,7 @@ const float MAX_ANGLE_DOWN = 5.0f;
 
 const float SPEED = 1;
 
-cLightBase::cLightBase()
+LightBase::LightBase()
 {
 	// パラメータ設定
 	m_Up = { 0,1,0 };
@@ -46,7 +46,7 @@ cLightBase::cLightBase()
 	);
 }
 
-void cLightBase::Update()
+void LightBase::Update()
 {
 	// ライトの回転
 	if (Input::GetKeyPress('L'))
@@ -77,7 +77,7 @@ void cLightBase::Update()
 	m_Up = { 0,1,0 };
 }
 
-void cLightBase::Draw()
+void LightBase::Draw()
 {
 #ifdef _DEBUG
 	ImGui::Begin("Light");
@@ -90,7 +90,7 @@ void cLightBase::Draw()
 #endif
 }
 
-DirectX::XMFLOAT4X4 cLightBase::GetLightViewProjectionMat()
+DirectX::XMFLOAT4X4 LightBase::GetLightViewProjectionMat()
 {
 	DirectX::XMMATRIX lvp;
 	DirectX::XMMATRIX vM = DirectX::XMLoadFloat4x4(&m_ViewMatrix);

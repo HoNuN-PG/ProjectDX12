@@ -1,0 +1,120 @@
+
+#include "SceneSandBoxDX12.h"
+#include "ConstantWVP.h"
+
+HRESULT SceneSandBoxDX12::Init()
+{
+    SetUp();
+
+	// スフィア作成
+	SphereMesh = std::make_unique<Sphere>();
+	SphereMesh->Create();
+
+	// ディスクリプターヒープ
+	{
+		DescriptorHeap::Description desc = {};
+		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		desc.num = 128;
+		Heap = std::make_unique<DescriptorHeap>(desc);
+	}
+	// 定数バッファ
+	{
+		ConstantBuffer::Description desc = {};
+		desc.pHeap = Heap.get();
+		desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
+		WVPs.push_back(std::make_unique<ConstantBuffer>(desc));
+	}
+	// 定数バッファ
+	{
+		ConstantBuffer::Description desc = {};
+		desc.pHeap = Heap.get();
+		desc.size = sizeof(DirectX::XMFLOAT4);
+		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+	}
+	// ルートシグネチャ
+	{
+		RootSignature::ParameterTable param[] = {
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
+		};
+		RootSignature::DescriptionTable desc = {};
+		desc.pParam = param;
+		desc.paramNum = _countof(param);
+		DefRootSignature = std::make_unique<RootSignature>(desc);
+	}
+	// パイプライン
+	{
+		Pipeline::InputLayout layout[] = {
+			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
+			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
+			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
+		};
+		Pipeline::Description desc = {};
+		desc.pInputLayout = layout;
+		desc.InputLayoutNum = _countof(layout);
+		desc.VSFile = L"assets/shader/Vertex.cso";
+		desc.PSFile = L"assets/shader/PS_SimpleLit.cso";
+		desc.pRootSignature = DefRootSignature->Get();
+		desc.RenderTargetNum = 1;
+		DefPipeline = std::make_unique<Pipeline>(desc);
+	}
+	// ディスクリプターヒープ（深度バッファ)
+	{
+		DescriptorHeap::Description desc = {};
+		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+		desc.num = 1;
+		DSVHeap = std::make_unique<DescriptorHeap>(desc);
+	}
+	// 深度バッファ
+	{
+		DepthStencil::Description desc = {};
+		desc.width = WINDOW_WIDTH;
+		desc.height = WINDOW_HEIGHT;
+		desc.pDSVHeap = DSVHeap.get();
+		DSV = std::make_unique<DepthStencil>(desc);
+	}
+
+    return E_NOTIMPL;
+}
+
+void SceneSandBoxDX12::Uninit()
+{
+}
+
+void SceneSandBoxDX12::Update()
+{
+	Camera->Update();
+	Light->Update();
+}
+
+void SceneSandBoxDX12::Draw()
+{
+	Camera->Draw();
+	Light->Draw();
+
+	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
+	// 表示領域の設定
+	D3D12_VIEWPORT vp = { 0, 0, 1280.0f, 720.0f, 0.0f, 1.0f };
+	D3D12_RECT scissor = { 0, 0, 1280.0f, 720.0f };
+	pCmdList->RSSetViewports(1, &vp);
+	pCmdList->RSSetScissorRects(1, &scissor);
+
+	// バックバッファに描画
+	auto hRTV = GetRTV();
+	SetRenderTarget(1, &hRTV, DSV->GetHandleDSV().hCPU);
+	DSV->Clear();
+
+	// パイプラインのバインド
+	DefPipeline->Bind();
+	// シェーダーに渡す定数バッファ&テクスチャを指定
+	WVPs[0]->Write(cConstantWVP::Calc3DMatrix(
+		{ 0,0,0 },
+		{ 0,0,0 },
+		{ 1,1,1 }));
+	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = {
+		WVPs[0]->GetHandle().hGPU,
+	};
+	Heap->Bind();
+	DefRootSignature->Bind(desc, _countof(desc));
+	// 描画
+	SphereMesh->Draw();
+}
