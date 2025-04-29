@@ -33,11 +33,11 @@ RootSignature::RootSignature(DescriptionTables desc)
 	for (UINT i = 0; i < desc.paramNum; ++i)
 	{
 		range[i].resize(desc.pParam[i].range);
-		for (UINT j = 0; j < 1; ++j)
+		for (UINT j = 0; j < desc.pParam[i].range; ++j)
 		{
-			range[i][j].RangeType								= desc.pParam[i].type;
-			range[i][j].BaseShaderRegister						= desc.pParam[i].slot;
-			range[i][j].NumDescriptors							= desc.pParam[i].num;
+			range[i][j].RangeType								= desc.pParam[i].type[j];
+			range[i][j].BaseShaderRegister						= desc.pParam[i].slot[j];
+			range[i][j].NumDescriptors							= desc.pParam[i].num[j];
 			range[i][j].OffsetInDescriptorsFromTableStart		= D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 		}
 		param[i].ParameterType							= D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;

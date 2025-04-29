@@ -23,11 +23,11 @@ public:
 	/// </summary>
 	struct ParameterTables
 	{
-		D3D12_DESCRIPTOR_RANGE_TYPE type;	// ルートパラメータの種類
-		UINT						slot;	// 対応レジストリの開始番号
-		UINT						num;	// ディスクリプタ数
-		UINT						range;	// ディスクリプタのレンジ
-		D3D12_SHADER_VISIBILITY		shader;	// 使用先のシェーダー
+		std::vector<D3D12_DESCRIPTOR_RANGE_TYPE>	type;	// レンジごとのルートパラメータの種類
+		std::vector<UINT>							slot;	// レンジごとの対応レジストリの開始番号
+		std::vector<UINT>							num;	// レンジごとのディスクリプタ数
+		UINT										range;	// ディスクリプタのレンジ
+		D3D12_SHADER_VISIBILITY						shader;	// 使用先のシェーダー
 	};
 	struct DescriptionTable
 	{

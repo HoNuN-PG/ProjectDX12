@@ -4,13 +4,13 @@
 
 HRESULT SceneSandBoxDX12::Init()
 {
-    SetUp();
+    SceneBase::Initialize();
 
 	// スフィア作成
 	SphereMesh = std::make_unique<Sphere>();
 	SphereMesh->Create();
 
-	// ディスクリプターヒープ
+	// ディスクリプタヒープ
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -28,15 +28,19 @@ HRESULT SceneSandBoxDX12::Init()
 	{
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = Heap.get();
-		desc.size = sizeof(DirectX::XMFLOAT4);
+		desc.size = sizeof(DirectX::XMFLOAT4X4);
+		// カメラ
+		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+		// ライト
 		Params.push_back(std::make_unique<ConstantBuffer>(desc));
 	}
 	// ルートシグネチャ
 	{
-		RootSignature::ParameterTable param[] = {
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
+		RootSignature::ParameterTables param[] = {
+			{{D3D12_DESCRIPTOR_RANGE_TYPE_CBV}, {0}, {1}, 1, D3D12_SHADER_VISIBILITY_VERTEX },
+			{{D3D12_DESCRIPTOR_RANGE_TYPE_CBV}, {0}, {2}, 1, D3D12_SHADER_VISIBILITY_PIXEL  },
 		};
-		RootSignature::DescriptionTable desc = {};
+		RootSignature::DescriptionTables desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		DefRootSignature = std::make_unique<RootSignature>(desc);
@@ -57,7 +61,7 @@ HRESULT SceneSandBoxDX12::Init()
 		desc.RenderTargetNum = 1;
 		DefPipeline = std::make_unique<Pipeline>(desc);
 	}
-	// ディスクリプターヒープ（深度バッファ)
+	// ディスクリプタヒープ（深度バッファ)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
@@ -91,6 +95,8 @@ void SceneSandBoxDX12::Draw()
 	Camera->Draw();
 	Light->Draw();
 
+	SceneBase::SetUpResource();
+
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	// 表示領域の設定
 	D3D12_VIEWPORT vp = { 0, 0, 1280.0f, 720.0f, 0.0f, 1.0f };
@@ -105,15 +111,24 @@ void SceneSandBoxDX12::Draw()
 
 	// パイプラインのバインド
 	DefPipeline->Bind();
-	// シェーダーに渡す定数バッファ&テクスチャを指定
+	// WVP
 	WVPs[0]->Write(cConstantWVP::Calc3DMatrix(
 		{ 0,0,0 },
 		{ 0,0,0 },
 		{ 1,1,1 }));
+	// グローバルリソースからリソースをコピー
+	GetDevice()->CopyDescriptorsSimple(
+		(UINT)2,
+		Params[0]->GetHandle().hCPU, GetGlobalResource(0)->GetHandle().hCPU,
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	ID3D12DescriptorHeap* heap[] = {
+		Heap.get()->Get()
+	};
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = {
 		WVPs[0]->GetHandle().hGPU,
+		Params[0]->GetHandle().hGPU,
 	};
-	Heap->Bind();
+	DescriptorHeap::Bind(heap,_countof(heap));
 	DefRootSignature->Bind(desc, _countof(desc));
 	// 描画
 	SphereMesh->Draw();

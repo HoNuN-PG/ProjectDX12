@@ -342,13 +342,6 @@ HRESULT SceneIBL::Init()
 		m_pDSV								= std::make_shared<DepthStencil>(desc);
 	}
 	return HRESULT();
-
-	RootSignature::ParameterTables param[] = {
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-	};
-
 }
 
 void SceneIBL::Uninit()

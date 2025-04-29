@@ -46,7 +46,7 @@ void DescriptorHeap::Bind()
 	GetCommandList()->SetDescriptorHeaps(1, &m_pHeap);
 }
 
-void DescriptorHeap::Bind(ID3D12DescriptorHeap* _heaps, UINT _num)
+void DescriptorHeap::Bind(ID3D12DescriptorHeap** _heaps, UINT _num)
 {
-	GetCommandList()->SetDescriptorHeaps(_num, &_heaps);
+	GetCommandList()->SetDescriptorHeaps(_num, _heaps);
 }

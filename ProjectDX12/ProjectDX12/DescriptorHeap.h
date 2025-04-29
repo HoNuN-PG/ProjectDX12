@@ -27,7 +27,7 @@ public:
 	Handle Allocate();
 	// ヒープの設定
 	void Bind();
-	static void Bind(ID3D12DescriptorHeap* _heaps, UINT _num);
+	static void Bind(ID3D12DescriptorHeap** _heaps, UINT _num);
 
 private:
 	ID3D12DescriptorHeap*		m_pHeap;		// ヒープのデータ
