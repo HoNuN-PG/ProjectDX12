@@ -1,14 +1,15 @@
 
+#include "GlobalResourceKey.h"
+
 #include "SceneSandBoxDX12.h"
 #include "ConstantWVP.h"
+
+// マテリアル
+#include "M_SimpleLit.h"
 
 HRESULT SceneSandBoxDX12::Init()
 {
     SceneBase::Initialize();
-
-	// スフィア作成
-	SphereMesh = std::make_unique<Sphere>();
-	SphereMesh->Create();
 
 	// ディスクリプタヒープ
 	{
@@ -43,23 +44,24 @@ HRESULT SceneSandBoxDX12::Init()
 		RootSignature::DescriptionTables desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
-		DefRootSignature = std::make_unique<RootSignature>(desc);
+		RootSignatureData = std::make_unique<RootSignature>(desc);
 	}
 	// パイプライン
 	{
 		Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
+			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 		};
 		Pipeline::Description desc = {};
 		desc.pInputLayout = layout;
 		desc.InputLayoutNum = _countof(layout);
-		desc.VSFile = L"assets/shader/Vertex.cso";
+		desc.VSFile = L"assets/shader/VS_Object.cso";
 		desc.PSFile = L"assets/shader/PS_SimpleLit.cso";
-		desc.pRootSignature = DefRootSignature->Get();
+		desc.pRootSignature = RootSignatureData->Get();
 		desc.RenderTargetNum = 1;
-		DefPipeline = std::make_unique<Pipeline>(desc);
+		PipelineData = std::make_unique<Pipeline>(desc);
 	}
 	// ディスクリプタヒープ（深度バッファ)
 	{
@@ -76,6 +78,18 @@ HRESULT SceneSandBoxDX12::Init()
 		desc.pDSVHeap = DSVHeap.get();
 		DSV = std::make_unique<DepthStencil>(desc);
 	}
+
+	// マテリアル作成
+	Materials.push_back(std::make_unique<M_SimpleLit>());
+	Materials.back()->Initialize(Heap.get());
+
+	// スフィア作成
+	SphereMesh = std::make_unique<Sphere>();
+	SphereMesh->Create();
+
+	// モデル作成
+	ModelMesh = std::make_unique<Model>();
+	ModelMesh->Create(Materials[0].get(), "assets/model/spot/spot.fbx");
 
     return E_NOTIMPL;
 }
@@ -95,7 +109,7 @@ void SceneSandBoxDX12::Draw()
 	Camera->Draw();
 	Light->Draw();
 
-	SceneBase::SetUpResource();
+	SceneBase::WriteGlobalResource();
 
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	// 表示領域の設定
@@ -110,16 +124,16 @@ void SceneSandBoxDX12::Draw()
 	DSV->Clear();
 
 	// パイプラインのバインド
-	DefPipeline->Bind();
+	PipelineData->Bind();
 	// WVP
-	WVPs[0]->Write(cConstantWVP::Calc3DMatrix(
+	WVPs[0]->Write(ConstantWVP::Calc3DMatrix(
 		{ 0,0,0 },
 		{ 0,0,0 },
 		{ 1,1,1 }));
 	// グローバルリソースからリソースをコピー
 	GetDevice()->CopyDescriptorsSimple(
 		(UINT)2,
-		Params[0]->GetHandle().hCPU, GetGlobalResource(0)->GetHandle().hCPU,
+		Params[0]->GetHandle().hCPU, GetGlobalResource(GlobalResourceKey::Camera)->GetHandle().hCPU,
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	ID3D12DescriptorHeap* heap[] = {
 		Heap.get()->Get()
@@ -129,7 +143,15 @@ void SceneSandBoxDX12::Draw()
 		Params[0]->GetHandle().hGPU,
 	};
 	DescriptorHeap::Bind(heap,_countof(heap));
-	DefRootSignature->Bind(desc, _countof(desc));
+	RootSignatureData->Bind(desc, _countof(desc));
 	// 描画
 	SphereMesh->Draw();
+
+	ModelMesh->GetMaterial()->WriteWVP(ConstantWVP::Calc3DMatrix(
+		{ 0,1,0 },
+		{ 0,0,0 },
+		{ 1,1,1 }));
+	ModelMesh->GetMaterial()->WriteCopy((UINT)2, 0, 
+		GetGlobalResource(GlobalResourceKey::Camera)->GetHandle().hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	ModelMesh->Draw();
 }

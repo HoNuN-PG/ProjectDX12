@@ -403,7 +403,7 @@ void SceneIBL::Draw()
 #endif
 
 		// 定数バッファの設定
-		m_pObjectCB_WVP[MODEL]->Write(cConstantWVP::Calc3DMatrix(
+		m_pObjectCB_WVP[MODEL]->Write(ConstantWVP::Calc3DMatrix(
 			{ 0,0,0 },
 			{ DirectX::XMConvertToRadians(rot[0]),DirectX::XMConvertToRadians(rot[1]),DirectX::XMConvertToRadians(rot[2]) },
 			{ 1,1,1 }));
@@ -445,7 +445,7 @@ void SceneIBL::Draw()
 		// パイプラインのバインド
 		m_pBlurPipeline->Bind();
 		// シェーダーに渡す定数バッファ&テクスチャを指定
-		m_pObjectCB_WVP[BLUR]->Write(cConstantWVP::Calc3DMatrix(
+		m_pObjectCB_WVP[BLUR]->Write(ConstantWVP::Calc3DMatrix(
 			{ 0,0,0 },
 			{ 0,0,0 },
 			{ 1,1,1 }));
@@ -469,7 +469,7 @@ void SceneIBL::Draw()
 	);
 
 	// 画面全体表示
-	m_pObjectCB_WVP[DEFFERED]->Write(cConstantWVP::Calc2DMatrix(
+	m_pObjectCB_WVP[DEFFERED]->Write(ConstantWVP::Calc2DMatrix(
 		{ WINDOW_WIDTH / 2, -WINDOW_HEIGHT / 2, 0 },
 		{ 0,0,0 },
 		{ WINDOW_WIDTH	  ,  WINDOW_HEIGHT	  , 0 }));
@@ -496,7 +496,7 @@ void SceneIBL::Draw()
 		// パイプラインのバインド
 		m_pSkyPipeline->Bind();
 		// シェーダーに渡す定数バッファ&テクスチャを指定
-		m_pObjectCB_WVP[SKY_SPHERE]->Write(cConstantWVP::Calc3DMatrix(
+		m_pObjectCB_WVP[SKY_SPHERE]->Write(ConstantWVP::Calc3DMatrix(
 			{ 0,0,0 },
 			{ 0,0,0 },
 			{ 1,1,1 }));
@@ -516,7 +516,7 @@ void SceneIBL::Draw()
 		m_pPipeline->Bind();
 		for (int i = 0; i < 3; i++)
 		{
-			m_pObjectCB_WVP_Gbuffer[i]->Write(cConstantWVP::Calc2DMatrix(
+			m_pObjectCB_WVP_Gbuffer[i]->Write(ConstantWVP::Calc2DMatrix(
 				{ 320.0f + 640.0f * (int)(i % 2), -180.0f - 360.0f * (int)(i / 2), 0 },
 				{ 0,0,0 },
 				{ WINDOW_WIDTH / 2.5f, WINDOW_HEIGHT / 2.5f, 0 }));
@@ -534,7 +534,7 @@ void SceneIBL::Draw()
 		// IBL情報
 		DirectX::XMFLOAT4X4 param[2];
 		// VP逆行列
-		param[0] = cConstantWVP::CalcInversVPMatrix();
+		param[0] = ConstantWVP::CalcInversVPMatrix();
 		// ライトの設定
 		param[1]._11 = m_pLight->GetDir().x;
 		param[1]._12 = m_pLight->GetDir().y;

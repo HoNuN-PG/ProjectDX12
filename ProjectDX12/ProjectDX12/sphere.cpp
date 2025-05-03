@@ -28,7 +28,7 @@ void Sphere::Create()
 			float radXZ			= DirectX::XM_2PI * u;
 			float x				= sinf(radXZ) * sY;
 			float z				= cosf(radXZ) * sY;
-			sphereVtx[idx + i]	= { {x, cY, z}, {u, v}, {1,1,1,1} };
+			sphereVtx[idx + i] = { {x, cY, z}, {x, cY, z}, { u, v }, {1, 1, 1, 1} };
 		}
 	}
 	// インデックス作成

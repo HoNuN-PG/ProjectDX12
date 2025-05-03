@@ -3,7 +3,6 @@
 
 #include "SceneBase.h"
 
-#include "MeshBuffer.h"
 #include "DescriptorHeap.h"
 #include "ConstantBuffer.h"
 #include "RootSignature.h"
@@ -13,8 +12,9 @@
 #include <vector>
 #include <memory>
 
-#include "CameraBase.h"
 #include "sphere.h"
+#include "Model.h"
+#include "Material.h"
 
 class SceneSandBoxDX12 : public SceneBase
 {
@@ -26,13 +26,17 @@ public:
 
 private:
 	std::unique_ptr<Sphere>							SphereMesh;
+	std::unique_ptr<Model>							ModelMesh;
 	std::unique_ptr<DescriptorHeap>					Heap;
 	std::unique_ptr<DescriptorHeap>					DSVHeap;
 	std::vector<std::unique_ptr<ConstantBuffer>>	WVPs;
 	std::vector<std::unique_ptr<ConstantBuffer>>	Params;
-	std::unique_ptr<RootSignature>					DefRootSignature;
-	std::unique_ptr<Pipeline>						DefPipeline;
+	std::unique_ptr<RootSignature>					RootSignatureData;
+	std::unique_ptr<Pipeline>						PipelineData;
 	std::unique_ptr<DepthStencil>					DSV;
+
+private:
+	std::vector<std::unique_ptr<Material>>			Materials;
 
 };
 

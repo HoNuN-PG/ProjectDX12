@@ -4,7 +4,7 @@
 #include "StartUp.h"
 #include "CameraBase.h"
 
-void * cConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
+void * ConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
 {
 	sConstantWVP wvp;
 
@@ -38,7 +38,7 @@ void * cConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, 
 	return &wvp;
 }
 
-void * cConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
+void * ConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
 {
 	sConstantWVP wvp;
 
@@ -64,7 +64,7 @@ void * cConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, 
 	return &wvp;
 }
 
-DirectX::XMFLOAT4X4 cConstantWVP::CalcInversVPMatrix()
+DirectX::XMFLOAT4X4 ConstantWVP::CalcInversVPMatrix()
 {
 	// ビューマトリクス
 	DirectX::XMFLOAT3 pos = { CameraDebug::m_MainPos.x,CameraDebug::m_MainPos.y,CameraDebug::m_MainPos.z };

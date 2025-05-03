@@ -10,6 +10,10 @@
 #include "DescriptorHeap.h"
 #include "ConstantBuffer.h"
 
+#include <vector>
+#include <string>
+#include <unordered_map>
+
 class SceneBase
 {
 public:
@@ -22,18 +26,18 @@ public:
 
 protected:
 	void Initialize();
-	void SetUpResource();
+	void WriteGlobalResource();
+
+protected:
+	static DescriptorHeap* GetGlobalHeap()
+	{ return GlobalHeap.get(); }
+	static ConstantBuffer* GetGlobalResource(UINT key);
+private:
+	static std::unique_ptr<DescriptorHeap>	GlobalHeap;
+	static std::unordered_map<UINT,std::unique_ptr<ConstantBuffer>> GlobalResource;
 protected:
 	std::unique_ptr<CameraDebug> Camera;
 	std::unique_ptr<LightBase> Light;
-protected:
-	DescriptorHeap* GetGlobalHeap()
-	{ return GlobalHeap.get(); }
-	ConstantBuffer* GetGlobalResource(int _resourceID)
-	{ return GlobalResource[_resourceID].get(); }
-private:
-	std::unique_ptr<DescriptorHeap>	GlobalHeap;
-	std::vector<std::unique_ptr<ConstantBuffer>> GlobalResource;
 
 };
 

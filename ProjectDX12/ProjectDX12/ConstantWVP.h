@@ -10,7 +10,7 @@ struct sConstantWVP
 	DirectX::XMFLOAT4X4 proj;
 };
 
-class cConstantWVP
+class ConstantWVP
 {
 public:
 	static void* Calc3DMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rot, DirectX::XMFLOAT3 scale);

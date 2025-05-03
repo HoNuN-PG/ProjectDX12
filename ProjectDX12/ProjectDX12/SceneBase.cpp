@@ -1,5 +1,10 @@
 
+#include "GlobalResourceKey.h"
+
 #include "SceneBase.h"
+
+std::unique_ptr<DescriptorHeap>	 SceneBase::GlobalHeap;
+std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>> SceneBase::GlobalResource;
 
 void SceneBase::Initialize()
 {
@@ -18,14 +23,12 @@ void SceneBase::Initialize()
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = GlobalHeap.get();
 		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		// カメラ
-		GlobalResource.push_back(std::make_unique<ConstantBuffer>(desc));
-		// ライト
-		GlobalResource.push_back(std::make_unique<ConstantBuffer>(desc));
+		GlobalResource[GlobalResourceKey::Camera] = std::make_unique<ConstantBuffer>(desc);
+		GlobalResource[GlobalResourceKey::Light] = std::make_unique<ConstantBuffer>(desc);
 	}
 }
 
-void SceneBase::SetUpResource()
+void SceneBase::WriteGlobalResource()
 {
 	// カメラ
 	DirectX::XMFLOAT4X4 camera;
@@ -33,7 +36,7 @@ void SceneBase::SetUpResource()
 	camera._12 = CameraDebug::m_MainPos.y;
 	camera._13 = CameraDebug::m_MainPos.z;
 	camera._14 = 0.0f;
-	GlobalResource[0]->Write(&camera);
+	GlobalResource[GlobalResourceKey::Camera]->Write(&camera);
 	// ライト
 	DirectX::XMFLOAT4X4 light;
 	light._11 = Light->GetDir().x;
@@ -44,5 +47,12 @@ void SceneBase::SetUpResource()
 	light._22 = Light->GetColor().y;
 	light._23 = Light->GetColor().z;
 	light._24 = Light->GetAmbient();
-	GlobalResource[1]->Write(&light);
+	GlobalResource[GlobalResourceKey::Light]->Write(&light);
+}
+
+ConstantBuffer* SceneBase::GetGlobalResource(UINT key)
+{
+	if (!GlobalResource.contains(key))
+		return nullptr;
+	return GlobalResource[key].get();
 }

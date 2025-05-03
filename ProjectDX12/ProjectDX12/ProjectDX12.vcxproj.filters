@@ -91,12 +91,6 @@
     <Filter Include="リソース ファイル\PS\Utillity">
       <UniqueIdentifier>{63741e0c-fdf7-4f32-b1c7-b7efbf492c3d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\Primitive">
-      <UniqueIdentifier>{585c52db-8a6a-4581-9f00-2750b9c5ac2b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Primitive">
-      <UniqueIdentifier>{33a8443c-13ec-4c65-a4b0-a77f0ec4533e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="リソース ファイル\PS\Deffered">
       <UniqueIdentifier>{a95ea7ae-ea62-4a39-9d0c-70508852de95}</UniqueIdentifier>
     </Filter>
@@ -105,6 +99,30 @@
     </Filter>
     <Filter Include="リソース ファイル\PS\Lit">
       <UniqueIdentifier>{15aabc8b-5dc5-41b7-9cb4-4751e0f7940f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Resource">
+      <UniqueIdentifier>{8fc44d71-26c5-46f1-883b-de47a46a2af0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Lib">
+      <UniqueIdentifier>{511a6ff1-a73d-41c9-b493-121c25f0cab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Material">
+      <UniqueIdentifier>{cb423ac8-2216-4bd0-86dd-c647b8f7769e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Material">
+      <UniqueIdentifier>{688fd8bc-b23a-4195-886d-e6b86eb329fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Model">
+      <UniqueIdentifier>{33a8443c-13ec-4c65-a4b0-a77f0ec4533e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Model">
+      <UniqueIdentifier>{585c52db-8a6a-4581-9f00-2750b9c5ac2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Material\Materials">
+      <UniqueIdentifier>{d08ec512-921f-483d-a204-ee90d2e781ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Material\Mterials">
+      <UniqueIdentifier>{d78f6a5e-abc0-47b4-96a1-dec250921816}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -199,13 +217,22 @@
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
     <ClCompile Include="sphere.cpp">
-      <Filter>ソース ファイル\Primitive</Filter>
+      <Filter>ソース ファイル\Model</Filter>
     </ClCompile>
     <ClCompile Include="primitive.cpp">
-      <Filter>ソース ファイル\Primitive</Filter>
+      <Filter>ソース ファイル\Model</Filter>
     </ClCompile>
     <ClCompile Include="SceneBase.cpp">
       <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>ソース ファイル\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>ソース ファイル\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="M_SimpleLit.cpp">
+      <Filter>ソース ファイル\Material\Mterials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -309,10 +336,25 @@
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
     <ClInclude Include="primitive.h">
-      <Filter>ヘッダー ファイル\Primitive</Filter>
+      <Filter>ヘッダー ファイル\Model</Filter>
     </ClInclude>
     <ClInclude Include="sphere.h">
-      <Filter>ヘッダー ファイル\Primitive</Filter>
+      <Filter>ヘッダー ファイル\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalResourceKey.h">
+      <Filter>ヘッダー ファイル\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="MyMath.h">
+      <Filter>ヘッダー ファイル\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>ヘッダー ファイル\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>ヘッダー ファイル\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="M_SimpleLit.h">
+      <Filter>ヘッダー ファイル\Material\Materials</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -325,7 +367,7 @@
     <FxCompile Include="ModelVertex.hlsl">
       <Filter>リソース ファイル\VS\Sample</Filter>
     </FxCompile>
-    <FxCompile Include="Vertex.hlsl">
+    <FxCompile Include="VS_Object.hlsl">
       <Filter>リソース ファイル\VS\Sample</Filter>
     </FxCompile>
     <FxCompile Include="CommonLighting.hlsl">
