@@ -5,7 +5,7 @@
 #include "ConstantWVP.h"
 
 // ƒ}ƒeƒŠƒAƒ‹
-#include "M_SimpleLit.h"
+#include "Material/M_SimpleLit.h"
 
 HRESULT SceneSandBoxDX12::Init()
 {
@@ -151,7 +151,7 @@ void SceneSandBoxDX12::Draw()
 		{ 0,1,0 },
 		{ 0,0,0 },
 		{ 1,1,1 }));
-	ModelMesh->GetMaterial()->WriteCopy((UINT)2, 0, 
+	ModelMesh->GetMaterial()->WriteParams((UINT)2, 0, 
 		GetGlobalResource(GlobalResourceKey::Camera)->GetHandle().hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	ModelMesh->Draw();
 }

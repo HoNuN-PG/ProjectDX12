@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "MeshBuffer.h"
-#include "Material.h"
+#include "Material/Material.h"
 
 class Model
 {

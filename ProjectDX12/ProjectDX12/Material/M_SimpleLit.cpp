@@ -1,5 +1,5 @@
 
-#include "Material/M_SimpleLit.h"
+#include "M_SimpleLit.h"
 
 #include <DirectXMath.h>
 
@@ -18,7 +18,7 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap)
 	RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 2, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},

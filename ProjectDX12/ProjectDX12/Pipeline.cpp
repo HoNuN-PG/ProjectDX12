@@ -76,10 +76,10 @@ Pipeline::Pipeline(Description desc)
 	// プリミティブ
 	pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	// レンダーターゲット
-	pipelineDesc.NumRenderTargets	= desc.RenderTargetNum;
+	pipelineDesc.NumRenderTargets		= desc.RenderTargetNum;
 	for(int i = 0;i < desc.RenderTargetNum;++i)
 		pipelineDesc.RTVFormats[i]		= DXGI_FORMAT_R8G8B8A8_UNORM;
-	pipelineDesc.DSVFormat			= DXGI_FORMAT_UNKNOWN;
+	pipelineDesc.DSVFormat				= DXGI_FORMAT_UNKNOWN;
 	// 深度バッファ
 	pipelineDesc.DepthStencilState	= dsDesc;
 	pipelineDesc.DSVFormat			= DXGI_FORMAT_D32_FLOAT;
