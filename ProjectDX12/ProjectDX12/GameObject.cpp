@@ -1,0 +1,97 @@
+
+#include "GameObject.h"
+
+void GameObject::InitBase()
+{
+	Init();
+}
+
+void GameObject::UninitBase()
+{
+	Uninit();
+
+	for (GameObject* child : ChildGameObjects)
+	{
+		child->UninitBase();
+	}
+	for (Component* component : Components)
+	{
+		component->Uninit();
+		delete component;
+	}
+
+	ChildGameObjects.clear();
+	Components.clear();
+}
+
+void GameObject::UpdateBase()
+{
+	for (GameObject* child : ChildGameObjects)
+	{
+		child->UpdateBase();
+	}
+	for (Component* component : Components)
+	{
+		component->Update();
+	}
+	Update();
+}
+
+void GameObject::DrawBase(DirectX::XMFLOAT4X4 ParentMatrix)
+{
+	DirectX::XMMATRIX scale, rot, trans;
+	scale	= DirectX::XMMatrixScaling(Scale.x, Scale.y, Scale.z);
+	rot		= DirectX::XMMatrixRotationRollPitchYaw(Rotation.x,Rotation.y, Rotation.z);
+	trans	= DirectX::XMMatrixTranslation(Position.x, Position.y,Position.z);
+	DirectX::XMStoreFloat4x4
+	(
+		&fx4World,
+		scale * rot * trans * DirectX::XMLoadFloat4x4(&ParentMatrix)
+	);
+	WorldPosition = { fx4World._41,fx4World._42,fx4World._43 };
+
+	for (GameObject* child : ChildGameObjects)
+	{
+		child->DrawBase(fx4World);
+	}
+	Draw();
+	for (Component* component : Components)
+	{
+		component->Draw();
+	}
+}
+
+void GameObject::Rendering()
+{
+	Draw();
+	for (Component* component : Components)
+	{
+		component->Draw();
+	}
+}
+
+bool GameObject::Destroy()
+{
+	if (bDestroy)
+	{
+		UninitBase();
+		delete this;
+		return true;
+	}
+	return false;
+}
+
+DirectX::XMFLOAT3 GameObject::GetForwardVector()
+{
+	DirectX::XMFLOAT4X4 rot;
+	DirectX::XMStoreFloat4x4(&rot,
+		DirectX::XMMatrixRotationRollPitchYaw(
+			Rotation.x, Rotation.y, Rotation.z));
+
+	DirectX::XMFLOAT3 forward;
+	forward.x = rot._31;
+	forward.y = rot._32;
+	forward.z = rot._33;
+
+	return forward;
+}

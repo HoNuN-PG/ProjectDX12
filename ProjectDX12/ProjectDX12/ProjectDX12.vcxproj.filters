@@ -183,6 +183,9 @@
     <ClCompile Include="M_SimpleLit.cpp">
       <Filter>ソース ファイル\Material\Mterials</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DescriptorHeap.h">
@@ -286,6 +289,12 @@
     </ClInclude>
     <ClInclude Include="sphere.h">
       <Filter>ヘッダー ファイル\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

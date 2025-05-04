@@ -2,6 +2,9 @@
 #include "Model.h"
 #include "StartUp.h"
 
+#include "GameObject.h"
+#include "ConstantWVP.h"
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -67,6 +70,11 @@ void Model::Create(Material* material, const char* path)
 
 void Model::Draw()
 {
+	// WVP‚ÌÝ’è
+	MaterialData->WriteWVP(ConstantWVP::Calc3DMatrix(
+		Owner->GetPosition() ,
+		Owner->GetRotation(),
+		Owner->GetScale()));
 	MaterialData->Draw();
 	ModelData->Draw();
 }

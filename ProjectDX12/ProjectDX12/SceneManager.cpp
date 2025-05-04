@@ -26,14 +26,14 @@ HRESULT SceneManager::Init()
 		case SANDBOXDX12:	mScenes[mCurrentScene] = std::make_unique<SceneSandBoxDX12>();	break;
 		}	
 	}
-	return mScenes[mCurrentScene]->Init();
+	return mScenes[mCurrentScene]->InitBase();
 }
 
 void SceneManager::Uninit()
 {
 	if (mScenes[mCurrentScene])
 	{
-		mScenes[mCurrentScene]->Uninit();
+		mScenes[mCurrentScene]->UninitBase();
 		mScenes[mCurrentScene].release();
 	}
 }
@@ -53,10 +53,10 @@ void SceneManager::Update()
 		Init();
 	}
 
-	if(mScenes[mCurrentScene]) mScenes[mCurrentScene]->Update();
+	if(mScenes[mCurrentScene]) mScenes[mCurrentScene]->UpdateBase();
 }
 
 void SceneManager::Draw()
 {
-	if (mScenes[mCurrentScene]) mScenes[mCurrentScene]->Draw();
+	if (mScenes[mCurrentScene]) mScenes[mCurrentScene]->DrawBase();
 }

@@ -28,12 +28,10 @@ private:
 	std::unique_ptr<Sphere>							SphereMesh;
 	std::unique_ptr<Model>							ModelMesh;
 	std::unique_ptr<DescriptorHeap>					Heap;
-	std::unique_ptr<DescriptorHeap>					DSVHeap;
 	std::vector<std::unique_ptr<ConstantBuffer>>	WVPs;
 	std::vector<std::unique_ptr<ConstantBuffer>>	Params;
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;
-	std::unique_ptr<DepthStencil>					DSV;
 
 private:
 	std::vector<std::unique_ptr<Material>>			Materials;

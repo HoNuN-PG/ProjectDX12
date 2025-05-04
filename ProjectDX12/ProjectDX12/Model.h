@@ -4,13 +4,14 @@
 #include <DirectXMath.h>
 #include <memory>
 
+#include "Component.h"
 #include "MeshBuffer.h"
 #include "Material/Material.h"
 
-class Model
+class Model : public Component
 {
 public:
-	struct ModelVertex 
+	struct ModelVertex
 	{
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 normal;
@@ -19,10 +20,16 @@ public:
 	};
 
 public:
-	Model() {};
+	using Component::Component;
+
+	virtual void Init() override {};
+	virtual void Uninit() override {}
+	virtual void Update() override {}
+	virtual void Draw() override;
+
+public:
 	virtual ~Model(){}
 	void Create(Material* material, const char* path);
-	void Draw();
 
 public:
 	Material* GetMaterial()

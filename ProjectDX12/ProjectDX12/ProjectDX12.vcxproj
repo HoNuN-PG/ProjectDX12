@@ -176,6 +176,7 @@
     <ClCompile Include="DepthStencil.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="DirectX.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="M_SimpleLit.cpp" />
@@ -201,6 +202,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CameraBase.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="ConstantLighting.h" />
     <ClInclude Include="ConstantWVP.h" />
@@ -208,6 +210,7 @@
     <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="DirectX.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="GlobalResourceKey.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Model.h" />
