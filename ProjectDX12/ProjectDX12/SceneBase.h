@@ -14,7 +14,6 @@
 #include "ConstantBuffer.h"
 #include "DepthStencil.h"
 
-#include <vector>
 #include <string>
 #include <unordered_map>
 
@@ -51,7 +50,6 @@ public:
 	virtual void Draw()		= 0;
 
 protected:
-	void Initialize();
 	void WriteGlobalResource();
 
 public:
@@ -109,8 +107,8 @@ private:
 	static std::unique_ptr<DescriptorHeap>	GlobalHeap;
 	static std::unordered_map<UINT,std::unique_ptr<ConstantBuffer>> GlobalResource;
 protected:
-	std::unique_ptr<CameraDebug> Camera;
-	std::unique_ptr<LightBase> Light;
+	CameraDebug* Camera;
+	LightBase* Light;
 
 };
 

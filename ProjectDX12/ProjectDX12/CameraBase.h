@@ -4,16 +4,20 @@
 #include <DirectXMath.h>
 #include <Windows.h>
 
+#include "GameObject.h"
+
 #define CAM_NEAR (0.01)
 #define CAM_FAR (1000)
 
-class cCameraBase
+class cCameraBase : public GameObject
 {
 public:
 	cCameraBase() {}
 	virtual ~cCameraBase() {}
-	virtual void Update() {}
-	virtual void Draw(){}
+	virtual void Init() override {}
+	virtual void Uninit() override {}
+	virtual void Update() override {}
+	virtual void Draw() override {}
 
 	// ç¿ïW
 	DirectX::XMFLOAT3 GetPos() 
@@ -56,8 +60,8 @@ private:
 public:
 	CameraDebug();
 	~CameraDebug() {}
-	void Update() override;
-	void Draw() override;
+	virtual void Update() override;
+	virtual void Draw() override;
 
 private:
 	void ProcDCC(Argument& arg);

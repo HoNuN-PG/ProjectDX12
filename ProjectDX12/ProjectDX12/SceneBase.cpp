@@ -8,8 +8,44 @@ std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>> SceneBase::GlobalResou
 
 HRESULT SceneBase::InitBase()
 {
-	Initialize();
+	// ディスクリプタヒープ（深度バッファ)
+	{
+		DescriptorHeap::Description desc = {};
+		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+		desc.num = 1;
+		DSVHeap = std::make_unique<DescriptorHeap>(desc);
+	}
+	// 深度バッファ
+	{
+		DepthStencil::Description desc = {};
+		desc.width = WINDOW_WIDTH;
+		desc.height = WINDOW_HEIGHT;
+		desc.pDSVHeap = DSVHeap.get();
+		DSV = std::make_unique<DepthStencil>(desc);
+	}
+
+	// リソースオブジェクト
+	Camera = AddGameObject<CameraDebug>();
+	Light = AddGameObject<LightBase>();
+
+	// グローバルディスクリプタヒープ
+	{
+		DescriptorHeap::Description desc = {};
+		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		desc.num = 64;
+		GlobalHeap = std::make_unique<DescriptorHeap>(desc);
+	}
+	// グローバルリソース
+	{
+		ConstantBuffer::Description desc = {};
+		desc.pHeap = GlobalHeap.get();
+		desc.size = sizeof(DirectX::XMFLOAT4X4);
+		GlobalResource[GlobalResourceKey::Camera] = std::make_unique<ConstantBuffer>(desc);
+		GlobalResource[GlobalResourceKey::Light] = std::make_unique<ConstantBuffer>(desc);
+	}
+
 	Init();
+
 	return E_NOTIMPL;
 }
 
@@ -70,44 +106,6 @@ void SceneBase::DrawBase()
 		}
 	}
 	Draw();
-}
-
-void SceneBase::Initialize()
-{
-	// ディスクリプタヒープ（深度バッファ)
-	{
-		DescriptorHeap::Description desc	= {};
-		desc.heapType						= D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-		desc.num							= 1;
-		DSVHeap								= std::make_unique<DescriptorHeap>(desc);
-	}
-	// 深度バッファ
-	{
-		DepthStencil::Description desc	= {};
-		desc.width						= WINDOW_WIDTH;
-		desc.height						= WINDOW_HEIGHT;
-		desc.pDSVHeap					= DSVHeap.get();
-		DSV								= std::make_unique<DepthStencil>(desc);
-	}
-
-	Camera = std::make_unique<CameraDebug>();
-	Light = std::make_unique<LightBase>();
-
-	// グローバルディスクリプタヒープ
-	{
-		DescriptorHeap::Description desc = {};
-		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		desc.num = 64;
-		GlobalHeap = std::make_unique<DescriptorHeap>(desc);
-	}
-	// グローバルリソース
-	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = GlobalHeap.get();
-		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		GlobalResource[GlobalResourceKey::Camera] = std::make_unique<ConstantBuffer>(desc);
-		GlobalResource[GlobalResourceKey::Light] = std::make_unique<ConstantBuffer>(desc);
-	}
 }
 
 void SceneBase::WriteGlobalResource()

@@ -1,10 +1,10 @@
 #ifndef ___LIGHT_BASE_H___
 #define ___LIGHT_BASE_H___
 
-#include "CameraBase.h"
+#include "GameObject.h"
 #include "imgui/imgui.h"
 
-class LightBase
+class LightBase : public GameObject
 {
 private:
 	/**
@@ -19,8 +19,10 @@ private:
 public:
 	LightBase();
 	~LightBase() {}
-	void Update();
-	void Draw();
+	virtual void Init() override {}
+	virtual void Uninit() override {}
+	virtual void Update() override;
+	virtual void Draw() override;
 
 	/**
 	 * パラメーター取得

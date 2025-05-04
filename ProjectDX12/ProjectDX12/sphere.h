@@ -6,8 +6,7 @@
 class Sphere : public Primitive
 {
 public:
-	Sphere(){}
-	~Sphere(){}
+	virtual ~Sphere(){}
 	void Create() override;
 
 };

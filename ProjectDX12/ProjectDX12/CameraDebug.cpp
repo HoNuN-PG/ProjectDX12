@@ -10,9 +10,9 @@ CameraDebug::CameraDebug()
 {
 	m_IsMain = true;
 
-	m_Pos = { 0,20,-30 };
+	m_Pos = { 0,5,-10 };
 	m_Up = { 0,1,0 };
-	m_Target = { 0,10,0 };
+	m_Target = { 0,0,0 };
 
 	m_MoveSpeed = 0.5;
 	m_MouseSpeed = 1.0f;

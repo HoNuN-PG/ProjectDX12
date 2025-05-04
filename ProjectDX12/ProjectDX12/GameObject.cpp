@@ -8,8 +8,6 @@ void GameObject::InitBase()
 
 void GameObject::UninitBase()
 {
-	Uninit();
-
 	for (GameObject* child : ChildGameObjects)
 	{
 		child->UninitBase();
@@ -19,6 +17,7 @@ void GameObject::UninitBase()
 		component->Uninit();
 		delete component;
 	}
+	Uninit();
 
 	ChildGameObjects.clear();
 	Components.clear();
@@ -54,11 +53,8 @@ void GameObject::DrawBase(DirectX::XMFLOAT4X4 ParentMatrix)
 	{
 		child->DrawBase(fx4World);
 	}
-	Draw();
-	for (Component* component : Components)
-	{
-		component->Draw();
-	}
+
+	Rendering();
 }
 
 void GameObject::Rendering()
