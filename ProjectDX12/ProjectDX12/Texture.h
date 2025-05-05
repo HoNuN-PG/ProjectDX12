@@ -16,12 +16,12 @@ public:
 	Texture(Description desc);
 	~Texture();
 	DescriptorHeap::Handle GetHandle() {
-		return m_handle;
+		return Handle;
 	}
 
 private:
-	ID3D12Resource*			m_pTexture;	// テクスチャリソース
-	DescriptorHeap::Handle	m_handle;
+	ID3D12Resource*			Resource;	// テクスチャリソース
+	DescriptorHeap::Handle	Handle;
 
 };
 

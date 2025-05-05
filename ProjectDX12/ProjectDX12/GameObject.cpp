@@ -1,8 +1,13 @@
 
 #include "GameObject.h"
+#include "SceneManager.h"
+#include "SceneBase.h"
+#include "RenderingEngine.h"
 
-void GameObject::InitBase()
+void GameObject::InitBase(RenderingTiming timing)
 {
+	Engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
+	Timing = timing;
 	Init();
 }
 
@@ -38,6 +43,9 @@ void GameObject::UpdateBase()
 
 void GameObject::DrawBase(DirectX::XMFLOAT4X4 ParentMatrix)
 {
+	// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒGƒ“ƒWƒ“‚Ö‚Ì“o˜^
+	Engine->AddRenderObject(*this, Timing);
+
 	DirectX::XMMATRIX scale, rot, trans;
 	scale	= DirectX::XMMatrixScaling(Scale.x, Scale.y, Scale.z);
 	rot		= DirectX::XMMatrixRotationRollPitchYaw(Rotation.x,Rotation.y, Rotation.z);
@@ -53,8 +61,6 @@ void GameObject::DrawBase(DirectX::XMFLOAT4X4 ParentMatrix)
 	{
 		child->DrawBase(fx4World);
 	}
-
-	Rendering();
 }
 
 void GameObject::Rendering()

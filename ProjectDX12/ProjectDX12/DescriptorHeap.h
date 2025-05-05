@@ -22,7 +22,7 @@ public:
 public:
 	DescriptorHeap(Description desc);
 	~DescriptorHeap();
-	ID3D12DescriptorHeap* Get() { return m_pHeap; }
+	ID3D12DescriptorHeap* Get() { return Heap; }
 	// ディスクリプタを取得
 	Handle Allocate();
 	// ヒープの設定
@@ -30,9 +30,9 @@ public:
 	static void Bind(ID3D12DescriptorHeap** _heaps, UINT _num);
 
 private:
-	ID3D12DescriptorHeap*		m_pHeap;		// ヒープのデータ
-	D3D12_DESCRIPTOR_HEAP_TYPE	m_type;			// ディスクリプタヒープの種類
-	UINT						m_allocCout;	// 確保したディスクリプタ数
+	ID3D12DescriptorHeap*		Heap;		// ヒープのデータ
+	D3D12_DESCRIPTOR_HEAP_TYPE	Type;		// ディスクリプタヒープの種類
+	UINT						AllocCout;	// 確保したディスクリプタ数
 
 };
 

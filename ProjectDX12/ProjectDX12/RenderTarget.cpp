@@ -33,7 +33,7 @@ RenderTarget::RenderTarget(Description desc)
 		&rtvResourceDesc,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		&clearValue,
-		IID_PPV_ARGS(&m_pRenderTarget)
+		IID_PPV_ARGS(&Resource)
 	);
 	if (FAILED(hr)) { return; }
 
@@ -41,9 +41,9 @@ RenderTarget::RenderTarget(Description desc)
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc	= {};
 	rtvDesc.ViewDimension					= D3D12_RTV_DIMENSION_TEXTURE2D;
 	rtvDesc.Format							= rtvResourceDesc.Format;
-	m_hRTV									= desc.pRTVHeap->Allocate();
-	GetDevice()->CreateRenderTargetView(m_pRenderTarget, &rtvDesc,
-		m_hRTV.hCPU);
+	hRTV									= desc.pRTVHeap->Allocate();
+	GetDevice()->CreateRenderTargetView(Resource, &rtvDesc,
+		hRTV.hCPU);
 
 	// シェーダーリソースビューの作成
 	D3D12_SHADER_RESOURCE_VIEW_DESC rtvsrvDesc	= {};
@@ -51,13 +51,13 @@ RenderTarget::RenderTarget(Description desc)
 	rtvsrvDesc.Format							= rtvDesc.Format;
 	rtvsrvDesc.Texture2D.MipLevels				= 1;
 	rtvsrvDesc.Shader4ComponentMapping			= D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	m_hSRV										= desc.pSRVHeap->Allocate();
-	GetDevice()->CreateShaderResourceView(m_pRenderTarget, &rtvsrvDesc, m_hSRV.hCPU);
+	hSRV										= desc.pSRVHeap->Allocate();
+	GetDevice()->CreateShaderResourceView(Resource, &rtvsrvDesc, hSRV.hCPU);
 }
 
 RenderTarget::~RenderTarget()
 {
-	m_pRenderTarget->Release();
+	Resource->Release();
 }
 
 void RenderTarget::ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
@@ -66,7 +66,7 @@ void RenderTarget::ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_
 	D3D12_RESOURCE_BARRIER barrirDesc	= {};
 	barrirDesc.Type						= D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrirDesc.Flags					= D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrirDesc.Transition.pResource		= m_pRenderTarget;
+	barrirDesc.Transition.pResource		= Resource;
 	barrirDesc.Transition.Subresource	= 0;
 	barrirDesc.Transition.StateBefore	= before;
 	barrirDesc.Transition.StateAfter	= after;
@@ -77,11 +77,11 @@ void RenderTarget::Clear()
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	const float clearColor[4] = { 1,0,1,0 };
-	pCmdList->ClearRenderTargetView(m_hRTV.hCPU, clearColor, 0, nullptr);
+	pCmdList->ClearRenderTargetView(hRTV.hCPU, clearColor, 0, nullptr);
 }
 
 void RenderTarget::Clear(const float clearColor[])
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
-	pCmdList->ClearRenderTargetView(m_hRTV.hCPU, clearColor, 0, nullptr);
+	pCmdList->ClearRenderTargetView(hRTV.hCPU, clearColor, 0, nullptr);
 }

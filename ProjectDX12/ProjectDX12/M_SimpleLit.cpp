@@ -1,7 +1,8 @@
 
-#include "Material/M_SimpleLit.h"
-#include "SceneBase.h"
 #include "GlobalResourceKey.h"
+
+#include "Material/M_SimpleLit.h"
+#include "RenderingEngine.h"
 
 #include <DirectXMath.h>
 
@@ -46,7 +47,7 @@ void M_SimpleLit::Draw()
 {
 	// 定数バッファの設定
 	WriteParams((UINT)2, 0,
-		SceneBase::GetGlobalResource(GlobalResourceKey::Camera)->GetHandle().hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		RenderingEngine::GetGlobalResource(GlobalResourceKey::Camera)->GetHandle().hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = 
 	{

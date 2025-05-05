@@ -21,16 +21,16 @@ public:
 	void Clear();
 	void Clear(const float clearColor[]);
 	DescriptorHeap::Handle GetHandleRTV() {
-		return m_hRTV;
+		return hRTV;
 	}
 	DescriptorHeap::Handle GetHandleSRV() {
-		return m_hSRV;
+		return hSRV;
 	}
 
 private:
-	ID3D12Resource*			m_pRenderTarget;
-	DescriptorHeap::Handle	m_hRTV;
-	DescriptorHeap::Handle	m_hSRV;
+	ID3D12Resource*			Resource;
+	DescriptorHeap::Handle	hRTV;
+	DescriptorHeap::Handle	hSRV;
 
 };
 

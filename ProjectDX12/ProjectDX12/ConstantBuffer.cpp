@@ -3,11 +3,11 @@
 
 ConstantBuffer::ConstantBuffer(Description desc)
 	:
-	m_handle{},
-	m_size(0),
-	m_pBuf(nullptr),
-	m_cbv{},
-	m_pPtr(nullptr)
+	Handle{},
+	Size(0),
+	Resource(nullptr),
+	CBV{},
+	Ptr(nullptr)
 {
 	HRESULT hr;
 	ID3D12Device* pDevice = GetDevice();
@@ -37,23 +37,23 @@ ConstantBuffer::ConstantBuffer(Description desc)
 	// リソース生成
 	hr = pDevice->CreateCommittedResource(
 		&prop, D3D12_HEAP_FLAG_NONE, &res, D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr, IID_PPV_ARGS(&m_pBuf));
+		nullptr, IID_PPV_ARGS(&Resource));
 	if (FAILED(hr)) { return; }
 
 	// 定数バッファビュー生成
-	m_cbv.BufferLocation	= m_pBuf->GetGPUVirtualAddress();
-	m_cbv.SizeInBytes		= static_cast<UINT>(res.Width);		// 256アライメントでないとGPUアクセスエラー
-	m_handle				= desc.pHeap->Allocate();
-	pDevice->CreateConstantBufferView(&m_cbv, m_handle.hCPU);	// ディスクリプターヒープとの紐づけ
+	CBV.BufferLocation	= Resource->GetGPUVirtualAddress();
+	CBV.SizeInBytes		= static_cast<UINT>(res.Width);		// 256アライメントでないとGPUアクセスエラー
+	Handle				= desc.pHeap->Allocate();
+	pDevice->CreateConstantBufferView(&CBV, Handle.hCPU);	// ディスクリプターヒープとの紐づけ
 
 	// データ初期化
-	hr = m_pBuf->Map(0, nullptr, &m_pPtr);
+	hr = Resource->Map(0, nullptr, &Ptr);
 	if (FAILED(hr)) { return; }
-	ZeroMemory(m_pPtr, desc.size);
-	m_size = desc.size;
+	ZeroMemory(Ptr, desc.size);
+	Size = desc.size;
 }
 
 ConstantBuffer::~ConstantBuffer()
 {
-	m_pBuf->Release();
+	Resource->Release();
 }

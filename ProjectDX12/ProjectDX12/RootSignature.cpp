@@ -51,7 +51,7 @@ RootSignature::RootSignature(DescriptionTables desc)
 
 RootSignature::~RootSignature()
 {
-	m_pRootSignature->Release();
+	RootSignatureData->Release();
 }
 
 void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param,UINT num)
@@ -86,13 +86,13 @@ void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param,UINT num)
 
 	// ルートシグネチャ生成
 	hr = GetDevice()->CreateRootSignature(
-		0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&m_pRootSignature)
+		0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&RootSignatureData)
 	);
 }
 
 void RootSignature::Bind(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num)
 {
-	GetCommandList()->SetGraphicsRootSignature(m_pRootSignature);
+	GetCommandList()->SetGraphicsRootSignature(RootSignatureData);
 	for (int i = 0; i < num; ++i)
 		GetCommandList()->SetGraphicsRootDescriptorTable(i, handle[i]);
 }

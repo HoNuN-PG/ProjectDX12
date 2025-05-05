@@ -1,62 +1,64 @@
 
 #include "SceneManager.h"
-
+#include "SceneSandBoxDX12.h"
 #include "Input.h"
+
 #include <algorithm>
 
-#include "SceneSandBoxDX12.h"
+int SceneManager::CurrentScene = SceneManager::SceneType::SANDBOXDX12;
+std::vector<std::unique_ptr<SceneBase>> SceneManager::Scenes;
 
 SceneManager::SceneManager()
 {
 	// ƒV[ƒ“”z—ñ‚Ì‰Šú‰»
-	mScenes.resize(MAX_SCENES);
-	for(int i = 0;i < mScenes.size();i++)
+	Scenes.resize(MAX_SCENES);
+	for(int i = 0;i < Scenes.size();i++)
 	{
-		mScenes[i] = nullptr;
+		Scenes[i] = nullptr;
 	}
 }
 
 HRESULT SceneManager::Init()
 {
 	HRESULT hr = E_FAIL;
-	if (!mScenes[mCurrentScene])
+	if (!Scenes[CurrentScene])
 	{
-		switch (mCurrentScene) {
+		switch (CurrentScene) {
 		default:break;
-		case SANDBOXDX12:	mScenes[mCurrentScene] = std::make_unique<SceneSandBoxDX12>();	break;
+		case SANDBOXDX12:Scenes[CurrentScene] = std::make_unique<SceneSandBoxDX12>();	break;
 		}	
 	}
-	return mScenes[mCurrentScene]->InitBase();
+	return Scenes[CurrentScene]->InitBase();
 }
 
 void SceneManager::Uninit()
 {
-	if (mScenes[mCurrentScene])
+	if (Scenes[CurrentScene])
 	{
-		mScenes[mCurrentScene]->UninitBase();
-		mScenes[mCurrentScene].release();
+		Scenes[CurrentScene]->UninitBase();
+		Scenes[CurrentScene].release();
 	}
 }
 
 void SceneManager::Update()
 {
-	int preScene = mCurrentScene;
+	int preScene = CurrentScene;
 	if (Input::GetKeyTrigger(VK_RIGHT))
-		mCurrentScene = min(mCurrentScene + 1, MAX_SCENES - 1);
+		CurrentScene = min(CurrentScene + 1, MAX_SCENES - 1);
 	if (Input::GetKeyTrigger(VK_LEFT))
-		mCurrentScene = max(IBL, mCurrentScene - 1);
-	if (mCurrentScene != preScene) {
-		int newScene = mCurrentScene;
-		mCurrentScene = preScene;
+		CurrentScene = max(0, CurrentScene - 1);
+	if (CurrentScene != preScene) {
+		int newScene = CurrentScene;
+		CurrentScene = preScene;
 		Uninit();
-		mCurrentScene = newScene;
+		CurrentScene = newScene;
 		Init();
 	}
 
-	if(mScenes[mCurrentScene]) mScenes[mCurrentScene]->UpdateBase();
+	if(Scenes[CurrentScene]) Scenes[CurrentScene]->UpdateBase();
 }
 
 void SceneManager::Draw()
 {
-	if (mScenes[mCurrentScene]) mScenes[mCurrentScene]->DrawBase();
+	if (Scenes[CurrentScene]) Scenes[CurrentScene]->DrawBase();
 }

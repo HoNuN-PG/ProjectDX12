@@ -3,14 +3,15 @@
 
 #include <DirectXMath.h>
 
-struct sLight
-{
-	DirectX::XMFLOAT4 dir;
-};
-
 struct sCamera
 {
 	DirectX::XMFLOAT4 pos;
+};
+
+struct sLight
+{
+	DirectX::XMFLOAT4 lightParam;
+	DirectX::XMFLOAT4 lightColor;
 };
 
 #endif

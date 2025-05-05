@@ -36,12 +36,8 @@ void SceneSandBoxDX12::Uninit()
 
 void SceneSandBoxDX12::Update()
 {
-	Camera->Update();
-	Light->Update();
 }
 
 void SceneSandBoxDX12::Draw()
 {
-	Camera->Draw();
-	Light->Draw();
 }

@@ -26,11 +26,11 @@ public:
 	Pipeline(Description desc);
 	~Pipeline();
 	void Bind() {
-		GetCommandList()->SetPipelineState(m_pPipeline);
+		GetCommandList()->SetPipelineState(PipelineData);
 	}
 
 private:
-	ID3D12PipelineState* m_pPipeline;
+	ID3D12PipelineState* PipelineData;
 
 };
 

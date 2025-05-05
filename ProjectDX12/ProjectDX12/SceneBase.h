@@ -8,13 +8,8 @@
 #include <list>
 
 #include "GameObject.h"
-#include "CameraBase.h"
-#include "LightBase.h"
-#include "DescriptorHeap.h"
-#include "ConstantBuffer.h"
-#include "DepthStencil.h"
+#include "RenderingEngine.h"
 
-#include <string>
 #include <unordered_map>
 
 class SceneBase
@@ -49,16 +44,13 @@ public:
 	virtual void Update()	= 0;
 	virtual void Draw()		= 0;
 
-protected:
-	void WriteGlobalResource();
-
 public:
 	template <typename T>
-	T* AddGameObject(Layer layer = OPACITY)
+	T* AddGameObject(Layer layer = OPACITY, GameObject::RenderingTiming timing = GameObject::RenderingTiming::FORWARD)
 	{
 		T* gameObject = new T();
 		GameObjects[layer].push_back(gameObject);
-		gameObject->InitBase();
+		gameObject->InitBase(timing);
 		return gameObject;
 	}
 	template <typename T>
@@ -95,20 +87,10 @@ public:
 protected:
 	std::array<std::list<GameObject*>, MAX_LAYER> GameObjects;
 
-protected:
-	std::unique_ptr<DescriptorHeap>					DSVHeap;
-	std::unique_ptr<DepthStencil>					DSV;
-
 public:
-	static DescriptorHeap* GetGlobalHeap()
-	{ return GlobalHeap.get(); }
-	static ConstantBuffer* GetGlobalResource(UINT key);
+	RenderingEngine* GetRenderingEngine();
 private:
-	static std::unique_ptr<DescriptorHeap>	GlobalHeap;
-	static std::unordered_map<UINT,std::unique_ptr<ConstantBuffer>> GlobalResource;
-protected:
-	CameraDebug* Camera;
-	LightBase* Light;
+	std::unique_ptr<RenderingEngine> Engine;
 
 };
 

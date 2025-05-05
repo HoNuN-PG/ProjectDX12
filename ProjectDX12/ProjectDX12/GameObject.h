@@ -8,13 +8,30 @@
 
 #include "Component.h"
 
+class RenderingEngine;
+
 class GameObject
 {
+public:
+	enum RenderingTiming
+	{
+		CAM = 0,
+		SKYBOX,
+		LIGHT,
+		DEFERRED,
+		FORWARD,
+		CANVAS,
+		AFTER_POSTPROCESS,
+		AFTER_FRAME_BUFFER,
+
+		MAX_TIMING
+	};
+
 public:
 	GameObject() {}
 	virtual ~GameObject() {}
 
-	void InitBase();
+	void InitBase(RenderingTiming timing = RenderingTiming::FORWARD);
 	void UninitBase();
 	void UpdateBase();
 	void DrawBase(DirectX::XMFLOAT4X4 ParentMatrix);
@@ -125,6 +142,10 @@ public:
 	void SetDestroy() { bDestroy = true; }
 	bool IsDestroy() { return bDestroy; }
 	bool Destroy();
+
+private:
+	RenderingEngine* Engine;
+	RenderingTiming Timing;
 
 };
 

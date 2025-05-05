@@ -17,19 +17,19 @@ public:
 	~ConstantBuffer();
 	void Write(const void* data)
 	{
-		memcpy_s(m_pPtr, m_size, data, m_size);
+		memcpy_s(Ptr, Size, data, Size);
 	}
 	DescriptorHeap::Handle GetHandle() 
 	{
-		return m_handle; 
+		return Handle; 
 	}
 
 private:
-	DescriptorHeap::Handle			m_handle;	// 該当ディスクリプタのハンドル
-	UINT							m_size;		// 定数バッファのサイズ
-	ID3D12Resource*					m_pBuf;		// 定数バッファリソース
-	D3D12_CONSTANT_BUFFER_VIEW_DESC	m_cbv;		// 定数バッファビュー
-	void*							m_pPtr;		// 書き込み先アドレス
+	DescriptorHeap::Handle			Handle;		// 該当ディスクリプタのハンドル
+	UINT							Size;		// 定数バッファのサイズ
+	ID3D12Resource*					Resource;	// 定数バッファリソース
+	D3D12_CONSTANT_BUFFER_VIEW_DESC	CBV;		// 定数バッファビュー
+	void*							Ptr;		// 書き込み先アドレス
 
 };
 

@@ -82,7 +82,8 @@ void Material::WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDL
 {
 	GetDevice()->CopyDescriptorsSimple(
 		range,
-		Params[startIdx]->GetHandle().hCPU, startHandle,
+		Params[startIdx]->GetHandle().hCPU, 
+		startHandle,
 		type);
 }
 

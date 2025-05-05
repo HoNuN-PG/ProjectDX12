@@ -85,11 +85,11 @@ Pipeline::Pipeline(Description desc)
 	pipelineDesc.DSVFormat			= DXGI_FORMAT_D32_FLOAT;
 
 	// パイプラインの生成
-	hr = GetDevice()->CreateGraphicsPipelineState(&pipelineDesc, IID_PPV_ARGS(&m_pPipeline));
+	hr = GetDevice()->CreateGraphicsPipelineState(&pipelineDesc, IID_PPV_ARGS(&PipelineData));
 	if (FAILED(hr)) { return; }
 }
 
 Pipeline::~Pipeline()
 {
-	m_pPipeline->Release();
+	PipelineData->Release();
 }

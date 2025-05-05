@@ -20,8 +20,8 @@ public:
 	DescriptorHeap::Handle GetHandleDSV();
 
 private:
-	ID3D12Resource* m_pDepthStencil;
-	DescriptorHeap::Handle m_hDSV;
+	ID3D12Resource* Resource;
+	DescriptorHeap::Handle DSV;
 
 };
 

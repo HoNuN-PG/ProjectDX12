@@ -3,11 +3,11 @@
 
 MeshBuffer::MeshBuffer(Description desc)
 	: 
-	m_desc(desc), 
-	m_pVtxBuf(nullptr), 
-	m_vbv{}, 
-	m_pIdxBuf(nullptr), 
-	m_ibv{}
+	Desc(desc), 
+	Vtx(nullptr), 
+	Vbv{}, 
+	Idx(nullptr), 
+	Ibv{}
 {
 	HRESULT hr;
 	// ヒープの設定
@@ -33,22 +33,22 @@ MeshBuffer::MeshBuffer(Description desc)
 	// 頂点バッファリソースの生成
 	hr = GetDevice()->CreateCommittedResource(
 		&heapProp, D3D12_HEAP_FLAG_NONE, &resDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-		IID_PPV_ARGS(&m_pVtxBuf)
+		IID_PPV_ARGS(&Vtx)
 	);
 	if (FAILED(hr)) { return; }
 
 	// 頂点バッファの初期値設定
 	void* pVtxMap;
-	hr = m_pVtxBuf->Map(0, nullptr, (void**)&pVtxMap);
+	hr = Vtx->Map(0, nullptr, (void**)&pVtxMap);
 	if (SUCCEEDED(hr)) {
 		memcpy_s(pVtxMap, resDesc.Width, desc.pVtx, resDesc.Width);
 	}
-	m_pVtxBuf->Unmap(0, nullptr);
+	Vtx->Unmap(0, nullptr);
 
 	// 頂点バッファビューの設定
-	m_vbv.BufferLocation	= m_pVtxBuf->GetGPUVirtualAddress();
-	m_vbv.SizeInBytes		= resDesc.Width;
-	m_vbv.StrideInBytes		= desc.vtxSize;
+	Vbv.BufferLocation	= Vtx->GetGPUVirtualAddress();
+	Vbv.SizeInBytes		= resDesc.Width;
+	Vbv.StrideInBytes		= desc.vtxSize;
 
 	// インデックス作成チェック
 	if (desc.pIdx == nullptr) { return; }
@@ -65,39 +65,39 @@ MeshBuffer::MeshBuffer(Description desc)
 
 	// リソース生成
 	hr = GetDevice()->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &resDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,nullptr,IID_PPV_ARGS(&m_pIdxBuf));
+		D3D12_RESOURCE_STATE_GENERIC_READ,nullptr,IID_PPV_ARGS(&Idx));
 
 	// インデックスデータ書き込み
 	void* pIdxMap = nullptr;
-	hr = m_pIdxBuf->Map(0, nullptr, &pIdxMap);
+	hr = Idx->Map(0, nullptr, &pIdxMap);
 	if (SUCCEEDED(hr)) {
 		memcpy_s(pIdxMap, resDesc.Width, desc.pIdx, resDesc.Width);
 	}
-	m_pIdxBuf->Unmap(0, nullptr);
+	Idx->Unmap(0, nullptr);
 
 	// インデックスバッファビュー作成
-	m_ibv.BufferLocation = m_pIdxBuf->GetGPUVirtualAddress();
-	m_ibv.Format = desc.idxSize;
-	m_ibv.SizeInBytes = static_cast<UINT>(resDesc.Width);
+	Ibv.BufferLocation = Idx->GetGPUVirtualAddress();
+	Ibv.Format = desc.idxSize;
+	Ibv.SizeInBytes = static_cast<UINT>(resDesc.Width);
 }
 
 MeshBuffer::~MeshBuffer()
 {
-	if (m_pIdxBuf)
-		m_pIdxBuf->Release();
-	m_pVtxBuf->Release();
+	if (Idx)
+		Idx->Release();
+	Vtx->Release();
 }
 
 void MeshBuffer::Draw()
 {
-	GetCommandList()->IASetPrimitiveTopology(m_desc.topology);
-	GetCommandList()->IASetVertexBuffers(0, 1, &m_vbv);
-	if (m_pIdxBuf)
+	GetCommandList()->IASetPrimitiveTopology(Desc.topology);
+	GetCommandList()->IASetVertexBuffers(0, 1, &Vbv);
+	if (Idx)
 	{
-		GetCommandList()->IASetIndexBuffer(&m_ibv);
-		GetCommandList()->DrawIndexedInstanced(m_desc.idxCount, 1, 0, 0, 0);
+		GetCommandList()->IASetIndexBuffer(&Ibv);
+		GetCommandList()->DrawIndexedInstanced(Desc.idxCount, 1, 0, 0, 0);
 	}
 	else {
-		GetCommandList()->DrawInstanced(m_desc.vtxCount, 1, 0, 0);
+		GetCommandList()->DrawInstanced(Desc.vtxCount, 1, 0, 0);
 	}
 }

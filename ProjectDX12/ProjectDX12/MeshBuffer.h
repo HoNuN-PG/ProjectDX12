@@ -21,11 +21,11 @@ public:
 	~MeshBuffer();
 	void Draw();
 private:
-	Description				m_desc;
-	ID3D12Resource*				m_pVtxBuf;
-	D3D12_VERTEX_BUFFER_VIEW	m_vbv;
-	ID3D12Resource*				m_pIdxBuf;
-	D3D12_INDEX_BUFFER_VIEW		m_ibv;
+	Description					Desc;
+	ID3D12Resource*				Vtx;
+	D3D12_VERTEX_BUFFER_VIEW	Vbv;
+	ID3D12Resource*				Idx;
+	D3D12_INDEX_BUFFER_VIEW		Ibv;
 };
 
 #endif

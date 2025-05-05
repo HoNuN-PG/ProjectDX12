@@ -18,16 +18,16 @@ const float SPEED = 1;
 LightBase::LightBase()
 {
 	// パラメータ設定
-	m_Up = { 0,1,0 };
-	m_Position = DirectX::XMFLOAT3(0, 1, 0);
-	m_Target = DirectX::XMFLOAT3();
-	m_TargetOffset = DirectX::XMFLOAT3();
-	m_Dist = 350;
-	m_Rad.radXZ = m_Rad.lateXZ = DirectX::XMConvertToRadians(0.0f);
-	m_Rad.radY = m_Rad.lateY = DirectX::XMConvertToRadians((MAX_ANGLE_UP + MAX_ANGLE_DOWN) / 2.0f);
-	m_Color = { 1,1,1,1 };
-	m_Power = 1.5f;
-	m_Ambient = 0.2f;
+	m_Up						= { 0,1,0 };
+	m_Position					= DirectX::XMFLOAT3(0, 1, 0);
+	m_Target					= DirectX::XMFLOAT3();
+	m_TargetOffset				= DirectX::XMFLOAT3();
+	m_Dist						= 350;
+	m_Rad.radXZ = m_Rad.lateXZ	= DirectX::XMConvertToRadians(0.0f);
+	m_Rad.radY = m_Rad.lateY	= DirectX::XMConvertToRadians((MAX_ANGLE_UP + MAX_ANGLE_DOWN) / 2.0f);
+	m_Color						= { 1,1,1,1 };
+	m_Power						= 1.5f;
+	m_Ambient					= 0.2f;
 
 	// 角度と距離・注視点からカメラ位置を計算
 	m_Position.x = cosf(m_Rad.lateY) * sinf(m_Rad.lateXZ) * (m_Dist)+m_Target.x;

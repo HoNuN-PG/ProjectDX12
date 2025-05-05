@@ -31,12 +31,12 @@ Texture::Texture(Description desc)
 
 	// リソースの作成
 	hr = GetDevice()->CreateCommittedResource(&texProp, D3D12_HEAP_FLAG_NONE,
-		&texDesc, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, nullptr, IID_PPV_ARGS(&m_pTexture));
+		&texDesc, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, nullptr, IID_PPV_ARGS(&Resource));
 	if (FAILED(hr)) { return; }
 
 	// 書き込み
 	auto img = image.GetImage(0, 0, 0);
-	hr = m_pTexture->WriteToSubresource(0, nullptr, img->pixels, img->rowPitch, img->slicePitch);
+	hr = Resource->WriteToSubresource(0, nullptr, img->pixels, img->rowPitch, img->slicePitch);
 	if (FAILED(hr)) { return; }
 
 	// シェーダーリソースビューの作成
@@ -47,11 +47,11 @@ Texture::Texture(Description desc)
 	srvDesc.Texture2D.MipLevels				= info.mipLevels;
 
 	// ディスクリプターの割り当て位置(事前に定数バッファを作っているのでハンドルのポインタを移動させる)
-	m_handle = desc.pHeap->Allocate();
-	GetDevice()->CreateShaderResourceView(m_pTexture, &srvDesc, m_handle.hCPU);
+	Handle = desc.pHeap->Allocate();
+	GetDevice()->CreateShaderResourceView(Resource, &srvDesc, Handle.hCPU);
 }
 
 Texture::~Texture()
 {
-	m_pTexture->Release();
+	Resource->Release();
 }

@@ -49,7 +49,7 @@ private:
 
 public:
 	ID3D12RootSignature* Get() {
-		return m_pRootSignature;
+		return RootSignatureData;
 	}
 	/// <summary>
 	/// １つのディスクリプタヒープ内のディスクリプタをディスクリプタテーブルと紐づけ
@@ -59,7 +59,7 @@ public:
 	void Bind(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num);
 
 private:
-	ID3D12RootSignature* m_pRootSignature;
+	ID3D12RootSignature* RootSignatureData;
 
 };
 

@@ -12,26 +12,24 @@ class SceneManager
 private:
 	enum SceneType 
 	{
-		IBL = 0,
-		FRACTAL,
-		LSYSTEM,
-		LSYSTEM3D,
-		PROCEDURAL,
-		FIELD,
-		SANDBOXDX12,
+		SANDBOXDX12 = 0,
 
 		MAX_SCENES
 	};
-	int mCurrentScene = SANDBOXDX12;
-	std::vector<std::unique_ptr<SceneBase>> mScenes;
+	static int CurrentScene;
+	static std::vector<std::unique_ptr<SceneBase>> Scenes;
 
 public:
 	SceneManager();
 
-	HRESULT Init();
-	void Uninit();
-	void Update();
-	void Draw();
+	static HRESULT Init();
+	static void Uninit();
+	static void Update();
+	static void Draw();
+
+public:
+	static SceneBase* GetCurrentScene()
+	{ return Scenes[CurrentScene].get(); }
 
 };
 
