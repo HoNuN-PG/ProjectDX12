@@ -1,12 +1,21 @@
 #ifndef ___GLOBAL_RESOURCE_KEY_H___
 #define ___GLOBAL_RESOURCE_KEY_H___
 
-enum GlobalResourceKey
+enum GlobalConstantBufferResourceKey
 {
-	Camera = 0,
+	ScreenWVP = 0,
+	Camera,
 	Light,
 
-	MAX_KEY_TYPE
+	MAX_RESOURCE_KEY_TYPE
+};
+
+enum GlobalTextureResourceKey
+{
+	AlbedoTexture = 0,
+	NormalTexture,
+
+	MAX_TEXTURE_RESOURCE_KEY_TYPE
 };
 
 #endif

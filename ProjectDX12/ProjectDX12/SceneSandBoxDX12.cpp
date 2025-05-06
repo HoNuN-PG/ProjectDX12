@@ -5,7 +5,8 @@
 #include "ConstantWVP.h"
 
 // マテリアル
-#include "Material/M_SimpleLit.h"
+#include "M_SimpleLit.h"
+#include "M_Deffered_Albedo_Normal.h"
 
 HRESULT SceneSandBoxDX12::Init()
 {
@@ -17,15 +18,26 @@ HRESULT SceneSandBoxDX12::Init()
 		Heap = std::make_unique<DescriptorHeap>(desc);
 	}
 
-	// マテリアル作成
-	Materials.push_back(std::make_unique<M_SimpleLit>());
-	Materials.back()->Initialize(Heap.get());
-
 	// モデル作成
-	GameObject* obj = AddGameObject<GameObject>();
-	obj->SetPosition({ 0,0,0 });
-	Model* model = obj->AddComponent<Model>();
-	model->Create(Materials[0].get(), "assets/model/spot/spot.fbx");
+	{
+		Materials.push_back(std::make_unique<M_SimpleLit>());
+		Materials.back()->Initialize(Heap.get());
+
+		GameObject* obj = AddGameObject<GameObject>();
+		obj->SetPosition({ -1,0,0 });
+		Model* model = obj->AddComponent<Model>();
+		model->Create(Materials.back().get(), "assets/model/spot/spot.fbx");
+	}
+	{
+		Materials.push_back(std::make_unique<M_Deffered_Albedo_Normal>());
+		Materials.back()->Initialize(Heap.get());
+		Materials.back()->AddTexture("assets/model/spot/spot_texture.png");
+
+		GameObject* obj = AddGameObject<GameObject>(GameObject::DEFERRED);
+		obj->SetPosition({ 1,0,0 });
+		Model* model = obj->AddComponent<Model>();
+		model->Create(Materials.back().get(), "assets/model/spot/spot.fbx");
+	}
 
     return E_NOTIMPL;
 }

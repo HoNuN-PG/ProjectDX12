@@ -56,14 +56,12 @@ void CameraDebug::Update()
 
 void CameraDebug::Draw()
 {
-#ifdef _DEBUG
 	ImGui::Begin("Camera");
 	{
 		ImGui::SliderFloat("Camera_MoveSpeed", &m_MoveSpeed, 0.01f, 1.0f);
 		ImGui::SliderFloat("Camera_MouseSpeed", &m_MouseSpeed, 0.01f, 2.0f);
 	}
 	ImGui::End();
-#endif
 }
 
 void CameraDebug::ProcDCC(Argument & arg)

@@ -11,5 +11,10 @@ void Primitive::Draw()
 		Owner->GetRotation(),
 		Owner->GetScale()));
 	MaterialData->Draw();
-	Mesh->Draw();
+	MeshData->Draw();
+}
+
+void Primitive::SetMaterial(Material* material)
+{
+	MaterialData = material;
 }

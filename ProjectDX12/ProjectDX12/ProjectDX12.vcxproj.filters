@@ -91,6 +91,12 @@
     <Filter Include="ソース ファイル\Material\Mterials">
       <UniqueIdentifier>{d78f6a5e-abc0-47b4-96a1-dec250921816}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\PS\Deffered">
+      <UniqueIdentifier>{97472983-d64e-45a2-9716-855aa7b81ce2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\PS\Common">
+      <UniqueIdentifier>{fcbb99d6-5423-4ff4-aab3-9f45a43918a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DescriptorHeap.cpp">
@@ -188,6 +194,12 @@
     </ClCompile>
     <ClCompile Include="RenderingEngine.cpp">
       <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
+    <ClCompile Include="plane.cpp">
+      <Filter>ソース ファイル\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="M_Deffered_Albedo_Normal.cpp">
+      <Filter>ソース ファイル\Material\Mterials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -302,6 +314,15 @@
     <ClInclude Include="RenderingEngine.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
+    <ClInclude Include="RenderingComponent.h">
+      <Filter>ヘッダー ファイル\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="plane.h">
+      <Filter>ヘッダー ファイル\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="M_Deffered_Albedo_Normal.h">
+      <Filter>ヘッダー ファイル\Material\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="CommonLighting.hlsl">
@@ -315,6 +336,12 @@
     </FxCompile>
     <FxCompile Include="VS_Object.hlsl">
       <Filter>リソース ファイル\VS</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Deffered.hlsl">
+      <Filter>リソース ファイル\PS\Deffered</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Copy.hlsl">
+      <Filter>リソース ファイル\PS\Common</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

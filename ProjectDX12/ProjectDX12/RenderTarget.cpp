@@ -76,7 +76,7 @@ void RenderTarget::ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_
 void RenderTarget::Clear()
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
-	const float clearColor[4] = { 1,0,1,0 };
+	const float clearColor[4] = { 0,0,0,0 };
 	pCmdList->ClearRenderTargetView(hRTV.hCPU, clearColor, 0, nullptr);
 }
 

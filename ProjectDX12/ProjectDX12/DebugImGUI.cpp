@@ -18,10 +18,10 @@ DebugImGUI::DebugImGUI()
 	// スクリーン頂点
 	Vertex screenVtx[] =
 	{
-		{{-0.5f, 0.5f,0} ,{0,0},{1,1,1,1}} ,
-		{{ 0.5f, 0.5f,0} ,{1,0},{1,1,1,1}} ,
-		{{-0.5f,-0.5f,0} ,{0,1},{1,1,1,1}} ,
-		{{ 0.5f,-0.5f,0} ,{1,1},{1,1,1,1}} ,
+		{{-0.5f, 0.5f,0}, {0,0,1} ,{0,0}, {1,1,1,1}} ,
+		{{ 0.5f, 0.5f,0}, {0,0,1} ,{1,0}, {1,1,1,1}} ,
+		{{-0.5f,-0.5f,0}, {0,0,1} ,{0,1}, {1,1,1,1}} ,
+		{{ 0.5f,-0.5f,0}, {0,0,1} ,{1,1}, {1,1,1,1}} ,
 	};
 
 	// スクリーン
@@ -30,7 +30,7 @@ DebugImGUI::DebugImGUI()
 	desc.vtxSize = sizeof(Vertex);
 	desc.vtxCount = _countof(screenVtx);
 	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-	mpScreen = std::make_unique<MeshBuffer>(desc);
+	Screen = std::make_unique<MeshBuffer>(desc);
 }
 
 DebugImGUI::~DebugImGUI()
@@ -46,7 +46,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = HEAP_NUM;
-		mpImGUIHeap = std::make_unique<DescriptorHeap>(desc);
+		ImGUIHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// ImGUIの初期化
 	// 実行ファイルの設定から高DPI項目の編集をする事でマウスポインタのズレ等を修正できる
@@ -63,9 +63,9 @@ MSG DebugImGUI::Create(HWND _hwnd)
 			}
 			// DirectX用のimguiの初期化
 			else {
-				auto handle = mpImGUIHeap->Allocate();
+				auto handle = ImGUIHeap->Allocate();
 				ImGui_ImplDX12_Init(GetDevice(), 3,
-					DXGI_FORMAT_R8G8B8A8_UNORM, mpImGUIHeap->Get(), handle.hCPU, handle.hGPU);
+					DXGI_FORMAT_R8G8B8A8_UNORM, ImGUIHeap->Get(), handle.hCPU, handle.hGPU);
 			}
 		}
 	}
@@ -78,22 +78,24 @@ MSG DebugImGUI::Create(HWND _hwnd)
 		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
-		mpRootSignature = std::make_unique<RootSignature>(desc);
+		RootSignatureData = std::make_unique<RootSignature>(desc);
 	}
 	// パイプライン
 	{
 		Pipeline::InputLayout layout[] = {
-			{"POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT},
+			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
+			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
+			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
+			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 		};
 		Pipeline::Description desc = {};
 		desc.pInputLayout = layout;
 		desc.InputLayoutNum = _countof(layout);
-		desc.VSFile = L"assets/shader/VS_Sprite.cso";
+		desc.VSFile = L"assets/shader/VS_Object.cso";
 		desc.PSFile = L"assets/shader/PS_Copy.cso";
-		desc.pRootSignature = mpRootSignature->Get();
+		desc.pRootSignature = RootSignatureData->Get();
 		desc.RenderTargetNum = 1;
-		mpPipeline = std::make_unique<Pipeline>(desc);
+		PipelineData = std::make_unique<Pipeline>(desc);
 	}
 	// ディスクリプタヒープ
 	{
@@ -101,7 +103,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 		// RTV用のヒープ設定
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		desc.num = HEAP_NUM - 1;
-		mpRTVHeap = std::make_unique<DescriptorHeap>(desc);
+		RTVHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// レンダーターゲット
 	{
@@ -110,9 +112,9 @@ MSG DebugImGUI::Create(HWND _hwnd)
 			RenderTarget::Description desc = {};
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
-			desc.pRTVHeap = mpRTVHeap.get();
-			desc.pSRVHeap = mpImGUIHeap.get();
-			mpRTV.push_back(std::make_pair<bool, std::unique_ptr<RenderTarget>>(false, std::make_unique<RenderTarget>(desc)));
+			desc.pRTVHeap = RTVHeap.get();
+			desc.pSRVHeap = ImGUIHeap.get();
+			RTVs.push_back(std::make_pair<bool, std::unique_ptr<RenderTarget>>(false, std::make_unique<RenderTarget>(desc)));
 		}
 	}
 
@@ -130,12 +132,12 @@ ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* _heap, ConstantBuffer* _wv
 
 	// 使用するRTVを決定
 	RenderTarget* useRTV = nullptr;
-	for (int i = 0; i < mpRTV.size(); i++)
+	for (int i = 0; i < RTVs.size(); i++)
 	{
-		if (!mpRTV[i].first)
+		if (!RTVs[i].first)
 		{
-			mpRTV[i].first = true;
-			useRTV = mpRTV[i].second.get();
+			RTVs[i].first = true;
+			useRTV = RTVs[i].second.get();
 			break;
 		}
 	}
@@ -144,21 +146,25 @@ ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* _heap, ConstantBuffer* _wv
 	// レンダーターゲット切り替え
 	useRTV->ResourceBarrier(
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	useRTV->Clear();
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
 		useRTV->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(1, rtvs);
-	useRTV->Clear();
 
 	// ImGUI用RTVに描画
-	mpPipeline->Bind();
+	PipelineData->Bind();
+	ID3D12DescriptorHeap* heaps[] =
+	{
+		_heap->Get(),
+	};
+	DescriptorHeap::Bind(heaps, 1);
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = {
 		_wvp->GetHandle().hGPU,
 		_srv->GetHandleSRV().hGPU,
 	};
-	_heap->Bind();
-	mpRootSignature->Bind(hScreen, _countof(hScreen));
-	mpScreen->Draw();
+	RootSignatureData->Bind(hScreen, _countof(hScreen));
+	Screen->Draw();
 
 	useRTV->ResourceBarrier(
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
@@ -168,13 +174,13 @@ ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* _heap, ConstantBuffer* _wv
 
 void DebugImGUI::CompletedDraw()
 {
-	for (int i = 0; i < mpRTV.size(); i++)
+	for (int i = 0; i < RTVs.size(); i++)
 	{
-		mpRTV[i].first = false;
+		RTVs[i].first = false;
 	}
 }
 
 DescriptorHeap* DebugImGUI::GetImGUIDescriptorHeap()
 {
-	return mpImGUIHeap.get();
+	return ImGUIHeap.get();
 }

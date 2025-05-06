@@ -46,7 +46,7 @@ public:
 
 public:
 	template <typename T>
-	T* AddGameObject(Layer layer = OPACITY, GameObject::RenderingTiming timing = GameObject::RenderingTiming::FORWARD)
+	T* AddGameObject(GameObject::RenderingTiming timing = GameObject::RenderingTiming::FORWARD, Layer layer = OPACITY)
 	{
 		T* gameObject = new T();
 		GameObjects[layer].push_back(gameObject);

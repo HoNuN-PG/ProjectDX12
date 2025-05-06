@@ -5,15 +5,16 @@
 #include <memory>
 
 #include "DescriptorHeap.h"
+#include "RenderTarget.h"
 #include "DepthStencil.h"
 #include "ConstantBuffer.h"
 
 #include <unordered_map>
 
+class GameObject;
+
 class CameraDebug;
 class LightBase;
-
-class GameObject;
 
 class RenderingEngine
 {
@@ -31,35 +32,59 @@ public:
 	void Update();
 	void Draw();
 
-	// デプスステンシルバッファ
-private:
-	std::unique_ptr<DescriptorHeap>					DSVHeap;
-	std::unique_ptr<DepthStencil>					DSV;
-
-	// グローバルリソース
+	// グローバルヒープ
 public:
 	static DescriptorHeap* GetGlobalHeap()
 	{
 		return GlobalHeap.get();
 	}
-	static ConstantBuffer* GetGlobalResource(UINT key);
 private:
-	void WriteGlobalResource();
+	static std::unique_ptr<DescriptorHeap> GlobalHeap;
+
+	// テクスチャヒープ
 private:
-	static std::unique_ptr<DescriptorHeap>								GlobalHeap;
-	static std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>>	GlobalResource;
+	std::shared_ptr<DescriptorHeap>	RTVHeap;
+	std::unique_ptr<DescriptorHeap>	DSVHeap;
+
+	// GBuffer
+private:
+	enum GBuffer
+	{
+		Albedo = 0,		// アルベド
+		Normal,			// 法線
+		
+		MAX_GBUFFER
+	};
+
+	// グローバルリソース
+public:
+	static DescriptorHeap::Handle GetGlobalConstantBufferResource(UINT key);
+	static DescriptorHeap::Handle GetGlobalTextureResource(UINT key);
+private:
+	static std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>> GlobalConstantBuffer;
+	static std::unordered_map<UINT, std::unique_ptr<RenderTarget>> GlobalTexture;
+
+	// リソース
+private:
+	void WriteGlobalConstantBufferResource();
 private:
 	CameraDebug* Camera;
 	LightBase* Light;
+private:
+	std::unique_ptr<DepthStencil> DSV;
 
+	// レンダリングオブジェクトの追加
 public:
 	void AddRenderObject(GameObject& obj, int timing);
-
-private:
-	void ForwardRendering();
-
 private:
 	std::vector<std::vector<RenderingInfo>> m_RenderObjects;
+
+	// レンダリング
+private:
+	void DefferedRendering();
+	void DefferedLighting();
+	void ForwardRendering();
+	void ViewGBuffers();
 
 };
 

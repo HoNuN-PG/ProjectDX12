@@ -5,13 +5,13 @@
 
 struct sCamera
 {
-	DirectX::XMFLOAT4 pos;
+	DirectX::XMFLOAT4 camParam;
 };
 
 struct sLight
 {
-	DirectX::XMFLOAT4 lightParam;
-	DirectX::XMFLOAT4 lightColor;
+	DirectX::XMFLOAT4 ligParam;
+	DirectX::XMFLOAT4 ligColor;
 };
 
 #endif

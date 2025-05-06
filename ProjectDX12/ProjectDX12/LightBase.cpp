@@ -80,7 +80,6 @@ void LightBase::Update()
 
 void LightBase::Draw()
 {
-#ifdef _DEBUG
 	ImGui::Begin("Light");
 	{
 		ImGui::ColorEdit4("LightColor", (float*)&m_Color);
@@ -88,7 +87,6 @@ void LightBase::Draw()
 		ImGui::SliderFloat("Ambient", &m_Ambient, 0, 1);
 	}
 	ImGui::End();
-#endif
 }
 
 DirectX::XMFLOAT4X4 LightBase::GetLightViewProjectionMat()

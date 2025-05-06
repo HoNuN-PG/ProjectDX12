@@ -4,11 +4,9 @@
 #include <DirectXMath.h>
 #include <memory>
 
-#include "Component.h"
-#include "MeshBuffer.h"
-#include "Material/Material.h"
+#include "RenderingComponent.h"
 
-class Model : public Component
+class Model : public RenderingComponent
 {
 public:
 	struct ModelVertex
@@ -20,7 +18,7 @@ public:
 	};
 
 public:
-	using Component::Component;
+	using RenderingComponent::RenderingComponent;
 
 	virtual void Init() override {};
 	virtual void Uninit() override {}
@@ -30,13 +28,6 @@ public:
 public:
 	virtual ~Model(){}
 	void Create(Material* material, const char* path);
-
-public:
-	Material* GetMaterial()
-	{ return MaterialData; }
-protected:
-	std::unique_ptr<MeshBuffer> ModelData;
-	Material* MaterialData;
 
 };
 

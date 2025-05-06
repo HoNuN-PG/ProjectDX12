@@ -29,9 +29,9 @@ void Model::Create(Material* material, const char* path)
 	}
 
 	// 読み込んだデータから頂点バッファ生成
-	desc.vtxSize = sizeof(ModelVertex);
-	desc.idxSize = DXGI_FORMAT_R16_UINT;
-	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	desc.vtxSize	= sizeof(ModelVertex);
+	desc.idxSize	= DXGI_FORMAT_R16_UINT;
+	desc.topology	= D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	for (int i = 0; i < pScene->mNumMeshes; ++i) {
 		// 頂点データの初期値作成
 		std::vector<ModelVertex> modelVtx;
@@ -60,11 +60,11 @@ void Model::Create(Material* material, const char* path)
 			modelIdx.push_back(face.mIndices[2]);
 		}
 		// データ生成
-		desc.pVtx = modelVtx.data();
-		desc.vtxCount = modelVtx.size();
-		desc.pIdx = modelIdx.data();
-		desc.idxCount = modelIdx.size();
-		ModelData = std::make_unique<MeshBuffer>(desc);
+		desc.pVtx		= modelVtx.data();
+		desc.vtxCount	= modelVtx.size();
+		desc.pIdx		= modelIdx.data();
+		desc.idxCount	= modelIdx.size();
+		MeshData		= std::make_unique<MeshBuffer>(desc);
 	}
 }
 
@@ -76,5 +76,5 @@ void Model::Draw()
 		Owner->GetRotation(),
 		Owner->GetScale()));
 	MaterialData->Draw();
-	ModelData->Draw();
+	MeshData->Draw();
 }

@@ -28,7 +28,7 @@ void Sphere::Create()
 			float radXZ			= DirectX::XM_2PI * u;
 			float x				= sinf(radXZ) * sY;
 			float z				= cosf(radXZ) * sY;
-			sphereVtx[idx + i] = { {x, cY, z}, {x, cY, z}, { u, v }, {1, 1, 1, 1} };
+			sphereVtx[idx + i]	= { {x, cY, z}, {x, cY, z}, { u, v }, {1, 1, 1, 1} };
 		}
 	}
 	// インデックス作成
@@ -39,8 +39,8 @@ void Sphere::Create()
 		int idxY	= j * SphereIdxXNum;
 		for (int i = 0; i < SphereIdxXNum; ++i) 
 		{
-			int vtxIdx = vtxIdxY + i;
-			int idx = (idxY + i) * 6;
+			int vtxIdx	= vtxIdxY + i;
+			int idx		= (idxY + i) * 6;
 			sphereIdx[idx + 0] = vtxIdx + 1;
 			sphereIdx[idx + 1] = vtxIdx;
 			sphereIdx[idx + 2] = vtxIdx + SphereVtxXNum;
@@ -58,5 +58,5 @@ void Sphere::Create()
 	desc.idxSize	= DXGI_FORMAT_R16_UINT;
 	desc.idxCount	= SphereIdxNum;
 	desc.topology	= D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	Mesh			= std::make_unique<MeshBuffer>(desc);
+	MeshData		= std::make_unique<MeshBuffer>(desc);
 }

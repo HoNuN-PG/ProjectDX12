@@ -1,23 +1,26 @@
 
 #include "GlobalResourceKey.h"
 
-#include "Material/M_SimpleLit.h"
+#include "M_SimpleLit.h"
 #include "RenderingEngine.h"
 
 #include <DirectXMath.h>
 
 void M_SimpleLit::Initialize(DescriptorHeap* heap)
 {
-	ConstantBuffer::Description desc = {};
-	desc.pHeap = heap;
-	// WVP
-	desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
-	WVP = std::make_unique<ConstantBuffer>(desc);
-	// Params
-	desc.size = sizeof(DirectX::XMFLOAT4X4);
-	Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
-	Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
-
+	// 定数バッファ
+	{
+		ConstantBuffer::Description desc = {};
+		desc.pHeap = heap;
+		// WVP
+		desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
+		WVP = std::make_unique<ConstantBuffer>(desc);
+		// Params
+		desc.size = sizeof(DirectX::XMFLOAT4X4);
+		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
+		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
+	}
+	
 	RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
@@ -47,7 +50,7 @@ void M_SimpleLit::Draw()
 {
 	// 定数バッファの設定
 	WriteParams((UINT)2, 0,
-		RenderingEngine::GetGlobalResource(GlobalResourceKey::Camera)->GetHandle().hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		RenderingEngine::GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = 
 	{

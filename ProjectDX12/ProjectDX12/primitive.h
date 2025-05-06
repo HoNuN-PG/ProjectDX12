@@ -3,11 +3,9 @@
 
 #include <memory>
 
-#include "Component.h"
-#include "MeshBuffer.h"
-#include "Material/Material.h"
+#include "RenderingComponent.h"
 
-class Primitive : public Component
+class Primitive : public RenderingComponent
 {
 public:
 	struct Vertex 
@@ -19,7 +17,7 @@ public:
 	};
 
 public:
-	using Component::Component;
+	using RenderingComponent::RenderingComponent;
 
 	virtual void Init() override {};
 	virtual void Uninit() override {}
@@ -29,18 +27,7 @@ public:
 public:
 	virtual ~Primitive() {}
 	virtual void Create() = 0;
-
-protected:
-	std::unique_ptr<MeshBuffer> Mesh;
-
-public:
-	Material* GetMaterial()
-	{
-		return MaterialData;
-	}
-protected:
-	std::unique_ptr<MeshBuffer> ModelData;
-	Material* MaterialData;
+	void SetMaterial(Material* material);
 
 };
 
