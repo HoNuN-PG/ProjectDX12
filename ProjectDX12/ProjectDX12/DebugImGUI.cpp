@@ -7,21 +7,25 @@
 #include "imgui/imgui_impl_dx12.h"
 
 #include "ConstantBuffer.h"
-#include "RootSignature.h"
-#include "Pipeline.h"
-#include "RenderTarget.h"
 
 #include "ConstantWVP.h"
+
+std::unique_ptr<MeshBuffer>									DebugImGUI::Screen;
+std::unique_ptr<RootSignature>								DebugImGUI::RootSignatureData;
+std::unique_ptr<Pipeline>									DebugImGUI::PipelineData;
+std::vector<std::pair<bool, std::unique_ptr<RenderTarget>>>	DebugImGUI::RTVs;
+std::unique_ptr<DescriptorHeap>								DebugImGUI::ImGUIHeap;
+std::unique_ptr<DescriptorHeap>								DebugImGUI::RTVHeap;
 
 DebugImGUI::DebugImGUI()
 {
 	// スクリーン頂点
 	Vertex screenVtx[] =
 	{
-		{{-0.5f, 0.5f,0}, {0,0,1} ,{0,0}, {1,1,1,1}} ,
-		{{ 0.5f, 0.5f,0}, {0,0,1} ,{1,0}, {1,1,1,1}} ,
-		{{-0.5f,-0.5f,0}, {0,0,1} ,{0,1}, {1,1,1,1}} ,
-		{{ 0.5f,-0.5f,0}, {0,0,1} ,{1,1}, {1,1,1,1}} ,
+		{{-0.5f, 0.5f,0} ,{0,0}} ,
+		{{ 0.5f, 0.5f,0} ,{1,0}} ,
+		{{-0.5f,-0.5f,0} ,{0,1}} ,
+		{{ 0.5f,-0.5f,0} ,{1,1}} ,
 	};
 
 	// スクリーン
@@ -72,7 +76,6 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	// ルートシグネチャ
 	{
 		RootSignature::ParameterTable param[] = {
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
 		RootSignature::DescriptionTable desc = {};
@@ -84,14 +87,12 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	{
 		Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 		};
 		Pipeline::Description desc = {};
 		desc.pInputLayout = layout;
 		desc.InputLayoutNum = _countof(layout);
-		desc.VSFile = L"assets/shader/VS_Object.cso";
+		desc.VSFile = L"assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"assets/shader/PS_Copy.cso";
 		desc.pRootSignature = RootSignatureData->Get();
 		desc.RenderTargetNum = 1;
@@ -121,7 +122,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	return msg;
 }
 
-ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* _heap, ConstantBuffer* _wvp, RenderTarget* _srv)
+ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* heap, ConstantBuffer* wvp, RenderTarget* srv)
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	// 表示領域の設定
@@ -156,12 +157,11 @@ ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* _heap, ConstantBuffer* _wv
 	PipelineData->Bind();
 	ID3D12DescriptorHeap* heaps[] =
 	{
-		_heap->Get(),
+		heap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = {
-		_wvp->GetHandle().hGPU,
-		_srv->GetHandleSRV().hGPU,
+		srv->GetHandleSRV().hGPU,
 	};
 	RootSignatureData->Bind(hScreen, _countof(hScreen));
 	Screen->Draw();

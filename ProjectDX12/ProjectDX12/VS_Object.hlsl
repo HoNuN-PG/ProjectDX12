@@ -26,7 +26,8 @@ VS_OUT main(VS_IN input)
 {
 	VS_OUT output;
 	float4 wvp;
-	wvp.xyz = input.pos; wvp.w = 1;
+	wvp.xyz = input.pos; 
+	wvp.w = 1;
 	wvp = mul(wvp, world);
 	wvp = mul(wvp, view);
 	wvp = mul(wvp, proj);

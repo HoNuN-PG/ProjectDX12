@@ -44,6 +44,7 @@ public:
 	virtual void Update()	= 0;
 	virtual void Draw()		= 0;
 
+	// ゲームオブジェクト
 public:
 	template <typename T>
 	T* AddGameObject(GameObject::RenderingTiming timing = GameObject::RenderingTiming::FORWARD, Layer layer = OPACITY)
@@ -87,10 +88,18 @@ public:
 protected:
 	std::array<std::list<GameObject*>, MAX_LAYER> GameObjects;
 
+	// レンダリングエンジン
 public:
 	RenderingEngine* GetRenderingEngine();
 private:
 	std::unique_ptr<RenderingEngine> Engine;
+
+	// シーンヒープ
+public:
+	DescriptorHeap* GetHeap()
+	{ return Heap.get(); }
+protected:
+	std::unique_ptr<DescriptorHeap>	Heap;
 
 };
 

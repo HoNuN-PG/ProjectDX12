@@ -7,6 +7,14 @@ HRESULT SceneBase::InitBase()
 	Engine = std::make_unique<RenderingEngine>();
 	Engine->Init();
 
+	// ディスクリプタヒープ
+	{
+		DescriptorHeap::Description desc = {};
+		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		desc.num = 256;
+		Heap = std::make_unique<DescriptorHeap>(desc);
+	}
+
 	Init();
 
 	return E_NOTIMPL;

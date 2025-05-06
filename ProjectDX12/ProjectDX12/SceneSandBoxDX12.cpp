@@ -2,22 +2,20 @@
 #include "GlobalResourceKey.h"
 
 #include "SceneSandBoxDX12.h"
-#include "ConstantWVP.h"
+#include "ConstantBuffer.h"
+#include "DepthStencil.h"
+#include "Pipeline.h"
+#include "RootSignature.h"
+#include "Model.h"
 
 // マテリアル
 #include "M_SimpleLit.h"
 #include "M_Deffered_Albedo_Normal.h"
 
+#include "ConstantWVP.h"
+
 HRESULT SceneSandBoxDX12::Init()
 {
-	// ディスクリプタヒープ
-	{
-		DescriptorHeap::Description desc = {};
-		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		desc.num = 128;
-		Heap = std::make_unique<DescriptorHeap>(desc);
-	}
-
 	// モデル作成
 	{
 		Materials.push_back(std::make_unique<M_SimpleLit>());

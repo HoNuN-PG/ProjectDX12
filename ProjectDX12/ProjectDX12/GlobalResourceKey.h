@@ -12,7 +12,8 @@ enum GlobalConstantBufferResourceKey
 
 enum GlobalTextureResourceKey
 {
-	AlbedoTexture = 0,
+	MainTexture = 0,
+	AlbedoTexture,
 	NormalTexture,
 
 	MAX_TEXTURE_RESOURCE_KEY_TYPE

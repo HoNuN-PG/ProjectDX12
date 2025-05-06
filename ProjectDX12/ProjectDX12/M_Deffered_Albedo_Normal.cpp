@@ -1,8 +1,6 @@
 
 #include "M_Deffered_Albedo_Normal.h"
 
-#include "RenderingEngine.h"
-
 #include <DirectXMath.h>
 
 void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap)

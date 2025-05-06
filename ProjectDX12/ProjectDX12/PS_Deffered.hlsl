@@ -20,7 +20,7 @@ PS_OUT main(PS_IN input)
 {
     PS_OUT output;
 
-    output.albedo       = input.color; // tex.Sample(samp, input.uv);
+    output.albedo       = tex.Sample(samp, input.uv);
 
     output.normal.xyz   = input.normal * 0.5f + 0.5f;
     output.normal.w     = 1;

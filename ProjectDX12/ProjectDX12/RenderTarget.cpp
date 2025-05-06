@@ -73,6 +73,19 @@ void RenderTarget::ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_
 	GetCommandList()->ResourceBarrier(1, &barrirDesc);
 }
 
+void RenderTarget::ResourceBarrier(ID3D12Resource* res, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
+{
+	// レンダーターゲットのリソースバリア
+	D3D12_RESOURCE_BARRIER barrirDesc = {};
+	barrirDesc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrirDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrirDesc.Transition.pResource = res;
+	barrirDesc.Transition.Subresource = 0;
+	barrirDesc.Transition.StateBefore = before;
+	barrirDesc.Transition.StateAfter = after;
+	GetCommandList()->ResourceBarrier(1, &barrirDesc);
+}
+
 void RenderTarget::Clear()
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();

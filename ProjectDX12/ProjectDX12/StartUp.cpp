@@ -5,7 +5,6 @@
 #include <tchar.h>
 
 #include "DirectX.h"
-#include "Scene.h"
 #include "Input.h"
 
 #include "imgui/imgui.h"
@@ -15,14 +14,11 @@
 #pragma comment(lib,"winmm.lib")
 
 #include "SceneManager.h"
+#include "DebugImGUI.h"
 
 std::unique_ptr<SceneManager> gSceneManager;
-
 std::unique_ptr<DebugImGUI> gDebugImGUI;
-DebugImGUI* GetDebugImGUI()
-{
-	return gDebugImGUI.get();
-}
+
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
 LRESULT WinProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)

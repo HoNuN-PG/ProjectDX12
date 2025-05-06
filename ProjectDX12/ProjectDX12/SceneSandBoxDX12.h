@@ -3,17 +3,9 @@
 
 #include "SceneBase.h"
 
-#include "DescriptorHeap.h"
-#include "ConstantBuffer.h"
-#include "RootSignature.h"
-#include "Pipeline.h"
-#include "DepthStencil.h"
-
 #include <vector>
 #include <memory>
 
-#include "sphere.h"
-#include "Model.h"
 #include "Material.h"
 
 class SceneSandBoxDX12 : public SceneBase
@@ -23,9 +15,6 @@ public:
 	void Uninit();
 	void Update();
 	void Draw();
-
-private:
-	std::unique_ptr<DescriptorHeap>					Heap;
 
 private:
 	std::vector<std::unique_ptr<Material>>			Materials;

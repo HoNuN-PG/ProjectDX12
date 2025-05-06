@@ -172,6 +172,7 @@
     <ClCompile Include="CameraDebug.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="ConstantWVP.cpp" />
+    <ClCompile Include="Copy.cpp" />
     <ClCompile Include="DebugImGUI.cpp" />
     <ClCompile Include="DepthStencil.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
@@ -202,6 +203,7 @@
     <ClCompile Include="sphere.cpp" />
     <ClCompile Include="StartUp.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="volume.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CameraBase.h" />
@@ -209,6 +211,7 @@
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="ConstantLighting.h" />
     <ClInclude Include="ConstantWVP.h" />
+    <ClInclude Include="Copy.h" />
     <ClInclude Include="DebugImGUI.h" />
     <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="DescriptorHeap.h" />
@@ -244,6 +247,7 @@
     <ClInclude Include="sphere.h" />
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="volume.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="CommonFunction.hlsl">
@@ -259,6 +263,16 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="CommonInfo.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="CommonLighting.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -302,6 +316,16 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjctDir)assets\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)assets\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="VS_Sprite.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

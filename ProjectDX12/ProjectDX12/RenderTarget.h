@@ -18,8 +18,12 @@ public:
 	RenderTarget(Description desc);
 	~RenderTarget();
 	void ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
+	static void ResourceBarrier(ID3D12Resource* res, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 	void Clear();
 	void Clear(const float clearColor[]);
+	ID3D12Resource* GetResource() {
+		return Resource;
+	}
 	DescriptorHeap::Handle GetHandleRTV() {
 		return hRTV;
 	}

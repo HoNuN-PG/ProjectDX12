@@ -3,13 +3,12 @@
 
 #include <vector>
 #include <memory>
-
-#include "DescriptorHeap.h"
-#include "RenderTarget.h"
-#include "DepthStencil.h"
-#include "ConstantBuffer.h"
-
 #include <unordered_map>
+
+#include "ConstantBuffer.h"
+#include "DescriptorHeap.h"
+#include "DepthStencil.h"
+#include "RenderTarget.h"
 
 class GameObject;
 
@@ -35,15 +34,17 @@ public:
 	// グローバルヒープ
 public:
 	static DescriptorHeap* GetGlobalHeap()
-	{
-		return GlobalHeap.get();
-	}
+	{ return GlobalHeap.get(); }
 private:
 	static std::unique_ptr<DescriptorHeap> GlobalHeap;
+	std::shared_ptr<DescriptorHeap>	GlobalRTVHeap;
 
-	// テクスチャヒープ
+	// ヒープ
+public:
+	DescriptorHeap* GetHeap()
+	{ return Heap.get(); }
 private:
-	std::shared_ptr<DescriptorHeap>	RTVHeap;
+	std::shared_ptr<DescriptorHeap>	Heap;
 	std::unique_ptr<DescriptorHeap>	DSVHeap;
 
 	// GBuffer
@@ -63,13 +64,13 @@ public:
 private:
 	static std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>> GlobalConstantBuffer;
 	static std::unordered_map<UINT, std::unique_ptr<RenderTarget>> GlobalTexture;
-
-	// リソース
 private:
 	void WriteGlobalConstantBufferResource();
 private:
 	CameraDebug* Camera;
 	LightBase* Light;
+
+	// リソース
 private:
 	std::unique_ptr<DepthStencil> DSV;
 

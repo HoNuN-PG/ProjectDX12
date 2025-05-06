@@ -1,9 +1,13 @@
 
 #include "GlobalResourceKey.h"
-#include "StartUp.h"
+#include "DebugImGUI.h"
 
 #include "RenderingEngine.h"
 #include "DirectX.h"
+
+#include "volume.h"
+#include "Copy.h"
+
 #include "GameObject.h"
 #include "CameraBase.h"
 #include "LightBase.h"
@@ -13,14 +17,16 @@
 
 #include "ConstantWVP.h"
 
-#include "RenderingComponent.h"
-
 std::unique_ptr<DescriptorHeap>	RenderingEngine::GlobalHeap;
 std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>> RenderingEngine::GlobalConstantBuffer;
 std::unordered_map<UINT, std::unique_ptr<RenderTarget>>	RenderingEngine::GlobalTexture;
 
 void RenderingEngine::Init()
 {
+	// ボリュームの作成
+	Volume::Load();
+	Copy::Load();
+
 	// グローバルディスクリプタヒープ
 	{
 		DescriptorHeap::Description desc = {};
@@ -28,12 +34,19 @@ void RenderingEngine::Init()
 		desc.num = 64;
 		GlobalHeap = std::make_unique<DescriptorHeap>(desc);
 	}
-	// ディスクリプターヒープ(レンダーターゲット)
+	// ディスクリプターヒープ(グローバルレンダーターゲット)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		desc.num = 64;
-		RTVHeap = std::make_shared<DescriptorHeap>(desc);
+		GlobalRTVHeap = std::make_shared<DescriptorHeap>(desc);
+	}
+	// ディスクリプタヒープ
+	{
+		DescriptorHeap::Description desc = {};
+		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		desc.num = 256;
+		Heap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// ディスクリプタヒープ（深度バッファ)
 	{
@@ -52,14 +65,24 @@ void RenderingEngine::Init()
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera] = std::make_unique<ConstantBuffer>(desc);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light] = std::make_unique<ConstantBuffer>(desc);
 	}
-	// GBuffer
+	// RTV
 	{
+		// Main
+		{
+			RenderTarget::Description desc = {};
+			desc.width = WINDOW_WIDTH;
+			desc.height = WINDOW_HEIGHT;
+			desc.pRTVHeap = GlobalRTVHeap.get();
+			desc.pSRVHeap = GlobalHeap.get();
+			GlobalTexture[GlobalTextureResourceKey::MainTexture] = std::make_unique<RenderTarget>(desc);
+		}
+		// GBuffer
 		for (int i = 0; i < MAX_GBUFFER; i++)
 		{
 			RenderTarget::Description desc = {};
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
-			desc.pRTVHeap = RTVHeap.get();
+			desc.pRTVHeap = GlobalRTVHeap.get();
 			desc.pSRVHeap = GlobalHeap.get();
 			GlobalTexture[GlobalTextureResourceKey::AlbedoTexture + i] = std::make_unique<RenderTarget>(desc);
 		}
@@ -109,7 +132,12 @@ void RenderingEngine::Draw()
 	DefferedRendering();
 	DefferedLighting();
 	ForwardRendering();
+	Copy::Copy::ExecuteCopy(GlobalHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get(), GetRTV());
 	ViewGBuffers();
+
+	// 最終的にバックバッファに描画
+	auto hRTV = GetRTV();
+	SetRenderTarget(1, &hRTV, DSV->GetHandleDSV().hCPU);
 
 	// 登録された情報をクリア
 	for (int i = 0; i < m_RenderObjects.size(); ++i)
@@ -202,33 +230,46 @@ void RenderingEngine::DefferedLighting()
 
 void RenderingEngine::ForwardRendering()
 {
-	// バックバッファに描画
-	auto hRTV = GetRTV();
-	SetRenderTarget(1, &hRTV, DSV->GetHandleDSV().hCPU);
+	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
+
+	// ターゲット化
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+	// RTVの設定
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->Clear(clearColor);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+		GlobalTexture[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
+	};
+	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// フォワードレンダリング
 	for (int i = 0; i < m_RenderObjects[GameObject::RenderingTiming::FORWARD].size(); ++i)
 	{
 		m_RenderObjects[GameObject::RenderingTiming::FORWARD][i].obj.Rendering();
 	}
+
+	// リソース化
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
 void RenderingEngine::ViewGBuffers()
 {
 	ImGui::Begin("GBuffers");
 	{
-		ImGui::Image(GetDebugImGUI()->GetImGUIImage(
+		ImGui::Image(DebugImGUI::GetImGUIImage(
+			GlobalHeap.get(),
+			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(),
+			GlobalTexture[GlobalTextureResourceKey::MainTexture].get()), { 480,270 });
+		ImGui::Image(DebugImGUI::GetImGUIImage(
 			GlobalHeap.get(), 
 			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(), 
 			GlobalTexture[GlobalTextureResourceKey::AlbedoTexture].get()), {480,270});
-		ImGui::Image(GetDebugImGUI()->GetImGUIImage(
+		ImGui::Image(DebugImGUI::GetImGUIImage(
 			GlobalHeap.get(),
 			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(),
 			GlobalTexture[GlobalTextureResourceKey::NormalTexture].get()), { 480,270 });
 	}
 	ImGui::End();
-
-	// バックバッファに描画
-	auto hRTV = GetRTV();
-	SetRenderTarget(1, &hRTV, DSV->GetHandleDSV().hCPU);
 }
