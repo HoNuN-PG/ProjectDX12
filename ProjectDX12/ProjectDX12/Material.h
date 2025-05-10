@@ -1,10 +1,10 @@
 #ifndef ___MATERIAL_H___
 #define ___MATERIAL_H___
 
-#include "DescriptorHeap.h"
-#include "RootSignature.h"
-#include "Pipeline.h"
 #include "ConstantBuffer.h"
+#include "DescriptorHeap.h"
+#include "Pipeline.h"
+#include "RootSignature.h"
 #include "Texture.h"
 
 #include <memory>
@@ -14,11 +14,26 @@
 class Material
 {
 public:
+	enum RenderingTiming
+	{
+		CAM = 0,
+		SKYBOX,
+		LIGHT,
+		DEFERRED,
+		FORWARD,
+		CANVAS,
+		AFTER_POSTPROCESS,
+		AFTER_FRAME_BUFFER,
+
+		MAX_TIMING
+	};
+
+public:
 	Material() {};
 	virtual ~Material() {};
 
 public:
-	virtual void Initialize(DescriptorHeap* heap) = 0;
+	virtual void Initialize(DescriptorHeap* heap, RenderingTiming timing = RenderingTiming::FORWARD) = 0;
 	virtual void Draw() = 0;
 	void AddTexture(const char* path);
 	void WriteWVP(void* data);
@@ -50,8 +65,11 @@ protected:
 	);
 	void DrawBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
 
+public:
+	RenderingTiming GetRenderingTiming() { return Timing; }
 protected:
-	DescriptorHeap* Heap;
+	RenderingTiming									Timing;
+	DescriptorHeap*									Heap;
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;
 	std::vector<std::unique_ptr<Texture>>			Textures;

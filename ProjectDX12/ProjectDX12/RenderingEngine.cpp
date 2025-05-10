@@ -105,7 +105,7 @@ void RenderingEngine::Init()
 	Camera = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>();
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>();
 
-	m_RenderObjects.resize(GameObject::RenderingTiming::MAX_TIMING);
+	m_RenderObjects.resize(Material::RenderingTiming::MAX_TIMING);
 }
 
 void RenderingEngine::Uninit()
@@ -211,9 +211,9 @@ void RenderingEngine::DefferedRendering()
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// ディファードレンダリング
-	for (int i = 0; i < m_RenderObjects[GameObject::RenderingTiming::DEFERRED].size(); ++i)
+	for (int i = 0; i < m_RenderObjects[Material::RenderingTiming::DEFERRED].size(); ++i)
 	{
-		m_RenderObjects[GameObject::RenderingTiming::DEFERRED][i].obj.Rendering();
+		m_RenderObjects[Material::RenderingTiming::DEFERRED][i].obj.RenderingBase();
 	}
 
 	// リソース化
@@ -244,9 +244,9 @@ void RenderingEngine::ForwardRendering()
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// フォワードレンダリング
-	for (int i = 0; i < m_RenderObjects[GameObject::RenderingTiming::FORWARD].size(); ++i)
+	for (int i = 0; i < m_RenderObjects[Material::RenderingTiming::FORWARD].size(); ++i)
 	{
-		m_RenderObjects[GameObject::RenderingTiming::FORWARD][i].obj.Rendering();
+		m_RenderObjects[Material::RenderingTiming::FORWARD][i].obj.RenderingBase();
 	}
 
 	// リソース化

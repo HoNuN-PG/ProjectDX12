@@ -5,6 +5,11 @@
 
 void Primitive::Draw()
 {
+	Owner->BindRenderingEngine(MaterialData->GetRenderingTiming());
+}
+
+void Primitive::Rendering()
+{
 	// WVP‚ÌÝ’è
 	MaterialData->WriteWVP(ConstantWVP::Calc3DMatrix(
 		Owner->GetPosition(),

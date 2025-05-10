@@ -6,8 +6,10 @@
 
 #include <DirectXMath.h>
 
-void M_SimpleLit::Initialize(DescriptorHeap* heap)
+void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 {
+	Timing = timing;
+
 	// 定数バッファ
 	{
 		ConstantBuffer::Description desc = {};
@@ -52,11 +54,11 @@ void M_SimpleLit::Draw()
 	WriteParams((UINT)2, 0,
 		RenderingEngine::GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = 
+	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
 		WVP->GetHandle().hGPU,
 		Params[0]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 	};
-	Material::DrawBase(desc,_countof(desc));
+	Material::DrawBase(desc, _countof(desc));
 }

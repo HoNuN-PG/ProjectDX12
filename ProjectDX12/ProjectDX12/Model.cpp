@@ -70,9 +70,14 @@ void Model::Create(Material* material, const char* path)
 
 void Model::Draw()
 {
+	Owner->BindRenderingEngine(MaterialData->GetRenderingTiming());
+}
+
+void Model::Rendering()
+{
 	// WVP‚ÌÝ’è
 	MaterialData->WriteWVP(ConstantWVP::Calc3DMatrix(
-		Owner->GetPosition() ,
+		Owner->GetPosition(),
 		Owner->GetRotation(),
 		Owner->GetScale()));
 	MaterialData->Draw();

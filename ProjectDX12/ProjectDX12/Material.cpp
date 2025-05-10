@@ -3,13 +3,10 @@
 
 void Material::AddTexture(const char* path)
 {
-	// テクスチャ
-	{
-		Texture::Description desc = {};
-		desc.fileName = path;
-		desc.pHeap = Heap;
-		Textures.push_back(std::make_unique<Texture>(desc));
-	}
+	Texture::Description desc = {};
+	desc.fileName = path;
+	desc.pHeap = Heap;
+	Textures.push_back(std::make_unique<Texture>(desc));
 }
 
 void Material::WriteWVP(void* data)

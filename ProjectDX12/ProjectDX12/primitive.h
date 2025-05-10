@@ -23,6 +23,7 @@ public:
 	virtual void Uninit() override {}
 	virtual void Update() override {}
 	virtual void Draw() override;
+	virtual void Rendering() override;
 
 public:
 	virtual ~Primitive() {}

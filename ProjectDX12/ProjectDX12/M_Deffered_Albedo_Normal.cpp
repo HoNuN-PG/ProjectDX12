@@ -3,8 +3,10 @@
 
 #include <DirectXMath.h>
 
-void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap)
+void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 {
+	Timing = timing;
+
 	// 定数バッファ
 	{
 		ConstantBuffer::Description desc = {};

@@ -28,10 +28,10 @@ HRESULT SceneSandBoxDX12::Init()
 	}
 	{
 		Materials.push_back(std::make_unique<M_Deffered_Albedo_Normal>());
-		Materials.back()->Initialize(Heap.get());
+		Materials.back()->Initialize(Heap.get(), Material::DEFERRED);
 		Materials.back()->AddTexture("assets/model/spot/spot_texture.png");
 
-		GameObject* obj = AddGameObject<GameObject>(GameObject::DEFERRED);
+		GameObject* obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 1,0,0 });
 		Model* model = obj->AddComponent<Model>();
 		model->Create(Materials.back().get(), "assets/model/spot/spot.fbx");

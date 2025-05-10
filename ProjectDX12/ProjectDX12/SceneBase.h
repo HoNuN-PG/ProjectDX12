@@ -47,11 +47,11 @@ public:
 	// ゲームオブジェクト
 public:
 	template <typename T>
-	T* AddGameObject(GameObject::RenderingTiming timing = GameObject::RenderingTiming::FORWARD, Layer layer = OPACITY)
+	T* AddGameObject(Layer layer = OPACITY)
 	{
 		T* gameObject = new T();
 		GameObjects[layer].push_back(gameObject);
-		gameObject->InitBase(timing);
+		gameObject->InitBase();
 		return gameObject;
 	}
 	template <typename T>

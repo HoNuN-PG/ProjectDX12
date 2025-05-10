@@ -7,40 +7,28 @@
 #include <DirectXMath.h>
 
 #include "Component.h"
+#include "Material.h"
 
 class RenderingEngine;
 
 class GameObject
 {
 public:
-	enum RenderingTiming
-	{
-		CAM = 0,
-		SKYBOX,
-		LIGHT,
-		DEFERRED,
-		FORWARD,
-		CANVAS,
-		AFTER_POSTPROCESS,
-		AFTER_FRAME_BUFFER,
-
-		MAX_TIMING
-	};
-
-public:
 	GameObject() {}
 	virtual ~GameObject() {}
 
-	void InitBase(RenderingTiming timing = RenderingTiming::FORWARD);
+	void InitBase();
 	void UninitBase();
 	void UpdateBase();
 	void DrawBase(DirectX::XMFLOAT4X4 ParentMatrix);
-	void Rendering();
+	void BindRenderingEngine(Material::RenderingTiming timing);
+	void RenderingBase();
 
 	virtual void Init() {}
 	virtual void Uninit() {}
 	virtual void Update() {}
 	virtual void Draw() {}
+	virtual void Rendering() {}
 
 protected:
 	// トランスフォーム
@@ -145,7 +133,6 @@ public:
 
 private:
 	RenderingEngine* Engine;
-	RenderingTiming Timing;
 
 };
 
