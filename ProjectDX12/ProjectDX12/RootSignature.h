@@ -48,9 +48,8 @@ private:
 	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param,UINT num);
 
 public:
-	ID3D12RootSignature* Get() {
-		return RootSignatureData;
-	}
+	ID3D12RootSignature* Get() 
+	{ return RootSignatureData; }
 	/// <summary>
 	/// １つのディスクリプタヒープ内のディスクリプタをディスクリプタテーブルと紐づけ
 	/// </summary>

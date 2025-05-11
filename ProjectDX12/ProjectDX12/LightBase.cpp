@@ -26,7 +26,7 @@ LightBase::LightBase()
 	m_Rad.radXZ = m_Rad.lateXZ	= DirectX::XMConvertToRadians(0.0f);
 	m_Rad.radY = m_Rad.lateY	= DirectX::XMConvertToRadians((MAX_ANGLE_UP + MAX_ANGLE_DOWN) / 2.0f);
 	m_Color						= { 1,1,1,1 };
-	m_Power						= 1.5f;
+	m_Power						= 1.0f;
 	m_Ambient					= 0.2f;
 
 	// 角度と距離・注視点からカメラ位置を計算

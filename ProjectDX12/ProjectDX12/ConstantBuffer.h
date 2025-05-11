@@ -16,13 +16,9 @@ public:
 	ConstantBuffer(Description desc);
 	~ConstantBuffer();
 	void Write(const void* data)
-	{
-		memcpy_s(Ptr, Size, data, Size);
-	}
+	{ memcpy_s(Ptr, Size, data, Size); }
 	DescriptorHeap::Handle GetHandle() 
-	{
-		return Handle; 
-	}
+	{ return Handle; }
 
 private:
 	DescriptorHeap::Handle			Handle;		// 該当ディスクリプタのハンドル

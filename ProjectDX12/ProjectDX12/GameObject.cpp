@@ -1,9 +1,10 @@
 
 #include "GameObject.h"
+
 #include "SceneManager.h"
 #include "SceneBase.h"
-#include "RenderingEngine.h"
 
+#include "RenderingEngine.h"
 #include "RenderingComponent.h"
 
 void GameObject::InitBase()

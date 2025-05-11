@@ -3,14 +3,14 @@
 
 #include <Windows.h>
 #include <vector>
-#include <memory>
-#include <array>
 #include <list>
+#include <array>
+#include <memory>
+#include <unordered_map>
 
 #include "GameObject.h"
-#include "RenderingEngine.h"
 
-#include <unordered_map>
+#include "RenderingEngine.h"
 
 class SceneBase
 {

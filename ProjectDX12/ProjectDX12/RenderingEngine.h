@@ -7,11 +7,13 @@
 
 #include "ConstantBuffer.h"
 #include "DescriptorHeap.h"
+
 #include "DepthStencil.h"
 #include "RenderTarget.h"
 
-class GameObject;
+#include "Material.h"
 
+class GameObject;
 class CameraDebug;
 class LightBase;
 
@@ -78,14 +80,20 @@ private:
 public:
 	void AddRenderObject(GameObject& obj, int timing);
 private:
-	std::vector<std::vector<RenderingInfo>> m_RenderObjects;
+	std::vector<std::vector<RenderingInfo>> RenderObjects;
 
 	// ƒŒƒ“ƒ_ƒŠƒ“ƒO
+public:
+	static Material::RenderingTiming GetCurrentRenderingTiming() { return CurrentRenderingTiming; }
 private:
+	void DepthNormalRendering();
 	void DefferedRendering();
 	void DefferedLighting();
 	void ForwardRendering();
+	void ViewDepthNormal();
 	void ViewGBuffers();
+private:
+	static Material::RenderingTiming CurrentRenderingTiming;
 
 };
 

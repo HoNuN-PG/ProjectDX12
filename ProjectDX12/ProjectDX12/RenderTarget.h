@@ -10,6 +10,7 @@ public:
 	{
 		UINT width;
 		UINT height;
+		DXGI_FORMAT format;
 		DescriptorHeap* pRTVHeap;
 		DescriptorHeap* pSRVHeap;
 	};
@@ -21,15 +22,12 @@ public:
 	static void ResourceBarrier(ID3D12Resource* res, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 	void Clear();
 	void Clear(const float clearColor[]);
-	ID3D12Resource* GetResource() {
-		return Resource;
-	}
-	DescriptorHeap::Handle GetHandleRTV() {
-		return hRTV;
-	}
-	DescriptorHeap::Handle GetHandleSRV() {
-		return hSRV;
-	}
+	ID3D12Resource* GetResource() 
+	{ return Resource; }
+	DescriptorHeap::Handle GetHandleRTV() 
+	{ return hRTV; }
+	DescriptorHeap::Handle GetHandleSRV() 
+	{ return hSRV; }
 
 private:
 	ID3D12Resource*			Resource;

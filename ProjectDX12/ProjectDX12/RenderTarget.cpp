@@ -12,7 +12,7 @@ RenderTarget::RenderTarget(Description desc)
 
 	// ÉäÉ\Å[ÉXê›íË
 	D3D12_RESOURCE_DESC rtvResourceDesc = {};
-	rtvResourceDesc.Format				= DXGI_FORMAT_R8G8B8A8_UNORM;
+	rtvResourceDesc.Format				= desc.format;
 	rtvResourceDesc.Width				= desc.width;
 	rtvResourceDesc.Height				= desc.height;
 	rtvResourceDesc.DepthOrArraySize	= 1;

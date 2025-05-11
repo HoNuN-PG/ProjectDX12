@@ -4,15 +4,16 @@
 
 #include "GameObject.h"
 #include "ConstantWVP.h"
+#include "RenderingEngine.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #pragma comment(lib, "assimp-vc141-mtd.lib")
 
-void Model::Create(Material* material, const char* path)
+void Model::Create(std::vector<Material*> materials, const char* path)
 {
-	MaterialData = material;
+	MaterialData = materials;
 
 	MeshBuffer::Description desc = {};
 	// ƒ‚ƒfƒ‹“Çž
@@ -70,16 +71,26 @@ void Model::Create(Material* material, const char* path)
 
 void Model::Draw()
 {
-	Owner->BindRenderingEngine(MaterialData->GetRenderingTiming());
+	for (auto material : MaterialData)
+	{
+		Owner->BindRenderingEngine(material->GetRenderingTiming());
+	}
 }
 
 void Model::Rendering()
 {
-	// WVP‚ÌÝ’è
-	MaterialData->WriteWVP(ConstantWVP::Calc3DMatrix(
-		Owner->GetPosition(),
-		Owner->GetRotation(),
-		Owner->GetScale()));
-	MaterialData->Draw();
+	Material::RenderingTiming current = RenderingEngine::GetCurrentRenderingTiming();
+	for (auto material : MaterialData)
+	{
+		if (material->GetRenderingTiming() == current)
+		{
+			material->WriteWVP(ConstantWVP::Calc3DMatrix(
+				Owner->GetPosition(),
+				Owner->GetRotation(),
+				Owner->GetScale()));
+			material->Draw();
+			break;
+		}
+	}
 	MeshData->Draw();
 }

@@ -15,9 +15,8 @@ public:
 public:
 	Texture(Description desc);
 	~Texture();
-	DescriptorHeap::Handle GetHandle() {
-		return Handle;
-	}
+	DescriptorHeap::Handle GetHandle() 
+	{ return Handle; }
 
 private:
 	ID3D12Resource*			Resource;	// テクスチャリソース

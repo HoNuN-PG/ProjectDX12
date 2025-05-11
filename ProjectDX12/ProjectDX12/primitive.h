@@ -1,9 +1,9 @@
 #ifndef ___PRIMITIVE_H___
 #define ___PRIMITIVE_H___
 
-#include <memory>
-
 #include "RenderingComponent.h"
+
+#include <memory>
 
 class Primitive : public RenderingComponent
 {
@@ -28,7 +28,7 @@ public:
 public:
 	virtual ~Primitive() {}
 	virtual void Create() = 0;
-	void SetMaterial(Material* material);
+	void AddMaterial(Material* material);
 
 };
 

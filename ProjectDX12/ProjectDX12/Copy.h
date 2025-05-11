@@ -30,6 +30,7 @@ private:
 	static std::unique_ptr<MeshBuffer>									Screen;
 	static std::unique_ptr<RootSignature>								RootSignatureData;
 	static std::unique_ptr<Pipeline>									PipelineData;
+
 };
 
 #endif

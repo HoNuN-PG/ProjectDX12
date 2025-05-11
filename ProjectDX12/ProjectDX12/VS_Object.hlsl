@@ -31,9 +31,9 @@ VS_OUT main(VS_IN input)
 	wvp = mul(wvp, world);
 	wvp = mul(wvp, view);
 	wvp = mul(wvp, proj);
+    output.pos = wvp;
     output.normal = mul(input.normal.xyz, (float3x3)world);
     output.normal = normalize(output.normal);
-	output.pos		= wvp;
 	output.uv		= input.uv;
 	output.color	= input.color;
 	return output;

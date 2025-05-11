@@ -4,8 +4,6 @@
 #include "M_SimpleLit.h"
 #include "RenderingEngine.h"
 
-#include <DirectXMath.h>
-
 void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 {
 	Timing = timing;

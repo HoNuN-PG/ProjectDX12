@@ -25,9 +25,8 @@ public:
 public:
 	Pipeline(Description desc);
 	~Pipeline();
-	void Bind() {
-		GetCommandList()->SetPipelineState(PipelineData);
-	}
+	void Bind() 
+	{ GetCommandList()->SetPipelineState(PipelineData); }
 
 private:
 	ID3D12PipelineState* PipelineData;

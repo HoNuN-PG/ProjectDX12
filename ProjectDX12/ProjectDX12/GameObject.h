@@ -1,7 +1,6 @@
 #ifndef ___GAMEOBJECT_H___
 #define ___GAMEOBJECT_H___
 
-#include <vector>
 #include <list>
 #include <memory>
 #include <DirectXMath.h>

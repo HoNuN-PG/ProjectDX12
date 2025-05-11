@@ -60,18 +60,19 @@ MSG DebugImGUI::Create(HWND _hwnd)
 			msg.message = WM_QUIT;
 		}
 		else {
-			// Windows用のimguiの初期化
 			if (!ImGui_ImplWin32_Init(_hwnd)) {
 				MessageBox(_hwnd, _T("Error"), _T("Failed [Imgui]."), MB_OK);
 				msg.message = WM_QUIT;
 			}
-			// DirectX用のimguiの初期化
 			else {
 				auto handle = ImGUIHeap->Allocate();
 				ImGui_ImplDX12_Init(GetDevice(), 3,
 					DXGI_FORMAT_R8G8B8A8_UNORM, ImGUIHeap->Get(), handle.hCPU, handle.hGPU);
 			}
 		}
+		// ドッキング
+		auto& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	}
 	// ルートシグネチャ
 	{
@@ -113,6 +114,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 			RenderTarget::Description desc = {};
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
+			desc.format = DXGI_FORMAT_B8G8R8A8_UNORM;
 			desc.pRTVHeap = RTVHeap.get();
 			desc.pSRVHeap = ImGUIHeap.get();
 			RTVs.push_back(std::make_pair<bool, std::unique_ptr<RenderTarget>>(false, std::make_unique<RenderTarget>(desc)));

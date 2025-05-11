@@ -5,10 +5,12 @@
 #include <vector>
 
 #include "DescriptorHeap.h"
-#include "MeshBuffer.h"
 #include "Pipeline.h"
-#include "RenderTarget.h"
 #include "RootSignature.h"
+
+#include "MeshBuffer.h"
+
+#include "RenderTarget.h"
 
 class Volume
 {

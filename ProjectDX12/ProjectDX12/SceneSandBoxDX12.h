@@ -21,4 +21,4 @@ private:
 
 };
 
-#endif // __SCENE_PROCEDURAL_H__
+#endif

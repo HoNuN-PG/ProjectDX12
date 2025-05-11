@@ -22,6 +22,6 @@ SamplerState samp : register(s0);
 
 float4 main(PS_IN input) : SV_TARGET
 {
-    float3 color = CalcLambert(input.normal,ligParam.xyz);
+    float3 color = CalcLambert(input.normal,ligParam.xyz) * ligParam.w + ligColor.w;
     return float4(color * ligColor.xyz * input.color.xyz,1);
 }

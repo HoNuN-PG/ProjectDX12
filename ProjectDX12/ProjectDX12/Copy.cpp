@@ -1,6 +1,7 @@
 
 #include "Copy.h"
 #include "DescriptorHeap.h"
+
 #include "RenderTarget.h"
 
 std::unique_ptr<MeshBuffer>	Copy::Screen;
@@ -68,7 +69,6 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, RenderTarget* src, D3D12_CPU_DESCRI
 	};
 	SetRenderTarget(1, rtvs);
 
-	// ImGUI—pRTV‚É•`‰æ
 	PipelineData->Bind();
 	ID3D12DescriptorHeap* heaps[] =
 	{

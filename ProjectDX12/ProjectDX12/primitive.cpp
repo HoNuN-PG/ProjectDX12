@@ -3,23 +3,35 @@
 #include "GameObject.h"
 #include "ConstantWVP.h"
 
+#include "RenderingEngine.h"
+
 void Primitive::Draw()
 {
-	Owner->BindRenderingEngine(MaterialData->GetRenderingTiming());
+	for (auto material : MaterialData)
+	{
+		Owner->BindRenderingEngine(material->GetRenderingTiming());
+	}
 }
 
 void Primitive::Rendering()
 {
-	// WVP‚ÌÝ’è
-	MaterialData->WriteWVP(ConstantWVP::Calc3DMatrix(
-		Owner->GetPosition(),
-		Owner->GetRotation(),
-		Owner->GetScale()));
-	MaterialData->Draw();
+	Material::RenderingTiming current = RenderingEngine::GetCurrentRenderingTiming();
+	for (auto material : MaterialData)
+	{
+		if (material->GetRenderingTiming() == current)
+		{
+			material->WriteWVP(ConstantWVP::Calc3DMatrix(
+				Owner->GetPosition(),
+				Owner->GetRotation(),
+				Owner->GetScale()));
+			material->Draw();
+			break;
+		}
+	}
 	MeshData->Draw();
 }
 
-void Primitive::SetMaterial(Material* material)
+void Primitive::AddMaterial(Material* material)
 {
-	MaterialData = material;
+	MaterialData.push_back(material);
 }

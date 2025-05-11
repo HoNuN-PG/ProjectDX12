@@ -20,6 +20,7 @@
 std::unique_ptr<DescriptorHeap>	RenderingEngine::GlobalHeap;
 std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>> RenderingEngine::GlobalConstantBuffer;
 std::unordered_map<UINT, std::unique_ptr<RenderTarget>>	RenderingEngine::GlobalTexture;
+Material::RenderingTiming RenderingEngine::CurrentRenderingTiming;
 
 void RenderingEngine::Init()
 {
@@ -72,19 +73,34 @@ void RenderingEngine::Init()
 			RenderTarget::Description desc = {};
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
+			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 			desc.pRTVHeap = GlobalRTVHeap.get();
 			desc.pSRVHeap = GlobalHeap.get();
 			GlobalTexture[GlobalTextureResourceKey::MainTexture] = std::make_unique<RenderTarget>(desc);
 		}
-		// GBuffer
-		for (int i = 0; i < MAX_GBUFFER; i++)
+		// DepthNormal
 		{
 			RenderTarget::Description desc = {};
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
+			desc.format = DXGI_FORMAT_R32G32_FLOAT;
 			desc.pRTVHeap = GlobalRTVHeap.get();
 			desc.pSRVHeap = GlobalHeap.get();
-			GlobalTexture[GlobalTextureResourceKey::AlbedoTexture + i] = std::make_unique<RenderTarget>(desc);
+			GlobalTexture[GlobalTextureResourceKey::DepthTexture] = std::make_unique<RenderTarget>(desc);
+			desc.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			GlobalTexture[GlobalTextureResourceKey::NormalTexture] = std::make_unique<RenderTarget>(desc);
+		}
+		// GBuffer
+		{
+			RenderTarget::Description desc = {};
+			desc.width = WINDOW_WIDTH;
+			desc.height = WINDOW_HEIGHT;
+			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			desc.pRTVHeap = GlobalRTVHeap.get();
+			desc.pSRVHeap = GlobalHeap.get();
+			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_unique<RenderTarget>(desc);
+			desc.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture] = std::make_unique<RenderTarget>(desc);
 		}
 	}
 	// 深度バッファ
@@ -105,7 +121,7 @@ void RenderingEngine::Init()
 	Camera = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>();
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>();
 
-	m_RenderObjects.resize(Material::RenderingTiming::MAX_TIMING);
+	RenderObjects.resize(Material::RenderingTiming::MAX_TIMING);
 }
 
 void RenderingEngine::Uninit()
@@ -129,10 +145,15 @@ void RenderingEngine::Draw()
 	DSV->Clear();
 
 	WriteGlobalConstantBufferResource();
+	CurrentRenderingTiming = Material::DEPTH_NORMAL;
+	DepthNormalRendering();
+	CurrentRenderingTiming = Material::DEFERRED;
 	DefferedRendering();
 	DefferedLighting();
+	CurrentRenderingTiming = Material::FORWARD;
 	ForwardRendering();
 	Copy::Copy::ExecuteCopy(GlobalHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get(), GetRTV());
+	ViewDepthNormal();
 	ViewGBuffers();
 
 	// 最終的にバックバッファに描画
@@ -140,9 +161,9 @@ void RenderingEngine::Draw()
 	SetRenderTarget(1, &hRTV, DSV->GetHandleDSV().hCPU);
 
 	// 登録された情報をクリア
-	for (int i = 0; i < m_RenderObjects.size(); ++i)
+	for (int i = 0; i < RenderObjects.size(); ++i)
 	{
-		m_RenderObjects[i].clear();
+		RenderObjects[i].clear();
 	}
 }
 
@@ -185,7 +206,39 @@ void RenderingEngine::WriteGlobalConstantBufferResource()
 void RenderingEngine::AddRenderObject(GameObject& obj, int timing)
 {
 	RenderingInfo info = { obj };
-	m_RenderObjects[timing].push_back(info);
+	RenderObjects[timing].push_back(info);
+}
+
+void RenderingEngine::DepthNormalRendering()
+{
+	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
+
+	// ターゲット化
+	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	GlobalTexture[GlobalTextureResourceKey::NormalTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+	// RTVの設定
+	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->Clear(clearColor);
+	GlobalTexture[GlobalTextureResourceKey::NormalTexture]->Clear(clearColor);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+		GlobalTexture[GlobalTextureResourceKey::DepthTexture]->GetHandleRTV().hCPU,
+		GlobalTexture[GlobalTextureResourceKey::NormalTexture]->GetHandleRTV().hCPU,
+	};
+	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
+
+	// DepthNormal
+	for (int i = 0; i < RenderObjects[Material::RenderingTiming::DEPTH_NORMAL].size(); ++i)
+	{
+		RenderObjects[Material::RenderingTiming::DEPTH_NORMAL][i].obj.RenderingBase();
+	}
+
+	// リソース化
+	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	GlobalTexture[GlobalTextureResourceKey::NormalTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
 void RenderingEngine::DefferedRendering()
@@ -195,31 +248,31 @@ void RenderingEngine::DefferedRendering()
 	// ターゲット化
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		GlobalTexture[GlobalTextureResourceKey::AlbedoTexture + i]->ResourceBarrier(
+		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->ResourceBarrier(
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	}
 
 	// RTVの設定
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		GlobalTexture[GlobalTextureResourceKey::AlbedoTexture + i]->Clear(clearColor);
+		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->Clear(clearColor);
 	}
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
-		GlobalTexture[GlobalTextureResourceKey::AlbedoTexture]->GetHandleRTV().hCPU,
-		GlobalTexture[GlobalTextureResourceKey::NormalTexture]->GetHandleRTV().hCPU,
+		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture]->GetHandleRTV().hCPU,
+		GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// ディファードレンダリング
-	for (int i = 0; i < m_RenderObjects[Material::RenderingTiming::DEFERRED].size(); ++i)
+	for (int i = 0; i < RenderObjects[Material::RenderingTiming::DEFERRED].size(); ++i)
 	{
-		m_RenderObjects[Material::RenderingTiming::DEFERRED][i].obj.RenderingBase();
+		RenderObjects[Material::RenderingTiming::DEFERRED][i].obj.RenderingBase();
 	}
 
 	// リソース化
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		GlobalTexture[GlobalTextureResourceKey::AlbedoTexture + i]->ResourceBarrier(
+		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->ResourceBarrier(
 			D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	}
 }
@@ -244,9 +297,9 @@ void RenderingEngine::ForwardRendering()
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// フォワードレンダリング
-	for (int i = 0; i < m_RenderObjects[Material::RenderingTiming::FORWARD].size(); ++i)
+	for (int i = 0; i < RenderObjects[Material::RenderingTiming::FORWARD].size(); ++i)
 	{
-		m_RenderObjects[Material::RenderingTiming::FORWARD][i].obj.RenderingBase();
+		RenderObjects[Material::RenderingTiming::FORWARD][i].obj.RenderingBase();
 	}
 
 	// リソース化
@@ -254,22 +307,38 @@ void RenderingEngine::ForwardRendering()
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
+void RenderingEngine::ViewDepthNormal()
+{
+	ImGui::Begin("DepthNormal");
+	{
+		ImGui::Text("Depth");
+		ImGui::Image(DebugImGUI::GetImGUIImage(
+			GlobalHeap.get(),
+			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(),
+			GlobalTexture[GlobalTextureResourceKey::DepthTexture].get()), { 240,135 });
+		ImGui::Text("Normal");
+		ImGui::Image(DebugImGUI::GetImGUIImage(
+			GlobalHeap.get(),
+			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(),
+			GlobalTexture[GlobalTextureResourceKey::NormalTexture].get()), { 240,135 });
+	}
+	ImGui::End();
+}
+
 void RenderingEngine::ViewGBuffers()
 {
 	ImGui::Begin("GBuffers");
 	{
-		ImGui::Image(DebugImGUI::GetImGUIImage(
-			GlobalHeap.get(),
-			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(),
-			GlobalTexture[GlobalTextureResourceKey::MainTexture].get()), { 480,270 });
+		ImGui::Text("DefferedAlbedo");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			GlobalHeap.get(), 
 			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(), 
-			GlobalTexture[GlobalTextureResourceKey::AlbedoTexture].get()), {480,270});
+			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture].get()), { 240,135 });
+		ImGui::Text("DefferedNormal");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			GlobalHeap.get(),
 			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(),
-			GlobalTexture[GlobalTextureResourceKey::NormalTexture].get()), { 480,270 });
+			GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture].get()), { 240,135 });
 	}
 	ImGui::End();
 }

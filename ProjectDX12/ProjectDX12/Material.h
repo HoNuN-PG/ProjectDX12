@@ -7,9 +7,10 @@
 #include "RootSignature.h"
 #include "Texture.h"
 
-#include <memory>
-#include <vector>
 #include <string>
+#include <vector>
+#include <memory>
+#include <DirectXMath.h>
 
 class Material
 {
@@ -19,6 +20,7 @@ public:
 		CAM = 0,
 		SKYBOX,
 		LIGHT,
+		DEPTH_NORMAL,
 		DEFERRED,
 		FORWARD,
 		CANVAS,

@@ -1,10 +1,10 @@
 #ifndef ___MODEL_H___
 #define ___MODEL_H___
 
-#include <DirectXMath.h>
-#include <memory>
-
 #include "RenderingComponent.h"
+
+#include <memory>
+#include <DirectXMath.h>
 
 class Model : public RenderingComponent
 {
@@ -28,7 +28,7 @@ public:
 
 public:
 	virtual ~Model(){}
-	void Create(Material* material, const char* path);
+	void Create(std::vector<Material*> materials, const char* path);
 
 };
 
