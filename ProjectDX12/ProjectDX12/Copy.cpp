@@ -56,12 +56,8 @@ void Copy::Load()
 
 void Copy::ExecuteCopy(DescriptorHeap* heap, RenderTarget* src, D3D12_CPU_DESCRIPTOR_HANDLE dst)
 {
-	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	// 表示領域の設定
-	D3D12_VIEWPORT vp = { 0, 0, 1280.0f, 720.0f, 0.0f, 1.0f };
-	D3D12_RECT scissor = { 0, 0, 1280.0f, 720.0f };
-	pCmdList->RSSetViewports(1, &vp);
-	pCmdList->RSSetScissorRects(1, &scissor);
+	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);
 
 	// レンダーターゲット切り替え
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {

@@ -18,8 +18,8 @@
 #include "ConstantWVP.h"
 
 std::unique_ptr<DescriptorHeap>	RenderingEngine::GlobalHeap;
-std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>> RenderingEngine::GlobalConstantBuffer;
-std::unordered_map<UINT, std::unique_ptr<RenderTarget>>	RenderingEngine::GlobalTexture;
+std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> RenderingEngine::GlobalConstantBuffer;
+std::unordered_map<UINT, std::shared_ptr<RenderTarget>>	RenderingEngine::GlobalTexture;
 Material::RenderingTiming RenderingEngine::CurrentRenderingTiming;
 
 void RenderingEngine::Init()
@@ -35,19 +35,19 @@ void RenderingEngine::Init()
 		desc.num = 64;
 		GlobalHeap = std::make_unique<DescriptorHeap>(desc);
 	}
-	// ディスクリプターヒープ(グローバルレンダーターゲット)
-	{
-		DescriptorHeap::Description desc = {};
-		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-		desc.num = 64;
-		GlobalRTVHeap = std::make_shared<DescriptorHeap>(desc);
-	}
 	// ディスクリプタヒープ
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = 256;
 		Heap = std::make_unique<DescriptorHeap>(desc);
+	}
+	// ディスクリプターヒープ(レンダーターゲット)
+	{
+		DescriptorHeap::Description desc = {};
+		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+		desc.num = 64;
+		RTVHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// ディスクリプタヒープ（深度バッファ)
 	{
@@ -61,12 +61,12 @@ void RenderingEngine::Init()
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = GlobalHeap.get();
 		desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP] = std::make_unique<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP] = std::make_shared<ConstantBuffer>(desc);
 		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera] = std::make_unique<ConstantBuffer>(desc);
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light] = std::make_unique<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera] = std::make_shared<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light] = std::make_shared<ConstantBuffer>(desc);
 	}
-	// RTV
+	// グローバルRTV
 	{
 		// Main
 		{
@@ -74,9 +74,9 @@ void RenderingEngine::Init()
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
 			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-			desc.pRTVHeap = GlobalRTVHeap.get();
+			desc.pRTVHeap = RTVHeap.get();
 			desc.pSRVHeap = GlobalHeap.get();
-			GlobalTexture[GlobalTextureResourceKey::MainTexture] = std::make_unique<RenderTarget>(desc);
+			GlobalTexture[GlobalTextureResourceKey::MainTexture] = std::make_shared<RenderTarget>(desc);
 		}
 		// DepthNormal
 		{
@@ -84,11 +84,11 @@ void RenderingEngine::Init()
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
 			desc.format = DXGI_FORMAT_R32G32_FLOAT;
-			desc.pRTVHeap = GlobalRTVHeap.get();
+			desc.pRTVHeap = RTVHeap.get();
 			desc.pSRVHeap = GlobalHeap.get();
-			GlobalTexture[GlobalTextureResourceKey::DepthTexture] = std::make_unique<RenderTarget>(desc);
+			GlobalTexture[GlobalTextureResourceKey::DepthTexture] = std::make_shared<RenderTarget>(desc);
 			desc.format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			GlobalTexture[GlobalTextureResourceKey::NormalTexture] = std::make_unique<RenderTarget>(desc);
+			GlobalTexture[GlobalTextureResourceKey::NormalTexture] = std::make_shared<RenderTarget>(desc);
 		}
 		// GBuffer
 		{
@@ -96,11 +96,11 @@ void RenderingEngine::Init()
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
 			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-			desc.pRTVHeap = GlobalRTVHeap.get();
+			desc.pRTVHeap = RTVHeap.get();
 			desc.pSRVHeap = GlobalHeap.get();
-			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_unique<RenderTarget>(desc);
+			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_shared<RenderTarget>(desc);
 			desc.format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture] = std::make_unique<RenderTarget>(desc);
+			GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture] = std::make_shared<RenderTarget>(desc);
 		}
 	}
 	// 深度バッファ
@@ -122,6 +122,8 @@ void RenderingEngine::Init()
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>();
 
 	RenderObjects.resize(Material::RenderingTiming::MAX_TIMING);
+	ObjectPostProcess = std::make_unique<PostProcess>();
+	CanvasPostProcess = std::make_unique<PostProcess>();
 }
 
 void RenderingEngine::Uninit()
@@ -130,16 +132,14 @@ void RenderingEngine::Uninit()
 
 void RenderingEngine::Update()
 {
+	ObjectPostProcess->Update();
+	CanvasPostProcess->Update();
 }
 
 void RenderingEngine::Draw()
 {
-	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	// 表示領域の設定
-	D3D12_VIEWPORT vp = { 0, 0, 1280.0f, 720.0f, 0.0f, 1.0f };
-	D3D12_RECT scissor = { 0, 0, 1280.0f, 720.0f };
-	pCmdList->RSSetViewports(1, &vp);
-	pCmdList->RSSetScissorRects(1, &scissor);
+	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);
 
 	// デプスクリア
 	DSV->Clear();
@@ -152,6 +152,8 @@ void RenderingEngine::Draw()
 	DefferedLighting();
 	CurrentRenderingTiming = Material::FORWARD;
 	ForwardRendering();
+	ObjectPostProcessRendering();
+	CanvasPostProcessRendering();
 	Copy::Copy::ExecuteCopy(GlobalHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get(), GetRTV());
 	ViewDepthNormal();
 	ViewGBuffers();
@@ -171,14 +173,35 @@ DescriptorHeap::Handle RenderingEngine::GetGlobalConstantBufferResource(UINT key
 {
 	if (!GlobalConstantBuffer.contains(key))
 		return DescriptorHeap::Handle();
-	return GlobalConstantBuffer[key].get()->GetHandle();
+	return GlobalConstantBuffer[key]->GetHandle();
 }
 
-DescriptorHeap::Handle RenderingEngine::GetGlobalTextureResource(UINT key)
+DescriptorHeap::Handle RenderingEngine::GetGlobalTextureRTV(UINT key)
 {
 	if (!GlobalTexture.contains(key))
 		return DescriptorHeap::Handle();
-	return GlobalTexture[key].get()->GetHandleSRV();
+	return GlobalTexture[key]->GetHandleRTV();
+}
+
+DescriptorHeap::Handle RenderingEngine::GetGlobalTextureSRV(UINT key)
+{
+	if (!GlobalTexture.contains(key))
+		return DescriptorHeap::Handle();
+	return GlobalTexture[key]->GetHandleSRV();
+}
+
+void RenderingEngine::GlobalTextureRTV2SRV(UINT key)
+{
+	if (!GlobalTexture.contains(key))
+		return;
+	GlobalTexture[key]->RTV2SRV();
+}
+
+void RenderingEngine::GlobalTextureSRV2RTV(UINT key)
+{
+	if (!GlobalTexture.contains(key))
+		return;
+	GlobalTexture[key]->SRV2RTV();
 }
 
 void RenderingEngine::WriteGlobalConstantBufferResource()
@@ -305,6 +328,16 @@ void RenderingEngine::ForwardRendering()
 	// リソース化
 	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+}
+
+void RenderingEngine::ObjectPostProcessRendering()
+{
+	ObjectPostProcess->Draw();
+}
+
+void RenderingEngine::CanvasPostProcessRendering()
+{
+	CanvasPostProcess->Draw();
 }
 
 void RenderingEngine::ViewDepthNormal()

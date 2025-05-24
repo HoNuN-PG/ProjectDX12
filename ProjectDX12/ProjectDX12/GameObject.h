@@ -131,7 +131,7 @@ public:
 	bool Destroy();
 
 private:
-	RenderingEngine* Engine;
+	std::shared_ptr<RenderingEngine> Engine;
 
 };
 

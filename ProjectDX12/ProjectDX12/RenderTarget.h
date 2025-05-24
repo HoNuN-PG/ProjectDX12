@@ -18,6 +18,8 @@ public:
 public:
 	RenderTarget(Description desc);
 	~RenderTarget();
+	void RTV2SRV();
+	void SRV2RTV();
 	void ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 	static void ResourceBarrier(ID3D12Resource* res, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 	void Clear();
@@ -33,7 +35,8 @@ private:
 	ID3D12Resource*			Resource;
 	DescriptorHeap::Handle	hRTV;
 	DescriptorHeap::Handle	hSRV;
-
+	float Width;
+	float Height;
 };
 
 #endif

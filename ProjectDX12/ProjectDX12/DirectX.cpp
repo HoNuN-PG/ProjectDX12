@@ -55,7 +55,6 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	hr = g_pDevice->CreateCommandQueue(&cmdQueueDesc,IID_PPV_ARGS(&g_pCmdQueue));
 	if (FAILED(hr)) { return hr; }
 
-	// スワップチェーン
 #ifdef _DEBUG
 	hr = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG,IID_PPV_ARGS(&g_pFactory));
 #else
@@ -63,6 +62,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 #endif
 	if (FAILED(hr)) { return hr; }
 
+	// スワップチェーン
 	DXGI_SWAP_CHAIN_DESC1 scDesc = {};
 	// 解像度
 	scDesc.Width				= width;
@@ -210,6 +210,16 @@ D3D12_CPU_DESCRIPTOR_HANDLE GetRTV()
 	hRTV = g_RTVHeap->GetCPUDescriptorHandleForHeapStart();
 	hRTV.ptr += bbIdx * g_pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	return hRTV;
+}
+
+void SetViewPort(float width, float height)
+{
+	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
+	// 表示領域の設定
+	D3D12_VIEWPORT vp = { 0, 0, width, height, 0.0f, 1.0f };
+	D3D12_RECT scissor = { 0, 0, width, height };
+	pCmdList->RSSetViewports(1, &vp);
+	pCmdList->RSSetScissorRects(1, &scissor);
 }
 
 void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV)

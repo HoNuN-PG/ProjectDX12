@@ -49,6 +49,7 @@ public:
 	template <typename T>
 	T* AddGameObject(Layer layer = OPACITY)
 	{
+		std::shared_ptr<T> s = std::make_shared<T>();
 		T* gameObject = new T();
 		GameObjects[layer].push_back(gameObject);
 		gameObject->InitBase();
@@ -90,9 +91,9 @@ protected:
 
 	// レンダリングエンジン
 public:
-	RenderingEngine* GetRenderingEngine();
+	std::shared_ptr<RenderingEngine> GetRenderingEngine();
 private:
-	std::unique_ptr<RenderingEngine> Engine;
+	std::shared_ptr<RenderingEngine> Engine;
 
 	// シーンヒープ
 public:

@@ -1,4 +1,7 @@
 
+// ウィンドウの作成
+// https://qiita.com/okmonn/items/94ea48e0fdcb2c74dbbf
+
 #include "StartUp.h"
 
 #include <Windows.h>

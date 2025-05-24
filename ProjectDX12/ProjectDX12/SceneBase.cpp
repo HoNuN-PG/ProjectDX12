@@ -4,7 +4,7 @@
 
 HRESULT SceneBase::InitBase()
 {
-	Engine = std::make_unique<RenderingEngine>();
+	Engine = std::make_shared<RenderingEngine>();
 	Engine->Init();
 
 	// ディスクリプタヒープ
@@ -68,7 +68,7 @@ void SceneBase::DrawBase()
 	Engine->Draw();
 }
 
-RenderingEngine* SceneBase::GetRenderingEngine()
+std::shared_ptr<RenderingEngine> SceneBase::GetRenderingEngine()
 {
-	return Engine.get();
+	return Engine;
 }

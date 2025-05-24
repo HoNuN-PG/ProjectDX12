@@ -16,8 +16,13 @@
 
 #include "ConstantWVP.h"
 
+#include "vignette.h"
+
 HRESULT SceneSandBoxDX12::Init()
 {
+	// ƒ{ƒŠƒ…[ƒ€’Ç‰Á
+	GetRenderingEngine()->AddVolume<Vignette>();
+
 	// ƒ‚ƒfƒ‹ì¬
 	{
 		std::vector<Material*> materials;

@@ -12,6 +12,7 @@
 #include "RenderTarget.h"
 
 #include "Material.h"
+#include "PostProcess.h"
 
 class GameObject;
 class CameraDebug;
@@ -39,14 +40,14 @@ public:
 	{ return GlobalHeap.get(); }
 private:
 	static std::unique_ptr<DescriptorHeap> GlobalHeap;
-	std::shared_ptr<DescriptorHeap>	GlobalRTVHeap;
 
 	// ヒープ
 public:
 	DescriptorHeap* GetHeap()
 	{ return Heap.get(); }
 private:
-	std::shared_ptr<DescriptorHeap>	Heap;
+	std::unique_ptr<DescriptorHeap>	Heap;
+	std::unique_ptr<DescriptorHeap>	RTVHeap;
 	std::unique_ptr<DescriptorHeap>	DSVHeap;
 
 	// GBuffer
@@ -62,10 +63,13 @@ private:
 	// グローバルリソース
 public:
 	static DescriptorHeap::Handle GetGlobalConstantBufferResource(UINT key);
-	static DescriptorHeap::Handle GetGlobalTextureResource(UINT key);
+	static DescriptorHeap::Handle GetGlobalTextureRTV(UINT key);
+	static DescriptorHeap::Handle GetGlobalTextureSRV(UINT key);
+	static void GlobalTextureRTV2SRV(UINT key);
+	static void GlobalTextureSRV2RTV(UINT key);
 private:
-	static std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>> GlobalConstantBuffer;
-	static std::unordered_map<UINT, std::unique_ptr<RenderTarget>> GlobalTexture;
+	static std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
+	static std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
 private:
 	void WriteGlobalConstantBufferResource();
 private:
@@ -76,11 +80,34 @@ private:
 private:
 	std::unique_ptr<DepthStencil> DSV;
 
-	// レンダリングオブジェクトの追加
+	// レンダリングオブジェクト
 public:
 	void AddRenderObject(GameObject& obj, int timing);
+	// ポストプロセスの追加や取得
+	template <typename T>
+	T* AddVolume()
+	{
+		return ObjectPostProcess->AddVolume<T>();
+	}
+	template <typename T>
+	T* GetVolume()
+	{
+		return ObjectPostProcess->GetVolume<T>();
+	}
+	template <typename T>
+	T* AddCanvasVolume()
+	{
+		return CanvasPostProcess->AddVolume<T>();
+	}
+	template <typename T>
+	T* GetCanvasVolume()
+	{
+		return CanvasPostProcess->GetVolume<T>();
+	}
 private:
 	std::vector<std::vector<RenderingInfo>> RenderObjects;
+	std::unique_ptr<PostProcess> ObjectPostProcess;			// オブジェクト描画後のポストプロセス
+	std::unique_ptr<PostProcess> CanvasPostProcess;			// キャンバス描画後のポストプロセス
 
 	// レンダリング
 public:
@@ -90,6 +117,8 @@ private:
 	void DefferedRendering();
 	void DefferedLighting();
 	void ForwardRendering();
+	void ObjectPostProcessRendering();
+	void CanvasPostProcessRendering();
 	void ViewDepthNormal();
 	void ViewGBuffers();
 private:

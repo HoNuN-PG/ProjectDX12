@@ -184,6 +184,7 @@
     <ClCompile Include="M_DepthNormal.cpp" />
     <ClCompile Include="M_SimpleLit.cpp" />
     <ClCompile Include="plane.cpp" />
+    <ClCompile Include="PostProcess.cpp" />
     <ClCompile Include="primitive.cpp" />
     <ClCompile Include="RenderingEngine.cpp" />
     <ClCompile Include="SceneBase.cpp" />
@@ -204,6 +205,7 @@
     <ClCompile Include="sphere.cpp" />
     <ClCompile Include="StartUp.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="vignette.cpp" />
     <ClCompile Include="volume.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +228,7 @@
     <ClInclude Include="M_DepthNormal.h" />
     <ClInclude Include="M_SimpleLit.h" />
     <ClInclude Include="plane.h" />
+    <ClInclude Include="PostProcess.h" />
     <ClInclude Include="primitive.h" />
     <ClInclude Include="RenderingComponent.h" />
     <ClInclude Include="RenderingEngine.h" />
@@ -249,6 +252,7 @@
     <ClInclude Include="sphere.h" />
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="vignette.h" />
     <ClInclude Include="volume.h" />
   </ItemGroup>
   <ItemGroup>
@@ -306,6 +310,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="PS_SimpleLit.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="PS_Vignette.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>

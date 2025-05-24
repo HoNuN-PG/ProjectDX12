@@ -17,7 +17,7 @@ public:
 	void Draw();
 
 private:
-	std::vector<std::unique_ptr<Material>>			Materials;
+	std::vector<std::unique_ptr<Material>> Materials;
 
 };
 

@@ -25,14 +25,42 @@ public:
 	Volume() {};
 	virtual ~Volume() {};
 	static void Load();
+	static void Unload();
+
+	virtual void Init() {};
+	virtual void Draw() {};
+
+protected:
+	void BindPostProcessRTV();
+	void BindPipeline();
+	void BindHeap();
+	void Rendering();
+
+public:
+	void SetDestroy() {
+		bDestroy = true;
+	}
+	bool Destroy() {
+		if (bDestroy)
+		{
+			delete this;
+			return true;
+		}
+		return false;
+	}
 
 private:
 	static std::unique_ptr<MeshBuffer>									Screen;
+protected:
+	static std::shared_ptr<DescriptorHeap>								Heap;
+	static std::shared_ptr<DescriptorHeap>								RTVHeap;
+	static std::unique_ptr<RenderTarget>								PostProcessRTV;
 	std::unique_ptr<RootSignature>										RootSignatureData;
 	std::unique_ptr<Pipeline>											PipelineData;
-	std::vector<std::unique_ptr<RenderTarget>>							RTVs;
-	std::unique_ptr<DescriptorHeap> RTVHeap;
-	std::unique_ptr<DescriptorHeap> Heap;
+	std::vector<std::unique_ptr<RenderTarget>>							CustomRTVs;
+private:
+	bool																bDestroy = false;
+
 };
 
 #endif
