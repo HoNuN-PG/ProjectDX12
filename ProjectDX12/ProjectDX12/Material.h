@@ -15,12 +15,21 @@
 class Material
 {
 public:
+	enum RenderingPassType
+	{
+		SHADOW = 0,					// シャドウ
+		O_DEPTH_NORMAL_PASS,		// 不透明深度
+		MAIN,						// メイン
+		T_DEPTH_NORMAL_PASS,		// 透明深度
+		OTHER,						// その他
+
+		MAX_RENDERING_PASS
+	};
 	enum RenderingTiming
 	{
 		CAM = 0,
 		SKYBOX,
 		LIGHT,
-		DEPTH_NORMAL,
 		DEFERRED,
 		FORWARD,
 		CANVAS,
@@ -35,7 +44,14 @@ public:
 	virtual ~Material() {};
 
 public:
-	virtual void Initialize(DescriptorHeap* heap, RenderingTiming timing = RenderingTiming::FORWARD) = 0;
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="heap"></param>
+	/// <param name="pass">実行パス</param>
+	/// <param name="timing">パス内での描画タイミング</param>
+	virtual void Initialize(DescriptorHeap* heap,
+		RenderingPassType pass = RenderingPassType::MAIN ,RenderingTiming timing = RenderingTiming::FORWARD) = 0;
 	virtual void Draw() = 0;
 	void AddTexture(const char* path);
 	void WriteWVP(void* data);
@@ -69,8 +85,10 @@ protected:
 
 public:
 	RenderingTiming GetRenderingTiming() { return Timing; }
+	RenderingPassType GetRenderingPassType() { return Pass; }
 protected:
 	RenderingTiming									Timing;
+	RenderingPassType								Pass;
 	DescriptorHeap*									Heap;
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;

@@ -4,9 +4,10 @@
 #include "M_SimpleLit.h"
 #include "RenderingEngine.h"
 
-void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingTiming timing)
+void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingPassType pass, RenderingTiming timing)
 {
 	Timing = timing;
+	Pass = pass;
 
 	// 定数バッファ
 	{

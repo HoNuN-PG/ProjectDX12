@@ -27,7 +27,7 @@ HRESULT SceneSandBoxDX12::Init()
 	{
 		std::vector<Material*> materials;
 		Materials.push_back(std::make_unique<M_DepthNormal>());
-		Materials.back()->Initialize(Heap.get(), Material::DEPTH_NORMAL);
+		Materials.back()->Initialize(Heap.get(), Material::O_DEPTH_NORMAL_PASS);
 		materials.push_back(Materials.back().get());
 		Materials.push_back(std::make_unique<M_SimpleLit>());
 		Materials.back()->Initialize(Heap.get());
@@ -41,10 +41,10 @@ HRESULT SceneSandBoxDX12::Init()
 	{
 		std::vector<Material*> materials;
 		Materials.push_back(std::make_unique<M_DepthNormal>());
-		Materials.back()->Initialize(Heap.get(), Material::DEPTH_NORMAL);
+		Materials.back()->Initialize(Heap.get(), Material::O_DEPTH_NORMAL_PASS);
 		materials.push_back(Materials.back().get());
 		Materials.push_back(std::make_unique<M_Deffered_Albedo_Normal>());
-		Materials.back()->Initialize(Heap.get(), Material::DEFERRED);
+		Materials.back()->Initialize(Heap.get(), Material::MAIN, Material::DEFERRED);
 		Materials.back()->AddTexture("assets/model/spot/spot_texture.png");
 		materials.push_back(Materials.back().get());
 

@@ -67,9 +67,6 @@
     <Filter Include="リソース ファイル\PS\Lit">
       <UniqueIdentifier>{15aabc8b-5dc5-41b7-9cb4-4751e0f7940f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\Resource">
-      <UniqueIdentifier>{8fc44d71-26c5-46f1-883b-de47a46a2af0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\Lib">
       <UniqueIdentifier>{511a6ff1-a73d-41c9-b493-121c25f0cab5}</UniqueIdentifier>
     </Filter>
@@ -117,6 +114,12 @@
     </Filter>
     <Filter Include="リソース ファイル\PS\Volume">
       <UniqueIdentifier>{598a5ca8-8d1e-4a47-8eb8-37a44f56391a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\System\Rendering\Pass">
+      <UniqueIdentifier>{bc501b4f-a12b-427a-96c6-0d36f39929e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\System\Rendering\Pass">
+      <UniqueIdentifier>{88f124ee-10f8-42d8-9369-c838dc32a20c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -237,6 +240,12 @@
     <ClCompile Include="vignette.cpp">
       <Filter>ソース ファイル\System\Rendering\Volume</Filter>
     </ClCompile>
+    <ClCompile Include="RenderingPass.cpp">
+      <Filter>ソース ファイル\System\Rendering\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthNormalPass.cpp">
+      <Filter>ソース ファイル\System\Rendering\Pass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectX.h">
@@ -298,9 +307,6 @@
     </ClInclude>
     <ClInclude Include="primitive.h">
       <Filter>ヘッダー ファイル\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="GlobalResourceKey.h">
-      <Filter>ヘッダー ファイル\Resource</Filter>
     </ClInclude>
     <ClInclude Include="MyMath.h">
       <Filter>ヘッダー ファイル\Lib</Filter>
@@ -373,6 +379,15 @@
     </ClInclude>
     <ClInclude Include="vignette.h">
       <Filter>ヘッダー ファイル\System\Rendering\Volume</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingPass.h">
+      <Filter>ヘッダー ファイル\System\Rendering\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalResourceKey.h">
+      <Filter>ヘッダー ファイル\System\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthNormalPass.h">
+      <Filter>ヘッダー ファイル\System\Rendering\Pass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

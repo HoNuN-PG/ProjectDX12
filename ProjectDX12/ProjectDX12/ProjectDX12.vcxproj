@@ -174,6 +174,7 @@
     <ClCompile Include="ConstantWVP.cpp" />
     <ClCompile Include="Copy.cpp" />
     <ClCompile Include="DebugImGUI.cpp" />
+    <ClCompile Include="DepthNormalPass.cpp" />
     <ClCompile Include="DepthStencil.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="DirectX.cpp" />
@@ -187,6 +188,7 @@
     <ClCompile Include="PostProcess.cpp" />
     <ClCompile Include="primitive.cpp" />
     <ClCompile Include="RenderingEngine.cpp" />
+    <ClCompile Include="RenderingPass.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -216,6 +218,7 @@
     <ClInclude Include="ConstantWVP.h" />
     <ClInclude Include="Copy.h" />
     <ClInclude Include="DebugImGUI.h" />
+    <ClInclude Include="DepthNormalPass.h" />
     <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="DirectX.h" />
@@ -232,6 +235,7 @@
     <ClInclude Include="primitive.h" />
     <ClInclude Include="RenderingComponent.h" />
     <ClInclude Include="RenderingEngine.h" />
+    <ClInclude Include="RenderingPass.h" />
     <ClInclude Include="SceneBase.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />

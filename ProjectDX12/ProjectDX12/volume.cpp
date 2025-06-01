@@ -32,7 +32,7 @@ void Volume::Load()
 		desc.num = 128;
 		Heap = std::make_shared<DescriptorHeap>(desc);
 	}
-	// ディスクリプターヒープ(レンダーターゲット)
+	// ボリュームディスクリプターヒープ(レンダーターゲット)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;

@@ -13,6 +13,7 @@
 
 #include "Material.h"
 #include "PostProcess.h"
+#include "RenderingPass.h"
 
 class GameObject;
 class CameraDebug;
@@ -36,19 +37,19 @@ public:
 
 	// グローバルヒープ
 public:
-	static DescriptorHeap* GetGlobalHeap()
-	{ return GlobalHeap.get(); }
+	static std::shared_ptr<DescriptorHeap> GetGlobalHeap()
+	{ return GlobalHeap; }
 private:
-	static std::unique_ptr<DescriptorHeap> GlobalHeap;
+	static std::shared_ptr<DescriptorHeap> GlobalHeap;
 
 	// ヒープ
 public:
-	DescriptorHeap* GetHeap()
-	{ return Heap.get(); }
+	std::shared_ptr<DescriptorHeap> GetHeap()
+	{ return Heap; }
 private:
-	std::unique_ptr<DescriptorHeap>	Heap;
-	std::unique_ptr<DescriptorHeap>	RTVHeap;
-	std::unique_ptr<DescriptorHeap>	DSVHeap;
+	std::shared_ptr<DescriptorHeap>	Heap;
+	std::shared_ptr<DescriptorHeap>	RTVHeap;
+	std::shared_ptr<DescriptorHeap>	DSVHeap;
 
 	// GBuffer
 private:
@@ -63,6 +64,7 @@ private:
 	// グローバルリソース
 public:
 	static DescriptorHeap::Handle GetGlobalConstantBufferResource(UINT key);
+	static std::shared_ptr<RenderTarget> GetGlobalRenderTarget(UINT key);
 	static DescriptorHeap::Handle GetGlobalTextureRTV(UINT key);
 	static DescriptorHeap::Handle GetGlobalTextureSRV(UINT key);
 	static void GlobalTextureRTV2SRV(UINT key);
@@ -80,9 +82,13 @@ private:
 private:
 	std::unique_ptr<DepthStencil> DSV;
 
+	// レンダリングパス
+private:
+	std::unordered_map<UINT, std::unique_ptr<RenderingPass>> RenderingPasses;
+
 	// レンダリングオブジェクト
 public:
-	void AddRenderObject(GameObject& obj, int timing);
+	void AddRenderObject(GameObject& obj, Material::RenderingPassType pass ,Material::RenderingTiming timing);
 	// ポストプロセスの追加や取得
 	template <typename T>
 	T* AddVolume()
@@ -111,18 +117,19 @@ private:
 
 	// レンダリング
 public:
-	static Material::RenderingTiming GetCurrentRenderingTiming() { return CurrentRenderingTiming; }
+	static Material::RenderingPassType GetCurrentRenderingPass() { return CurrentRenderingPass; }
 private:
-	void DepthNormalRendering();
+	void OpaqueDepthNormalRendering();
 	void DefferedRendering();
 	void DefferedLighting();
 	void ForwardRendering();
+	void TranslucentDepthNormalRendering();
 	void ObjectPostProcessRendering();
 	void CanvasPostProcessRendering();
 	void ViewDepthNormal();
 	void ViewGBuffers();
 private:
-	static Material::RenderingTiming CurrentRenderingTiming;
+	static Material::RenderingPassType CurrentRenderingPass;
 
 };
 

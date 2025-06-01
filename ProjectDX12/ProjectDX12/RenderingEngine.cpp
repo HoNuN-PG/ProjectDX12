@@ -15,12 +15,14 @@
 #include "SceneManager.h"
 #include "SceneBase.h"
 
+#include "DepthNormalPass.h"
+
 #include "ConstantWVP.h"
 
-std::unique_ptr<DescriptorHeap>	RenderingEngine::GlobalHeap;
+std::shared_ptr<DescriptorHeap>	RenderingEngine::GlobalHeap;
 std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> RenderingEngine::GlobalConstantBuffer;
 std::unordered_map<UINT, std::shared_ptr<RenderTarget>>	RenderingEngine::GlobalTexture;
-Material::RenderingTiming RenderingEngine::CurrentRenderingTiming;
+Material::RenderingPassType RenderingEngine::CurrentRenderingPass;
 
 void RenderingEngine::Init()
 {
@@ -33,28 +35,28 @@ void RenderingEngine::Init()
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = 64;
-		GlobalHeap = std::make_unique<DescriptorHeap>(desc);
+		GlobalHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ディスクリプタヒープ
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = 256;
-		Heap = std::make_unique<DescriptorHeap>(desc);
+		Heap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ディスクリプターヒープ(レンダーターゲット)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		desc.num = 64;
-		RTVHeap = std::make_unique<DescriptorHeap>(desc);
+		RTVHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ディスクリプタヒープ（深度バッファ)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 		desc.num = 1;
-		DSVHeap = std::make_unique<DescriptorHeap>(desc);
+		DSVHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// グローバルリソース
 	{
@@ -121,7 +123,13 @@ void RenderingEngine::Init()
 	Camera = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>();
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>();
 
+	// レンダリングパス
+	RenderingPasses[Material::RenderingPassType::O_DEPTH_NORMAL_PASS] = std::make_unique<OpaqueDepthNormalPass>();
+
+	// レンダリングオブジェクト
 	RenderObjects.resize(Material::RenderingTiming::MAX_TIMING);
+
+	// ポストプロセス
 	ObjectPostProcess = std::make_unique<PostProcess>();
 	CanvasPostProcess = std::make_unique<PostProcess>();
 }
@@ -145,13 +153,14 @@ void RenderingEngine::Draw()
 	DSV->Clear();
 
 	WriteGlobalConstantBufferResource();
-	CurrentRenderingTiming = Material::DEPTH_NORMAL;
-	DepthNormalRendering();
-	CurrentRenderingTiming = Material::DEFERRED;
+	CurrentRenderingPass = Material::RenderingPassType::O_DEPTH_NORMAL_PASS;
+	OpaqueDepthNormalRendering();
+	CurrentRenderingPass = Material::RenderingPassType::MAIN;
 	DefferedRendering();
 	DefferedLighting();
-	CurrentRenderingTiming = Material::FORWARD;
 	ForwardRendering();
+	CurrentRenderingPass = Material::RenderingPassType::T_DEPTH_NORMAL_PASS;
+	TranslucentDepthNormalRendering();
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
 	Copy::Copy::ExecuteCopy(GlobalHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get(), GetRTV());
@@ -174,6 +183,13 @@ DescriptorHeap::Handle RenderingEngine::GetGlobalConstantBufferResource(UINT key
 	if (!GlobalConstantBuffer.contains(key))
 		return DescriptorHeap::Handle();
 	return GlobalConstantBuffer[key]->GetHandle();
+}
+
+std::shared_ptr<RenderTarget> RenderingEngine::GetGlobalRenderTarget(UINT key)
+{
+	if (!GlobalTexture.contains(key))
+		return nullptr;
+	return GlobalTexture[key];
 }
 
 DescriptorHeap::Handle RenderingEngine::GetGlobalTextureRTV(UINT key)
@@ -226,13 +242,29 @@ void RenderingEngine::WriteGlobalConstantBufferResource()
 	GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light]->Write(&light);
 }
 
-void RenderingEngine::AddRenderObject(GameObject& obj, int timing)
+void RenderingEngine::AddRenderObject(GameObject& obj, Material::RenderingPassType pass, Material::RenderingTiming timing)
 {
 	RenderingInfo info = { obj };
-	RenderObjects[timing].push_back(info);
+	switch (pass)
+	{
+	case Material::SHADOW:
+		break;
+	case Material::O_DEPTH_NORMAL_PASS:
+		RenderingPasses[Material::RenderingPassType::O_DEPTH_NORMAL_PASS]->AddObj(obj);
+		break;
+	case Material::MAIN:
+		RenderObjects[timing].push_back(info);
+		break;
+	case Material::T_DEPTH_NORMAL_PASS:
+		break;
+	case Material::OTHER:
+		break;
+	default:
+		break;
+	}
 }
 
-void RenderingEngine::DepthNormalRendering()
+void RenderingEngine::OpaqueDepthNormalRendering()
 {
 	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
 
@@ -252,10 +284,7 @@ void RenderingEngine::DepthNormalRendering()
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// DepthNormal
-	for (int i = 0; i < RenderObjects[Material::RenderingTiming::DEPTH_NORMAL].size(); ++i)
-	{
-		RenderObjects[Material::RenderingTiming::DEPTH_NORMAL][i].obj.RenderingBase();
-	}
+	RenderingPasses[Material::RenderingPassType::O_DEPTH_NORMAL_PASS]->Execute();
 
 	// リソース化
 	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(
@@ -327,6 +356,34 @@ void RenderingEngine::ForwardRendering()
 
 	// リソース化
 	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+}
+
+void RenderingEngine::TranslucentDepthNormalRendering()
+{
+	// ターゲット化
+	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	GlobalTexture[GlobalTextureResourceKey::NormalTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+	// RTVの設定
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+		GlobalTexture[GlobalTextureResourceKey::DepthTexture]->GetHandleRTV().hCPU,
+		GlobalTexture[GlobalTextureResourceKey::NormalTexture]->GetHandleRTV().hCPU,
+	};
+	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
+
+	// DepthNormal
+	//for (int i = 0; i < RenderObjects[Material::RenderingTiming::O_DEPTH_NORMAL_TIMING].size(); ++i)
+	//{
+	//	RenderObjects[Material::RenderingTiming::O_DEPTH_NORMAL_TIMING][i].obj.RenderingBase();
+	//}
+
+	// リソース化
+	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	GlobalTexture[GlobalTextureResourceKey::NormalTexture]->ResourceBarrier(
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 

@@ -1,9 +1,10 @@
 
 #include "M_DepthNormal.h"
 
-void M_DepthNormal::Initialize(DescriptorHeap* heap, RenderingTiming timing)
+void M_DepthNormal::Initialize(DescriptorHeap* heap, RenderingPassType pass, RenderingTiming timing)
 {
 	Timing = timing;
+	Pass = pass;
 
 	// 定数バッファ
 	{
