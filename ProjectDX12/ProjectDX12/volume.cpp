@@ -6,6 +6,9 @@ std::shared_ptr<DescriptorHeap>				Volume::Heap;
 std::shared_ptr<DescriptorHeap>				Volume::RTVHeap;
 std::unique_ptr<RenderTarget>				Volume::PostProcessRTV;
 
+#include "GlobalResourceKey.h"
+#include "RenderingEngine.h"
+
 void Volume::Load()
 {
 	// スクリーン頂点
@@ -78,6 +81,15 @@ void Volume::BindHeap()
 		Heap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
+}
+
+void Volume::GetGlobalSRV(std::shared_ptr<RenderTarget> dest, UINT key)
+{
+	GetDevice()->CopyDescriptorsSimple(
+		1,
+		dest->GetHandleSRV().hCPU,
+		RenderingEngine::GetGlobalTextureSRV(key).hCPU,
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 void Volume::Rendering()

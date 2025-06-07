@@ -34,6 +34,7 @@ protected:
 	void BindPostProcessRTV();
 	void BindPipeline();
 	void BindHeap();
+	void GetGlobalSRV(std::shared_ptr<RenderTarget> dest, UINT key);
 	void Rendering();
 
 public:

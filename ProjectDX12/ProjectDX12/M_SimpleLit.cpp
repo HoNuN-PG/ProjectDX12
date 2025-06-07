@@ -4,7 +4,7 @@
 #include "M_SimpleLit.h"
 #include "RenderingEngine.h"
 
-void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingPassType pass, RenderingTiming timing)
+void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingPass::RenderingPassType pass, MainPassRenderingTiming timing)
 {
 	Timing = timing;
 	Pass = pass;

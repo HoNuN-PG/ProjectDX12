@@ -1,7 +1,7 @@
 
 #include "M_DepthNormal.h"
 
-void M_DepthNormal::Initialize(DescriptorHeap* heap, RenderingPassType pass, RenderingTiming timing)
+void M_DepthNormal::Initialize(DescriptorHeap* heap, RenderingPass::RenderingPassType pass, MainPassRenderingTiming timing)
 {
 	Timing = timing;
 	Pass = pass;

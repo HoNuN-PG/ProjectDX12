@@ -15,7 +15,7 @@ void Primitive::Draw()
 
 void Primitive::Rendering()
 {
-	Material::RenderingPassType current = RenderingEngine::GetCurrentRenderingPass();
+	RenderingPass::RenderingPassType current = RenderingEngine::GetCurrentRenderingPass();
 	for (auto material : MaterialData)
 	{
 		if (material->GetRenderingPassType() == current)

@@ -35,7 +35,7 @@ float4 main(PS_IN pin) : SV_TARGET
     f = pow(f, 2.0f);
 
 	// ï‚ä‘
-    color = lerp(color, float4(0, 0, 0, 1), f);
+    color = lerp(color, float4(1, 0, 0, 1), f);
 
     return float4(color.xyz, 1.0f);
 }

@@ -88,7 +88,7 @@ private:
 
 	// レンダリングオブジェクト
 public:
-	void AddRenderObject(GameObject& obj, Material::RenderingPassType pass ,Material::RenderingTiming timing);
+	void AddRenderObject(GameObject& obj, RenderingPass::RenderingPassType pass ,Material::MainPassRenderingTiming timing);
 	// ポストプロセスの追加や取得
 	template <typename T>
 	T* AddVolume()
@@ -117,7 +117,7 @@ private:
 
 	// レンダリング
 public:
-	static Material::RenderingPassType GetCurrentRenderingPass() { return CurrentRenderingPass; }
+	static RenderingPass::RenderingPassType GetCurrentRenderingPass() { return CurrentRenderingPass; }
 private:
 	void OpaqueDepthNormalRendering();
 	void DefferedRendering();
@@ -129,7 +129,7 @@ private:
 	void ViewDepthNormal();
 	void ViewGBuffers();
 private:
-	static Material::RenderingPassType CurrentRenderingPass;
+	static RenderingPass::RenderingPassType CurrentRenderingPass;
 
 };
 

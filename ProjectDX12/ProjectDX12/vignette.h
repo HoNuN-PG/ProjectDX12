@@ -23,7 +23,7 @@ public:
 	void Init() override;
 	void Draw() override;
 private:
-	std::unique_ptr<RenderTarget> RTV;
+	std::shared_ptr<RenderTarget> RTV;
 	VignetteParams Param;
 	std::unique_ptr<ConstantBuffer> ParamBuf;
 

@@ -22,7 +22,7 @@
 std::shared_ptr<DescriptorHeap>	RenderingEngine::GlobalHeap;
 std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> RenderingEngine::GlobalConstantBuffer;
 std::unordered_map<UINT, std::shared_ptr<RenderTarget>>	RenderingEngine::GlobalTexture;
-Material::RenderingPassType RenderingEngine::CurrentRenderingPass;
+RenderingPass::RenderingPassType RenderingEngine::CurrentRenderingPass;
 
 void RenderingEngine::Init()
 {
@@ -124,11 +124,10 @@ void RenderingEngine::Init()
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>();
 
 	// レンダリングパス
-	RenderingPasses[Material::RenderingPassType::O_DEPTH_NORMAL_PASS] = std::make_unique<OpaqueDepthNormalPass>();
+	RenderingPasses[RenderingPass::RenderingPassType::O_DEPTH_NORMAL_PASS] = std::make_unique<OpaqueDepthNormalPass>();
 
 	// レンダリングオブジェクト
-	RenderObjects.resize(Material::RenderingTiming::MAX_TIMING);
-
+	RenderObjects.resize(Material::MainPassRenderingTiming::MAX_TIMING);
 	// ポストプロセス
 	ObjectPostProcess = std::make_unique<PostProcess>();
 	CanvasPostProcess = std::make_unique<PostProcess>();
@@ -153,13 +152,13 @@ void RenderingEngine::Draw()
 	DSV->Clear();
 
 	WriteGlobalConstantBufferResource();
-	CurrentRenderingPass = Material::RenderingPassType::O_DEPTH_NORMAL_PASS;
+	CurrentRenderingPass = RenderingPass::RenderingPassType::O_DEPTH_NORMAL_PASS;
 	OpaqueDepthNormalRendering();
-	CurrentRenderingPass = Material::RenderingPassType::MAIN;
+	CurrentRenderingPass = RenderingPass::RenderingPassType::MAIN;
 	DefferedRendering();
 	DefferedLighting();
 	ForwardRendering();
-	CurrentRenderingPass = Material::RenderingPassType::T_DEPTH_NORMAL_PASS;
+	CurrentRenderingPass = RenderingPass::RenderingPassType::T_DEPTH_NORMAL_PASS;
 	TranslucentDepthNormalRendering();
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
@@ -242,22 +241,22 @@ void RenderingEngine::WriteGlobalConstantBufferResource()
 	GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light]->Write(&light);
 }
 
-void RenderingEngine::AddRenderObject(GameObject& obj, Material::RenderingPassType pass, Material::RenderingTiming timing)
+void RenderingEngine::AddRenderObject(GameObject& obj, RenderingPass::RenderingPassType pass, Material::MainPassRenderingTiming timing)
 {
 	RenderingInfo info = { obj };
 	switch (pass)
 	{
-	case Material::SHADOW:
+	case RenderingPass::SHADOW:
 		break;
-	case Material::O_DEPTH_NORMAL_PASS:
-		RenderingPasses[Material::RenderingPassType::O_DEPTH_NORMAL_PASS]->AddObj(obj);
+	case RenderingPass::O_DEPTH_NORMAL_PASS:
+		RenderingPasses[RenderingPass::RenderingPassType::O_DEPTH_NORMAL_PASS]->AddObj(obj);
 		break;
-	case Material::MAIN:
+	case RenderingPass::MAIN:
 		RenderObjects[timing].push_back(info);
 		break;
-	case Material::T_DEPTH_NORMAL_PASS:
+	case RenderingPass::T_DEPTH_NORMAL_PASS:
 		break;
-	case Material::OTHER:
+	case RenderingPass::OTHER:
 		break;
 	default:
 		break;
@@ -284,7 +283,7 @@ void RenderingEngine::OpaqueDepthNormalRendering()
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// DepthNormal
-	RenderingPasses[Material::RenderingPassType::O_DEPTH_NORMAL_PASS]->Execute();
+	RenderingPasses[RenderingPass::RenderingPassType::O_DEPTH_NORMAL_PASS]->Execute();
 
 	// リソース化
 	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(
@@ -316,9 +315,9 @@ void RenderingEngine::DefferedRendering()
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// ディファードレンダリング
-	for (int i = 0; i < RenderObjects[Material::RenderingTiming::DEFERRED].size(); ++i)
+	for (int i = 0; i < RenderObjects[Material::MainPassRenderingTiming::DEFERRED].size(); ++i)
 	{
-		RenderObjects[Material::RenderingTiming::DEFERRED][i].obj.RenderingBase();
+		RenderObjects[Material::MainPassRenderingTiming::DEFERRED][i].obj.RenderingBase();
 	}
 
 	// リソース化
@@ -349,9 +348,9 @@ void RenderingEngine::ForwardRendering()
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// フォワードレンダリング
-	for (int i = 0; i < RenderObjects[Material::RenderingTiming::FORWARD].size(); ++i)
+	for (int i = 0; i < RenderObjects[Material::MainPassRenderingTiming::FORWARD].size(); ++i)
 	{
-		RenderObjects[Material::RenderingTiming::FORWARD][i].obj.RenderingBase();
+		RenderObjects[Material::MainPassRenderingTiming::FORWARD][i].obj.RenderingBase();
 	}
 
 	// リソース化

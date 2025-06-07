@@ -2,16 +2,26 @@
 #define ___RENDERING_PASS_H___
 
 #include <memory>
-#include "Material.h"
 
 class GameObject;
 
 class RenderingPass
 {
 public:
-	Material::RenderingPassType GetID() { return PassID; }
+	enum RenderingPassType
+	{
+		SHADOW = 0,					// シャドウ
+		O_DEPTH_NORMAL_PASS,		// 不透明深度
+		MAIN,						// メイン
+		T_DEPTH_NORMAL_PASS,		// 透明深度
+		OTHER,						// その他
+
+		MAX_RENDERING_PASS
+	};
+public:
+	RenderingPassType GetID() { return PassID; }
 protected:
-	Material::RenderingPassType PassID;
+	RenderingPassType PassID;
 public:
 	RenderingPass();
 	virtual ~RenderingPass() {};

@@ -7,7 +7,8 @@ class M_SimpleLit : public Material
 {
 public:
 	virtual void Initialize(DescriptorHeap* heap, 
-		RenderingPassType pass = RenderingPassType::MAIN, RenderingTiming timing = RenderingTiming::FORWARD) override;
+		RenderingPass::RenderingPassType pass = RenderingPass::RenderingPassType::MAIN, 
+		MainPassRenderingTiming timing = MainPassRenderingTiming::FORWARD) override;
 	virtual void Draw() override;
 
 };

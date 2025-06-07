@@ -46,7 +46,7 @@ void Vignette::Init()
 		desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		desc.pRTVHeap = RTVHeap.get();
 		desc.pSRVHeap = Heap.get();
-		RTV = std::make_unique<RenderTarget>(desc);
+		RTV = std::make_shared<RenderTarget>(desc);
 	}
 	// パラメーター定数バッファ
 	{
@@ -77,11 +77,7 @@ void Vignette::Draw()
 
 	BindPipeline();
 	BindHeap();
-	GetDevice()->CopyDescriptorsSimple(
-		1,
-		RTV.get()->GetHandleSRV().hCPU,
-		RenderingEngine::GetGlobalTextureSRV(GlobalTextureResourceKey::MainTexture).hCPU,
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	GetGlobalSRV(RTV, GlobalTextureResourceKey::MainTexture);
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = {
 		RTV.get()->GetHandleSRV().hGPU,
 		ParamBuf.get()->GetHandle().hGPU,

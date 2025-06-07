@@ -1,7 +1,7 @@
 
 #include "M_Deffered_Albedo_Normal.h"
 
-void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap, RenderingPassType pass, RenderingTiming timing)
+void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap, RenderingPass::RenderingPassType pass, MainPassRenderingTiming timing)
 {
 	Timing = timing;
 	Pass = pass;

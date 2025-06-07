@@ -20,7 +20,7 @@ public:
 	void UninitBase();
 	void UpdateBase();
 	void DrawBase(DirectX::XMFLOAT4X4 ParentMatrix);
-	void BindRenderingEngine(Material::RenderingPassType pass ,Material::RenderingTiming timing);
+	void BindRenderingEngine(RenderingPass::RenderingPassType pass ,Material::MainPassRenderingTiming timing);
 	void RenderingBase();
 
 	virtual void Init() {}
