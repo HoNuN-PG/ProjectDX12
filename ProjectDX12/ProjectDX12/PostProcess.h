@@ -16,29 +16,29 @@ public:
 	void Draw();
 
 	template <typename T> // テンプレート関数
-	T* AddVolume()
+	std::shared_ptr<T> AddVolume()
 	{
-		T* volume = new T();
+		std::shared_ptr<T> volume = std::make_shared<T>();
 		Volumes.push_back(volume);
 		Volumes.back()->Init();
 		return volume;
 	}
 
 	template <typename T>
-	T* GetVolume()
+	std::shared_ptr<T> GetVolume()
 	{
-		for (Volume* volume : Volumes)
+		for (std::shared_ptr<Volume> volume : Volumes)
 		{
-			if (typeid(*volume) == typeid(T)) // 型を調べる(RTTI動的型情報)
+			if (std::shared_ptr<T> v = std::dynamic_pointer_cast<T>(volume))
 			{
-				return (T*)volume;
+				return v;
 			}
 		}
 		return nullptr;
 	}
 
 private:
-	std::list<Volume*> Volumes;
+	std::list<std::shared_ptr<Volume>> Volumes;
 
 };
 

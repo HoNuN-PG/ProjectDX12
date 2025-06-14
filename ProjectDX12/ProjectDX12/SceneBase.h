@@ -93,10 +93,10 @@ private:
 
 	// シーンヒープ
 public:
-	DescriptorHeap* GetHeap()
-	{ return Heap.get(); }
+	std::shared_ptr<DescriptorHeap> GetHeap()
+	{ return Heap; }
 protected:
-	std::unique_ptr<DescriptorHeap>	Heap;
+	std::shared_ptr<DescriptorHeap>	Heap;
 
 };
 

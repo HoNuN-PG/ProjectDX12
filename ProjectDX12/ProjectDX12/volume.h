@@ -38,13 +38,11 @@ protected:
 	void Rendering();
 
 public:
-	void SetDestroy() {
-		bDestroy = true;
-	}
+	void SetDestroy() { bDestroy = true; }
+	bool IsDestroy() { return bDestroy; }
 	bool Destroy() {
 		if (bDestroy)
 		{
-			delete this;
 			return true;
 		}
 		return false;
@@ -56,6 +54,7 @@ protected:
 	static std::shared_ptr<DescriptorHeap>								Heap;
 	static std::shared_ptr<DescriptorHeap>								RTVHeap;
 	static std::unique_ptr<RenderTarget>								PostProcessRTV;
+protected:
 	std::unique_ptr<RootSignature>										RootSignatureData;
 	std::unique_ptr<Pipeline>											PipelineData;
 	std::vector<std::unique_ptr<RenderTarget>>							CustomRTVs;

@@ -12,7 +12,7 @@ HRESULT SceneBase::InitBase()
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = 256;
-		Heap = std::make_unique<DescriptorHeap>(desc);
+		Heap = std::make_shared<DescriptorHeap>(desc);
 	}
 
 	Init();
@@ -47,7 +47,16 @@ void SceneBase::UpdateBase()
 	for (auto& objectList : GameObjects)
 	{
 		objectList.remove_if(
-			[](std::shared_ptr<GameObject> object) {return object->Destroy(); });
+			[](std::shared_ptr<GameObject> object) 
+			{
+				if (object->IsDestroy())
+				{
+					object->Destroy();
+					object = nullptr;
+					return true;
+				}
+				return false;
+			});
 	}
 	Update();
 	Engine->Update();

@@ -18,6 +18,7 @@ void GameObject::UninitBase()
 	for (std::shared_ptr<GameObject> child : ChildGameObjects)
 	{
 		child->UninitBase();
+		child = nullptr;
 	}
 	for (std::shared_ptr<Component> component : Components)
 	{
@@ -88,7 +89,6 @@ bool GameObject::Destroy()
 	if (bDestroy)
 	{
 		UninitBase();
-		delete this;
 		return true;
 	}
 	return false;

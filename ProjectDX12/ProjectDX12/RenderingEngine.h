@@ -63,15 +63,19 @@ private:
 
 	// グローバルリソース
 public:
+	// グローバル定数バッファ
 	static DescriptorHeap::Handle GetGlobalConstantBufferResource(UINT key);
+	// グローバルテクスチャ
 	static std::shared_ptr<RenderTarget> GetGlobalRenderTarget(UINT key);
 	static DescriptorHeap::Handle GetGlobalTextureRTV(UINT key);
 	static DescriptorHeap::Handle GetGlobalTextureSRV(UINT key);
+	// リソース切り替え
 	static void GlobalTextureRTV2SRV(UINT key);
 	static void GlobalTextureSRV2RTV(UINT key);
 private:
 	static std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
 	static std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
+	// グローバルリソースオブジェクト
 private:
 	void WriteGlobalConstantBufferResource();
 private:
@@ -91,28 +95,28 @@ public:
 	void AddRenderObject(GameObject& obj, Material::RenderingTiming timing);
 	// ポストプロセスの追加や取得
 	template <typename T>
-	T* AddVolume()
+	std::shared_ptr<T> AddVolume()
 	{
 		return ObjectPostProcess->AddVolume<T>();
 	}
 	template <typename T>
-	T* GetVolume()
+	std::shared_ptr<T> GetVolume()
 	{
 		return ObjectPostProcess->GetVolume<T>();
 	}
 	template <typename T>
-	T* AddCanvasVolume()
+	std::shared_ptr<T> AddCanvasVolume()
 	{
 		return CanvasPostProcess->AddVolume<T>();
 	}
 	template <typename T>
-	T* GetCanvasVolume()
+	std::shared_ptr<T> GetCanvasVolume()
 	{
 		return CanvasPostProcess->GetVolume<T>();
 	}
 private:
-	std::vector<RenderingInfo> DefferedObjects;
-	std::vector<RenderingInfo> ForwardObjects;
+	std::vector<RenderingInfo> DefferedObjects;				// ディファードライティングオブジェクト
+	std::vector<RenderingInfo> ForwardObjects;				// フォワードライティングオブジェクト
 	std::unique_ptr<PostProcess> ObjectPostProcess;			// オブジェクト描画後のポストプロセス
 	std::unique_ptr<PostProcess> CanvasPostProcess;			// キャンバス描画後のポストプロセス
 

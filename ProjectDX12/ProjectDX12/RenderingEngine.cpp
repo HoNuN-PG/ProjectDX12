@@ -120,8 +120,8 @@ void RenderingEngine::Init()
 		{ 0,0,0 },
 		{ WINDOW_WIDTH	  ,  WINDOW_HEIGHT	  , 0 }));
 	// リソースオブジェクト
-	Camera = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>();
-	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>();
+	Camera = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
+	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
 
 	// レンダリングパス
 	RenderingPasses[RenderingPass::RenderingPassType::OpaqueDepthNormal] = std::make_unique<OpaqueDepthNormalPass>();
@@ -155,6 +155,7 @@ void RenderingEngine::Draw()
 	CurrentRenderingTiming = Material::Deffered;
 	DefferedRendering();
 	DefferedLighting();
+	CurrentRenderingTiming = Material::Forward;
 	ForwardRendering();
 	CurrentRenderingTiming = Material::RenderingTiming::TranslucentDepthNormal;
 	TranslucentDepthNormalRendering();

@@ -75,21 +75,26 @@ void Vignette::Draw()
 	}
 	memcpy(&Param.color,color,sizeof(DirectX::XMFLOAT4));
 	ImGui::End();
-	ParamBuf->Write(&Param);
 
+	// バッファに書き込み
+	ParamBuf->Write(&Param);
+	// ポストプロセス用RTVをバインド
 	PostProcessRTV->SRV2RTV();
 	BindPostProcessRTV();
-
+	// 各種オブジェクトをバインド
 	BindPipeline();
 	BindHeap();
+	// MainTextureを取得
 	GetGlobalSRV(RTV, GlobalTextureResourceKey::MainTexture);
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = {
 		RTV.get()->GetHandleSRV().hGPU,
 		ParamBuf.get()->GetHandle().hGPU,
 	};
 	RootSignatureData->Bind(desc, _countof(desc));
+	// 描画
 	Rendering();
 
+	// MainTextureに張り付け
 	PostProcessRTV->RTV2SRV();
 	RenderingEngine::GlobalTextureSRV2RTV(GlobalTextureResourceKey::MainTexture);
 	Copy::ExecuteCopy(Heap.get(), PostProcessRTV.get(),RenderingEngine::GetGlobalTextureRTV(GlobalTextureResourceKey::MainTexture).hCPU);
