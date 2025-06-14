@@ -57,6 +57,7 @@ void Vignette::Init()
 	}
 
 	// パラメーター書き込み
+	Param.color = { 0,0,0,0 };
 	Param.start = 0.5f;
 	Param.range = 0.5f;
 	ParamBuf->Write(&Param);
@@ -65,10 +66,14 @@ void Vignette::Init()
 void Vignette::Draw()
 {
 	ImGui::Begin("Vignette");
+	float color[4];
+	memcpy(color, &Param.color, sizeof(DirectX::XMFLOAT4));
 	{
+		ImGui::ColorEdit4("color",color);
 		ImGui::SliderFloat("start", &Param.start, 0.01f, 1.0f);
 		ImGui::SliderFloat("range", &Param.range, 0.01f, 1.0f);
 	}
+	memcpy(&Param.color,color,sizeof(DirectX::XMFLOAT4));
 	ImGui::End();
 	ParamBuf->Write(&Param);
 

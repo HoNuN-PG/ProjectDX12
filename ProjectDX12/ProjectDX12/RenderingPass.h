@@ -2,6 +2,7 @@
 #define ___RENDERING_PASS_H___
 
 #include <memory>
+#include <stdio.h>
 
 class GameObject;
 
@@ -10,19 +11,15 @@ class RenderingPass
 public:
 	enum RenderingPassType
 	{
-		Shadow = 0,					// シャドウ
-		OpaqueDepthNormal,			// 不透明深度
-		Forward,					// フォワード
-		Deffered,					// ディファード
-		TranslucentDepthNormal,		// 透明深度
-		Other,						// その他
+		None = 0,
+		OpaqueDepthNormal,
 
 		MAX_RENDERING_PASS_TYPE
 	};
 public:
-	RenderingPassType GetID() { return PassID; }
+	RenderingPassType GetType() { return PassType; }
 protected:
-	RenderingPassType PassID;
+	RenderingPassType PassType;
 public:
 	RenderingPass();
 	virtual ~RenderingPass() {};

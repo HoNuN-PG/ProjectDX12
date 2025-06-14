@@ -73,16 +73,16 @@ void Model::Draw()
 {
 	for (auto material : MaterialData)
 	{
-		Owner->BindRenderingEngine(material->GetRenderingPassType(), material->GetRenderingTiming());
+		Owner->BindRenderingEngine(material->GetRenderTiming());
 	}
 }
 
 void Model::Rendering()
 {
-	RenderingPass::RenderingPassType current = RenderingEngine::GetCurrentRenderingPass();
+	Material::RenderingTiming current = RenderingEngine::GetCurrentRenderingPass();
 	for (auto material : MaterialData)
 	{
-		if (material->GetRenderingPassType() == current)
+		if (material->GetRenderTiming() == current)
 		{
 			material->WriteWVP(ConstantWVP::Calc3DMatrix(
 				Owner->GetPosition(),

@@ -17,19 +17,17 @@
 class Material
 {
 public:
-	enum MainPassRenderingTiming
+	enum RenderingTiming
 	{
-		NONE = 0,
-		CAM,
-		SKYBOX,
-		LIGHT,
-		DEFERRED,
-		FORWARD,
-		CANVAS,
-		AFTER_POSTPROCESS,
-		AFTER_FRAME_BUFFER,
+		Shadow = 0,					// シャドウ
+		OpaqueDepthNormal,			// 不透明深度法線
+		Deffered,					// ディファード
+		Forward,					// フォワード
+		TranslucentDepthNormal,		// 透明深度法線
+		Canvas,						// キャンバス
+		Other,						// その他
 
-		MAX_TIMING
+		MAX_RENDERING_PASS_TYPE
 	};
 
 public:
@@ -40,12 +38,8 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	/// <param name="heap"></param>
-	/// <param name="pass">実行パス</param>
-	/// <param name="timing">メインパス内での描画タイミング</param>
 	virtual void Initialize(DescriptorHeap* heap,
-		RenderingPass::RenderingPassType pass = RenderingPass::RenderingPassType::Forward ,
-		MainPassRenderingTiming timing = MainPassRenderingTiming::FORWARD) = 0;
+		RenderingTiming timing = RenderingTiming::Forward) = 0;
 	virtual void Draw() = 0;
 	void AddTexture(const char* path);
 	void WriteWVP(void* data);
@@ -78,11 +72,9 @@ protected:
 	void DrawBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
 
 public:
-	MainPassRenderingTiming GetRenderingTiming() { return Timing; }
-	RenderingPass::RenderingPassType GetRenderingPassType() { return Pass; }
+	RenderingTiming GetRenderTiming() { return Timing; };
 protected:
-	MainPassRenderingTiming									Timing;
-	RenderingPass::RenderingPassType								Pass;
+	RenderingTiming									Timing;
 	DescriptorHeap*									Heap;
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;

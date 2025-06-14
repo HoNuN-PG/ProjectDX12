@@ -22,7 +22,7 @@
 std::shared_ptr<DescriptorHeap>	RenderingEngine::GlobalHeap;
 std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> RenderingEngine::GlobalConstantBuffer;
 std::unordered_map<UINT, std::shared_ptr<RenderTarget>>	RenderingEngine::GlobalTexture;
-RenderingPass::RenderingPassType RenderingEngine::CurrentRenderingPass;
+Material::RenderingTiming RenderingEngine::CurrentRenderingTiming;
 
 void RenderingEngine::Init()
 {
@@ -126,8 +126,6 @@ void RenderingEngine::Init()
 	// レンダリングパス
 	RenderingPasses[RenderingPass::RenderingPassType::OpaqueDepthNormal] = std::make_unique<OpaqueDepthNormalPass>();
 
-	// レンダリングオブジェクト
-	RenderObjects.resize(Material::MainPassRenderingTiming::MAX_TIMING);
 	// ポストプロセス
 	ObjectPostProcess = std::make_unique<PostProcess>();
 	CanvasPostProcess = std::make_unique<PostProcess>();
@@ -152,29 +150,30 @@ void RenderingEngine::Draw()
 	DSV->Clear();
 
 	WriteGlobalConstantBufferResource();
-	CurrentRenderingPass = RenderingPass::RenderingPassType::OpaqueDepthNormal;
+	CurrentRenderingTiming = Material::RenderingTiming::OpaqueDepthNormal;
 	OpaqueDepthNormalRendering();
-	CurrentRenderingPass = RenderingPass::RenderingPassType::Forward;
+	CurrentRenderingTiming = Material::Deffered;
 	DefferedRendering();
 	DefferedLighting();
 	ForwardRendering();
-	CurrentRenderingPass = RenderingPass::RenderingPassType::TranslucentDepthNormal;
+	CurrentRenderingTiming = Material::RenderingTiming::TranslucentDepthNormal;
 	TranslucentDepthNormalRendering();
+	CurrentRenderingTiming = Material::RenderingTiming::Other;
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
 	Copy::Copy::ExecuteCopy(GlobalHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get(), GetRTV());
+#ifdef _DEBUG
 	ViewDepthNormal();
 	ViewGBuffers();
+#endif
 
 	// 最終的にバックバッファに描画
 	auto hRTV = GetRTV();
 	SetRenderTarget(1, &hRTV, DSV->GetHandleDSV().hCPU);
 
 	// 登録された情報をクリア
-	for (int i = 0; i < RenderObjects.size(); ++i)
-	{
-		RenderObjects[i].clear();
-	}
+	ForwardObjects.clear();
+	DefferedObjects.clear();
 }
 
 DescriptorHeap::Handle RenderingEngine::GetGlobalConstantBufferResource(UINT key)
@@ -241,22 +240,27 @@ void RenderingEngine::WriteGlobalConstantBufferResource()
 	GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light]->Write(&light);
 }
 
-void RenderingEngine::AddRenderObject(GameObject& obj, RenderingPass::RenderingPassType pass, Material::MainPassRenderingTiming timing)
+void RenderingEngine::AddRenderObject(GameObject& obj, Material::RenderingTiming timing)
 {
 	RenderingInfo info = { obj };
-	switch (pass)
+	switch (timing)
 	{
-	case RenderingPass::Shadow:
+	case Material::Shadow:
 		break;
-	case RenderingPass::OpaqueDepthNormal:
+	case Material::OpaqueDepthNormal:
 		RenderingPasses[RenderingPass::RenderingPassType::OpaqueDepthNormal]->AddObj(obj);
 		break;
-	case RenderingPass::Forward:
-		RenderObjects[timing].push_back(info);
+	case Material::Deffered:
+		DefferedObjects.push_back(info);
 		break;
-	case RenderingPass::TranslucentDepthNormal:
+	case Material::Forward:
+		ForwardObjects.push_back(info);
 		break;
-	case RenderingPass::Other:
+	case Material::TranslucentDepthNormal:
+		break;
+	case Material::Canvas:
+		break;
+	case Material::Other:
 		break;
 	default:
 		break;
@@ -315,9 +319,9 @@ void RenderingEngine::DefferedRendering()
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// ディファードレンダリング
-	for (int i = 0; i < RenderObjects[Material::MainPassRenderingTiming::DEFERRED].size(); ++i)
+	for (int i = 0; i < DefferedObjects.size(); ++i)
 	{
-		RenderObjects[Material::MainPassRenderingTiming::DEFERRED][i].obj.RenderingBase();
+		DefferedObjects[i].obj.RenderingBase();
 	}
 
 	// リソース化
@@ -348,9 +352,9 @@ void RenderingEngine::ForwardRendering()
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// フォワードレンダリング
-	for (int i = 0; i < RenderObjects[Material::MainPassRenderingTiming::FORWARD].size(); ++i)
+	for (int i = 0; i < ForwardObjects.size(); ++i)
 	{
-		RenderObjects[Material::MainPassRenderingTiming::FORWARD][i].obj.RenderingBase();
+		ForwardObjects[i].obj.RenderingBase();
 	}
 
 	// リソース化

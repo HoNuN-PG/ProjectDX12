@@ -27,7 +27,7 @@ HRESULT SceneSandBoxDX12::Init()
 	{
 		std::shared_ptr<Material> opaque_depth_normal;
 		opaque_depth_normal = std::make_shared<M_DepthNormal>();
-		opaque_depth_normal->Initialize(Heap.get(), RenderingPass::OpaqueDepthNormal);
+		opaque_depth_normal->Initialize(Heap.get(), Material::RenderingTiming::OpaqueDepthNormal);
 
 		std::shared_ptr<Material> simple_lit;
 		simple_lit = std::make_shared<M_SimpleLit>();
@@ -45,11 +45,11 @@ HRESULT SceneSandBoxDX12::Init()
 	{
 		std::shared_ptr<Material> opaque_depth_normal;
 		opaque_depth_normal = std::make_shared<M_DepthNormal>();
-		opaque_depth_normal->Initialize(Heap.get(), RenderingPass::OpaqueDepthNormal);
+		opaque_depth_normal->Initialize(Heap.get(), Material::RenderingTiming::OpaqueDepthNormal);
 
 		std::shared_ptr<Material> deffered_albedo_normal;
 		deffered_albedo_normal = std::make_shared<M_Deffered_Albedo_Normal>();
-		deffered_albedo_normal->Initialize(Heap.get(), RenderingPass::Forward, Material::DEFERRED);
+		deffered_albedo_normal->Initialize(Heap.get(), Material::RenderingTiming::Deffered);
 		deffered_albedo_normal->AddTexture("assets/model/spot/spot_texture.png");
 
 		std::vector<std::shared_ptr<Material>> materials;

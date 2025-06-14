@@ -3,7 +3,7 @@
 
 #include <DirectXMath.h>
 
-class MyMath
+class DirectXFunctionLiblaly
 {
 public:
 	static DirectX::XMFLOAT3 Subtraction(const DirectX::XMFLOAT3& obj1, const DirectX::XMFLOAT3& obj2)

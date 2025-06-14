@@ -88,7 +88,7 @@ private:
 
 	// レンダリングオブジェクト
 public:
-	void AddRenderObject(GameObject& obj, RenderingPass::RenderingPassType pass ,Material::MainPassRenderingTiming timing);
+	void AddRenderObject(GameObject& obj, Material::RenderingTiming timing);
 	// ポストプロセスの追加や取得
 	template <typename T>
 	T* AddVolume()
@@ -111,13 +111,14 @@ public:
 		return CanvasPostProcess->GetVolume<T>();
 	}
 private:
-	std::vector<std::vector<RenderingInfo>> RenderObjects;
+	std::vector<RenderingInfo> DefferedObjects;
+	std::vector<RenderingInfo> ForwardObjects;
 	std::unique_ptr<PostProcess> ObjectPostProcess;			// オブジェクト描画後のポストプロセス
 	std::unique_ptr<PostProcess> CanvasPostProcess;			// キャンバス描画後のポストプロセス
 
 	// レンダリング
 public:
-	static RenderingPass::RenderingPassType GetCurrentRenderingPass() { return CurrentRenderingPass; }
+	static Material::RenderingTiming GetCurrentRenderingPass() { return CurrentRenderingTiming; }
 private:
 	void OpaqueDepthNormalRendering();
 	void DefferedRendering();
@@ -129,7 +130,7 @@ private:
 	void ViewDepthNormal();
 	void ViewGBuffers();
 private:
-	static RenderingPass::RenderingPassType CurrentRenderingPass;
+	static Material::RenderingTiming CurrentRenderingTiming;
 
 };
 

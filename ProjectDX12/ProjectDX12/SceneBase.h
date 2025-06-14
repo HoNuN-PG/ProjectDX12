@@ -23,7 +23,6 @@ public:
 		OpaqueInstance,
 		Translucent,
 		TranslucentInstance,
-		Canvas,
 
 		MAX_LAYER,
 	};

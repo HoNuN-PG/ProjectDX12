@@ -4,10 +4,9 @@
 #include "M_SimpleLit.h"
 #include "RenderingEngine.h"
 
-void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingPass::RenderingPassType pass, MainPassRenderingTiming timing)
+void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 {
 	Timing = timing;
-	Pass = pass;
 
 	// 定数バッファ
 	{
@@ -21,7 +20,7 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingPass::RenderingPassT
 		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
 		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
 	}
-	
+
 	RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},

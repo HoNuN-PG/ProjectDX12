@@ -13,6 +13,7 @@ class Vignette : public Volume
 public:
 	struct VignetteParams
 	{
+		DirectX::XMFLOAT4 color;
 		float start;
 		float range;
 		DirectX::XMFLOAT2 pad1;

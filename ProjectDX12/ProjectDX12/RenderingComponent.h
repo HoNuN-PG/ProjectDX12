@@ -11,25 +11,6 @@
 class RenderingComponent : public Component
 {
 public:
-	enum RenderingTiming
-	{
-		CAM = 0,
-		SKYBOX,
-		LIGHT,
-		DEFERRED,
-		FORWARD,
-		CANVAS,
-		AFTER_POSTPROCESS,
-		BACK_BUFFER,
-
-		MAX_TIMING
-	};
-	RenderingTiming GetRenderingTiming()
-	{ return Timing; }
-private:
-	RenderingTiming Timing = RenderingTiming::FORWARD;
-
-public:
 	using Component::Component;
 
 	virtual void Init() override {};

@@ -7,6 +7,7 @@ struct PS_IN
 
 cbuffer Vignette : register(b0)
 {
+    float4 color;
     float start;
     float range;
 };
@@ -16,8 +17,8 @@ SamplerState samp : register(s0);
 
 float4 main(PS_IN pin) : SV_TARGET
 {
-    float4 color = float4(0, 0, 0, 1);
-    color = tex.Sample(samp, pin.uv);
+    float4 albedo = float4(0, 0, 0, 1);
+    albedo = tex.Sample(samp, pin.uv);
 
 	// ç≈ëÂãóó£
     const float max = length(float2(1.0f, 1.0f) - float2(0.5f, 0.5f));
@@ -35,7 +36,7 @@ float4 main(PS_IN pin) : SV_TARGET
     f = pow(f, 2.0f);
 
 	// ï‚ä‘
-    color = lerp(color, float4(1, 0, 0, 1), f);
+    albedo = lerp(albedo, color, f);
 
-    return float4(color.xyz, 1.0f);
+    return float4(albedo.xyz, 1.0f);
 }

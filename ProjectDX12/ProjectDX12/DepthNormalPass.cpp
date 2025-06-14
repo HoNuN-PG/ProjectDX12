@@ -7,7 +7,7 @@
 
 OpaqueDepthNormalPass::OpaqueDepthNormalPass()
 {
-	PassID = RenderingPass::RenderingPassType::OpaqueDepthNormal;
+	PassType = RenderingPass::RenderingPassType::OpaqueDepthNormal;
 	Depth = Engine->GetGlobalRenderTarget(GlobalTextureResourceKey::DepthTexture);
 	Normal = Engine->GetGlobalRenderTarget(GlobalTextureResourceKey::NormalTexture);
 }
