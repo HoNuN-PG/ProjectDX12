@@ -15,14 +15,14 @@ void GameObject::InitBase()
 
 void GameObject::UninitBase()
 {
-	for (GameObject* child : ChildGameObjects)
+	for (std::shared_ptr<GameObject> child : ChildGameObjects)
 	{
 		child->UninitBase();
 	}
-	for (Component* component : Components)
+	for (std::shared_ptr<Component> component : Components)
 	{
 		component->Uninit();
-		delete component;
+		component = nullptr;
 	}
 	Uninit();
 
@@ -32,11 +32,11 @@ void GameObject::UninitBase()
 
 void GameObject::UpdateBase()
 {
-	for (GameObject* child : ChildGameObjects)
+	for (std::shared_ptr<GameObject> child : ChildGameObjects)
 	{
 		child->UpdateBase();
 	}
-	for (Component* component : Components)
+	for (std::shared_ptr<Component> component : Components)
 	{
 		component->Update();
 	}
@@ -56,13 +56,13 @@ void GameObject::DrawBase(DirectX::XMFLOAT4X4 ParentMatrix)
 	);
 	WorldPosition = { fx4World._41,fx4World._42,fx4World._43 };
 
-	for (GameObject* child : ChildGameObjects)
+	for (std::shared_ptr<GameObject> child : ChildGameObjects)
 	{
 		child->DrawBase(fx4World);
 	}
 
 	Draw();
-	for (Component* component : Components)
+	for (std::shared_ptr<Component> component : Components)
 	{
 		component->Draw();
 	}
@@ -77,12 +77,9 @@ void GameObject::BindRenderingEngine(Material::RenderingTiming timing)
 void GameObject::RenderingBase()
 {
 	Rendering();
-	for (Component* component : Components)
+	for (std::weak_ptr<RenderingComponent> comp : GetComponents<RenderingComponent>())
 	{
-		if (RenderingComponent* rendering = dynamic_cast<RenderingComponent*>(component))
-		{
-			rendering->Rendering();
-		}
+		comp.lock()->Rendering();
 	}
 }
 

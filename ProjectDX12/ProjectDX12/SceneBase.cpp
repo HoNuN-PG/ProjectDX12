@@ -24,10 +24,10 @@ void SceneBase::UninitBase()
 {
 	for (auto& objectList : GameObjects)
 	{
-		for (GameObject* object : objectList)
+		for (std::shared_ptr<GameObject> object : objectList)
 		{
 			object->UninitBase();
-			delete object;
+			object = nullptr;
 		}
 		objectList.clear();
 	}
@@ -39,7 +39,7 @@ void SceneBase::UpdateBase()
 {
 	for (int i = 0; i < MAX_LAYER; i++)
 	{
-		for (GameObject* object : GameObjects[i])
+		for (std::shared_ptr<GameObject> object : GameObjects[i])
 		{
 			object->UpdateBase();
 		}
@@ -47,7 +47,7 @@ void SceneBase::UpdateBase()
 	for (auto& objectList : GameObjects)
 	{
 		objectList.remove_if(
-			[](GameObject* object) {return object->Destroy(); });
+			[](std::shared_ptr<GameObject> object) {return object->Destroy(); });
 	}
 	Update();
 	Engine->Update();
@@ -59,7 +59,7 @@ void SceneBase::DrawBase()
 	DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixIdentity());
 	for (int i = 0; i < MAX_LAYER; i++)
 	{
-		for (GameObject* object : GameObjects[i])
+		for (std::shared_ptr<GameObject> object : GameObjects[i])
 		{
 			object->DrawBase(matrix);
 		}

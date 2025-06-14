@@ -44,47 +44,46 @@ public:
 	// ゲームオブジェクト
 public:
 	template <typename T>
-	T* AddGameObject(Layer layer = Opaque)
+	std::shared_ptr<T> AddGameObject(Layer layer = Opaque)
 	{
-		std::shared_ptr<T> s = std::make_shared<T>();
-		T* gameObject = new T();
+		std::shared_ptr<T> gameObject = std::make_shared<T>();
 		GameObjects[layer].push_back(gameObject);
-		gameObject->InitBase();
+		GameObjects[layer].back()->InitBase();
 		return gameObject;
 	}
 	template <typename T>
-	T* GetGameObject()
+	std::shared_ptr<T> GetGameObject()
 	{
 		for (auto& objectList : GameObjects)
 		{
-			for (GameObject* object : objectList)
+			for (std::shared_ptr<GameObject> object : objectList)
 			{
-				if (typeid(*object) == typeid(T))
+				if (std::shared_ptr<T> o = std::dynamic_pointer_cast<T>(object))
 				{
-					return (T*)object;
+					return o;
 				}
 			}
 		}
 		return nullptr;
 	}
 	template <typename T>
-	std::vector<T*> GetGameObjects()
+	std::vector<std::shared_ptr<T>> GetGameObjects()
 	{
-		std::vector<T*> objects;
+		std::vector<std::shared_ptr<T>> objects;
 		for (auto& objectList : GameObjects)
 		{
-			for (GameObject* object : objectList)
+			for (std::shared_ptr<GameObject> object : objectList)
 			{
-				if (typeid(*object) == typeid(T))
+				if (std::shared_ptr<T> o = std::dynamic_pointer_cast<T>(object))
 				{
-					objects.push_back((T*)object);
+					objects.push_back(o);
 				}
 			}
 		}
 		return objects;
 	}
 protected:
-	std::array<std::list<GameObject*>, MAX_LAYER> GameObjects;
+	std::array<std::list<std::shared_ptr<GameObject>>, MAX_LAYER> GameObjects;
 
 	// レンダリングエンジン
 public:

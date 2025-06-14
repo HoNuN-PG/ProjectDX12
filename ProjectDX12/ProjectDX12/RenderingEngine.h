@@ -75,8 +75,8 @@ private:
 private:
 	void WriteGlobalConstantBufferResource();
 private:
-	CameraDebug* Camera;
-	LightBase* Light;
+	std::shared_ptr<CameraDebug> Camera;
+	std::shared_ptr<LightBase> Light;
 
 	// ƒŠƒ\[ƒX
 private:

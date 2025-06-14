@@ -37,9 +37,9 @@ HRESULT SceneSandBoxDX12::Init()
 		materials.push_back(opaque_depth_normal);
 		materials.push_back(simple_lit);
 		
-		GameObject* obj = AddGameObject<GameObject>();
+		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ -1,0,0 });
-		Model* model = obj->AddComponent<Model>();
+		std::shared_ptr<Model> model = obj->AddComponent<Model>();
 		model->Create(materials, "assets/model/spot/spot.fbx");
 	}
 	{
@@ -56,9 +56,9 @@ HRESULT SceneSandBoxDX12::Init()
 		materials.push_back(opaque_depth_normal);
 		materials.push_back(deffered_albedo_normal);
 		
-		GameObject* obj = AddGameObject<GameObject>();
+		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 1,0,0 });
-		Model* model = obj->AddComponent<Model>();
+		std::shared_ptr<Model> model = obj->AddComponent<Model>();
 		model->Create(materials, "assets/model/spot/spot.fbx");
 	}
 

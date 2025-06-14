@@ -38,8 +38,8 @@ protected:
 	DirectX::XMFLOAT4X4 fx4World;							// ワールドマトリクス
 
 	// ゲームオブジェクト構成要素
-	std::list<GameObject*> ChildGameObjects;				// 子オブジェクト
-	std::list<Component*> Components;						// コンポーネント
+	std::list<std::shared_ptr<GameObject>> ChildGameObjects;				// 子オブジェクト
+	std::list<std::shared_ptr<Component>> Components;						// コンポーネント
 
 	// 削除フラグ
 	bool bDestroy = false;
@@ -58,68 +58,44 @@ public:
 
 	// 子オブジェクトの追加
 	template <typename T>
-	T* AddChild()
+	std::shared_ptr<T> AddChild()
 	{
-		T* child = new T();
+		std::shared_ptr<T> child = std::make_shared<T>();
 		ChildGameObjects.push_back(child);
-		child->InitBase();
+		ChildGameObjects.back()->InitBase();
 		return child;
 	}
 
 	// コンポーネントの追加・取得
 	template <typename T>
-	T* AddComponent()
+	std::shared_ptr<T> AddComponent()
 	{
-		T* component = new T(this);
+		std::shared_ptr<T> component = std::make_shared<T>(this);
 		Components.push_back(component);
-		((Component*)component)->Init();
-
+		Components.back()->Init();
 		return component;
 	}
 	template <typename T>
-	T* GetComponent()
+	std::shared_ptr<T> GetComponent()
 	{
-		for (Component* component : Components)
+		for (std::shared_ptr<Component> component : Components)
 		{ // 探索
-			if (typeid(*component) == typeid(T))
+			if (std::shared_ptr<T> c = std::dynamic_pointer_cast<T>(component))
 			{
-				return (T*)component;
+				return c;
 			}
 		}
 		return nullptr;
 	}
 	template <typename T>
-	std::vector<T*> GetComponents()
+	std::vector<std::shared_ptr<T>> GetComponents()
 	{
-		std::vector<T*> components;
-		for (Component* component : Components)
+		std::vector<std::shared_ptr<T>> components;
+		for (std::shared_ptr<Component> component : Components)
 		{ // 探索
-			if (typeid(*component) == typeid(T))
+			if (std::shared_ptr<T> c = std::dynamic_pointer_cast<T>(component))
 			{
-				components.push_back(component);
-			}
-		}
-		return components;
-	}
-	template <typename T>
-	T* GetComponentDynamic()
-	{
-		for (Component* component : Components)
-		{ // 探索
-			if (dynamic_cast<T*>(component))
-				return (T*)component;
-		}
-		return nullptr;
-	}
-	template <typename T>
-	std::vector<T*> GetComponentsDynamic()
-	{
-		std::vector<T*> components;
-		for (Component* component : Components)
-		{ // 探索
-			if (dynamic_cast<T*>(component))
-			{
-				components.push_back((T*)component);
+				components.push_back(c);
 			}
 		}
 		return components;
