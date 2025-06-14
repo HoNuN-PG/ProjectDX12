@@ -11,7 +11,7 @@
 #include <assimp/postprocess.h>
 #pragma comment(lib, "assimp-vc141-mtd.lib")
 
-void Model::Create(std::vector<Material*> materials, const char* path)
+void Model::Create(std::vector<std::shared_ptr<Material>> materials, const char* path)
 {
 	MaterialData = materials;
 

@@ -17,15 +17,13 @@ class SceneBase
 public:
 	enum Layer
 	{
-		CAM = 0,
-		SKYBOX,
-		LIGHT,
-		OPACITY,
-		OPACITY_INC,
-		TRANSPARENCY,
-		TRANSPARENCY_INC,
-		DEPTH,
-		UI,
+		Camera = 0,
+		Environment,
+		Opaque,
+		OpaqueInstance,
+		Translucent,
+		TranslucentInstance,
+		Canvas,
 
 		MAX_LAYER,
 	};
@@ -47,7 +45,7 @@ public:
 	// ゲームオブジェクト
 public:
 	template <typename T>
-	T* AddGameObject(Layer layer = OPACITY)
+	T* AddGameObject(Layer layer = Opaque)
 	{
 		std::shared_ptr<T> s = std::make_shared<T>();
 		T* gameObject = new T();

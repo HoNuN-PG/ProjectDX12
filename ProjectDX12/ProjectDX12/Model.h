@@ -28,7 +28,7 @@ public:
 
 public:
 	virtual ~Model(){}
-	void Create(std::vector<Material*> materials, const char* path);
+	void Create(std::vector<std::shared_ptr<Material>> materials, const char* path);
 
 };
 

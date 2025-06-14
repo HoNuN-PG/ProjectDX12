@@ -25,29 +25,37 @@ HRESULT SceneSandBoxDX12::Init()
 
 	// ÉÇÉfÉãçÏê¨
 	{
-		std::vector<Material*> materials;
-		Materials.push_back(std::make_unique<M_DepthNormal>());
-		Materials.back()->Initialize(Heap.get(), RenderingPass::O_DEPTH_NORMAL_PASS);
-		materials.push_back(Materials.back().get());
-		Materials.push_back(std::make_unique<M_SimpleLit>());
-		Materials.back()->Initialize(Heap.get());
-		materials.push_back(Materials.back().get());
+		std::shared_ptr<Material> opaque_depth_normal;
+		opaque_depth_normal = std::make_shared<M_DepthNormal>();
+		opaque_depth_normal->Initialize(Heap.get(), RenderingPass::OpaqueDepthNormal);
 
+		std::shared_ptr<Material> simple_lit;
+		simple_lit = std::make_shared<M_SimpleLit>();
+		simple_lit->Initialize(Heap.get());
+
+		std::vector<std::shared_ptr<Material>> materials;
+		materials.push_back(opaque_depth_normal);
+		materials.push_back(simple_lit);
+		
 		GameObject* obj = AddGameObject<GameObject>();
 		obj->SetPosition({ -1,0,0 });
 		Model* model = obj->AddComponent<Model>();
 		model->Create(materials, "assets/model/spot/spot.fbx");
 	}
 	{
-		std::vector<Material*> materials;
-		Materials.push_back(std::make_unique<M_DepthNormal>());
-		Materials.back()->Initialize(Heap.get(), RenderingPass::O_DEPTH_NORMAL_PASS);
-		materials.push_back(Materials.back().get());
-		Materials.push_back(std::make_unique<M_Deffered_Albedo_Normal>());
-		Materials.back()->Initialize(Heap.get(), RenderingPass::MAIN, Material::DEFERRED);
-		Materials.back()->AddTexture("assets/model/spot/spot_texture.png");
-		materials.push_back(Materials.back().get());
+		std::shared_ptr<Material> opaque_depth_normal;
+		opaque_depth_normal = std::make_shared<M_DepthNormal>();
+		opaque_depth_normal->Initialize(Heap.get(), RenderingPass::OpaqueDepthNormal);
 
+		std::shared_ptr<Material> deffered_albedo_normal;
+		deffered_albedo_normal = std::make_shared<M_Deffered_Albedo_Normal>();
+		deffered_albedo_normal->Initialize(Heap.get(), RenderingPass::Forward, Material::DEFERRED);
+		deffered_albedo_normal->AddTexture("assets/model/spot/spot_texture.png");
+
+		std::vector<std::shared_ptr<Material>> materials;
+		materials.push_back(opaque_depth_normal);
+		materials.push_back(deffered_albedo_normal);
+		
 		GameObject* obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 1,0,0 });
 		Model* model = obj->AddComponent<Model>();

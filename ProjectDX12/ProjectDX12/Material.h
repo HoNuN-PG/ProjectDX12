@@ -44,7 +44,7 @@ public:
 	/// <param name="pass">実行パス</param>
 	/// <param name="timing">メインパス内での描画タイミング</param>
 	virtual void Initialize(DescriptorHeap* heap,
-		RenderingPass::RenderingPassType pass = RenderingPass::RenderingPassType::MAIN ,
+		RenderingPass::RenderingPassType pass = RenderingPass::RenderingPassType::Forward ,
 		MainPassRenderingTiming timing = MainPassRenderingTiming::FORWARD) = 0;
 	virtual void Draw() = 0;
 	void AddTexture(const char* path);

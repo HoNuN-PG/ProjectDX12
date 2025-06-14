@@ -31,7 +31,7 @@ void Primitive::Rendering()
 	MeshData->Draw();
 }
 
-void Primitive::AddMaterial(Material* material)
+void Primitive::AddMaterial(std::shared_ptr<Material> material)
 {
 	MaterialData.push_back(material);
 }

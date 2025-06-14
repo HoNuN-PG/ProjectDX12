@@ -5,6 +5,7 @@
 #include "MeshBuffer.h"
 #include "Material.h"
 
+#include <memory>
 #include <vector>
 
 class RenderingComponent : public Component
@@ -38,11 +39,11 @@ public:
 	virtual void Rendering() = 0;
 
 public:
-	std::vector<Material*> GetMaterials()
+	std::vector<std::shared_ptr<Material>> GetMaterials()
 	{ return MaterialData; }
 protected:
 	std::unique_ptr<MeshBuffer> MeshData;
-	std::vector<Material*> MaterialData;
+	std::vector<std::shared_ptr<Material>> MaterialData;
 
 };
 

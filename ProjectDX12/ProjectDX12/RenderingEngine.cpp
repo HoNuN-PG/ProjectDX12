@@ -124,7 +124,7 @@ void RenderingEngine::Init()
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>();
 
 	// レンダリングパス
-	RenderingPasses[RenderingPass::RenderingPassType::O_DEPTH_NORMAL_PASS] = std::make_unique<OpaqueDepthNormalPass>();
+	RenderingPasses[RenderingPass::RenderingPassType::OpaqueDepthNormal] = std::make_unique<OpaqueDepthNormalPass>();
 
 	// レンダリングオブジェクト
 	RenderObjects.resize(Material::MainPassRenderingTiming::MAX_TIMING);
@@ -152,13 +152,13 @@ void RenderingEngine::Draw()
 	DSV->Clear();
 
 	WriteGlobalConstantBufferResource();
-	CurrentRenderingPass = RenderingPass::RenderingPassType::O_DEPTH_NORMAL_PASS;
+	CurrentRenderingPass = RenderingPass::RenderingPassType::OpaqueDepthNormal;
 	OpaqueDepthNormalRendering();
-	CurrentRenderingPass = RenderingPass::RenderingPassType::MAIN;
+	CurrentRenderingPass = RenderingPass::RenderingPassType::Forward;
 	DefferedRendering();
 	DefferedLighting();
 	ForwardRendering();
-	CurrentRenderingPass = RenderingPass::RenderingPassType::T_DEPTH_NORMAL_PASS;
+	CurrentRenderingPass = RenderingPass::RenderingPassType::TranslucentDepthNormal;
 	TranslucentDepthNormalRendering();
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
@@ -246,17 +246,17 @@ void RenderingEngine::AddRenderObject(GameObject& obj, RenderingPass::RenderingP
 	RenderingInfo info = { obj };
 	switch (pass)
 	{
-	case RenderingPass::SHADOW:
+	case RenderingPass::Shadow:
 		break;
-	case RenderingPass::O_DEPTH_NORMAL_PASS:
-		RenderingPasses[RenderingPass::RenderingPassType::O_DEPTH_NORMAL_PASS]->AddObj(obj);
+	case RenderingPass::OpaqueDepthNormal:
+		RenderingPasses[RenderingPass::RenderingPassType::OpaqueDepthNormal]->AddObj(obj);
 		break;
-	case RenderingPass::MAIN:
+	case RenderingPass::Forward:
 		RenderObjects[timing].push_back(info);
 		break;
-	case RenderingPass::T_DEPTH_NORMAL_PASS:
+	case RenderingPass::TranslucentDepthNormal:
 		break;
-	case RenderingPass::OTHER:
+	case RenderingPass::Other:
 		break;
 	default:
 		break;
@@ -283,7 +283,7 @@ void RenderingEngine::OpaqueDepthNormalRendering()
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// DepthNormal
-	RenderingPasses[RenderingPass::RenderingPassType::O_DEPTH_NORMAL_PASS]->Execute();
+	RenderingPasses[RenderingPass::RenderingPassType::OpaqueDepthNormal]->Execute();
 
 	// リソース化
 	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(

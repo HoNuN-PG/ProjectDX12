@@ -7,7 +7,7 @@ class M_DepthNormal : public Material
 {
 public:
 	virtual void Initialize(DescriptorHeap* heap, 
-		RenderingPass::RenderingPassType pass = RenderingPass::RenderingPassType::MAIN,
+		RenderingPass::RenderingPassType pass = RenderingPass::RenderingPassType::Forward,
 		MainPassRenderingTiming timing = MainPassRenderingTiming::FORWARD) override;
 	virtual void Draw() override;
 

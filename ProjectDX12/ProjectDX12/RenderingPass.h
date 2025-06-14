@@ -10,13 +10,14 @@ class RenderingPass
 public:
 	enum RenderingPassType
 	{
-		SHADOW = 0,					// シャドウ
-		O_DEPTH_NORMAL_PASS,		// 不透明深度
-		MAIN,						// メイン
-		T_DEPTH_NORMAL_PASS,		// 透明深度
-		OTHER,						// その他
+		Shadow = 0,					// シャドウ
+		OpaqueDepthNormal,			// 不透明深度
+		Forward,					// フォワード
+		Deffered,					// ディファード
+		TranslucentDepthNormal,		// 透明深度
+		Other,						// その他
 
-		MAX_RENDERING_PASS
+		MAX_RENDERING_PASS_TYPE
 	};
 public:
 	RenderingPassType GetID() { return PassID; }

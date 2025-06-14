@@ -28,7 +28,7 @@ public:
 public:
 	virtual ~Primitive() {}
 	virtual void Create() = 0;
-	void AddMaterial(Material* material);
+	void AddMaterial(std::shared_ptr<Material>);
 
 };
 
