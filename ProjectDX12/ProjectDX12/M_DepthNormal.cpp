@@ -9,9 +9,6 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 	{
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = heap;
-		// WVP
-		desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
-		WVP = std::make_unique<ConstantBuffer>(desc);
 	}
 
 	RootSignature::ParameterTable param[] = {
@@ -40,11 +37,11 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 	);
 }
 
-void M_DepthNormal::Draw()
+void M_DepthNormal::Bind()
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP->GetHandle().hGPU,
+		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
 	};
-	Material::DrawBase(desc, _countof(desc));
+	Material::BindBase(desc, _countof(desc));
 }

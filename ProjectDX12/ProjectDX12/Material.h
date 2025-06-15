@@ -31,8 +31,21 @@ public:
 	};
 
 public:
-	Material() {};
+	Material();
 	virtual ~Material() {};
+
+public:
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	static void Initialize(
+		std::shared_ptr<Material> material,
+		DescriptorHeap* heap,
+		RenderingTiming timing = RenderingTiming::Forward);
+protected:
+	virtual void Initialize(
+		DescriptorHeap* heap,
+		RenderingTiming timing = RenderingTiming::Forward) = 0;
 
 protected:
 	void Create
@@ -42,19 +55,29 @@ protected:
 		UINT paranNum,
 		Pipeline::Description pipeline
 	);
-	void DrawBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
+	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
 
 public:
 	/// <summary>
-	/// 初期化
+	/// MaterialInstanceIdxのマテリアル設定
+	/// MaterialInstanceIdxの更新が行われる
 	/// </summary>
-	virtual void Initialize(DescriptorHeap* heap,
-		RenderingTiming timing = RenderingTiming::Forward) = 0;
-	virtual void Draw() = 0;
+	virtual void Bind() = 0;
 	void AddTexture(const char* path);
+	void AddMaterialInstance();
+	/// <summary>
+	/// MaterialInstanceIdxごとにWVPを書き込み
+	/// WVPの書き込み直後にBindすることでMaterialInstanceIdxが正しく設定される
+	/// </summary>
+	/// <param name="data"></param>
 	void WriteWVP(void* data);
 	void WriteParams(void* data, UINT idx);
 	void WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDLE startHandle, D3D12_DESCRIPTOR_HEAP_TYPE type);
+
+	/// <summary>
+	/// 描画終了時に呼び出し
+	/// </summary>
+	void EndRendering();
 
 public:
 	RenderingTiming GetRenderTiming() { return Timing; };
@@ -64,7 +87,9 @@ protected:
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;
 	std::vector<std::unique_ptr<Texture>>			Textures;
-	std::unique_ptr<ConstantBuffer>					WVP;
+	unsigned int									MaterialInstanceCount;
+	unsigned int									MaterialInstanceIdx;
+	std::vector<std::unique_ptr<ConstantBuffer>>	WVP;
 	std::vector<std::unique_ptr<ConstantBuffer>>	Params;
 
 };

@@ -101,3 +101,89 @@ void MeshBuffer::Draw()
 		GetCommandList()->DrawInstanced(Desc.vtxCount, 1, 0, 0);
 	}
 }
+
+InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count) :
+	MeshBuffer(desc)
+{
+	InsCount = count >= 0 ? count : MAX_INSTANCE;
+
+	D3D12_HEAP_PROPERTIES heapProp = {};
+	heapProp.Type = D3D12_HEAP_TYPE_DEFAULT;
+	heapProp.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+	heapProp.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+	heapProp.CreationNodeMask = 1;
+	heapProp.VisibleNodeMask = 1;
+
+	D3D12_RESOURCE_DESC resDesc = {};
+	resDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	resDesc.Width = sizeof(InstanceData) * InsCount;
+	resDesc.Height = 1;
+	resDesc.DepthOrArraySize = 1;
+	resDesc.MipLevels = 1;
+	resDesc.Format = DXGI_FORMAT_UNKNOWN;
+	resDesc.SampleDesc.Count = 1;
+	resDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	resDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+	auto result = GetDevice()->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&resDesc,
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		nullptr,
+		IID_PPV_ARGS(&Ins)
+	);
+
+	if (FAILED(result))
+	{
+		return;
+	}
+
+	heapProp.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+	result = GetDevice()->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&resDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&InsUploader)
+	);
+}
+
+void InstanceMeshBuffer::MappingUploder()
+{
+	InstanceData* mappedData;
+	const size_t dataSize = sizeof(InstanceData);
+
+	auto result = InsUploader->Map(0, nullptr, reinterpret_cast<void**>(&mappedData));
+	if (FAILED(result))
+	{
+		return;
+	}
+
+	memcpy(mappedData, InsData.data(), dataSize * InsData.size());
+
+	InsUploader->Unmap(0, nullptr);
+
+	D3D12_SUBRESOURCE_DATA subResourceData = {};
+	subResourceData.pData = mappedData;
+	subResourceData.RowPitch = dataSize;
+	subResourceData.SlicePitch = subResourceData.RowPitch;
+
+	UpdateSubresources(GetCommandList(), Ins, InsUploader, 0, 0, 1, &subResourceData);
+}
+
+void InstanceMeshBuffer::Draw()
+{
+	GetCommandList()->IASetPrimitiveTopology(Desc.topology);
+	GetCommandList()->IASetVertexBuffers(0, 1, &Vbv);
+	if (Idx)
+	{
+		GetCommandList()->IASetIndexBuffer(&Ibv);
+		GetCommandList()->DrawIndexedInstanced(Desc.idxCount, InsCount, 0, 0, 0);
+	}
+	else {
+		GetCommandList()->DrawInstanced(Desc.vtxCount, 1, 0, 0);
+	}
+}

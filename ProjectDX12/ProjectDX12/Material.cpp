@@ -1,6 +1,21 @@
 
 #include "Material.h"
 
+#include "SceneManager.h"
+#include "RenderingEngine.h"
+
+Material::Material()
+{
+	MaterialInstanceCount = 0;
+	MaterialInstanceIdx = 0;
+}
+
+void Material::Initialize(std::shared_ptr<Material> material, DescriptorHeap* heap, RenderingTiming timing)
+{
+	material->Initialize(heap, timing);
+	SceneManager::GetCurrentScene()->GetRenderingEngine()->AddRenderingMaterial(material);
+}
+
 void Material::Create(
 	DescriptorHeap* heap, 
 	RootSignature::ParameterTable* param, 
@@ -30,7 +45,7 @@ void Material::Create(
 	}
 }
 
-void Material::DrawBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
+void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 {
 	PipelineData->Bind();
 	ID3D12DescriptorHeap* heaps[] =
@@ -39,6 +54,7 @@ void Material::DrawBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 	};
 	DescriptorHeap::Bind(heaps,1);
 	RootSignatureData->Bind(handle, handleNum);
+	MaterialInstanceIdx++;
 }
 
 void Material::AddTexture(const char* path)
@@ -49,9 +65,22 @@ void Material::AddTexture(const char* path)
 	Textures.push_back(std::make_unique<Texture>(desc));
 }
 
+void Material::AddMaterialInstance()
+{
+	MaterialInstanceCount++;
+	ConstantBuffer::Description desc = {};
+	desc.pHeap = Heap;
+	// WVP
+	desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
+	WVP.push_back(std::make_unique<ConstantBuffer>(desc));
+}
+
 void Material::WriteWVP(void* data)
 {
-	WVP->Write(data);
+	if (MaterialInstanceIdx >= MaterialInstanceCount) {
+		return;
+	}
+	WVP[MaterialInstanceIdx]->Write(data);
 }
 
 void Material::WriteParams(void* data, UINT idx)
@@ -66,4 +95,9 @@ void Material::WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDL
 		Params[startIdx]->GetHandle().hCPU,
 		startHandle,
 		type);
+}
+
+void Material::EndRendering()
+{
+	MaterialInstanceIdx = 0;
 }

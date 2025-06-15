@@ -6,8 +6,14 @@
 class Sphere : public Primitive
 {
 public:
+	using Primitive::Primitive;
+
 	virtual ~Sphere(){}
-	void Create() override;
+	virtual void Create(std::vector<std::shared_ptr<Material>> materials) override;
+	virtual void Create(std::vector<std::shared_ptr<Material>> materials, unsigned int instanced) override;
+
+private:
+	virtual void CreatePrimitive(unsigned int instanced) override;
 
 };
 

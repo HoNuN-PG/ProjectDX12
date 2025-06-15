@@ -12,9 +12,6 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 	{
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = heap;
-		// WVP
-		desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
-		WVP = std::make_unique<ConstantBuffer>(desc);
 		// Params
 		desc.size = sizeof(DirectX::XMFLOAT4X4);
 		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
@@ -49,7 +46,7 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 	);
 }
 
-void M_SimpleLit::Draw()
+void M_SimpleLit::Bind()
 {
 	// 定数バッファの設定
 	WriteParams((UINT)2, 0,
@@ -57,9 +54,9 @@ void M_SimpleLit::Draw()
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP->GetHandle().hGPU,
+		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
 		Params[0]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 	};
-	Material::DrawBase(desc, _countof(desc));
+	Material::BindBase(desc, _countof(desc));
 }

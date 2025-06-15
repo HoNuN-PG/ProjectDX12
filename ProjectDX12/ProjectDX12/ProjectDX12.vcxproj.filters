@@ -204,9 +204,6 @@
     <ClCompile Include="DepthStencil.cpp">
       <Filter>ソース ファイル\System\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="MeshBuffer.cpp">
-      <Filter>ソース ファイル\System\Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="Pipeline.cpp">
       <Filter>ソース ファイル\System\Rendering</Filter>
     </ClCompile>
@@ -245,6 +242,12 @@
     </ClCompile>
     <ClCompile Include="DepthNormalPass.cpp">
       <Filter>ソース ファイル\System\Rendering\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshBuffer.cpp">
+      <Filter>ソース ファイル\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="timer.cpp">
+      <Filter>ソース ファイル\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -347,9 +350,6 @@
     <ClInclude Include="Pipeline.h">
       <Filter>ヘッダー ファイル\System\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="MeshBuffer.h">
-      <Filter>ヘッダー ファイル\System\Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="DepthStencil.h">
       <Filter>ヘッダー ファイル\System\Rendering</Filter>
     </ClInclude>
@@ -388,6 +388,12 @@
     </ClInclude>
     <ClInclude Include="DepthNormalPass.h">
       <Filter>ヘッダー ファイル\System\Rendering\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshBuffer.h">
+      <Filter>ヘッダー ファイル\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
+      <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

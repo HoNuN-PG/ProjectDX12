@@ -14,6 +14,10 @@
 void Model::Create(std::vector<std::shared_ptr<Material>> materials, const char* path)
 {
 	MaterialData = materials;
+	for (auto material : MaterialData)
+	{
+		material->AddMaterialInstance();
+	}
 
 	MeshBuffer::Description desc = {};
 	// ƒ‚ƒfƒ‹“Çž
@@ -88,7 +92,7 @@ void Model::Rendering()
 				Owner->GetPosition(),
 				Owner->GetRotation(),
 				Owner->GetScale()));
-			material->Draw();
+			material->Bind();
 			break;
 		}
 	}

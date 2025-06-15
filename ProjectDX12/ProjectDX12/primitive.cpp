@@ -24,14 +24,9 @@ void Primitive::Rendering()
 				Owner->GetPosition(),
 				Owner->GetRotation(),
 				Owner->GetScale()));
-			material->Draw();
+			material->Bind();
 			break;
 		}
 	}
 	MeshData->Draw();
-}
-
-void Primitive::AddMaterial(std::shared_ptr<Material> material)
-{
-	MaterialData.push_back(material);
 }

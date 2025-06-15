@@ -2,6 +2,7 @@
 #define ___RENDERING_ENGINE_H___
 
 #include <vector>
+#include <list>
 #include <memory>
 #include <unordered_map>
 
@@ -92,6 +93,7 @@ private:
 
 	// レンダリングオブジェクト
 public:
+	// 描画オブジェクトの追加
 	void AddRenderObject(GameObject& obj, Material::RenderingTiming timing);
 	// ポストプロセスの追加や取得
 	template <typename T>
@@ -114,11 +116,14 @@ public:
 	{
 		return CanvasPostProcess->GetVolume<T>();
 	}
+	// 作成したマテリアルの追加
+	void AddRenderingMaterial(std::shared_ptr<Material> material);
 private:
 	std::vector<RenderingInfo> DefferedObjects;				// ディファードライティングオブジェクト
 	std::vector<RenderingInfo> ForwardObjects;				// フォワードライティングオブジェクト
 	std::unique_ptr<PostProcess> ObjectPostProcess;			// オブジェクト描画後のポストプロセス
 	std::unique_ptr<PostProcess> CanvasPostProcess;			// キャンバス描画後のポストプロセス
+	std::list<std::weak_ptr<Material>> RenderingMaterials;				// 作成されたマテリアル群
 
 	// レンダリング
 public:
@@ -133,6 +138,8 @@ private:
 	void CanvasPostProcessRendering();
 	void ViewDepthNormal();
 	void ViewGBuffers();
+	void EndRendering();
+
 private:
 	static Material::RenderingTiming CurrentRenderingTiming;
 

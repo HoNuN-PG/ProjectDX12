@@ -76,7 +76,7 @@
     <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>.</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -115,6 +115,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
@@ -207,6 +208,7 @@
     <ClCompile Include="sphere.cpp" />
     <ClCompile Include="StartUp.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="timer.cpp" />
     <ClCompile Include="vignette.cpp" />
     <ClCompile Include="volume.cpp" />
   </ItemGroup>
@@ -256,6 +258,7 @@
     <ClInclude Include="sphere.h" />
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="timer.h" />
     <ClInclude Include="vignette.h" />
     <ClInclude Include="volume.h" />
   </ItemGroup>

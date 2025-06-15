@@ -6,8 +6,14 @@
 class Plane : public Primitive
 {
 public:
+	using Primitive::Primitive;
+
 	virtual ~Plane() {}
-	void Create() override;
+	virtual void Create(std::vector<std::shared_ptr<Material>> materials) override;
+	virtual void Create(std::vector<std::shared_ptr<Material>> materials, unsigned int instanced = 0) override;
+
+private:
+	virtual void CreatePrimitive(unsigned int instanced) override;
 
 };
 

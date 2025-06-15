@@ -9,9 +9,6 @@ void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap, RenderingTiming 
 	{
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = heap;
-		// WVP
-		desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
-		WVP = std::make_unique<ConstantBuffer>(desc);
 	}
 
 	RootSignature::ParameterTable param[] = {
@@ -41,12 +38,12 @@ void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap, RenderingTiming 
 	);
 }
 
-void M_Deffered_Albedo_Normal::Draw()
+void M_Deffered_Albedo_Normal::Bind()
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP->GetHandle().hGPU,
+		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
 		Textures[0]->GetHandle().hGPU,
 	};
-	Material::DrawBase(desc, _countof(desc));
+	Material::BindBase(desc, _countof(desc));
 }

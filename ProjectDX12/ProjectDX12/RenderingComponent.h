@@ -13,6 +13,8 @@ class RenderingComponent : public Component
 public:
 	using Component::Component;
 
+	virtual ~RenderingComponent() {};
+
 	virtual void Init() override {};
 	virtual void Uninit() override {}
 	virtual void Update() override {}
@@ -23,8 +25,10 @@ public:
 	std::vector<std::shared_ptr<Material>> GetMaterials()
 	{ return MaterialData; }
 protected:
-	std::unique_ptr<MeshBuffer> MeshData;
-	std::vector<std::shared_ptr<Material>> MaterialData;
+	std::unique_ptr<MeshBuffer>				MeshData;
+	std::unique_ptr<InstanceMeshBuffer>		InstanceMeshData;
+	bool									bInstanced;
+	std::vector<std::shared_ptr<Material>>	MaterialData;
 
 };
 

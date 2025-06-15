@@ -163,10 +163,9 @@ void RenderingEngine::Draw()
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
 	Copy::Copy::ExecuteCopy(GlobalHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get(), GetRTV());
-#ifdef _DEBUG
 	ViewDepthNormal();
 	ViewGBuffers();
-#endif
+	EndRendering();
 
 	// 最終的にバックバッファに描画
 	auto hRTV = GetRTV();
@@ -266,6 +265,11 @@ void RenderingEngine::AddRenderObject(GameObject& obj, Material::RenderingTiming
 	default:
 		break;
 	}
+}
+
+void RenderingEngine::AddRenderingMaterial(std::shared_ptr<Material> material)
+{
+	RenderingMaterials.push_back(material);
 }
 
 void RenderingEngine::OpaqueDepthNormalRendering()
@@ -435,4 +439,17 @@ void RenderingEngine::ViewGBuffers()
 			GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture].get()), { 240,135 });
 	}
 	ImGui::End();
+}
+
+void RenderingEngine::EndRendering()
+{
+	for (auto material : RenderingMaterials)
+	{
+		material.lock()->EndRendering();
+	}
+	RenderingMaterials.remove_if(
+		[](std::weak_ptr<Material> object)
+		{
+			return object.expired();
+		});
 }

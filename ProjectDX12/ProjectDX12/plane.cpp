@@ -1,7 +1,27 @@
 
 #include "plane.h"
 
-void Plane::Create()
+void Plane::Create(std::vector<std::shared_ptr<Material>> materials)
+{
+	CreatePrimitive(0);
+	MaterialData = materials;
+	for (auto material : MaterialData)
+	{
+		material->AddMaterialInstance();
+	}
+}
+
+void Plane::Create(std::vector<std::shared_ptr<Material>> materials, unsigned int instanced)
+{
+	CreatePrimitive(instanced);
+	MaterialData = materials;
+	for (auto material : MaterialData)
+	{
+		material->AddMaterialInstance();
+	}
+}
+
+void Plane::CreatePrimitive(unsigned int instanced)
 {
 	// スクリーン頂点
 	Vertex screenVtx[] =
@@ -18,5 +38,14 @@ void Plane::Create()
 	desc.vtxSize = sizeof(Vertex);
 	desc.vtxCount = _countof(screenVtx);
 	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-	MeshData = std::make_unique<MeshBuffer>(desc);
+	if (instanced)
+	{
+		bInstanced = true;
+		InstanceMeshData = std::make_unique<InstanceMeshBuffer>(desc);
+	}
+	else
+	{
+		bInstanced = false;
+		MeshData = std::make_unique<MeshBuffer>(desc);
+	}
 }
