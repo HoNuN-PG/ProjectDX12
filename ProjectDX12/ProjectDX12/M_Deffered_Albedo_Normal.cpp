@@ -24,17 +24,20 @@ void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap, RenderingTiming 
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
+	Pipeline::Description pipeline;
+	pipeline.cull = D3D12_CULL_MODE_BACK;
+	pipeline.pInputLayout = layout;
+	pipeline.InputLayoutNum = _countof(layout);
+	pipeline.VSFile = L"assets/shader/VS_Object.cso";
+	pipeline.PSFile = L"assets/shader/PS_Deffered.cso";
+	pipeline.RenderTargetNum = 2;
 
 	Material::Create
 	(
 		heap,
 		param,
 		_countof(param),
-		layout,
-		_countof(layout),
-		L"assets/shader/VS_Object.cso",
-		L"assets/shader/PS_Deffered.cso",
-		2
+		pipeline
 	);
 }
 

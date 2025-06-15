@@ -14,6 +14,7 @@ public:
 	};
 	struct Description
 	{
+		D3D12_CULL_MODE			cull;
 		ID3D12RootSignature*	pRootSignature;
 		const wchar_t*			VSFile;
 		const wchar_t*			PSFile;

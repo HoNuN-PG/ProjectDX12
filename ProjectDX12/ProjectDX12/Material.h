@@ -34,6 +34,16 @@ public:
 	Material() {};
 	virtual ~Material() {};
 
+protected:
+	void Create
+	(
+		DescriptorHeap* heap,
+		RootSignature::ParameterTable* param,
+		UINT paranNum,
+		Pipeline::Description pipeline
+	);
+	void DrawBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
+
 public:
 	/// <summary>
 	/// èâä˙âª
@@ -45,31 +55,6 @@ public:
 	void WriteWVP(void* data);
 	void WriteParams(void* data, UINT idx);
 	void WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDLE startHandle, D3D12_DESCRIPTOR_HEAP_TYPE type);
-
-protected:
-	void Create
-	(
-		DescriptorHeap* heap,
-		RootSignature::ParameterTable* param,
-		UINT paranNum,
-		Pipeline::InputLayout* layout,
-		UINT layoutNum,
-		const wchar_t* vsPath,
-		const wchar_t* psPath,
-		UINT rtNum
-	);
-	void Create
-	(
-		DescriptorHeap* heap,
-		RootSignature::ParameterTables* param,
-		UINT paranNum,
-		Pipeline::InputLayout* layout,
-		UINT layoutNum,
-		const wchar_t* vsPath,
-		const wchar_t* psPath,
-		UINT rtNum
-	);
-	void DrawBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
 
 public:
 	RenderingTiming GetRenderTiming() { return Timing; };

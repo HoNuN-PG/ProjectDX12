@@ -91,6 +91,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 		};
 		Pipeline::Description desc = {};
+		desc.cull = D3D12_CULL_MODE_BACK;
 		desc.pInputLayout = layout;
 		desc.InputLayoutNum = _countof(layout);
 		desc.VSFile = L"assets/shader/VS_Sprite.cso";

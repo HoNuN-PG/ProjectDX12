@@ -9,7 +9,7 @@ Pipeline::Pipeline(Description desc)
 	// ラスタライザステート
 	D3D12_RASTERIZER_DESC rasterDesc	= {};
 	rasterDesc.MultisampleEnable		= false;
-	rasterDesc.CullMode					= D3D12_CULL_MODE_NONE;
+	rasterDesc.CullMode					= desc.cull;
 	rasterDesc.FillMode					= D3D12_FILL_MODE_SOLID;
 	rasterDesc.DepthClipEnable			= false;
 
