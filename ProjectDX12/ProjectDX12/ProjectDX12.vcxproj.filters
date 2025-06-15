@@ -249,6 +249,9 @@
     <ClCompile Include="timer.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
+    <ClCompile Include="M_Grid.cpp">
+      <Filter>ソース ファイル\Material\Mterials</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectX.h">
@@ -395,6 +398,9 @@
     <ClInclude Include="timer.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
+    <ClInclude Include="M_Grid.h">
+      <Filter>ヘッダー ファイル\Material\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="CommonLighting.hlsl">
@@ -429,6 +435,12 @@
     </FxCompile>
     <FxCompile Include="PS_Vignette.hlsl">
       <Filter>リソース ファイル\PS\Volume</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_WorldObject.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Grid.hlsl">
+      <Filter>リソース ファイル\PS\Common</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

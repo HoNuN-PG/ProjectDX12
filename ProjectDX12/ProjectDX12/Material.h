@@ -59,15 +59,15 @@ protected:
 
 public:
 	/// <summary>
-	/// MaterialInstanceIdxのマテリアル設定
-	/// MaterialInstanceIdxの更新が行われる
+	/// マテリアル設定
+	/// 設定後MaterialInstanceIdxが更新される
 	/// </summary>
 	virtual void Bind() = 0;
 	void AddTexture(const char* path);
 	void AddMaterialInstance();
 	/// <summary>
-	/// MaterialInstanceIdxごとにWVPを書き込み
-	/// WVPの書き込み直後にBindすることでMaterialInstanceIdxが正しく設定される
+	/// MaterialInstanceIdxにWVPを書き込み
+	/// WVPの書き込み直後にBindすることでMaterialInstanceIdxに書き込まれたWVPで設定を行う
 	/// </summary>
 	/// <param name="data"></param>
 	void WriteWVP(void* data);

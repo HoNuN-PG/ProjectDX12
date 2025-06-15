@@ -7,6 +7,7 @@
 #include "DepthStencil.h"
 #include "Pipeline.h"
 #include "RootSignature.h"
+#include "plane.h"
 #include "sphere.h"
 #include "Model.h"
 
@@ -14,6 +15,7 @@
 #include "M_DepthNormal.h"
 #include "M_Deffered_Albedo_Normal.h"
 #include "M_SimpleLit.h"
+#include "M_Grid.h"
 
 #include "ConstantWVP.h"
 
@@ -24,15 +26,30 @@ HRESULT SceneSandBoxDX12::Init()
 	// É{ÉäÉÖÅ[ÉÄí«â¡
 	GetRenderingEngine()->AddVolume<Vignette>();
 
-	std::shared_ptr<Material> opaque_depth_normal;
-	opaque_depth_normal = std::make_shared<M_DepthNormal>();
+	// DepthNormal
+	std::shared_ptr<M_DepthNormal> opaque_depth_normal = std::make_shared<M_DepthNormal>();
 	Material::Initialize(opaque_depth_normal, Heap.get(), Material::RenderingTiming::OpaqueDepthNormal);
-
-	std::shared_ptr<Material> simple_lit;
-	simple_lit = std::make_shared<M_SimpleLit>();
+	// Grid
+	std::shared_ptr<M_Grid> grid = std::make_shared<M_Grid>();
+	Material::Initialize(grid, Heap.get());
+	grid->SetDistance(1);
+	// SimpleLit
+	std::shared_ptr<M_SimpleLit> simple_lit = std::make_shared<M_SimpleLit>();
 	Material::Initialize(simple_lit, Heap.get());
 
 	// ÉÇÉfÉãçÏê¨
+	{
+		std::vector<std::shared_ptr<Material>> materials;
+		materials.push_back(opaque_depth_normal);
+		materials.push_back(grid);
+
+		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
+		obj->SetPosition({ 0,-1,0 });
+		obj->SetRotation({ DirectX::XMConvertToRadians(90),0,0 });
+		obj->SetScale({100,100,1});
+		std::shared_ptr<Plane> model = obj->AddComponent<Plane>();
+		model->Create(materials);
+	}
 	{		
 		std::vector<std::shared_ptr<Material>> materials;
 		materials.push_back(opaque_depth_normal);
@@ -57,16 +74,6 @@ HRESULT SceneSandBoxDX12::Init()
 		obj->SetPosition({ 1,0,0 });
 		std::shared_ptr<Model> model = obj->AddComponent<Model>();
 		model->Create(materials, "assets/model/spot/spot.fbx");
-	}
-	{
-		std::vector<std::shared_ptr<Material>> materials;
-		materials.push_back(opaque_depth_normal);
-		materials.push_back(simple_lit);
-
-		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
-		obj->SetPosition({ 0,5,0 });
-		std::shared_ptr<Sphere> model = obj->AddComponent<Sphere>();
-		model->Create(materials);
 	}
 
     return E_NOTIMPL;

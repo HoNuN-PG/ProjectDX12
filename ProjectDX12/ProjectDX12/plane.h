@@ -10,7 +10,7 @@ public:
 
 	virtual ~Plane() {}
 	virtual void Create(std::vector<std::shared_ptr<Material>> materials) override;
-	virtual void Create(std::vector<std::shared_ptr<Material>> materials, unsigned int instanced = 0) override;
+	virtual void Create(std::vector<std::shared_ptr<Material>> materials, unsigned int instanced) override;
 
 private:
 	virtual void CreatePrimitive(unsigned int instanced) override;
