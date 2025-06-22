@@ -51,20 +51,20 @@ protected:
 	void Create
 	(
 		DescriptorHeap* heap,
-		RootSignature::ParameterTable* param,
-		UINT paranNum,
+		RootSignature::DescriptionTable,
 		Pipeline::Description pipeline
 	);
 	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
 
 public:
+	void SetOwner(std::weak_ptr<class GameObject> owner) { Owner = owner; }
+	void AddMaterialInstance();
 	/// <summary>
 	/// マテリアル設定
 	/// 設定後MaterialInstanceIdxが更新される
 	/// </summary>
 	virtual void Bind() = 0;
 	void AddTexture(const char* path);
-	void AddMaterialInstance();
 	/// <summary>
 	/// MaterialInstanceIdxにWVPを書き込み
 	/// WVPの書き込み直後にBindすることでMaterialInstanceIdxに書き込まれたWVPで設定を行う
@@ -91,6 +91,8 @@ protected:
 	unsigned int									MaterialInstanceIdx;
 	std::vector<std::unique_ptr<ConstantBuffer>>	WVP;
 	std::vector<std::unique_ptr<ConstantBuffer>>	Params;
+protected:
+	std::weak_ptr<class GameObject>					Owner;
 
 };
 

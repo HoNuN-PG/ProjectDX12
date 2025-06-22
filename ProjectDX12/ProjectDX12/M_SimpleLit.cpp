@@ -1,7 +1,6 @@
 
-#include "GlobalResourceKey.h"
-
 #include "M_SimpleLit.h"
+#include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
 void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingTiming timing)
@@ -23,6 +22,9 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
+	RootSignature::DescriptionTable rootsignature;
+	rootsignature.pParam = param;
+	rootsignature.paramNum = _countof(param);
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
@@ -40,8 +42,7 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 	Material::Create
 	(
 		heap,
-		param,
-		_countof(param),
+		rootsignature,
 		pipeline
 	);
 }

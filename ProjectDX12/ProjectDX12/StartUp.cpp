@@ -50,7 +50,7 @@ void Draw()
 
 	// FPSŒv‘ªI—¹
 	gTimer->et = timeGetTime();
-	DWORD ms = gTimer->ObservationFPS(10);
+	DWORD ms = gTimer->ObservationFPS(100);
 	ImGui::Begin("GameFPS [ms]");
 	ImGui::Text("fps:%5.3f", 1000.0f / ms);
 	ImGui::End();

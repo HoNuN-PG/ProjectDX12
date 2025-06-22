@@ -1,14 +1,16 @@
 #ifndef ___COMPONENT_H___
 #define ___COMPONENT_H___
 
+#include <memory>
+
 class Component
 {
 protected:
-	class  GameObject* Owner = nullptr;
+	std::weak_ptr<class GameObject> Owner;
 
 public:
 	Component() = delete;
-	Component(class GameObject* Object) { Owner = Object; }
+	Component(std::shared_ptr<class GameObject> Object) { Owner = Object; }
 	virtual ~Component() {}
 
 	virtual void Init() {};

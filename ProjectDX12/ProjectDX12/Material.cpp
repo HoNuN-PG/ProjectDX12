@@ -18,18 +18,14 @@ void Material::Initialize(std::shared_ptr<Material> material, DescriptorHeap* he
 
 void Material::Create(
 	DescriptorHeap* heap, 
-	RootSignature::ParameterTable* param, 
-	UINT paranNum, 
+	RootSignature::DescriptionTable rootsignature,
 	Pipeline::Description pipeline)
 {
 	Heap = heap;
 
 	// ルートシグネチャ
 	{
-		RootSignature::DescriptionTable desc = {};
-		desc.pParam = param;
-		desc.paramNum = paranNum;
-		RootSignatureData = std::make_unique<RootSignature>(desc);
+		RootSignatureData = std::make_unique<RootSignature>(rootsignature);
 	}
 	// パイプライン
 	{

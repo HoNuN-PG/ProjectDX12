@@ -33,11 +33,26 @@ public:
 	{
 		ParameterTable*	pParam;
 		UINT			paramNum;
+		D3D12_TEXTURE_ADDRESS_MODE sample;
+
+		DescriptionTable() :
+			pParam(nullptr),
+			paramNum(0),
+			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
+		{}
 	};
 	struct DescriptionTables
 	{
 		ParameterTables*	pParam;
 		UINT				paramNum;
+		D3D12_TEXTURE_ADDRESS_MODE sample;
+
+		DescriptionTables() :
+			pParam(nullptr),
+			paramNum(0),
+			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
+		{
+		}
 	};
 
 public:
@@ -45,7 +60,7 @@ public:
 	RootSignature(DescriptionTables desc);
 	~RootSignature();
 private:
-	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param,UINT num);
+	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, UINT num);
 
 public:
 	ID3D12RootSignature* Get() 

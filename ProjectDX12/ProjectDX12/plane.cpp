@@ -7,6 +7,7 @@ void Plane::Create(std::vector<std::shared_ptr<Material>> materials)
 	MaterialData = materials;
 	for (auto material : MaterialData)
 	{
+		material->SetOwner(Owner);
 		material->AddMaterialInstance();
 	}
 }
@@ -17,6 +18,7 @@ void Plane::Create(std::vector<std::shared_ptr<Material>> materials, unsigned in
 	MaterialData = materials;
 	for (auto material : MaterialData)
 	{
+		material->SetOwner(Owner);
 		material->AddMaterialInstance();
 	}
 }
@@ -26,10 +28,10 @@ void Plane::CreatePrimitive(unsigned int instanced)
 	// スクリーン頂点
 	Vertex screenVtx[] =
 	{
-		{{-0.5f, 0.5f,0}, {0,0,1} ,{0,0}, {1,1,1,1}} ,
-		{{ 0.5f, 0.5f,0}, {0,0,1} ,{1,0}, {1,1,1,1}} ,
-		{{-0.5f,-0.5f,0}, {0,0,1} ,{0,1}, {1,1,1,1}} ,
-		{{ 0.5f,-0.5f,0}, {0,0,1} ,{1,1}, {1,1,1,1}} ,
+		{{-0.5f, 0.5f,0}, {0,0,-1} ,{0,0}, {1,1,1,1}} ,
+		{{ 0.5f, 0.5f,0}, {0,0,-1} ,{1,0}, {1,1,1,1}} ,
+		{{-0.5f,-0.5f,0}, {0,0,-1} ,{0,1}, {1,1,1,1}} ,
+		{{ 0.5f,-0.5f,0}, {0,0,-1} ,{1,1}, {1,1,1,1}} ,
 	};
 
 	MeshBuffer::Description desc = {};

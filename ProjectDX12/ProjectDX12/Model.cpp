@@ -16,6 +16,7 @@ void Model::Create(std::vector<std::shared_ptr<Material>> materials, const char*
 	MaterialData = materials;
 	for (auto material : MaterialData)
 	{
+		material->SetOwner(Owner);
 		material->AddMaterialInstance();
 	}
 
@@ -77,7 +78,7 @@ void Model::Draw()
 {
 	for (auto material : MaterialData)
 	{
-		Owner->BindRenderingEngine(material->GetRenderTiming());
+		Owner.lock()->BindRenderingEngine(material->GetRenderTiming());
 	}
 }
 
@@ -89,9 +90,9 @@ void Model::Rendering()
 		if (material->GetRenderTiming() == current)
 		{
 			material->WriteWVP(ConstantWVP::Calc3DMatrix(
-				Owner->GetPosition(),
-				Owner->GetRotation(),
-				Owner->GetScale()));
+				Owner.lock()->GetPosition(),
+				Owner.lock()->GetRotation(),
+				Owner.lock()->GetScale()));
 			material->Bind();
 			break;
 		}

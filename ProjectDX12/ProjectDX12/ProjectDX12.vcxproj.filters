@@ -121,6 +121,9 @@
     <Filter Include="ソース ファイル\System\Rendering\Pass">
       <UniqueIdentifier>{88f124ee-10f8-42d8-9369-c838dc32a20c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\PS\Depth">
+      <UniqueIdentifier>{305a46b2-d608-4624-a50a-1353292ca469}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectX.cpp">
@@ -250,6 +253,9 @@
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
     <ClCompile Include="M_Grid.cpp">
+      <Filter>ソース ファイル\Material\Mterials</Filter>
+    </ClCompile>
+    <ClCompile Include="M_SkyBox.cpp">
       <Filter>ソース ファイル\Material\Mterials</Filter>
     </ClCompile>
   </ItemGroup>
@@ -401,6 +407,9 @@
     <ClInclude Include="M_Grid.h">
       <Filter>ヘッダー ファイル\Material\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="M_SkyBox.h">
+      <Filter>ヘッダー ファイル\Material\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="CommonLighting.hlsl">
@@ -430,17 +439,23 @@
     <FxCompile Include="VS_DepthNormal.hlsl">
       <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
-    <FxCompile Include="PS_DepthNormal.hlsl">
-      <Filter>リソース ファイル\PS\Common</Filter>
-    </FxCompile>
     <FxCompile Include="PS_Vignette.hlsl">
       <Filter>リソース ファイル\PS\Volume</Filter>
     </FxCompile>
     <FxCompile Include="VS_WorldObject.hlsl">
       <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
+    <FxCompile Include="PS_UnLit.hlsl">
+      <Filter>リソース ファイル\PS\Lit</Filter>
+    </FxCompile>
     <FxCompile Include="PS_Grid.hlsl">
       <Filter>リソース ファイル\PS\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_DepthNormal.hlsl">
+      <Filter>リソース ファイル\PS\Depth</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_WorldObjectLocalNormal.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

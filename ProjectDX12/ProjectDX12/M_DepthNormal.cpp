@@ -14,6 +14,9 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 	RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 	};
+	RootSignature::DescriptionTable rootsignature;
+	rootsignature.pParam = param;
+	rootsignature.paramNum = _countof(param);
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
@@ -31,8 +34,7 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap, RenderingTiming timing)
 	Material::Create
 	(
 		heap,
-		param,
-		_countof(param),
+		rootsignature,
 		pipeline
 	);
 }

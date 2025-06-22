@@ -9,7 +9,7 @@ void Primitive::Draw()
 {
 	for (auto material : MaterialData)
 	{
-		Owner->BindRenderingEngine(material->GetRenderTiming());
+		Owner.lock()->BindRenderingEngine(material->GetRenderTiming());
 	}
 }
 
@@ -21,9 +21,9 @@ void Primitive::Rendering()
 		if (material->GetRenderTiming() == current)
 		{
 			material->WriteWVP(ConstantWVP::Calc3DMatrix(
-				Owner->GetPosition(),
-				Owner->GetRotation(),
-				Owner->GetScale()));
+				Owner.lock()->GetPosition(),
+				Owner.lock()->GetRotation(),
+				Owner.lock()->GetScale()));
 			material->Bind();
 			break;
 		}

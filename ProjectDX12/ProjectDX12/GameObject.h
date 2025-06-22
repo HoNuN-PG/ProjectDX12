@@ -68,11 +68,11 @@ public:
 
 	// コンポーネントの追加・取得
 	template <typename T>
-	std::shared_ptr<T> AddComponent()
+	static std::shared_ptr<T> AddComponent(std::shared_ptr<GameObject> own)
 	{
-		std::shared_ptr<T> component = std::make_shared<T>(this);
-		Components.push_back(component);
-		Components.back()->Init();
+		std::shared_ptr<T> component = std::make_shared<T>(own);
+		own->Components.push_back(component);
+		own->Components.back()->Init();
 		return component;
 	}
 	template <typename T>

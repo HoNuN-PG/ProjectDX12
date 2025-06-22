@@ -20,7 +20,7 @@ RootSignature::RootSignature(DescriptionTable desc)
 		param[i].ShaderVisibility						= desc.pParam[i].shader;
 	}
 
-	SetUp(param,desc.paramNum);
+	SetUp(param, desc.sample, desc.paramNum);
 }
 
 RootSignature::RootSignature(DescriptionTables desc)
@@ -46,7 +46,7 @@ RootSignature::RootSignature(DescriptionTables desc)
 		param[i].ShaderVisibility						= desc.pParam[i].shader;
 	}
 
-	SetUp(param, desc.paramNum);
+	SetUp(param, desc.sample, desc.paramNum);
 }
 
 RootSignature::~RootSignature()
@@ -54,14 +54,14 @@ RootSignature::~RootSignature()
 	RootSignatureData->Release();
 }
 
-void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param,UINT num)
+void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, UINT num)
 {
 	// ƒTƒ“ƒvƒ‰
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
 	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-	sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	sampler.AddressU = sample;
+	sampler.AddressV = sample;
+	sampler.AddressW = sample;
 	sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
 	sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
 	sampler.MinLOD = 0.0f;

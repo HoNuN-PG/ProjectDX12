@@ -443,13 +443,13 @@ void RenderingEngine::ViewGBuffers()
 
 void RenderingEngine::EndRendering()
 {
-	for (auto material : RenderingMaterials)
-	{
-		material.lock()->EndRendering();
-	}
 	RenderingMaterials.remove_if(
 		[](std::weak_ptr<Material> object)
 		{
 			return object.expired();
 		});
+	for (auto material : RenderingMaterials)
+	{
+		material.lock()->EndRendering();
+	}
 }

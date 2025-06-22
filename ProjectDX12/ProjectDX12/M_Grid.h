@@ -5,8 +5,10 @@
 
 struct GridParam
 {
-	float dist;
-	DirectX::XMFLOAT3 pad1;
+	float GridSize;
+	float SubGridNum;
+	DirectX::XMFLOAT2 pad1;
+	DirectX::XMFLOAT4 ObjectPositionWS;
 };
 
 class M_Grid : public Material
@@ -17,7 +19,8 @@ public:
 	virtual void Bind() override;
 
 public:
-	void SetDistance(float dist) { Grid.dist = dist; };
+	void SetGridSize(float size) { Grid.GridSize = size; }
+	void SetSubGridNum(float num) { Grid.SubGridNum = num; }
 private:
 	GridParam Grid;
 
