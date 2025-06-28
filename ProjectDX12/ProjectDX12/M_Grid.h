@@ -3,13 +3,16 @@
 
 #include "Material.h"
 
-struct GridParam
+namespace Grid 
 {
-	float GridSize;
-	float SubGridNum;
-	DirectX::XMFLOAT2 pad1;
-	DirectX::XMFLOAT4 ObjectPositionWS;
-};
+	struct GridParam
+	{
+		float GridSize;
+		float SubGridNum;
+		float GridWidth;
+		float pad1;
+	};
+}
 
 class M_Grid : public Material
 {
@@ -19,10 +22,11 @@ public:
 	virtual void Bind() override;
 
 public:
-	void SetGridSize(float size) { Grid.GridSize = size; }
-	void SetSubGridNum(float num) { Grid.SubGridNum = num; }
+	void SetGridSize(float size) { GridParam.GridSize = size; }
+	void SetSubGridNum(float num) { GridParam.SubGridNum = num; }
+	void SetGridWidth(float width) { GridParam.GridWidth = width; }
 private:
-	GridParam Grid;
+	Grid::GridParam GridParam;
 
 };
 

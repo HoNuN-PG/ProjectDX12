@@ -454,8 +454,5 @@
     <FxCompile Include="PS_DepthNormal.hlsl">
       <Filter>リソース ファイル\PS\Depth</Filter>
     </FxCompile>
-    <FxCompile Include="VS_WorldObjectLocalNormal.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>
