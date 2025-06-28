@@ -1,4 +1,6 @@
 
+// https://bgolus.medium.com/the-best-darn-grid-shader-yet-727f9278b9d8
+
 struct PS_IN
 {
     float4 pos : SV_POSITION;
@@ -67,10 +69,10 @@ float CalcGrid(float3 posWS, float3 normalLS, float4x4 world, float size)
     
     // TextureBlend
     float2 NormalRB = CalcNormalRB(abs(normalLS));
-    float A = tex.Sample(samp, p.xz, 0);
-    float B = tex.Sample(samp, p.yz, 0);
+    float A = tex.Sample(samp, p.xz);
+    float B = tex.Sample(samp, p.yz);
     float AlB = lerp(A, B, NormalRB.x);
-    float C = tex.Sample(samp, p.xy, 0);
+    float C = tex.Sample(samp, p.xy);
     float AlBlC = lerp(AlB, C, NormalRB.y);
     
     return AlBlC;
@@ -91,5 +93,19 @@ float4 main(PS_IN input) : SV_TARGET
     float3 color = float3(0, 0, 0);
     color = lerp(CalcBackgroundColor(), CalcSubGridColor(), CalcSubGrid(input.posWS, input.normalLS, input.worldMatrix));
     color = lerp(color, CalcGridColor(), CalcMainGrid(input.posWS, input.normalLS, input.worldMatrix));
+    
+    // <<< new
+    float lineWidth = 0.02f;
+    float2 uv = input.uv * 100;
+    float2 uvDeriv = fwidth(uv);
+    float2 drawWidth = max(lineWidth, uvDeriv);
+    float2 LineAA = uvDeriv * 1.5f;
+    float2 gridUV = 1.0 - abs(frac(uv) * 2.0f - 1.0f);
+    float2 grid2 = smoothstep(drawWidth + LineAA, drawWidth - LineAA, gridUV);
+    grid2 *= saturate(lineWidth / drawWidth);
+    float grid = lerp(grid2.x, 1, grid2.y);
+    color = lerp(CalcBackgroundColor(), CalcGridColor(), grid);
+    // >>> new
+    
     return float4(color, 1);
 }
