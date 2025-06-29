@@ -69,10 +69,10 @@ void GameObject::DrawBase(DirectX::XMFLOAT4X4 ParentMatrix)
 	}
 }
 
-void GameObject::BindRenderingEngine(Material::RenderingTiming timing)
+void GameObject::BindRenderingEngine(UINT timing, UINT passType)
 {
 	// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒGƒ“ƒWƒ“‚Ö‚Ì“o˜^
-	Engine->AddRenderObject(*this, timing);
+	Engine->AddRenderObject(*this, timing, passType);
 }
 
 void GameObject::RenderingBase()

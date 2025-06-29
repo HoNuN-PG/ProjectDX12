@@ -10,9 +10,15 @@ Material::Material()
 	MaterialInstanceIdx = 0;
 }
 
-void Material::Initialize(std::shared_ptr<Material> material, DescriptorHeap* heap, RenderingTiming timing)
+void Material::Initialize(
+	std::shared_ptr<Material> material, 
+	DescriptorHeap* heap, 
+	RenderingTiming timing, 
+	RenderingPass::RenderingPassType passType)
 {
-	material->Initialize(heap, timing);
+	material->Timing = timing;
+	material->PassType = passType;
+	material->Initialize(heap);
 	SceneManager::GetCurrentScene()->GetRenderingEngine()->AddRenderingMaterial(material);
 }
 

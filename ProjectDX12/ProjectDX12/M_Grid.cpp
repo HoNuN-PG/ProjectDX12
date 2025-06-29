@@ -5,10 +5,8 @@
 
 #include "GameObject.h"
 
-void M_Grid::Initialize(DescriptorHeap* heap, RenderingTiming timing)
+void M_Grid::Initialize(DescriptorHeap* heap)
 {
-	Timing = timing;
-
 	// 定数バッファ
 	{
 		ConstantBuffer::Description desc = {};

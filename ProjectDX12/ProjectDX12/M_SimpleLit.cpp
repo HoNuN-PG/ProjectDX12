@@ -3,10 +3,8 @@
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
-void M_SimpleLit::Initialize(DescriptorHeap* heap, RenderingTiming timing)
+void M_SimpleLit::Initialize(DescriptorHeap* heap)
 {
-	Timing = timing;
-
 	// 定数バッファ
 	{
 		ConstantBuffer::Description desc = {};

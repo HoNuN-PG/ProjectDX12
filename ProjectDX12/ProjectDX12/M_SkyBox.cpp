@@ -1,10 +1,8 @@
 
 #include "M_SkyBox.h"
 
-void M_SkyBox::Initialize(DescriptorHeap* heap, RenderingTiming timing)
+void M_SkyBox::Initialize(DescriptorHeap* heap)
 {
-	Timing = timing;
-
 	// 定数バッファ
 	{
 		ConstantBuffer::Description desc = {};

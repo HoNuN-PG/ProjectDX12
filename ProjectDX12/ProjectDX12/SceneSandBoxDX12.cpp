@@ -25,7 +25,7 @@
 HRESULT SceneSandBoxDX12::Init()
 {
 	// ƒ{ƒŠƒ…[ƒ€’Ç‰Á
-	// GetRenderingEngine()->AddVolume<Vignette>();
+	GetRenderingEngine()->AddVolume<Vignette>();
 
 	// SkyBox
 	std::shared_ptr<M_SkyBox> sky_box = std::make_shared<M_SkyBox>();
@@ -38,7 +38,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_Grid> grid = std::make_shared<M_Grid>();
 	Material::Initialize(grid, Heap.get());
 	grid->SetGridSize(1);
-	grid->SetSubGridNum(5);
+	grid->SetSubGridSize(5);
 	// SimpleLit
 	std::shared_ptr<M_SimpleLit> simple_lit = std::make_shared<M_SimpleLit>();
 	Material::Initialize(simple_lit, Heap.get());

@@ -1,10 +1,8 @@
 
 #include "M_DepthNormal.h"
 
-void M_DepthNormal::Initialize(DescriptorHeap* heap, RenderingTiming timing)
+void M_DepthNormal::Initialize(DescriptorHeap* heap)
 {
-	Timing = timing;
-
 	// 定数バッファ
 	{
 		ConstantBuffer::Description desc = {};

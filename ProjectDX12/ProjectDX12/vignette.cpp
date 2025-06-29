@@ -60,7 +60,7 @@ void Vignette::Init()
 	// パラメーター書き込み
 	Param.color = { 0,0,0,0 };
 	Param.start = 0.5f;
-	Param.range = 0.5f;
+	Param.range = 0.75f;
 	ParamBuf->Write(&Param);
 }
 

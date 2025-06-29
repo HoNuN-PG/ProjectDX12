@@ -8,7 +8,7 @@ namespace Grid
 	struct GridParam
 	{
 		float GridSize;
-		float SubGridNum;
+		float SubGridSize;
 		float GridWidth;
 		float pad1;
 	};
@@ -17,13 +17,12 @@ namespace Grid
 class M_Grid : public Material
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap,
-		RenderingTiming timing = RenderingTiming::Forward) override;
+	virtual void Initialize(DescriptorHeap* heap) override;
 	virtual void Bind() override;
 
 public:
 	void SetGridSize(float size) { GridParam.GridSize = size; }
-	void SetSubGridNum(float num) { GridParam.SubGridNum = num; }
+	void SetSubGridSize(float size) { GridParam.SubGridSize = size; }
 	void SetGridWidth(float width) { GridParam.GridWidth = width; }
 private:
 	Grid::GridParam GridParam;

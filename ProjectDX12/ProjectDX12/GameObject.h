@@ -1,12 +1,13 @@
 #ifndef ___GAMEOBJECT_H___
 #define ___GAMEOBJECT_H___
 
+#include <vector>
 #include <list>
 #include <memory>
 #include <DirectXMath.h>
+#include <Windows.h>
 
 #include "Component.h"
-#include "Material.h"
 
 class RenderingEngine;
 
@@ -20,7 +21,7 @@ public:
 	void UninitBase();
 	void UpdateBase();
 	void DrawBase(DirectX::XMFLOAT4X4 ParentMatrix);
-	void BindRenderingEngine(Material::RenderingTiming timing);
+	void BindRenderingEngine(UINT timing, UINT passType);
 	void RenderingBase();
 
 	virtual void Init() {}

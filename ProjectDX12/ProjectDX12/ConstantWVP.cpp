@@ -3,6 +3,7 @@
 
 #include <DirectXMath.h>
 
+#include "DirectX.h"
 #include "CameraBase.h"
 
 void * ConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)

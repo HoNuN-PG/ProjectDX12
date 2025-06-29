@@ -13,7 +13,7 @@ struct PS_IN
 cbuffer Grid : register(b0)
 {
     float GridSize;
-    float SubGridNum;
+    float SubGridSize;
     float GridWidth;
     float pad1;
 }
@@ -23,17 +23,22 @@ float3 CalcBackgroundColor()
     return float3(0.7f, 0.7f, 0.7f);
 }
 
+float3 CalcSubGridColor()
+{
+    return float3(0.3f, 0.3f, 0.3f);
+}
+
 float3 CalcGridColor()
 {
     return float3(0.2f, 0.2f, 0.2f);
 }
 
-float CalcGrid(float2 uv)
+float CalcGrid(float2 value)
 {
-    float2 uvDeriv = fwidth(uv);
-    float2 drawWidth = max(GridWidth, uvDeriv);
-    float2 LineAA = uvDeriv * 1.5f;
-    float2 gridUV = 1.0 - abs(frac(uv) * 2.0f - 1.0f);
+    float2 deriv = fwidth(value);
+    float2 drawWidth = max(GridWidth, deriv);
+    float2 LineAA = deriv * 1.5f;
+    float2 gridUV = 1.0 - abs(frac(value) * 2.0f - 1.0f);
     float2 grid2 = smoothstep(drawWidth + LineAA, drawWidth - LineAA, gridUV);
     grid2 *= saturate(GridWidth / drawWidth);
     float grid = lerp(grid2.x, 1, grid2.y);
@@ -43,8 +48,10 @@ float CalcGrid(float2 uv)
 
 float4 main(PS_IN input) : SV_TARGET
 {
-    float grid = CalcGrid(input.posWS.xz);    
-    float3 color = lerp(CalcBackgroundColor(), CalcGridColor() * 0.75f, grid);
-    
+    float3 color = float3(1, 1, 1);
+    float subgrid = CalcGrid(input.posWS.xz * GridSize);
+    float grid = CalcGrid(input.posWS.xz * SubGridSize);
+    color = lerp(CalcBackgroundColor(), CalcSubGridColor(), subgrid);
+    color = lerp(color, CalcGridColor(), grid);  
     return float4(color, 1);
 }

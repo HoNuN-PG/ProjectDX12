@@ -21,6 +21,7 @@ public:
 	{
 		Shadow = 0,					// シャドウ
 		OpaqueDepthNormal,			// 不透明深度法線
+		AfterOpaqueDepthNormal,	// 不透明深度法線描画後
 		Deffered,					// ディファード
 		Forward,					// フォワード
 		TranslucentDepthNormal,		// 透明深度法線
@@ -41,11 +42,10 @@ public:
 	static void Initialize(
 		std::shared_ptr<Material> material,
 		DescriptorHeap* heap,
-		RenderingTiming timing = RenderingTiming::Forward);
+		RenderingTiming timing = RenderingTiming::Forward,
+		RenderingPass::RenderingPassType passType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE);
 protected:
-	virtual void Initialize(
-		DescriptorHeap* heap,
-		RenderingTiming timing = RenderingTiming::Forward) = 0;
+	virtual void Initialize(DescriptorHeap* heap) = 0;
 
 protected:
 	void Create
@@ -81,8 +81,10 @@ public:
 
 public:
 	RenderingTiming GetRenderTiming() { return Timing; };
+	RenderingPass::RenderingPassType GetPassType() { return PassType; }
 protected:
 	RenderingTiming									Timing;
+	RenderingPass::RenderingPassType				PassType;
 	DescriptorHeap*									Heap;
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;

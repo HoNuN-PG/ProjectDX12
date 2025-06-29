@@ -1,9 +1,10 @@
 #ifndef ___DEPTH_NORMAL_PASS_H___
 #define ___DEPTH_NORMAL_PASS_H___
 
+#include "renderingPass.h"
+
 #include <vector>
 
-#include "renderingPass.h"
 #include "RenderingEngine.h"
 
 class OpaqueDepthNormalPass : public RenderingPass
@@ -15,6 +16,9 @@ public:
 	void Execute() override;
 public:
 	void AddObj(GameObject& obj) override;
+	virtual std::shared_ptr<RenderTarget> GetTexture(UINT idx) override { return nullptr; }
+	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) override {return DescriptorHeap::Handle(); }
+	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) override { return DescriptorHeap::Handle(); }
 private:
 	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
 

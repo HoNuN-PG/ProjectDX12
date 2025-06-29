@@ -1,10 +1,8 @@
 
 #include "M_Deffered_Albedo_Normal.h"
 
-void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap, RenderingTiming timing)
+void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap)
 {
-	Timing = timing;
-
 	// 定数バッファ
 	{
 		ConstantBuffer::Description desc = {};

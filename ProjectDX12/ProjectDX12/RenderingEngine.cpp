@@ -34,7 +34,7 @@ void RenderingEngine::Init()
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		desc.num = 64;
+		desc.num = 256;
 		GlobalHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ディスクリプタヒープ
@@ -55,7 +55,7 @@ void RenderingEngine::Init()
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-		desc.num = 1;
+		desc.num = 32;
 		DSVHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// グローバルリソース
@@ -124,7 +124,7 @@ void RenderingEngine::Init()
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
 
 	// レンダリングパス
-	RenderingPasses[RenderingPass::RenderingPassType::OpaqueDepthNormal] = std::make_unique<OpaqueDepthNormalPass>();
+	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>();
 
 	// ポストプロセス
 	ObjectPostProcess = std::make_unique<PostProcess>();
@@ -152,6 +152,8 @@ void RenderingEngine::Draw()
 	WriteGlobalConstantBufferResource();
 	CurrentRenderingTiming = Material::RenderingTiming::OpaqueDepthNormal;
 	OpaqueDepthNormalRendering();
+	CurrentRenderingTiming = Material::RenderingTiming::AfterOpaqueDepthNormal;
+	AfterOpaqueDepthNormalRendering();
 	CurrentRenderingTiming = Material::Deffered;
 	DefferedRendering();
 	DefferedLighting();
@@ -240,7 +242,16 @@ void RenderingEngine::WriteGlobalConstantBufferResource()
 	GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light]->Write(&light);
 }
 
-void RenderingEngine::AddRenderObject(GameObject& obj, Material::RenderingTiming timing)
+std::shared_ptr<RenderTarget> RenderingEngine::GetPassTexture(UINT timing, UINT type, UINT idx)
+{
+	if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
+		return RenderingPasses[timing][type]->GetTexture(idx);
+}
+
+void RenderingEngine::AddRenderObject(
+	GameObject& obj, 
+	UINT timing, 
+	UINT passType)
 {
 	RenderingInfo info = { obj };
 	switch (timing)
@@ -248,7 +259,11 @@ void RenderingEngine::AddRenderObject(GameObject& obj, Material::RenderingTiming
 	case Material::Shadow:
 		break;
 	case Material::OpaqueDepthNormal:
-		RenderingPasses[RenderingPass::RenderingPassType::OpaqueDepthNormal]->AddObj(obj);
+		ODepthNormalPass->AddObj(obj);
+		break;
+	case Material::AfterOpaqueDepthNormal:
+		if(RenderingPasses.contains(timing) && RenderingPasses[timing].contains(passType))
+			RenderingPasses[timing][passType]->AddObj(obj);
 		break;
 	case Material::Deffered:
 		DefferedObjects.push_back(info);
@@ -292,13 +307,23 @@ void RenderingEngine::OpaqueDepthNormalRendering()
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// DepthNormal
-	RenderingPasses[RenderingPass::RenderingPassType::OpaqueDepthNormal]->Execute();
+	ODepthNormalPass->Execute();
 
 	// リソース化
 	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	GlobalTexture[GlobalTextureResourceKey::NormalTexture]->ResourceBarrier(
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+}
+
+void RenderingEngine::AfterOpaqueDepthNormalRendering()
+{
+	if (!RenderingPasses.contains(Material::RenderingTiming::AfterOpaqueDepthNormal))
+		return;
+	for (int i = 0; i < RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal].size(); ++i)
+	{
+		RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal][i]->Execute();
+	}
 }
 
 void RenderingEngine::DefferedRendering()

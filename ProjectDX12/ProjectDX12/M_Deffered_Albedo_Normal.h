@@ -6,8 +6,7 @@
 class M_Deffered_Albedo_Normal : public Material
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap,
-		RenderingTiming timing = RenderingTiming::Forward) override;
+	virtual void Initialize(DescriptorHeap* heap) override;
 	virtual void Bind() override;
 
 };

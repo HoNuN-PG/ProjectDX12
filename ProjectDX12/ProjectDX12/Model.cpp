@@ -78,7 +78,7 @@ void Model::Draw()
 {
 	for (auto material : MaterialData)
 	{
-		Owner.lock()->BindRenderingEngine(material->GetRenderTiming());
+		Owner.lock()->BindRenderingEngine(material->GetRenderTiming(),material->GetPassType());
 	}
 }
 
