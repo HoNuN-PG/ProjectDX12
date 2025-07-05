@@ -22,6 +22,7 @@ class LightBase;
 
 class RenderingEngine
 {
+	// RenderingInfo
 public:
 	struct RenderingInfo
 	{
@@ -54,11 +55,7 @@ private:
 	static std::shared_ptr<DescriptorHeap> GlobalHeap;
 
 	// ヒープ
-public:
-	std::shared_ptr<DescriptorHeap> GetHeap()
-	{ return Heap; }
 private:
-	std::shared_ptr<DescriptorHeap>	Heap;
 	std::shared_ptr<DescriptorHeap>	RTVHeap;
 	std::shared_ptr<DescriptorHeap>	DSVHeap;
 
@@ -70,20 +67,16 @@ public:
 	static std::shared_ptr<RenderTarget> GetGlobalRenderTarget(UINT key);
 	static DescriptorHeap::Handle GetGlobalTextureRTV(UINT key);
 	static DescriptorHeap::Handle GetGlobalTextureSRV(UINT key);
-	// テクスチャリソース切り替え
+	// グローバルテクスチャリソース切り替え
 	static void GlobalTextureRTV2SRV(UINT key);
 	static void GlobalTextureSRV2RTV(UINT key);
-private:
-	// グローバルリソース
-	static std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
-	static std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
-
-	// グローバルリソースオブジェクト
 private:
 	void WriteGlobalConstantBufferResource();
 private:
 	std::shared_ptr<CameraDebug> Camera;
 	std::shared_ptr<LightBase> Light;
+	static std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
+	static std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
 
 	// リソース
 private:
@@ -94,11 +87,10 @@ public:
 	template<typename T>
 	void AddRenderingPass(UINT timing,UINT passType)
 	{
-		if (!RenderingPasses.contains(timing))
-			RenderingPasses[timing] = std::unordered_map<UINT, std::unique_ptr<RenderingPass>>();
 		if (RenderingPasses[timing].contains(passType)) 
 			return;
 		RenderingPasses[timing][passType] = std::make_unique<T>();
+		RenderingPasses[timing][passType]->Init(RTVHeap,GlobalHeap,DSVHeap);
 	}
 	std::shared_ptr<RenderTarget> GetPassTexture(UINT timing, UINT type, UINT idx);
 private:
@@ -133,8 +125,6 @@ public:
 	}
 	// 作成したマテリアルの追加
 	void AddRenderingMaterial(std::shared_ptr<Material> material);
-
-	// 描画リソース
 private:
 	std::vector<RenderingInfo> DefferedObjects;				// ディファードライティングオブジェクト
 	std::vector<RenderingInfo> ForwardObjects;				// フォワードライティングオブジェクト
@@ -142,7 +132,7 @@ private:
 	std::unique_ptr<PostProcess> CanvasPostProcess;			// キャンバス描画後のポストプロセス
 	std::list<std::weak_ptr<Material>> RenderingMaterials;	// 作成されたマテリアル群
 
-	// レンダリング
+	// レンダリング関数
 public:
 	static Material::RenderingTiming GetCurrentRenderingPass() { return CurrentRenderingTiming; }
 private:
@@ -156,6 +146,7 @@ private:
 	void CanvasPostProcessRendering();
 	void ViewDepthNormal();
 	void ViewGBuffers();
+	void ViewPasses();
 	void EndRendering();
 private:
 	static Material::RenderingTiming CurrentRenderingTiming;

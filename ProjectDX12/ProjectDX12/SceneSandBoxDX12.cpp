@@ -13,6 +13,7 @@
 
 // マテリアル
 #include "M_DepthNormal.h"
+#include "CustomDepthNormalPass.h"
 #include "M_Deffered_Albedo_Normal.h"
 #include "M_SimpleLit.h"
 #include "M_Grid.h"
@@ -20,12 +21,19 @@
 
 #include "ConstantWVP.h"
 
+// ポストプロセス
 #include "vignette.h"
+
+// パス
+#include "CustomDepthNormalPass.h"
 
 HRESULT SceneSandBoxDX12::Init()
 {
 	// ボリューム追加
 	GetRenderingEngine()->AddVolume<Vignette>();
+	GetRenderingEngine()->AddRenderingPass<CustomDepthNormalPass>(
+		Material::RenderingTiming::AfterOpaqueDepthNormal,
+		RenderingPass::RenderingPassType::CustomDepthNormal);
 
 	// SkyBox
 	std::shared_ptr<M_SkyBox> sky_box = std::make_shared<M_SkyBox>();
@@ -34,6 +42,11 @@ HRESULT SceneSandBoxDX12::Init()
 	// DepthNormal
 	std::shared_ptr<M_DepthNormal> opaque_depth_normal = std::make_shared<M_DepthNormal>();
 	Material::Initialize(opaque_depth_normal, Heap.get(), Material::RenderingTiming::OpaqueDepthNormal);
+	// CustomDepthNormal
+	std::shared_ptr<M_DepthNormal> custom_opaque_depth_normal = std::make_shared<M_DepthNormal>();
+	Material::Initialize(custom_opaque_depth_normal, Heap.get(), 
+		Material::RenderingTiming::AfterOpaqueDepthNormal,
+		RenderingPass::RenderingPassType::CustomDepthNormal);
 	// Grid
 	std::shared_ptr<M_Grid> grid = std::make_shared<M_Grid>();
 	Material::Initialize(grid, Heap.get());
@@ -70,6 +83,7 @@ HRESULT SceneSandBoxDX12::Init()
 	{		
 		std::vector<std::shared_ptr<Material>> materials;
 		materials.push_back(opaque_depth_normal);
+		materials.push_back(custom_opaque_depth_normal);
 		materials.push_back(simple_lit);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();

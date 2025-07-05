@@ -258,7 +258,7 @@
     <ClCompile Include="M_SkyBox.cpp">
       <Filter>ソース ファイル\Material\Mterials</Filter>
     </ClCompile>
-    <ClCompile Include="CustomDepthPass.cpp">
+    <ClCompile Include="CustomDepthNormalPass.cpp">
       <Filter>ソース ファイル\System\Rendering\Pass</Filter>
     </ClCompile>
   </ItemGroup>
@@ -413,7 +413,7 @@
     <ClInclude Include="M_SkyBox.h">
       <Filter>ヘッダー ファイル\Material\Materials</Filter>
     </ClInclude>
-    <ClInclude Include="CustomDepthPass.h">
+    <ClInclude Include="CustomDepthNormalPass.h">
       <Filter>ヘッダー ファイル\System\Rendering\Pass</Filter>
     </ClInclude>
   </ItemGroup>

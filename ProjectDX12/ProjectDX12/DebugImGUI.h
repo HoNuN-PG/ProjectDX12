@@ -26,7 +26,7 @@ public:
 	};
 
 private:
-	static const int HEAP_NUM = 5;
+	static const int HEAP_NUM = 32;
 
 public:
 	DebugImGUI();
@@ -37,11 +37,10 @@ public:
 	/// <summary>
 	/// ImGUI::Imageで表示するリソースの取得
 	/// </summary>
-	/// <param name="_heap">_wvpと_srvに使用されているヒープ</param>
-	/// <param name="_wvp"></param>
+	/// <param name="_heap">_srvに使用されているヒープ</param>
 	/// <param name="_srv"></param>
 	/// <returns></returns>
-	static ImTextureID GetImGUIImage(DescriptorHeap* _heap, ConstantBuffer* _wvp, RenderTarget* _srv);
+	static ImTextureID GetImGUIImage(DescriptorHeap* _heap, RenderTarget* _srv);
 
 public:
 	// 描画終了時に呼び出し

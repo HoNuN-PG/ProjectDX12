@@ -16,6 +16,7 @@
 #include "SceneBase.h"
 
 #include "DepthNormalPass.h"
+#include "CustomDepthNormalPass.h"
 
 #include "ConstantWVP.h"
 
@@ -37,13 +38,6 @@ void RenderingEngine::Init()
 		desc.num = 256;
 		GlobalHeap = std::make_shared<DescriptorHeap>(desc);
 	}
-	// ディスクリプタヒープ
-	{
-		DescriptorHeap::Description desc = {};
-		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		desc.num = 256;
-		Heap = std::make_shared<DescriptorHeap>(desc);
-	}
 	// ディスクリプターヒープ(レンダーターゲット)
 	{
 		DescriptorHeap::Description desc = {};
@@ -62,8 +56,6 @@ void RenderingEngine::Init()
 	{
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = GlobalHeap.get();
-		desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP] = std::make_shared<ConstantBuffer>(desc);
 		desc.size = sizeof(DirectX::XMFLOAT4X4);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera] = std::make_shared<ConstantBuffer>(desc);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light] = std::make_shared<ConstantBuffer>(desc);
@@ -114,11 +106,6 @@ void RenderingEngine::Init()
 		DSV = std::make_unique<DepthStencil>(desc);
 	}
 
-	// ScreenWVPの設定
-	GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP]->Write(ConstantWVP::Calc2DMatrix(
-		{ WINDOW_WIDTH / 2, -WINDOW_HEIGHT / 2, 0 },
-		{ 0,0,0 },
-		{ WINDOW_WIDTH	  ,  WINDOW_HEIGHT	  , 0 }));
 	// リソースオブジェクト
 	Camera = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
@@ -167,6 +154,7 @@ void RenderingEngine::Draw()
 	Copy::Copy::ExecuteCopy(GlobalHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get(), GetRTV());
 	ViewDepthNormal();
 	ViewGBuffers();
+	ViewPasses();
 	EndRendering();
 
 	// 最終的にバックバッファに描画
@@ -320,9 +308,10 @@ void RenderingEngine::AfterOpaqueDepthNormalRendering()
 {
 	if (!RenderingPasses.contains(Material::RenderingTiming::AfterOpaqueDepthNormal))
 		return;
-	for (int i = 0; i < RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal].size(); ++i)
+	auto it = RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal].begin();
+	for (; it != RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal].end(); it++)
 	{
-		RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal][i]->Execute();
+		it->second->Execute();
 	}
 }
 
@@ -437,12 +426,10 @@ void RenderingEngine::ViewDepthNormal()
 		ImGui::Text("Depth");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			GlobalHeap.get(),
-			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(),
 			GlobalTexture[GlobalTextureResourceKey::DepthTexture].get()), { 240,135 });
 		ImGui::Text("Normal");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			GlobalHeap.get(),
-			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(),
 			GlobalTexture[GlobalTextureResourceKey::NormalTexture].get()), { 240,135 });
 	}
 	ImGui::End();
@@ -455,13 +442,24 @@ void RenderingEngine::ViewGBuffers()
 		ImGui::Text("DefferedAlbedo");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			GlobalHeap.get(), 
-			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(), 
 			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture].get()), { 240,135 });
 		ImGui::Text("DefferedNormal");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			GlobalHeap.get(),
-			GlobalConstantBuffer[GlobalConstantBufferResourceKey::ScreenWVP].get(),
 			GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture].get()), { 240,135 });
+	}
+	ImGui::End();
+}
+
+void RenderingEngine::ViewPasses()
+{
+	ImGui::Begin("Passes");
+	{
+		ImGui::Text("CustomDepth");
+		ImGui::Image(DebugImGUI::GetImGUIImage(
+			GlobalHeap.get(),
+			RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal][RenderingPass::CustomDepthNormal]->
+			GetTexture(CustomDepthNormalPass::CustomDepth).get()), {240,135});
 	}
 	ImGui::End();
 }

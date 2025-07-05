@@ -3,8 +3,7 @@
 
 enum GlobalConstantBufferResourceKey
 {
-	ScreenWVP = 0,
-	Camera,
+	Camera = 0,
 	Light,
 
 	MAX_RESOURCE_KEY_TYPE

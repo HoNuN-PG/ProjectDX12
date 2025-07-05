@@ -125,7 +125,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	return msg;
 }
 
-ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* heap, ConstantBuffer* wvp, RenderTarget* srv)
+ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* heap, RenderTarget* srv)
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	// •\¦—Ìˆæ‚Ìİ’è

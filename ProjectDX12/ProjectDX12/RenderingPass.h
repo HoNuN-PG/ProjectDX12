@@ -17,7 +17,7 @@ public:
 	{
 		None = 0,
 		OpaqueDepthNormal,
-		CustomDepth,
+		CustomDepthNormal,
 
 		MAX_RENDERING_PASS_TYPE
 	};
@@ -30,6 +30,10 @@ public:
 	virtual ~RenderingPass() {};
 	virtual void Execute() {};
 public:
+	virtual void Init(
+		std::shared_ptr<DescriptorHeap> rtvHeap,
+		std::shared_ptr<DescriptorHeap> srvHeap,
+		std::shared_ptr<DescriptorHeap> dsvHeap) = 0;
 	/**
 	* @fn パスにオブジェクトを追加
 	*/

@@ -15,6 +15,10 @@ public:
 public:
 	void Execute() override;
 public:
+	virtual void Init(
+		std::shared_ptr<DescriptorHeap> rtvHeap,
+		std::shared_ptr<DescriptorHeap> srvHeap,
+		std::shared_ptr<DescriptorHeap> dsvHeap) override {};
 	void AddObj(GameObject& obj) override;
 	virtual std::shared_ptr<RenderTarget> GetTexture(UINT idx) override { return nullptr; }
 	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) override {return DescriptorHeap::Handle(); }
