@@ -4,24 +4,44 @@
 #include <DirectXMath.h>
 #include <Windows.h>
 
+#include "DirectX.h"
+#include "MyMath.h"
+
 #include "GameObject.h"
 
 #define CAM_NEAR (0.01)
 #define CAM_FAR (1000)
+#define VIEW_ANGLE (60)
 
-class cCameraBase : public GameObject
+class CameraBase : public GameObject
 {
 public:
-	cCameraBase() {}
-	virtual ~cCameraBase() {}
+	CameraBase() {}
+	virtual ~CameraBase() {}
 	virtual void Init() override {}
 	virtual void Uninit() override {}
 	virtual void Update() override {}
 	virtual void Draw() override {}
 
 	// ç¿ïW
-	DirectX::XMFLOAT3 GetPos() 
-	{ return m_Pos; }
+	DirectX::XMFLOAT3 GetPosition() 
+	{ 
+		return m_Pos; 
+	}
+	DirectX::XMFLOAT3 GetForward()
+	{
+		return DXFL::Normalize(DXFL::Subtraction(m_Target,m_Pos));
+	}
+	DirectX::XMFLOAT3 GetRight()
+	{
+		return DXFL::Cross(DXFL::Normalize(m_Up), GetForward());
+	}
+
+public:
+	static DirectX::XMFLOAT4X4 m_ViewMatrix;
+	static DirectX::XMFLOAT4X4 m_ProjMatrix;
+	static float GetViewAngle() { return DirectX::XMConvertToRadians(VIEW_ANGLE); }
+	static float GetAspect() { return (float)WINDOW_WIDTH / WINDOW_HEIGHT; }
 
 public:
 	float m_MoveSpeed;
@@ -43,7 +63,7 @@ public:
 
 };
 
-class CameraDebug : public cCameraBase
+class CameraDebug : public CameraBase
 {
 private:
 	struct Argument
@@ -65,6 +85,10 @@ public:
 
 private:
 	void ProcDCC(Argument& arg);
+
+public:
+	static DirectX::XMFLOAT4X4 GetCustomProjMatrix(UINT32 with, UINT32 height);
+	static DirectX::XMFLOAT4X4 GetCustomProjMatrix_Perspective(UINT32 with, UINT32 height);
 
 private:
 	POINT m_oldPos;

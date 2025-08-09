@@ -15,6 +15,7 @@
 #include "SceneManager.h"
 #include "SceneBase.h"
 
+#include "ShadowPass.h"
 #include "DepthNormalPass.h"
 #include "CustomDepthNormalPass.h"
 
@@ -59,6 +60,10 @@ void RenderingEngine::Init()
 		desc.size = sizeof(DirectX::XMFLOAT4X4);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera] = std::make_shared<ConstantBuffer>(desc);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light] = std::make_shared<ConstantBuffer>(desc);
+		desc.size = sizeof(ShadowParam::ShadowMapsParam);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps] = std::make_shared<ConstantBuffer>(desc);
+		desc.size = sizeof(ShadowParam::ShadowReceieveParam);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowReceive] = std::make_shared<ConstantBuffer>(desc);
 	}
 	// グローバルRTV
 	{
@@ -111,6 +116,8 @@ void RenderingEngine::Init()
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
 
 	// レンダリングパス
+	ShadowMapsPass = std::make_unique<ShadowPass>();
+	ShadowMapsPass->Init(RTVHeap, GlobalHeap, DSVHeap);
 	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>();
 
 	// ポストプロセス
@@ -137,6 +144,8 @@ void RenderingEngine::Draw()
 	DSV->Clear();
 
 	WriteGlobalConstantBufferResource();
+	CurrentRenderingTiming = Material::RenderingTiming::Shadow;
+	ShadowMapsRendering();
 	CurrentRenderingTiming = Material::RenderingTiming::OpaqueDepthNormal;
 	OpaqueDepthNormalRendering();
 	CurrentRenderingTiming = Material::RenderingTiming::AfterOpaqueDepthNormal;
@@ -152,6 +161,7 @@ void RenderingEngine::Draw()
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
 	Copy::Copy::ExecuteCopy(GlobalHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get(), GetRTV());
+	ViewShadowMaps();
 	ViewDepthNormal();
 	ViewGBuffers();
 	ViewPasses();
@@ -208,6 +218,11 @@ void RenderingEngine::GlobalTextureSRV2RTV(UINT key)
 	GlobalTexture[key]->SRV2RTV();
 }
 
+void RenderingEngine::WriteGlobalConstantBufferResource(UINT key, void* data)
+{
+	GlobalConstantBuffer[key]->Write(data);
+}
+
 void RenderingEngine::WriteGlobalConstantBufferResource()
 {
 	// カメラ
@@ -223,17 +238,44 @@ void RenderingEngine::WriteGlobalConstantBufferResource()
 	light._12 = Light->GetDir().y;
 	light._13 = Light->GetDir().z;
 	light._14 = Light->GetPower();
-	light._21 = Light->GetColor().x;
-	light._22 = Light->GetColor().y;
-	light._23 = Light->GetColor().z;
+	light._21 = Light->GetPos().x;
+	light._22 = Light->GetPos().y;
+	light._23 = Light->GetPos().z;
 	light._24 = Light->GetAmbient();
+	light._31 = Light->GetColor().x;
+	light._32 = Light->GetColor().y;
+	light._33 = Light->GetColor().z;
+	light._34 = Light->GetColor().w;
+
 	GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light]->Write(&light);
 }
 
 std::shared_ptr<RenderTarget> RenderingEngine::GetPassTexture(UINT timing, UINT type, UINT idx)
 {
-	if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
-		return RenderingPasses[timing][type]->GetTexture(idx);
+	switch (timing)
+	{
+	case Material::Shadow:
+		ShadowMapsPass->GetTexture(idx);
+		break;
+	case Material::OpaqueDepthNormal:
+		break;
+	case Material::AfterOpaqueDepthNormal:
+		if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
+			return RenderingPasses[timing][type]->GetTexture(idx);
+		break;
+	case Material::Deffered:
+		break;
+	case Material::Forward:
+		break;
+	case Material::TranslucentDepthNormal:
+		break;
+	case Material::Canvas:
+		break;
+	case Material::Other:
+		break;
+	default:
+		break;
+	}
 }
 
 void RenderingEngine::AddRenderObject(
@@ -245,6 +287,7 @@ void RenderingEngine::AddRenderObject(
 	switch (timing)
 	{
 	case Material::Shadow:
+		ShadowMapsPass->AddObj(obj);
 		break;
 	case Material::OpaqueDepthNormal:
 		ODepthNormalPass->AddObj(obj);
@@ -273,6 +316,11 @@ void RenderingEngine::AddRenderObject(
 void RenderingEngine::AddRenderingMaterial(std::shared_ptr<Material> material)
 {
 	RenderingMaterials.push_back(material);
+}
+
+void RenderingEngine::ShadowMapsRendering()
+{
+	ShadowMapsPass->Execute();
 }
 
 void RenderingEngine::OpaqueDepthNormalRendering()
@@ -417,6 +465,26 @@ void RenderingEngine::ObjectPostProcessRendering()
 void RenderingEngine::CanvasPostProcessRendering()
 {
 	CanvasPostProcess->Draw();
+}
+
+void RenderingEngine::ViewShadowMaps()
+{
+	ImGui::Begin("ShadowMaps");
+	{
+		ImGui::Text("ShadowMap1");
+		ImGui::Image(DebugImGUI::GetImGUIImage(
+			GlobalHeap.get(),
+			ShadowMapsPass->GetTexture(ShadowPass::Near).get()), { 240,135 });
+		ImGui::Text("ShadowMap2");
+		ImGui::Image(DebugImGUI::GetImGUIImage(
+			GlobalHeap.get(),
+			ShadowMapsPass->GetTexture(ShadowPass::Middle).get()), { 240,135 });
+		ImGui::Text("ShadowMap3");
+		ImGui::Image(DebugImGUI::GetImGUIImage(
+			GlobalHeap.get(),
+			ShadowMapsPass->GetTexture(ShadowPass::Far).get()), { 240,135 });
+	}
+	ImGui::End();
 }
 
 void RenderingEngine::ViewDepthNormal()

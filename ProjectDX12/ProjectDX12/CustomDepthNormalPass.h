@@ -18,7 +18,7 @@ class CustomDepthNormalPass : public RenderingPass
 public:
 	enum TextureType
 	{
-		CustomDepth,
+		CustomDepth = 0,
 		CustomNormal,
 
 		MAX

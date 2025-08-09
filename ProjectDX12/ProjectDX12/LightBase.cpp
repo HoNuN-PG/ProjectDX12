@@ -19,10 +19,10 @@ LightBase::LightBase()
 {
 	// パラメータ設定
 	m_Up						= { 0,1,0 };
-	m_Position					= DirectX::XMFLOAT3(0, 1, 0);
+	m_Position					= DirectX::XMFLOAT3();
 	m_Target					= DirectX::XMFLOAT3();
 	m_TargetOffset				= DirectX::XMFLOAT3();
-	m_Dist						= 350;
+	m_Dist						= 500;
 	m_Rad.radXZ = m_Rad.lateXZ	= DirectX::XMConvertToRadians(0.0f);
 	m_Rad.radY = m_Rad.lateY	= DirectX::XMConvertToRadians((MAX_ANGLE_UP + MAX_ANGLE_DOWN) / 2.0f);
 	m_Color						= { 1,1,1,1 };
@@ -43,7 +43,7 @@ LightBase::LightBase()
 
 	// プロジェクションマトリクス設定
 	DirectX::XMStoreFloat4x4(&m_ProjectionMatrix,
-		DirectX::XMMatrixOrthographicLH(100, 100, (float)CAM_NEAR, (float)CAM_FAR)
+		DirectX::XMMatrixOrthographicLH(WINDOW_WIDTH / 100, WINDOW_HEIGHT / 100, CAM_NEAR, LIGHT_LENGTH)
 	);
 }
 
@@ -76,6 +76,18 @@ void LightBase::Update()
 	m_Position.z = cosf(m_Rad.lateY) * (-cosf(m_Rad.lateXZ)) * (m_Dist)+m_Target.z;
 
 	m_Up = { 0,1,0 };
+
+	// ビューマトリクス設定
+	DirectX::XMFLOAT3 up = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
+	DirectX::XMStoreFloat4x4(&m_ViewMatrix,
+		DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&m_Position),
+			DirectX::XMLoadFloat3(&m_Target), XMLoadFloat3(&up))
+	);
+
+	// プロジェクションマトリクス設定
+	DirectX::XMStoreFloat4x4(&m_ProjectionMatrix,
+		DirectX::XMMatrixOrthographicLH(WINDOW_WIDTH / 100, WINDOW_HEIGHT / 100, CAM_NEAR, LIGHT_LENGTH)
+	);
 }
 
 void LightBase::Draw()

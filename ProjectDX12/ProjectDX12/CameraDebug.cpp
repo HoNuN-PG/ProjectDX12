@@ -52,6 +52,21 @@ void CameraDebug::Update()
 
 	// メインカメラパラメータの設定
 	if (m_IsMain) SetMainParams();
+	
+	// マトリクス計算
+	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
+		DirectX::XMLoadFloat3(&m_MainPos),
+		DirectX::XMLoadFloat3(&m_MainTarget),
+		XMLoadFloat3(&m_MainUp));
+	view = DirectX::XMMatrixTranspose(view);
+	DirectX::XMStoreFloat4x4(&m_ViewMatrix, view);
+	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(
+		GetViewAngle(),
+		(float)WINDOW_WIDTH / WINDOW_HEIGHT, 
+		(float)CAM_NEAR, 
+		(float)CAM_FAR);
+	proj = DirectX::XMMatrixTranspose(proj);
+	DirectX::XMStoreFloat4x4(&m_ProjMatrix, proj);
 }
 
 void CameraDebug::Draw()
@@ -64,7 +79,7 @@ void CameraDebug::Draw()
 	ImGui::End();
 }
 
-void CameraDebug::ProcDCC(Argument & arg)
+void CameraDebug::ProcDCC(Argument& arg)
 {
 	// マウスの移動量 / 画面サイズ の比率から、画面全体でどれだけ回転するか指定する。
 	float angleX = 360.0f * arg.mouseMove.x / WINDOW_WIDTH * m_MouseSpeed;
@@ -93,4 +108,29 @@ void CameraDebug::ProcDCC(Argument & arg)
 	DirectX::XMStoreFloat3(&m_Pos, vCamPos);
 	DirectX::XMStoreFloat3(&m_Target, DirectX::XMVectorAdd(vCamPos, DirectX::XMVectorScale(vFrontAxis, arg.focus)));
 	DirectX::XMStoreFloat3(&m_Up, DirectX::XMVector3Normalize(DirectX::XMVector3Cross(vFrontAxis, vSideAxis)));
+}
+
+DirectX::XMFLOAT4X4 CameraDebug::GetCustomProjMatrix(UINT32 with, UINT32 height)
+{
+	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(
+		GetViewAngle(),
+		(float)with / height,
+		(float)CAM_NEAR,
+		(float)CAM_FAR);
+	proj = DirectX::XMMatrixTranspose(proj);
+	DirectX::XMFLOAT4X4 mat;
+	DirectX::XMStoreFloat4x4(&mat, proj);
+	return mat;
+}
+
+DirectX::XMFLOAT4X4 CameraDebug::GetCustomProjMatrix_Perspective(UINT32 with, UINT32 height)
+{
+	DirectX::XMFLOAT4X4 mat;
+	DirectX::XMStoreFloat4x4(&mat,
+		DirectX::XMMatrixOrthographicLH(
+			with,
+			height,
+			(float)CAM_NEAR,
+			(float)CAM_FAR));
+	return mat;
 }

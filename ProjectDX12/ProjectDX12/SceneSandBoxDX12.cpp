@@ -12,6 +12,7 @@
 #include "Model.h"
 
 // ƒ}ƒeƒŠƒAƒ‹
+#include "M_ShadowMaps.h"
 #include "M_DepthNormal.h"
 #include "CustomDepthNormalPass.h"
 #include "M_Deffered_Albedo_Normal.h"
@@ -39,6 +40,9 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_SkyBox> sky_box = std::make_shared<M_SkyBox>();
 	Material::Initialize(sky_box, Heap.get());
 	sky_box->AddTexture("assets/texture/HDRI/skybox2.hdr");
+	// ShadowMap
+	std::shared_ptr<M_SimpleShadowMaps> shadow_map = std::make_shared<M_SimpleShadowMaps>();
+	Material::Initialize(shadow_map, Heap.get(), Material::RenderingTiming::Shadow);
 	// DepthNormal
 	std::shared_ptr<M_DepthNormal> opaque_depth_normal = std::make_shared<M_DepthNormal>();
 	Material::Initialize(opaque_depth_normal, Heap.get(), Material::RenderingTiming::OpaqueDepthNormal);
@@ -82,14 +86,16 @@ HRESULT SceneSandBoxDX12::Init()
 	}
 	{		
 		std::vector<std::shared_ptr<Material>> materials;
+		materials.push_back(shadow_map);
 		materials.push_back(opaque_depth_normal);
 		materials.push_back(custom_opaque_depth_normal);
 		materials.push_back(simple_lit);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ -1,0,0 });
+		obj->SetScale({2.5f,2.5f,2.5f});
 		std::shared_ptr<Model> model = GameObject::AddComponent<Model>(obj);
-		model->Create(materials, "assets/model/spot/spot.fbx");
+		model->Create(materials, "assets/model/tree/height_tree.fbx");
 	}
 	{
 		std::shared_ptr<Material> deffered_albedo_normal;

@@ -4,6 +4,8 @@
 #include "GameObject.h"
 #include "imgui/imgui.h"
 
+#define LIGHT_LENGTH (1000)
+
 class LightBase : public GameObject
 {
 private:

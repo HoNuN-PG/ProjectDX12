@@ -21,7 +21,7 @@ public:
 	{
 		Shadow = 0,					// シャドウ
 		OpaqueDepthNormal,			// 不透明深度法線
-		AfterOpaqueDepthNormal,	// 不透明深度法線描画後
+		AfterOpaqueDepthNormal,		// 不透明深度法線描画後
 		Deffered,					// ディファード
 		Forward,					// フォワード
 		TranslucentDepthNormal,		// 透明深度法線

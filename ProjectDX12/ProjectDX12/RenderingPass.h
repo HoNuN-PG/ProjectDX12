@@ -16,6 +16,7 @@ public:
 	enum RenderingPassType
 	{
 		None = 0,
+		Shadow,
 		OpaqueDepthNormal,
 		CustomDepthNormal,
 

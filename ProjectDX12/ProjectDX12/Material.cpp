@@ -57,6 +57,10 @@ void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 	DescriptorHeap::Bind(heaps,1);
 	RootSignatureData->Bind(handle, handleNum);
 	MaterialInstanceIdx++;
+	if (MaterialInstanceIdx >= MaterialInstanceCount)
+	{ // MaterialInstanceIdx‚ªƒ‹[ƒv‚·‚é‚æ‚¤‚É‘Î‰
+		MaterialInstanceIdx = 0;
+	}
 }
 
 void Material::AddTexture(const char* path)

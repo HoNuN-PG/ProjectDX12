@@ -53,12 +53,6 @@ float TurbulenceNoise(float2 vec, int block)
 	return 1 - abs(noise * 2.0f - 1.0f);
 }
 
-/**
- * @param(lacunarity)ƒmƒCƒY‚Ìk¬—¦
- * @param(gain)‡¬‚ÌŒ¸Š—¦
- * @param(amplitude)‰Šú‡¬—¦
- * @param(roll)ŒJ‚è•Ô‚µ‰ñ”
- */
 float PerlinFBM(float lacunarity, float gain, float amplitude, int roll,
 	float2 vec, int block)
 {
@@ -75,11 +69,6 @@ float PerlinFBM(float lacunarity, float gain, float amplitude, int roll,
     return n;
 }
 
-/** 
- * @param(lacunarity)ƒmƒCƒY‚Ìk¬—¦
- * @param(gain)‡¬‚ÌŒ¸Š—¦
- * @param(amplitude)‰Šú‡¬—¦
- */
 float TurbulenceFBM(float lacunarity,float gain,float amplitude,int roll,
 	float2 vec,int block)
 {	

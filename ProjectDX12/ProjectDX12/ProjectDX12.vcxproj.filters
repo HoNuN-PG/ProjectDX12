@@ -124,6 +124,9 @@
     <Filter Include="リソース ファイル\PS\Depth">
       <UniqueIdentifier>{305a46b2-d608-4624-a50a-1353292ca469}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\PS\ShadowMap">
+      <UniqueIdentifier>{c5fce56f-6b50-4e20-b8bf-b96f42f8b85c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectX.cpp">
@@ -260,6 +263,12 @@
     </ClCompile>
     <ClCompile Include="CustomDepthNormalPass.cpp">
       <Filter>ソース ファイル\System\Rendering\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowPass.cpp">
+      <Filter>ソース ファイル\System\Rendering\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="M_ShadowMaps.cpp">
+      <Filter>ソース ファイル\Material\Mterials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -416,6 +425,12 @@
     <ClInclude Include="CustomDepthNormalPass.h">
       <Filter>ヘッダー ファイル\System\Rendering\Pass</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowPass.h">
+      <Filter>ヘッダー ファイル\System\Rendering\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="M_ShadowMaps.h">
+      <Filter>ヘッダー ファイル\Material\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="CommonLighting.hlsl">
@@ -459,6 +474,12 @@
     </FxCompile>
     <FxCompile Include="PS_DepthNormal.hlsl">
       <Filter>リソース ファイル\PS\Depth</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_SimpleShadowMap.hlsl">
+      <Filter>リソース ファイル\PS\ShadowMap</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_ShadowMap.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

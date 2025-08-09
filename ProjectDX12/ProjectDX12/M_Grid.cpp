@@ -51,7 +51,6 @@ void M_Grid::Initialize(DescriptorHeap* heap)
 void M_Grid::Bind()
 {
 	// 定数バッファの設定
-	DirectX::XMFLOAT3 posWS = Owner.lock()->GetWorldPosition();
 	WriteParams(&GridParam,0);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =

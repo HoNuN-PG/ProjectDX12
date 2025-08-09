@@ -31,12 +31,14 @@ public:
 	DescriptorHeap::Handle GetHandleSRV() 
 	{ return hSRV; }
 
+public:
+	float Width;
+	float Height;
+
 private:
 	ID3D12Resource*			Resource;
 	DescriptorHeap::Handle	hRTV;
 	DescriptorHeap::Handle	hSRV;
-	float Width;
-	float Height;
 };
 
 #endif

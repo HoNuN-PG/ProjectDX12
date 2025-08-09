@@ -13,11 +13,12 @@
 #include "RenderTarget.h"
 
 #include "Material.h"
+#include "M_ShadowMaps.h"
 #include "RenderingPass.h"
 #include "PostProcess.h"
 
 class GameObject;
-class CameraDebug;
+class CameraBase;
 class LightBase;
 
 class RenderingEngine
@@ -70,11 +71,16 @@ public:
 	// グローバルテクスチャリソース切り替え
 	static void GlobalTextureRTV2SRV(UINT key);
 	static void GlobalTextureSRV2RTV(UINT key);
+public:
+	// シャドウレシーバ
+	void WriteGlobalConstantBufferResource(UINT key, void* data);
 private:
 	void WriteGlobalConstantBufferResource();
 private:
-	std::shared_ptr<CameraDebug> Camera;
+	std::shared_ptr<CameraBase> Camera;
 	std::shared_ptr<LightBase> Light;
+	std::shared_ptr<ShadowParam::ShadowMapsParam> ShadowMapsParam;
+	std::shared_ptr<ShadowParam::ShadowReceieveParam> ShadowReceieveParam;
 	static std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
 	static std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
 
@@ -94,9 +100,11 @@ public:
 	}
 	std::shared_ptr<RenderTarget> GetPassTexture(UINT timing, UINT type, UINT idx);
 private:
-	std::unique_ptr<RenderingPass> ODepthNormalPass;	// 不透明深度法線パス
-	std::unordered_map<UINT,std::unordered_map<UINT, std::unique_ptr<RenderingPass>>> 
-		RenderingPasses;								// 描画タイミングとパスの種類をキーとしたパス群
+	std::unique_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
+	std::unique_ptr<RenderingPass> ODepthNormalPass;		// 不透明深度法線パス
+	std::unordered_map<UINT, // 描画タイミング
+		std::unordered_map<UINT, // パスの種類
+		std::unique_ptr<RenderingPass>>> RenderingPasses;	// 描画タイミングとパスの種類をキーとしたパス群
 
 	// レンダリングオブジェクト
 public:
@@ -136,6 +144,7 @@ private:
 public:
 	static Material::RenderingTiming GetCurrentRenderingPass() { return CurrentRenderingTiming; }
 private:
+	void ShadowMapsRendering();
 	void OpaqueDepthNormalRendering();
 	void AfterOpaqueDepthNormalRendering();
 	void DefferedRendering();
@@ -144,6 +153,7 @@ private:
 	void TranslucentDepthNormalRendering();
 	void ObjectPostProcessRendering();
 	void CanvasPostProcessRendering();
+	void ViewShadowMaps();
 	void ViewDepthNormal();
 	void ViewGBuffers();
 	void ViewPasses();

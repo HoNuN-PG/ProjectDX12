@@ -5,6 +5,8 @@ enum GlobalConstantBufferResourceKey
 {
 	Camera = 0,
 	Light,
+	ShadowMaps,
+	ShadowReceive,
 
 	MAX_RESOURCE_KEY_TYPE
 };
