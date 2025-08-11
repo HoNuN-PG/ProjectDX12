@@ -1,5 +1,6 @@
 
-#include "CommonInfo.hlsl"
+#include "CommonDefine.hlsl"
+#include "CommonLighting.hlsl"
 
 struct VS_IN
 {
@@ -25,9 +26,7 @@ cbuffer WVP : register(b0)
 
 cbuffer Light : register(b1)
 {
-    float4 ligParam1;
-    float4 ligParam2;
-    float4 ligColor;
+    LightParam LightParams;
 }
 
 cbuffer ShadowMaps : register(b2)
@@ -50,7 +49,7 @@ VS_OUT main(VS_IN input)
 
     output.uv = input.uv;
 
-    output.z.x = length(wpos - ligParam2.xyz) / LIGHT_LENGTH;
+    output.z.x = length(wpos - LightParams.LihgtPos.xyz) / LIGHT_LENGTH;
     output.z.y = pow(output.z.x, 2);
 
     return output;

@@ -21,7 +21,6 @@
 
 #include "ConstantWVP.h"
 
-std::shared_ptr<DescriptorHeap>	RenderingEngine::GlobalHeap;
 std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> RenderingEngine::GlobalConstantBuffer;
 std::unordered_map<UINT, std::shared_ptr<RenderTarget>>	RenderingEngine::GlobalTexture;
 Material::RenderingTiming RenderingEngine::CurrentRenderingTiming;
@@ -37,7 +36,7 @@ void RenderingEngine::Init()
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = 256;
-		GlobalHeap = std::make_shared<DescriptorHeap>(desc);
+		RenderingHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ディスクリプターヒープ(レンダーターゲット)
 	{
@@ -56,12 +55,14 @@ void RenderingEngine::Init()
 	// グローバルリソース
 	{
 		ConstantBuffer::Description desc = {};
-		desc.pHeap = GlobalHeap.get();
+		desc.pHeap = RenderingHeap.get();
 		desc.size = sizeof(DirectX::XMFLOAT4X4);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera] = std::make_shared<ConstantBuffer>(desc);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light] = std::make_shared<ConstantBuffer>(desc);
 		desc.size = sizeof(ShadowParam::ShadowMapsParam);
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps] = std::make_shared<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps1] = std::make_shared<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps2] = std::make_shared<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps3] = std::make_shared<ConstantBuffer>(desc);
 		desc.size = sizeof(ShadowParam::ShadowReceieveParam);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowReceive] = std::make_shared<ConstantBuffer>(desc);
 	}
@@ -74,20 +75,8 @@ void RenderingEngine::Init()
 			desc.height = WINDOW_HEIGHT;
 			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 			desc.pRTVHeap = RTVHeap.get();
-			desc.pSRVHeap = GlobalHeap.get();
+			desc.pSRVHeap = RenderingHeap.get();
 			GlobalTexture[GlobalTextureResourceKey::MainTexture] = std::make_shared<RenderTarget>(desc);
-		}
-		// DepthNormal
-		{
-			RenderTarget::Description desc = {};
-			desc.width = WINDOW_WIDTH;
-			desc.height = WINDOW_HEIGHT;
-			desc.format = DXGI_FORMAT_R32G32_FLOAT;
-			desc.pRTVHeap = RTVHeap.get();
-			desc.pSRVHeap = GlobalHeap.get();
-			GlobalTexture[GlobalTextureResourceKey::DepthTexture] = std::make_shared<RenderTarget>(desc);
-			desc.format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			GlobalTexture[GlobalTextureResourceKey::NormalTexture] = std::make_shared<RenderTarget>(desc);
 		}
 		// GBuffer
 		{
@@ -96,7 +85,7 @@ void RenderingEngine::Init()
 			desc.height = WINDOW_HEIGHT;
 			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 			desc.pRTVHeap = RTVHeap.get();
-			desc.pSRVHeap = GlobalHeap.get();
+			desc.pSRVHeap = RenderingHeap.get();
 			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_shared<RenderTarget>(desc);
 			desc.format = DXGI_FORMAT_R8G8B8A8_UNORM;
 			GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture] = std::make_shared<RenderTarget>(desc);
@@ -108,7 +97,7 @@ void RenderingEngine::Init()
 		desc.width = WINDOW_WIDTH;
 		desc.height = WINDOW_HEIGHT;
 		desc.pDSVHeap = DSVHeap.get();
-		DSV = std::make_unique<DepthStencil>(desc);
+		DSV = std::make_shared<DepthStencil>(desc);
 	}
 
 	// リソースオブジェクト
@@ -117,8 +106,9 @@ void RenderingEngine::Init()
 
 	// レンダリングパス
 	ShadowMapsPass = std::make_unique<ShadowPass>();
-	ShadowMapsPass->Init(RTVHeap, GlobalHeap, DSVHeap);
+	ShadowMapsPass->Init(RTVHeap, RenderingHeap, DSVHeap);
 	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>();
+	ODepthNormalPass->Init(RTVHeap, RenderingHeap, DSVHeap);
 
 	// ポストプロセス
 	ObjectPostProcess = std::make_unique<PostProcess>();
@@ -143,13 +133,43 @@ void RenderingEngine::Draw()
 	// デプスクリア
 	DSV->Clear();
 
-	WriteGlobalConstantBufferResource();
+	// 環境情報の設定
+	{
+		// カメラ
+		DirectX::XMFLOAT4X4 camera;
+		camera._11 = CameraDebug::m_MainPos.x;
+		camera._12 = CameraDebug::m_MainPos.y;
+		camera._13 = CameraDebug::m_MainPos.z;
+		camera._14 = 0.0f;
+		WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera,&camera);
+
+		// ライト
+		DirectX::XMFLOAT4X4 light;
+		light._11 = Light->GetPos().x;
+		light._12 = Light->GetPos().y;
+		light._13 = Light->GetPos().z;
+		light._14 = 0;
+		light._21 = Light->GetDir().x;
+		light._22 = Light->GetDir().y;
+		light._23 = Light->GetDir().z;
+		light._24 = 0;
+		light._31 = Light->GetColor().x;
+		light._32 = Light->GetColor().y;
+		light._33 = Light->GetColor().z;
+		light._34 = Light->GetColor().w;
+		light._41 = Light->GetPower();
+		light._42 = Light->GetAmbient();
+		WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Light, &light);
+	}
+
 	CurrentRenderingTiming = Material::RenderingTiming::Shadow;
 	ShadowMapsRendering();
 	CurrentRenderingTiming = Material::RenderingTiming::OpaqueDepthNormal;
 	OpaqueDepthNormalRendering();
 	CurrentRenderingTiming = Material::RenderingTiming::AfterOpaqueDepthNormal;
 	AfterOpaqueDepthNormalRendering();
+	CurrentRenderingTiming = Material::Environment;
+	EnvironmentRendering();
 	CurrentRenderingTiming = Material::Deffered;
 	DefferedRendering();
 	DefferedLighting();
@@ -160,7 +180,7 @@ void RenderingEngine::Draw()
 	CurrentRenderingTiming = Material::RenderingTiming::Other;
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
-	Copy::Copy::ExecuteCopy(GlobalHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get(), GetRTV());
+	Copy::ExecuteCopy(RenderingHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get(), GetRTV());
 	ViewShadowMaps();
 	ViewDepthNormal();
 	ViewGBuffers();
@@ -172,8 +192,9 @@ void RenderingEngine::Draw()
 	SetRenderTarget(1, &hRTV, DSV->GetHandleDSV().hCPU);
 
 	// 登録された情報をクリア
-	ForwardObjects.clear();
+	EnvironmentObjects.clear();
 	DefferedObjects.clear();
+	ForwardObjects.clear();
 }
 
 DescriptorHeap::Handle RenderingEngine::GetGlobalConstantBufferResource(UINT key)
@@ -223,33 +244,6 @@ void RenderingEngine::WriteGlobalConstantBufferResource(UINT key, void* data)
 	GlobalConstantBuffer[key]->Write(data);
 }
 
-void RenderingEngine::WriteGlobalConstantBufferResource()
-{
-	// カメラ
-	DirectX::XMFLOAT4X4 camera;
-	camera._11 = CameraDebug::m_MainPos.x;
-	camera._12 = CameraDebug::m_MainPos.y;
-	camera._13 = CameraDebug::m_MainPos.z;
-	camera._14 = 0.0f;
-	GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera]->Write(&camera);
-	// ライト
-	DirectX::XMFLOAT4X4 light;
-	light._11 = Light->GetDir().x;
-	light._12 = Light->GetDir().y;
-	light._13 = Light->GetDir().z;
-	light._14 = Light->GetPower();
-	light._21 = Light->GetPos().x;
-	light._22 = Light->GetPos().y;
-	light._23 = Light->GetPos().z;
-	light._24 = Light->GetAmbient();
-	light._31 = Light->GetColor().x;
-	light._32 = Light->GetColor().y;
-	light._33 = Light->GetColor().z;
-	light._34 = Light->GetColor().w;
-
-	GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light]->Write(&light);
-}
-
 std::shared_ptr<RenderTarget> RenderingEngine::GetPassTexture(UINT timing, UINT type, UINT idx)
 {
 	switch (timing)
@@ -258,6 +252,7 @@ std::shared_ptr<RenderTarget> RenderingEngine::GetPassTexture(UINT timing, UINT 
 		ShadowMapsPass->GetTexture(idx);
 		break;
 	case Material::OpaqueDepthNormal:
+		ODepthNormalPass->GetTexture(idx);
 		break;
 	case Material::AfterOpaqueDepthNormal:
 		if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
@@ -296,6 +291,9 @@ void RenderingEngine::AddRenderObject(
 		if(RenderingPasses.contains(timing) && RenderingPasses[timing].contains(passType))
 			RenderingPasses[timing][passType]->AddObj(obj);
 		break;
+	case Material::Environment:
+		EnvironmentObjects.push_back(info);
+		break;
 	case Material::Deffered:
 		DefferedObjects.push_back(info);
 		break;
@@ -325,31 +323,7 @@ void RenderingEngine::ShadowMapsRendering()
 
 void RenderingEngine::OpaqueDepthNormalRendering()
 {
-	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
-
-	// ターゲット化
-	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	GlobalTexture[GlobalTextureResourceKey::NormalTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-	// RTVの設定
-	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->Clear(clearColor);
-	GlobalTexture[GlobalTextureResourceKey::NormalTexture]->Clear(clearColor);
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
-		GlobalTexture[GlobalTextureResourceKey::DepthTexture]->GetHandleRTV().hCPU,
-		GlobalTexture[GlobalTextureResourceKey::NormalTexture]->GetHandleRTV().hCPU,
-	};
-	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
-
-	// DepthNormal
 	ODepthNormalPass->Execute();
-
-	// リソース化
-	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	GlobalTexture[GlobalTextureResourceKey::NormalTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
 void RenderingEngine::AfterOpaqueDepthNormalRendering()
@@ -361,6 +335,32 @@ void RenderingEngine::AfterOpaqueDepthNormalRendering()
 	{
 		it->second->Execute();
 	}
+}
+
+void RenderingEngine::EnvironmentRendering()
+{
+	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
+
+	// ターゲット化
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+	// RTVの設定
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->Clear(clearColor);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+		GlobalTexture[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
+	};
+	SetRenderTarget(_countof(rtvs), rtvs);
+
+	// 環境描画
+	for (int i = 0; i < EnvironmentObjects.size(); ++i)
+	{
+		EnvironmentObjects[i].obj.RenderingBase();
+	}
+
+	// リソース化
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
 void RenderingEngine::DefferedRendering()
@@ -401,18 +401,16 @@ void RenderingEngine::DefferedRendering()
 
 void RenderingEngine::DefferedLighting()
 {
+
 }
 
 void RenderingEngine::ForwardRendering()
 {
-	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
-
 	// ターゲット化
 	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 	// RTVの設定
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->Clear(clearColor);
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
 		GlobalTexture[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
 	};
@@ -431,30 +429,7 @@ void RenderingEngine::ForwardRendering()
 
 void RenderingEngine::TranslucentDepthNormalRendering()
 {
-	// ターゲット化
-	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	GlobalTexture[GlobalTextureResourceKey::NormalTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-	// RTVの設定
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
-		GlobalTexture[GlobalTextureResourceKey::DepthTexture]->GetHandleRTV().hCPU,
-		GlobalTexture[GlobalTextureResourceKey::NormalTexture]->GetHandleRTV().hCPU,
-	};
-	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
-
-	// DepthNormal
-	//for (int i = 0; i < RenderObjects[Material::RenderingTiming::O_DEPTH_NORMAL_TIMING].size(); ++i)
-	//{
-	//	RenderObjects[Material::RenderingTiming::O_DEPTH_NORMAL_TIMING][i].obj.RenderingBase();
-	//}
-
-	// リソース化
-	GlobalTexture[GlobalTextureResourceKey::DepthTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	GlobalTexture[GlobalTextureResourceKey::NormalTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
 void RenderingEngine::ObjectPostProcessRendering()
@@ -473,15 +448,15 @@ void RenderingEngine::ViewShadowMaps()
 	{
 		ImGui::Text("ShadowMap1");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			GlobalHeap.get(),
+			RenderingHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::Near).get()), { 240,135 });
 		ImGui::Text("ShadowMap2");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			GlobalHeap.get(),
+			RenderingHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::Middle).get()), { 240,135 });
 		ImGui::Text("ShadowMap3");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			GlobalHeap.get(),
+			RenderingHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::Far).get()), { 240,135 });
 	}
 	ImGui::End();
@@ -493,12 +468,12 @@ void RenderingEngine::ViewDepthNormal()
 	{
 		ImGui::Text("Depth");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			GlobalHeap.get(),
-			GlobalTexture[GlobalTextureResourceKey::DepthTexture].get()), { 240,135 });
+			RenderingHeap.get(),
+			ODepthNormalPass->GetTexture(OpaqueDepthNormalPass::DepthTexture).get()), { 240,135 });
 		ImGui::Text("Normal");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			GlobalHeap.get(),
-			GlobalTexture[GlobalTextureResourceKey::NormalTexture].get()), { 240,135 });
+			RenderingHeap.get(),
+			ODepthNormalPass->GetTexture(OpaqueDepthNormalPass::NormalTexture).get()), { 240,135 });
 	}
 	ImGui::End();
 }
@@ -509,11 +484,11 @@ void RenderingEngine::ViewGBuffers()
 	{
 		ImGui::Text("DefferedAlbedo");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			GlobalHeap.get(), 
+			RenderingHeap.get(), 
 			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture].get()), { 240,135 });
 		ImGui::Text("DefferedNormal");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			GlobalHeap.get(),
+			RenderingHeap.get(),
 			GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture].get()), { 240,135 });
 	}
 	ImGui::End();
@@ -525,9 +500,9 @@ void RenderingEngine::ViewPasses()
 	{
 		ImGui::Text("CustomDepth");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			GlobalHeap.get(),
+			RenderingHeap.get(),
 			RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal][RenderingPass::CustomDepthNormal]->
-			GetTexture(CustomDepthNormalPass::CustomDepth).get()), {240,135});
+			GetTexture(CustomDepthNormalPass::DepthTexture).get()), {240,135});
 	}
 	ImGui::End();
 }

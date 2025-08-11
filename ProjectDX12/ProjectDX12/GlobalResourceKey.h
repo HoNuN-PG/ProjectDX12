@@ -5,7 +5,9 @@ enum GlobalConstantBufferResourceKey
 {
 	Camera = 0,
 	Light,
-	ShadowMaps,
+	ShadowMaps1,
+	ShadowMaps2,
+	ShadowMaps3,
 	ShadowReceive,
 
 	MAX_RESOURCE_KEY_TYPE
@@ -14,8 +16,6 @@ enum GlobalConstantBufferResourceKey
 enum GlobalTextureResourceKey
 {
 	MainTexture = 0,
-	DepthTexture,
-	NormalTexture,
 	DefferedAlbedoTexture,
 	DefferedNormalTexture,
 

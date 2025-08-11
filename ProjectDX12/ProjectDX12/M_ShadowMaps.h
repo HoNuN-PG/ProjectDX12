@@ -15,7 +15,19 @@ namespace ShadowParam
 	};
 }
 
-class M_SimpleShadowMaps : public Material
+class M_ShadowMapsBase : public Material
+{
+public:
+	virtual void Initialize(DescriptorHeap* heap) override {};
+	virtual void Bind() override {};
+
+public:
+	// 現在設定されているシャドウマップの番号
+	static UINT CurrentShadowMapsNo;
+
+};
+
+class M_SimpleShadowMaps : public M_ShadowMapsBase
 {
 public:
 	virtual void Initialize(DescriptorHeap* heap) override;

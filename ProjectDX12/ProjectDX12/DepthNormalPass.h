@@ -10,6 +10,14 @@
 class OpaqueDepthNormalPass : public RenderingPass
 {
 public:
+	enum TextureType
+	{
+		DepthTexture = 0,
+		NormalTexture,
+
+		MAX
+	};
+public:
 	OpaqueDepthNormalPass();
 	~OpaqueDepthNormalPass() {};
 public:
@@ -18,15 +26,16 @@ public:
 	virtual void Init(
 		std::shared_ptr<DescriptorHeap> rtvHeap,
 		std::shared_ptr<DescriptorHeap> srvHeap,
-		std::shared_ptr<DescriptorHeap> dsvHeap) override {};
+		std::shared_ptr<DescriptorHeap> dsvHeap) override;
 	void AddObj(GameObject& obj) override;
-	virtual std::shared_ptr<RenderTarget> GetTexture(UINT idx) override { return nullptr; }
-	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) override {return DescriptorHeap::Handle(); }
-	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) override { return DescriptorHeap::Handle(); }
+	virtual std::shared_ptr<RenderTarget> GetTexture(UINT idx) override;
+	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) override;
+	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) override;
 private:
 	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
 
 private:
+	std::shared_ptr<DepthStencil> DSV;
 	std::shared_ptr<RenderTarget> Depth;
 	std::shared_ptr<RenderTarget> Normal;
 

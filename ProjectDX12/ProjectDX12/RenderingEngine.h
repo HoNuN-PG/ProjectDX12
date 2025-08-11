@@ -48,45 +48,38 @@ public:
 	void Update();
 	void Draw();
 
-	// グローバルヒープ
-public:
-	static std::shared_ptr<DescriptorHeap> GetGlobalHeap()
-	{ return GlobalHeap; }
+	// 描画ヒープ
 private:
-	static std::shared_ptr<DescriptorHeap> GlobalHeap;
-
-	// ヒープ
-private:
+	std::shared_ptr<DescriptorHeap> RenderingHeap;
 	std::shared_ptr<DescriptorHeap>	RTVHeap;
 	std::shared_ptr<DescriptorHeap>	DSVHeap;
+	// 描画リソース
+public:
+	std::shared_ptr<DepthStencil> GetDSV() { return DSV; };
+private:
+	std::shared_ptr<DepthStencil> DSV;
 
 	// グローバルリソース
 public:
 	// グローバル定数バッファ
 	static DescriptorHeap::Handle GetGlobalConstantBufferResource(UINT key);
+	static void WriteGlobalConstantBufferResource(UINT key, void* data);
 	// グローバルテクスチャ
 	static std::shared_ptr<RenderTarget> GetGlobalRenderTarget(UINT key);
 	static DescriptorHeap::Handle GetGlobalTextureRTV(UINT key);
 	static DescriptorHeap::Handle GetGlobalTextureSRV(UINT key);
-	// グローバルテクスチャリソース切り替え
 	static void GlobalTextureRTV2SRV(UINT key);
 	static void GlobalTextureSRV2RTV(UINT key);
-public:
-	// シャドウレシーバ
-	void WriteGlobalConstantBufferResource(UINT key, void* data);
 private:
-	void WriteGlobalConstantBufferResource();
+	static std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
+	static std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
+
+	// 環境
 private:
 	std::shared_ptr<CameraBase> Camera;
 	std::shared_ptr<LightBase> Light;
 	std::shared_ptr<ShadowParam::ShadowMapsParam> ShadowMapsParam;
 	std::shared_ptr<ShadowParam::ShadowReceieveParam> ShadowReceieveParam;
-	static std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
-	static std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
-
-	// リソース
-private:
-	std::unique_ptr<DepthStencil> DSV;
 
 	// レンダリングパス
 public:
@@ -96,7 +89,7 @@ public:
 		if (RenderingPasses[timing].contains(passType)) 
 			return;
 		RenderingPasses[timing][passType] = std::make_unique<T>();
-		RenderingPasses[timing][passType]->Init(RTVHeap,GlobalHeap,DSVHeap);
+		RenderingPasses[timing][passType]->Init(RTVHeap,RenderingHeap,DSVHeap);
 	}
 	std::shared_ptr<RenderTarget> GetPassTexture(UINT timing, UINT type, UINT idx);
 private:
@@ -134,6 +127,7 @@ public:
 	// 作成したマテリアルの追加
 	void AddRenderingMaterial(std::shared_ptr<Material> material);
 private:
+	std::vector<RenderingInfo> EnvironmentObjects;			// 環境描画オブジェクト
 	std::vector<RenderingInfo> DefferedObjects;				// ディファードライティングオブジェクト
 	std::vector<RenderingInfo> ForwardObjects;				// フォワードライティングオブジェクト
 	std::unique_ptr<PostProcess> ObjectPostProcess;			// オブジェクト描画後のポストプロセス
@@ -147,6 +141,7 @@ private:
 	void ShadowMapsRendering();
 	void OpaqueDepthNormalRendering();
 	void AfterOpaqueDepthNormalRendering();
+	void EnvironmentRendering();
 	void DefferedRendering();
 	void DefferedLighting();
 	void ForwardRendering();

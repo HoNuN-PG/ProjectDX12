@@ -8,6 +8,8 @@
 #include "SceneManager.h"
 #include "RenderingEngine.h"
 
+#include "M_ShadowMaps.h"
+
 #include "GlobalResourceKey.h"
 
 ShadowPass::ShadowPass()
@@ -43,8 +45,9 @@ void ShadowPass::Execute()
 				DirectX::XMLoadFloat4x4(&lvpc4x4)
 			)
 		);
+		M_ShadowMapsBase::CurrentShadowMapsNo = i;
 		ShadowMapsParam = ShadowParam::ShadowMapsParam(lvpc4x4);
-		Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps, &ShadowMapsParam);
+		Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + i, &ShadowMapsParam);
 		ShadowReceiveParam.LVP[i] = lvpc4x4;
 
 		// ターゲット化
@@ -72,7 +75,6 @@ void ShadowPass::Execute()
 			D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 		nearDepth = CascadeAreas[i];
-		break;
 	}
 	Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReceive,&ShadowReceiveParam);
 

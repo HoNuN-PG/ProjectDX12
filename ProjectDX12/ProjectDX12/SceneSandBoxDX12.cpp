@@ -32,13 +32,14 @@ HRESULT SceneSandBoxDX12::Init()
 {
 	// ボリューム追加
 	GetRenderingEngine()->AddVolume<Vignette>();
+	// パス追加
 	GetRenderingEngine()->AddRenderingPass<CustomDepthNormalPass>(
 		Material::RenderingTiming::AfterOpaqueDepthNormal,
 		RenderingPass::RenderingPassType::CustomDepthNormal);
 
 	// SkyBox
 	std::shared_ptr<M_SkyBox> sky_box = std::make_shared<M_SkyBox>();
-	Material::Initialize(sky_box, Heap.get());
+	Material::Initialize(sky_box, Heap.get(),Material::RenderingTiming::Environment);
 	sky_box->AddTexture("assets/texture/HDRI/skybox2.hdr");
 	// ShadowMap
 	std::shared_ptr<M_SimpleShadowMaps> shadow_map = std::make_shared<M_SimpleShadowMaps>();
@@ -61,7 +62,7 @@ HRESULT SceneSandBoxDX12::Init()
 	Material::Initialize(simple_lit, Heap.get());
 
 	// モデル作成
-	{
+	{ // スカイボックス
 		std::vector<std::shared_ptr<Material>> materials;
 		materials.push_back(sky_box);
 
@@ -72,7 +73,7 @@ HRESULT SceneSandBoxDX12::Init()
 		std::shared_ptr<Sphere> model = GameObject::AddComponent<Sphere>(obj);
 		model->Create(materials);
 	}
-	{
+	{ // グリッド
 		std::vector<std::shared_ptr<Material>> materials;
 		materials.push_back(opaque_depth_normal);
 		materials.push_back(grid);
@@ -84,7 +85,7 @@ HRESULT SceneSandBoxDX12::Init()
 		std::shared_ptr<Plane> model = GameObject::AddComponent<Plane>(obj);
 		model->Create(materials);
 	}
-	{		
+	{ // 木
 		std::vector<std::shared_ptr<Material>> materials;
 		materials.push_back(shadow_map);
 		materials.push_back(opaque_depth_normal);
@@ -97,7 +98,8 @@ HRESULT SceneSandBoxDX12::Init()
 		std::shared_ptr<Model> model = GameObject::AddComponent<Model>(obj);
 		model->Create(materials, "assets/model/tree/height_tree.fbx");
 	}
-	{
+	{ // 牛
+		// Deffered
 		std::shared_ptr<Material> deffered_albedo_normal;
 		deffered_albedo_normal = std::make_shared<M_Deffered_Albedo_Normal>();
 		Material::Initialize(deffered_albedo_normal,Heap.get(), Material::RenderingTiming::Deffered);

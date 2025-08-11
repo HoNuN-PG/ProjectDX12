@@ -15,14 +15,12 @@ cbuffer Camera : register(b0)
 }
 cbuffer Light : register(b1)
 {
-    float4 ligParam1;
-    float4 ligParam2;
-    float4 ligColor;
+    LightParam LightParams;
 }
 SamplerState samp : register(s0);
 
 float4 main(PS_IN input) : SV_TARGET
 {
-    float3 color = CalcLambert(input.normal,ligParam1.xyz) * ligParam1.w + ligParam2.w;
-    return float4(color * ligColor.xyz * input.color.xyz,1);
+    float3 color = CalcLambert(input.normal,LightParams.LightDir.xyz) * LightParams.LightAdd.x + LightParams.LightAdd.y;
+    return float4(color * LightParams.LightColor.xyz * input.color.xyz,1);
 }

@@ -22,6 +22,7 @@ public:
 		Shadow = 0,					// シャドウ
 		OpaqueDepthNormal,			// 不透明深度法線
 		AfterOpaqueDepthNormal,		// 不透明深度法線描画後
+		Environment,				// 環境（スカイボックス等）
 		Deffered,					// ディファード
 		Forward,					// フォワード
 		TranslucentDepthNormal,		// 透明深度法線
@@ -36,9 +37,6 @@ public:
 	virtual ~Material() {};
 
 public:
-	/// <summary>
-	/// 初期化
-	/// </summary>
 	static void Initialize(
 		std::shared_ptr<Material> material,
 		DescriptorHeap* heap,
@@ -46,8 +44,6 @@ public:
 		RenderingPass::RenderingPassType passType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE);
 protected:
 	virtual void Initialize(DescriptorHeap* heap) = 0;
-
-protected:
 	void Create
 	(
 		DescriptorHeap* heap,

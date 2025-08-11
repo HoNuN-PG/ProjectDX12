@@ -18,8 +18,8 @@ class CustomDepthNormalPass : public RenderingPass
 public:
 	enum TextureType
 	{
-		CustomDepth = 0,
-		CustomNormal,
+		DepthTexture = 0,
+		NormalTexture,
 
 		MAX
 	};
@@ -42,8 +42,8 @@ private:
 
 private:
 	std::unique_ptr<DepthStencil> DSV;
-	std::shared_ptr<RenderTarget> CustomDepthTexture;
-	std::shared_ptr<RenderTarget> CustomNormalTexture;
+	std::shared_ptr<RenderTarget> Depth;
+	std::shared_ptr<RenderTarget> Normal;
 
 };
 

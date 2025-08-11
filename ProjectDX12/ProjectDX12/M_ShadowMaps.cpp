@@ -5,6 +5,8 @@
 
 #include "GameObject.h"
 
+UINT M_ShadowMapsBase::CurrentShadowMapsNo = 0;
+
 void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap)
 {
 	// 定数バッファ
@@ -15,7 +17,9 @@ void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap)
 		desc.size = sizeof(DirectX::XMFLOAT4X4);
 		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
 		desc.size = sizeof(ShadowParam::ShadowMapsParam);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ
+		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ1
+		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ2
+		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ3
 	}
 
 	RootSignature::ParameterTable param[] = {
@@ -52,14 +56,16 @@ void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap)
 void M_SimpleShadowMaps::Bind()
 {
 	// 定数バッファの設定
-	WriteParams((UINT)2, 0,
+	WriteParams((UINT)1, 0,
 		RenderingEngine::GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Light).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	WriteParams((UINT)1, 1 + CurrentShadowMapsNo,
+		RenderingEngine::GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + CurrentShadowMapsNo).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
 		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
 		Params[0]->GetHandle().hGPU,
-		Params[1]->GetHandle().hGPU,
+		Params[1 + CurrentShadowMapsNo]->GetHandle().hGPU,
 	};
 	Material::BindBase(desc, _countof(desc));
 }
