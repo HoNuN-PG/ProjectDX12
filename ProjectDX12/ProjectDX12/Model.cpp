@@ -34,7 +34,7 @@ void Model::Create(std::vector<std::vector<std::shared_ptr<Material>>> meshmater
 	flag |= aiProcess_GenUVCoords;
 	flag |= aiProcess_RemoveRedundantMaterials;
 	flag |= aiProcess_OptimizeMeshes;
-	flag |= aiProcess_FlipUVs; // UVèCê≥
+	flag |= aiProcess_FlipUVs;
 	const aiScene* pScene = importer.ReadFile(path, flag);
 	if (!pScene) {
 		MessageBox(nullptr, importer.GetErrorString(), "Assimp Error", MB_OK);
