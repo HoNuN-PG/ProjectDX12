@@ -13,7 +13,7 @@
 #include "RenderTarget.h"
 
 #include "Material.h"
-#include "M_ShadowMaps.h"
+#include "M_Shadow.h"
 #include "RenderingPass.h"
 #include "PostProcess.h"
 
@@ -49,6 +49,9 @@ public:
 	void Draw();
 
 	// 描画ヒープ
+public:
+	DescriptorHeap* GetRenderingHeap() { return RenderingHeap.get(); }
+	DescriptorHeap* GetRTVHeap() { return RTVHeap.get(); }
 private:
 	std::shared_ptr<DescriptorHeap> RenderingHeap;
 	std::shared_ptr<DescriptorHeap>	RTVHeap;
@@ -78,8 +81,6 @@ private:
 private:
 	std::shared_ptr<CameraBase> Camera;
 	std::shared_ptr<LightBase> Light;
-	std::shared_ptr<ShadowParam::ShadowMapsParam> ShadowMapsParam;
-	std::shared_ptr<ShadowParam::ShadowReceieveParam> ShadowReceieveParam;
 
 	// レンダリングパス
 public:
@@ -92,6 +93,7 @@ public:
 		RenderingPasses[timing][passType]->Init(RTVHeap,RenderingHeap,DSVHeap);
 	}
 	std::shared_ptr<RenderTarget> GetPassTexture(UINT timing, UINT type, UINT idx);
+	void CopyPassTextureSRV(std::shared_ptr<RenderTarget> dest, UINT timing, UINT type, UINT idx);
 private:
 	std::unique_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
 	std::unique_ptr<RenderingPass> ODepthNormalPass;		// 不透明深度法線パス

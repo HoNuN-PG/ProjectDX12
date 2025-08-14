@@ -129,8 +129,8 @@ ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* heap, RenderTarget* srv)
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	// •\Ž¦—Ìˆæ‚ÌÝ’è
-	D3D12_VIEWPORT vp = { 0, 0, 1280.0f, 720.0f, 0.0f, 1.0f };
-	D3D12_RECT scissor = { 0, 0, 1280.0f, 720.0f };
+	D3D12_VIEWPORT vp = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0.0f, 1.0f };
+	D3D12_RECT scissor = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
 	pCmdList->RSSetViewports(1, &vp);
 	pCmdList->RSSetScissorRects(1, &scissor);
 

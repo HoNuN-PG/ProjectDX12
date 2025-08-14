@@ -1,4 +1,10 @@
 
+struct CameraParam
+{
+    float4 CameraPos;
+    float4 CameraForward;
+};
+
 struct LightParam
 {
     float4 LihgtPos;

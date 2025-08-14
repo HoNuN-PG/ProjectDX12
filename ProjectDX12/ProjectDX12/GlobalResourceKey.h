@@ -8,7 +8,7 @@ enum GlobalConstantBufferResourceKey
 	ShadowMaps1,
 	ShadowMaps2,
 	ShadowMaps3,
-	ShadowReceive,
+	ShadowReciever,
 
 	MAX_RESOURCE_KEY_TYPE
 };

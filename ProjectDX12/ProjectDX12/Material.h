@@ -37,6 +37,9 @@ public:
 	virtual ~Material() {};
 
 public:
+	static void Init();
+
+public:
 	static void Initialize(
 		std::shared_ptr<Material> material,
 		DescriptorHeap* heap,
@@ -82,6 +85,7 @@ protected:
 	RenderingTiming									Timing;
 	RenderingPass::RenderingPassType				PassType;
 	DescriptorHeap*									Heap;
+	static std::shared_ptr<DescriptorHeap>			RTVHeap;
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;
 	std::vector<std::unique_ptr<Texture>>			Textures;

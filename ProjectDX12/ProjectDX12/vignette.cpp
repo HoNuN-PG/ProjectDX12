@@ -54,31 +54,31 @@ void Vignette::Init()
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = Heap.get();
 		desc.size = sizeof(VignetteParams);
-		ParamBuf = std::make_unique<ConstantBuffer>(desc);
+		Params = std::make_unique<ConstantBuffer>(desc);
 	}
 
 	// パラメーター書き込み
-	Param.color = { 0,0,0,0 };
-	Param.start = 0.5f;
-	Param.range = 0.75f;
-	ParamBuf->Write(&Param);
+	VignetteParam.color = { 0,0,0,0 };
+	VignetteParam.start = 0.5f;
+	VignetteParam.range = 0.75f;
+	Params->Write(&VignetteParam);
 }
 
 void Vignette::Draw()
 {
 	ImGui::Begin("Vignette");
 	float color[4];
-	memcpy(color, &Param.color, sizeof(DirectX::XMFLOAT4));
+	memcpy(color, &VignetteParam.color, sizeof(DirectX::XMFLOAT4));
 	{
 		ImGui::ColorEdit4("color",color);
-		ImGui::SliderFloat("start", &Param.start, 0.01f, 1.0f);
-		ImGui::SliderFloat("range", &Param.range, 0.01f, 1.0f);
+		ImGui::SliderFloat("start", &VignetteParam.start, 0.01f, 1.0f);
+		ImGui::SliderFloat("range", &VignetteParam.range, 0.01f, 1.0f);
 	}
-	memcpy(&Param.color,color,sizeof(DirectX::XMFLOAT4));
+	memcpy(&VignetteParam.color,color,sizeof(DirectX::XMFLOAT4));
 	ImGui::End();
 
 	// バッファに書き込み
-	ParamBuf->Write(&Param);
+	Params->Write(&VignetteParam);
 	// ポストプロセス用RTVをバインド
 	PostProcessRTV->SRV2RTV();
 	BindPostProcessRTV();
@@ -89,7 +89,7 @@ void Vignette::Draw()
 	GetGlobalSRV(RTV, GlobalTextureResourceKey::MainTexture);
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = {
 		RTV.get()->GetHandleSRV().hGPU,
-		ParamBuf.get()->GetHandle().hGPU,
+		Params.get()->GetHandle().hGPU,
 	};
 	RootSignatureData->Bind(desc, _countof(desc));
 	// 描画

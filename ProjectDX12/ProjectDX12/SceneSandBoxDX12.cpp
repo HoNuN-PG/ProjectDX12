@@ -12,7 +12,7 @@
 #include "Model.h"
 
 // マテリアル
-#include "M_ShadowMaps.h"
+#include "M_Shadow.h"
 #include "M_DepthNormal.h"
 #include "CustomDepthNormalPass.h"
 #include "M_Deffered_Albedo_Normal.h"
@@ -57,6 +57,10 @@ HRESULT SceneSandBoxDX12::Init()
 	Material::Initialize(grid, Heap.get());
 	grid->SetGridSize(1);
 	grid->SetSubGridSize(5);
+	std::shared_ptr<M_GridShadow> grid_shadow = std::make_shared<M_GridShadow>();
+	Material::Initialize(grid_shadow, Heap.get());
+	grid_shadow->SetGridSize(1);
+	grid_shadow->SetSubGridSize(5);
 	// SimpleLit
 	std::shared_ptr<M_SimpleLit> simple_lit = std::make_shared<M_SimpleLit>();
 	Material::Initialize(simple_lit, Heap.get());
@@ -76,7 +80,7 @@ HRESULT SceneSandBoxDX12::Init()
 	{ // グリッド
 		std::vector<std::shared_ptr<Material>> materials;
 		materials.push_back(opaque_depth_normal);
-		materials.push_back(grid);
+		materials.push_back(grid_shadow);
 
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,-1,0 });
@@ -93,7 +97,7 @@ HRESULT SceneSandBoxDX12::Init()
 		materials.push_back(simple_lit);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
-		obj->SetPosition({ -1,0,0 });
+		obj->SetPosition({ 0,0,0 });
 		obj->SetScale({2.5f,2.5f,2.5f});
 		std::shared_ptr<Model> model = GameObject::AddComponent<Model>(obj);
 		model->Create(materials, "assets/model/tree/height_tree.fbx");
@@ -110,7 +114,7 @@ HRESULT SceneSandBoxDX12::Init()
 		materials.push_back(deffered_albedo_normal);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
-		obj->SetPosition({ 1,0,0 });
+		obj->SetPosition({ 0,0,10 });
 		std::shared_ptr<Model> model = GameObject::AddComponent<Model>(obj);
 		model->Create(materials, "assets/model/spot/spot.fbx");
 	}

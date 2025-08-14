@@ -8,7 +8,7 @@
 
 #include "RenderingEngine.h"
 
-#include "M_ShadowMaps.h"
+#include "M_Shadow.h"
 
 #include "DepthStencil.h"
 #include "RenderTarget.h"
@@ -60,7 +60,11 @@ private:
 
 private:
 	ShadowParam::ShadowMapsParam ShadowMapsParam;
-	ShadowParam::ShadowReceieveParam ShadowReceiveParam;
+	ShadowParam::ShadowReceieverParam ShadowReceiveParam;
+
+public:
+	static DirectX::XMFLOAT2 ShadowMapsSize[TextureType::MAX];
+	static DXGI_FORMAT ShadowMapsFormat;
 
 };
 

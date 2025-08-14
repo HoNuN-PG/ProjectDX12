@@ -133,6 +133,9 @@
     <Filter Include="ソース ファイル\System\Rendering\System">
       <UniqueIdentifier>{b67ee4c7-76ab-4b37-ab48-d54d5bae8c58}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\PS\Common\Grid">
+      <UniqueIdentifier>{ca5af76f-2696-4ed5-9e12-2d20ea779ae0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectX.cpp">
@@ -264,7 +267,7 @@
     <ClCompile Include="ShadowPass.cpp">
       <Filter>ソース ファイル\System\Rendering\Pass</Filter>
     </ClCompile>
-    <ClCompile Include="M_ShadowMaps.cpp">
+    <ClCompile Include="M_Shadow.cpp">
       <Filter>ソース ファイル\Material\Mterials</Filter>
     </ClCompile>
     <ClCompile Include="DescriptorHeap.cpp">
@@ -425,7 +428,7 @@
     <ClInclude Include="ShadowPass.h">
       <Filter>ヘッダー ファイル\System\Rendering\Pass</Filter>
     </ClInclude>
-    <ClInclude Include="M_ShadowMaps.h">
+    <ClInclude Include="M_Shadow.h">
       <Filter>ヘッダー ファイル\Material\Materials</Filter>
     </ClInclude>
     <ClInclude Include="DescriptorHeap.h">
@@ -475,9 +478,6 @@
     <FxCompile Include="PS_UnLit.hlsl">
       <Filter>リソース ファイル\PS\Lit</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Grid.hlsl">
-      <Filter>リソース ファイル\PS\Common</Filter>
-    </FxCompile>
     <FxCompile Include="PS_DepthNormal.hlsl">
       <Filter>リソース ファイル\PS\Depth</Filter>
     </FxCompile>
@@ -486,6 +486,18 @@
     </FxCompile>
     <FxCompile Include="VS_ShadowMap.hlsl">
       <Filter>リソース ファイル\VS</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Grid.hlsl">
+      <Filter>リソース ファイル\PS\Common\Grid</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_GridShadow.hlsl">
+      <Filter>リソース ファイル\PS\Common\Grid</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_ShadowReciever.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
+    </FxCompile>
+    <FxCompile Include="CommonShadow.hlsl">
+      <Filter>リソース ファイル\Common</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

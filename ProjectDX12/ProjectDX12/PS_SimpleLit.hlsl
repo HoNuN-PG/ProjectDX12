@@ -11,13 +11,13 @@ struct PS_IN
 
 cbuffer Camera : register(b0)
 {
-    float4 camParam;
+    CameraParam CameraParams;
 }
+
 cbuffer Light : register(b1)
 {
     LightParam LightParams;
 }
-SamplerState samp : register(s0);
 
 float4 main(PS_IN input) : SV_TARGET
 {

@@ -8,9 +8,12 @@
 #include "SceneManager.h"
 #include "RenderingEngine.h"
 
-#include "M_ShadowMaps.h"
+#include "M_Shadow.h"
 
 #include "GlobalResourceKey.h"
+
+DirectX::XMFLOAT2 ShadowPass::ShadowMapsSize[TextureType::MAX];
+DXGI_FORMAT ShadowPass::ShadowMapsFormat;
 
 ShadowPass::ShadowPass()
 {
@@ -19,6 +22,11 @@ ShadowPass::ShadowPass()
 	CascadeAreas.push_back(500);
 	CascadeAreas.push_back(1000);
 	pCamera = SceneManager::GetCurrentScene()->GetGameObject<CameraBase>();
+
+	ShadowMapsSize[Near] = { WINDOW_WIDTH * 2,WINDOW_HEIGHT * 2 };
+	ShadowMapsSize[Middle] = { WINDOW_WIDTH ,WINDOW_HEIGHT };
+	ShadowMapsSize[Far] = { WINDOW_WIDTH / 2,WINDOW_HEIGHT / 2 };
+	ShadowMapsFormat = DXGI_FORMAT_R16G16_FLOAT;
 }
 
 void ShadowPass::Execute()
@@ -45,6 +53,7 @@ void ShadowPass::Execute()
 				DirectX::XMLoadFloat4x4(&lvpc4x4)
 			)
 		);
+		// パラメータ設定
 		M_ShadowMapsBase::CurrentShadowMapsNo = i;
 		ShadowMapsParam = ShadowParam::ShadowMapsParam(lvpc4x4);
 		Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + i, &ShadowMapsParam);
@@ -76,9 +85,11 @@ void ShadowPass::Execute()
 
 		nearDepth = CascadeAreas[i];
 	}
-	Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReceive,&ShadowReceiveParam);
+	SetViewPort(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);
+	// パラメータ設定
+	ShadowReceiveParam.CascadeAreas = DirectX::XMFLOAT4( CascadeAreas[Near],CascadeAreas[Middle],CascadeAreas[Far],0 );
+	Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever,&ShadowReceiveParam);
 
 	RenderObjects.clear();
 }
@@ -163,21 +174,16 @@ void ShadowPass::Init(
 	// RTV
 	{
 		RenderTarget::Description desc = {};
-		desc.format = DXGI_FORMAT_R16G16_FLOAT;
+		desc.format = ShadowMapsFormat;
 		desc.pRTVHeap = rtvHeap.get();
 		desc.pSRVHeap = srvHeap.get();
 
-		desc.width = WINDOW_WIDTH * 2;
-		desc.height = WINDOW_HEIGHT * 2;
-		ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
-
-		desc.width = WINDOW_WIDTH;
-		desc.height = WINDOW_HEIGHT;
-		ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
-
-		desc.width = WINDOW_WIDTH / 2;
-		desc.height = WINDOW_HEIGHT / 2;
-		ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
+		for (int i = 0; i < TextureType::MAX; ++i)
+		{
+			desc.width = ShadowMapsSize[i].x;
+			desc.height = ShadowMapsSize[i].y;
+			ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
+		}
 	}
 	// DSV
 	{

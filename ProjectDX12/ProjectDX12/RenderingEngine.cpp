@@ -27,8 +27,13 @@ Material::RenderingTiming RenderingEngine::CurrentRenderingTiming;
 
 void RenderingEngine::Init()
 {
+	// マテリアル初期化
+	Material::Init();
+
 	// ボリュームの作成
 	Volume::Load();
+
+	// 汎用クラス作成
 	Copy::Load();
 
 	// グローバルディスクリプタヒープ
@@ -63,8 +68,8 @@ void RenderingEngine::Init()
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps1] = std::make_shared<ConstantBuffer>(desc);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps2] = std::make_shared<ConstantBuffer>(desc);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps3] = std::make_shared<ConstantBuffer>(desc);
-		desc.size = sizeof(ShadowParam::ShadowReceieveParam);
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowReceive] = std::make_shared<ConstantBuffer>(desc);
+		desc.size = sizeof(ShadowParam::ShadowReceieverParam);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowReciever] = std::make_shared<ConstantBuffer>(desc);
 	}
 	// グローバルRTV
 	{
@@ -137,10 +142,15 @@ void RenderingEngine::Draw()
 	{
 		// カメラ
 		DirectX::XMFLOAT4X4 camera;
-		camera._11 = CameraDebug::m_MainPos.x;
-		camera._12 = CameraDebug::m_MainPos.y;
-		camera._13 = CameraDebug::m_MainPos.z;
+		camera._11 = CameraBase::m_MainPos.x;
+		camera._12 = CameraBase::m_MainPos.y;
+		camera._13 = CameraBase::m_MainPos.z;
 		camera._14 = 0.0f;
+		DirectX::XMFLOAT3 cameraForward = Camera->GetForward();
+		camera._21 = cameraForward.x;
+		camera._22 = cameraForward.y;
+		camera._23 = cameraForward.z;
+		camera._24 = 0.0f;
 		WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera,&camera);
 
 		// ライト
@@ -249,28 +259,44 @@ std::shared_ptr<RenderTarget> RenderingEngine::GetPassTexture(UINT timing, UINT 
 	switch (timing)
 	{
 	case Material::Shadow:
-		ShadowMapsPass->GetTexture(idx);
+		return ShadowMapsPass->GetTexture(idx);
 		break;
 	case Material::OpaqueDepthNormal:
-		ODepthNormalPass->GetTexture(idx);
+		return ODepthNormalPass->GetTexture(idx);
 		break;
 	case Material::AfterOpaqueDepthNormal:
 		if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
 			return RenderingPasses[timing][type]->GetTexture(idx);
 		break;
 	case Material::Deffered:
+		return nullptr;
 		break;
 	case Material::Forward:
+		return nullptr;
 		break;
 	case Material::TranslucentDepthNormal:
+		return nullptr;
 		break;
 	case Material::Canvas:
+		return nullptr;
 		break;
 	case Material::Other:
+		return nullptr;
 		break;
 	default:
+		return nullptr;
 		break;
 	}
+}
+
+void RenderingEngine::CopyPassTextureSRV(std::shared_ptr<RenderTarget> dest, UINT timing, UINT type, UINT idx)
+{
+	std::shared_ptr<RenderTarget> src = GetPassTexture(timing,type,idx);
+	GetDevice()->CopyDescriptorsSimple(
+		1,
+		dest->GetHandleSRV().hCPU,
+		src->GetHandleSRV().hCPU,
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 void RenderingEngine::AddRenderObject(

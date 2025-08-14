@@ -4,10 +4,23 @@
 #include "SceneManager.h"
 #include "RenderingEngine.h"
 
+std::shared_ptr<DescriptorHeap> Material::RTVHeap;
+
 Material::Material()
 {
 	MaterialInstanceCount = 0;
 	MaterialInstanceIdx = 0;
+}
+
+void Material::Init()
+{
+	// マテリアルディスクリプターヒープ(レンダーターゲット)
+	{
+		DescriptorHeap::Description desc = {};
+		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+		desc.num = 64;
+		RTVHeap = std::make_shared<DescriptorHeap>(desc);
+	}
 }
 
 void Material::Initialize(
