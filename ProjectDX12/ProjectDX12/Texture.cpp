@@ -1,9 +1,6 @@
 
 #include "Texture.h"
 
-#include <DirectXTex.h>
-#include <TextureLoad.h>
-
 Texture::Texture(Description desc)
 {
 	DirectX::TexMetadata info;

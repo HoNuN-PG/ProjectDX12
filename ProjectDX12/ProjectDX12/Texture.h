@@ -3,6 +3,11 @@
 
 #include "DescriptorHeap.h"
 
+#include <DirectXTex.h>
+#pragma comment(lib, "DirectXTex.lib")
+
+#include <TextureLoad.h>
+
 class Texture
 {
 public:
