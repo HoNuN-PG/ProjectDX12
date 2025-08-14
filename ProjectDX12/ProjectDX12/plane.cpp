@@ -4,22 +4,28 @@
 void Plane::Create(std::vector<std::shared_ptr<Material>> materials)
 {
 	CreatePrimitive(0);
-	MaterialData = materials;
-	for (auto material : MaterialData)
+	MeshMaterialsData.push_back(materials);
+	for (int i = 0; i < MeshMaterialsData.size(); ++i)
 	{
-		material->SetOwner(Owner);
-		material->AddMaterialInstance();
+		for (auto material : MeshMaterialsData[i])
+		{
+			material->SetOwner(Owner);
+			material->AddMaterialInstance();
+		}
 	}
 }
 
 void Plane::Create(std::vector<std::shared_ptr<Material>> materials, unsigned int instanced)
 {
 	CreatePrimitive(instanced);
-	MaterialData = materials;
-	for (auto material : MaterialData)
+	MeshMaterialsData.push_back(materials);
+	for (int i = 0; i < MeshMaterialsData.size(); ++i)
 	{
-		material->SetOwner(Owner);
-		material->AddMaterialInstance();
+		for (auto material : MeshMaterialsData[i])
+		{
+			material->SetOwner(Owner);
+			material->AddMaterialInstance();
+		}
 	}
 }
 
@@ -48,6 +54,6 @@ void Plane::CreatePrimitive(unsigned int instanced)
 	else
 	{
 		bInstanced = false;
-		MeshData = std::make_unique<MeshBuffer>(desc);
+		MeshData.push_back(std::make_unique<MeshBuffer>(desc));
 	}
 }

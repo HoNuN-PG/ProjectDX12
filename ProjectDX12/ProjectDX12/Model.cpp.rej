@@ -1,0 +1,13 @@
+diff a/ProjectDX12/ProjectDX12/Model.cpp b/ProjectDX12/ProjectDX12/Model.cpp	(rejected hunks)
+@@ -26,6 +26,11 @@
+ 	flag |= aiProcess_Triangulate;
+ 	flag |= aiProcess_JoinIdenticalVertices;
+ 	flag |= aiProcess_PreTransformVertices;
++	flag |= aiProcess_CalcTangentSpace;
++	flag |= aiProcess_GenSmoothNormals;
++	flag |= aiProcess_GenUVCoords;
++	flag |= aiProcess_RemoveRedundantMaterials;
++	flag |= aiProcess_OptimizeMeshes;
+ 	flag |= aiProcess_FlipUVs; // UV�C��
+ 	const aiScene* pScene = importer.ReadFile(path, flag);
+ 	if (!pScene) {

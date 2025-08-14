@@ -67,6 +67,7 @@ private:
 	ID3D12Resource*				InsUploader;
 	unsigned int				InsCount;
 	std::vector<InstanceData>	InsData;
+
 };
 
 #endif

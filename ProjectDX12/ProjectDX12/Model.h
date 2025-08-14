@@ -6,15 +6,22 @@
 #include <memory>
 #include <DirectXMath.h>
 
+struct aiMesh;
+
 class Model : public RenderingComponent
 {
 public:
-	struct ModelVertex
+	struct Vtx
 	{
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 normal;
 		DirectX::XMFLOAT2 uv;
 		DirectX::XMFLOAT4 color;
+	};
+	struct Mesh
+	{
+		std::vector<Vtx> Vertices;
+		std::vector<WORD> Indices;
 	};
 
 public:
@@ -28,7 +35,10 @@ public:
 
 public:
 	virtual ~Model(){}
-	void Create(std::vector<std::shared_ptr<Material>> materials, const char* path);
+	void Create(std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials, const char* path);
+
+private:
+	void CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV);
 
 };
 

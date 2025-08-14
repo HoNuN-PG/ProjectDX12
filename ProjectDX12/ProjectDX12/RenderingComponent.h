@@ -22,13 +22,15 @@ public:
 	virtual void Rendering() = 0;
 
 public:
-	std::vector<std::shared_ptr<Material>> GetMaterials()
-	{ return MaterialData; }
+	std::vector<std::shared_ptr<Material>> GetMaterials(int idx)
+	{ return MeshMaterialsData[idx]; }
 protected:
-	std::unique_ptr<MeshBuffer>				MeshData;
-	std::unique_ptr<InstanceMeshBuffer>		InstanceMeshData;
-	bool									bInstanced;
-	std::vector<std::shared_ptr<Material>>	MaterialData;
+	std::vector<std::unique_ptr<MeshBuffer>> MeshData;
+	UINT									 MeshIdx;
+	std::unique_ptr<InstanceMeshBuffer>		 InstanceMeshData;
+	bool									 bInstanced;
+	std::vector<std::vector<std::shared_ptr<Material>>>
+											 MeshMaterialsData;
 
 };
 

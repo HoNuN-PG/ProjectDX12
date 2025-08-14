@@ -90,17 +90,21 @@ HRESULT SceneSandBoxDX12::Init()
 		model->Create(materials);
 	}
 	{ // ñÿ
+		std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials;
 		std::vector<std::shared_ptr<Material>> materials;
 		materials.push_back(shadow_map);
 		materials.push_back(opaque_depth_normal);
 		materials.push_back(custom_opaque_depth_normal);
 		materials.push_back(simple_lit);
+
+		meshmaterials.push_back(materials);
+		meshmaterials.push_back(materials);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
-		obj->SetPosition({ 0,0,0 });
+		obj->SetPosition({ 0,-2.5f,0 });
 		obj->SetScale({2.5f,2.5f,2.5f});
 		std::shared_ptr<Model> model = GameObject::AddComponent<Model>(obj);
-		model->Create(materials, "assets/model/tree/height_tree.fbx");
+		model->Create(meshmaterials, "assets/model/tree/height_tree.fbx");
 	}
 	{ // ãç
 		// Deffered
@@ -108,15 +112,18 @@ HRESULT SceneSandBoxDX12::Init()
 		deffered_albedo_normal = std::make_shared<M_Deffered_Albedo_Normal>();
 		Material::Initialize(deffered_albedo_normal,Heap.get(), Material::RenderingTiming::Deffered);
 		deffered_albedo_normal->AddTexture("assets/model/spot/spot_texture.png");
-
+		
+		std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials;
 		std::vector<std::shared_ptr<Material>> materials;
 		materials.push_back(opaque_depth_normal);
 		materials.push_back(deffered_albedo_normal);
 		
+		meshmaterials.push_back(materials);
+		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,10 });
 		std::shared_ptr<Model> model = GameObject::AddComponent<Model>(obj);
-		model->Create(materials, "assets/model/spot/spot.fbx");
+		model->Create(meshmaterials, "assets/model/spot/spot.fbx");
 	}
 
     return E_NOTIMPL;

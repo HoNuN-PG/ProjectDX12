@@ -7,26 +7,32 @@
 
 void Primitive::Draw()
 {
-	for (auto material : MaterialData)
+	for (int i = 0; i < MeshMaterialsData.size(); ++i)
 	{
-		Owner.lock()->BindRenderingEngine(material->GetRenderTiming(), material->GetPassType());
+		for (auto material : MeshMaterialsData[i])
+		{
+			Owner.lock()->BindRenderingEngine(material->GetRenderTiming(), material->GetPassType());
+		}
 	}
 }
 
 void Primitive::Rendering()
 {
 	Material::RenderingTiming current = RenderingEngine::GetCurrentRenderingPass();
-	for (auto material : MaterialData)
+	for (int i = 0; i < MeshData.size(); ++i)
 	{
-		if (material->GetRenderTiming() == current)
+		for (auto material : MeshMaterialsData[i])
 		{
-			material->WriteWVP(ConstantWVP::Calc3DMatrix(
-				Owner.lock()->GetPosition(),
-				Owner.lock()->GetRotation(),
-				Owner.lock()->GetScale()));
-			material->Bind();
-			break;
+			if (material->GetRenderTiming() == current)
+			{
+				material->WriteWVP(ConstantWVP::Calc3DMatrix(
+					Owner.lock()->GetPosition(),
+					Owner.lock()->GetRotation(),
+					Owner.lock()->GetScale()));
+				material->Bind();
+				MeshData[i]->Draw();
+				break;
+			}
 		}
 	}
-	MeshData->Draw();
 }
