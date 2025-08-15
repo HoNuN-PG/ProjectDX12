@@ -58,10 +58,29 @@ void Volume::Unload()
 {
 }
 
+void Volume::CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest)
+{
+	GetDevice()->CopyDescriptorsSimple(
+		1,
+		dest,
+		src,
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+}
+
+void Volume::CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key)
+{
+	GetDevice()->CopyDescriptorsSimple(
+		1,
+		dest,
+		RenderingEngine::GetGlobalTextureSRV(key).hCPU,
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+}
+
 void Volume::BindPostProcessRTV()
 {
 	// RTV‚ÌÝ’è
 	constexpr static float clearColor[4] = { 0,0,0,0 };
+	PostProcessRTV->SRV2RTV();
 	PostProcessRTV->Clear(clearColor);
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
 		PostProcessRTV->GetHandleRTV().hCPU,
@@ -69,9 +88,9 @@ void Volume::BindPostProcessRTV()
 	SetRenderTarget(_countof(rtvs), rtvs);
 }
 
-void Volume::BindPipeline()
+void Volume::BindPipeline(UINT idx)
 {
-	PipelineData->Bind();
+	PipelineData[idx]->Bind();
 }
 
 void Volume::BindHeap()
@@ -81,15 +100,6 @@ void Volume::BindHeap()
 		Heap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
-}
-
-void Volume::GetGlobalSRV(std::shared_ptr<RenderTarget> dest, UINT key)
-{
-	GetDevice()->CopyDescriptorsSimple(
-		1,
-		dest->GetHandleSRV().hCPU,
-		RenderingEngine::GetGlobalTextureSRV(key).hCPU,
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 void Volume::Rendering()

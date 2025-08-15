@@ -1,7 +1,7 @@
 
 #include "Copy.h"
-#include "DescriptorHeap.h"
 
+#include "DescriptorHeap.h"
 #include "RenderTarget.h"
 
 std::unique_ptr<MeshBuffer>	Copy::Screen;
@@ -18,7 +18,7 @@ void Copy::Load()
 		{{-0.5f,-0.5f,0} ,{0,1}} ,
 		{{ 0.5f,-0.5f,0} ,{1,1}} ,
 	};
-
+	
 	// スクリーン
 	MeshBuffer::Description desc = {};
 	desc.pVtx = screenVtx;
@@ -55,14 +55,14 @@ void Copy::Load()
 	}
 }
 
-void Copy::ExecuteCopy(DescriptorHeap* heap, RenderTarget* src, D3D12_CPU_DESCRIPTOR_HANDLE dst)
+void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest)
 {
 	// 表示領域の設定
 	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);
 
 	// レンダーターゲット切り替え
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
-		dst,
+		dest,
 	};
 	SetRenderTarget(1, rtvs);
 
@@ -73,7 +73,31 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, RenderTarget* src, D3D12_CPU_DESCRI
 	};
 	DescriptorHeap::Bind(heaps, 1);
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = {
-		src->GetHandleSRV().hGPU,
+		src,
+	};
+	RootSignatureData->Bind(hScreen, _countof(hScreen));
+	Screen->Draw();
+}
+
+void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, std::shared_ptr<RenderTarget> dest)
+{
+	// 表示領域の設定
+	SetViewPort(dest->Width,dest->Height);
+
+	// レンダーターゲット切り替え
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+		dest->GetHandleRTV().hCPU,
+	};
+	SetRenderTarget(1, rtvs);
+
+	PipelineData->Bind();
+	ID3D12DescriptorHeap* heaps[] =
+	{
+		heap->Get(),
+	};
+	DescriptorHeap::Bind(heaps, 1);
+	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = {
+		src,
 	};
 	RootSignatureData->Bind(hScreen, _countof(hScreen));
 	Screen->Draw();

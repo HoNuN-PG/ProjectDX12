@@ -23,6 +23,11 @@ class LightBase;
 
 class RenderingEngine
 {
+public:
+	// 描画パス群
+	using PASSES = std::unordered_map<UINT,  // パスの種類
+		std::unique_ptr<RenderingPass>>;
+
 	// RenderingInfo
 public:
 	struct RenderingInfo
@@ -93,13 +98,12 @@ public:
 		RenderingPasses[timing][passType]->Init(RTVHeap,RenderingHeap,DSVHeap);
 	}
 	std::shared_ptr<RenderTarget> GetPassTexture(UINT timing, UINT type, UINT idx);
-	void CopyPassTextureSRV(std::shared_ptr<RenderTarget> dest, UINT timing, UINT type, UINT idx);
+	void CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx);
 private:
 	std::unique_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
 	std::unique_ptr<RenderingPass> ODepthNormalPass;		// 不透明深度法線パス
 	std::unordered_map<UINT, // 描画タイミング
-		std::unordered_map<UINT, // パスの種類
-		std::unique_ptr<RenderingPass>>> RenderingPasses;	// 描画タイミングとパスの種類をキーとしたパス群
+		PASSES> RenderingPasses;							// 描画パス群
 
 	// レンダリングオブジェクト
 public:

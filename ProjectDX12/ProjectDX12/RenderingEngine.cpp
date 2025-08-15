@@ -7,6 +7,7 @@
 
 #include "volume.h"
 #include "Copy.h"
+#include "Blur.h"
 
 #include "GameObject.h"
 #include "CameraBase.h"
@@ -32,9 +33,6 @@ void RenderingEngine::Init()
 
 	// ボリュームの作成
 	Volume::Load();
-
-	// 汎用クラス作成
-	Copy::Load();
 
 	// グローバルディスクリプタヒープ
 	{
@@ -104,6 +102,10 @@ void RenderingEngine::Init()
 		desc.pDSVHeap = DSVHeap.get();
 		DSV = std::make_shared<DepthStencil>(desc);
 	}
+
+	// 汎用クラス作成
+	Copy::Load();
+	Gauss::Load();
 
 	// リソースオブジェクト
 	Camera = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
@@ -190,7 +192,7 @@ void RenderingEngine::Draw()
 	CurrentRenderingTiming = Material::RenderingTiming::Other;
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
-	Copy::ExecuteCopy(RenderingHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get(), GetRTV());
+	Copy::ExecuteCopy(RenderingHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU, GetRTV());
 	ViewShadowMaps();
 	ViewDepthNormal();
 	ViewGBuffers();
@@ -289,12 +291,12 @@ std::shared_ptr<RenderTarget> RenderingEngine::GetPassTexture(UINT timing, UINT 
 	}
 }
 
-void RenderingEngine::CopyPassTextureSRV(std::shared_ptr<RenderTarget> dest, UINT timing, UINT type, UINT idx)
+void RenderingEngine::CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx)
 {
 	std::shared_ptr<RenderTarget> src = GetPassTexture(timing,type,idx);
 	GetDevice()->CopyDescriptorsSimple(
 		1,
-		dest->GetHandleSRV().hCPU,
+		dest,
 		src->GetHandleSRV().hCPU,
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }

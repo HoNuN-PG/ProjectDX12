@@ -37,7 +37,7 @@ void Vignette::Init()
 		desc.PSFile = L"assets/shader/PS_Vignette.cso";
 		desc.pRootSignature = RootSignatureData->Get();
 		desc.RenderTargetNum = 1;
-		PipelineData = std::make_unique<Pipeline>(desc);
+		PipelineData.push_back(std::make_unique<Pipeline>(desc));
 	}
 	// RTV
 	{
@@ -80,13 +80,12 @@ void Vignette::Draw()
 	// バッファに書き込み
 	Params->Write(&VignetteParam);
 	// ポストプロセス用RTVをバインド
-	PostProcessRTV->SRV2RTV();
 	BindPostProcessRTV();
 	// 各種オブジェクトをバインド
-	BindPipeline();
+	BindPipeline(0);
 	BindHeap();
 	// MainTextureを取得
-	GetGlobalSRV(RTV, GlobalTextureResourceKey::MainTexture);
+	CopyGlobalTextureSRV(RTV.get()->GetHandleSRV().hCPU, GlobalTextureResourceKey::MainTexture);
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = {
 		RTV.get()->GetHandleSRV().hGPU,
 		Params.get()->GetHandle().hGPU,
@@ -98,6 +97,6 @@ void Vignette::Draw()
 	// MainTextureに張り付け
 	PostProcessRTV->RTV2SRV();
 	RenderingEngine::GlobalTextureSRV2RTV(GlobalTextureResourceKey::MainTexture);
-	Copy::ExecuteCopy(Heap.get(), PostProcessRTV.get(),RenderingEngine::GetGlobalTextureRTV(GlobalTextureResourceKey::MainTexture).hCPU);
+	Copy::ExecuteCopy(Heap.get(), PostProcessRTV.get()->GetHandleSRV().hGPU, RenderingEngine::GetGlobalTextureRTV(GlobalTextureResourceKey::MainTexture).hCPU);
 	RenderingEngine::GlobalTextureRTV2SRV(GlobalTextureResourceKey::MainTexture);
 }

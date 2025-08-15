@@ -12,7 +12,7 @@
 
 #include "GlobalResourceKey.h"
 
-DirectX::XMFLOAT2 ShadowPass::ShadowMapsSize[TextureType::MAX];
+DirectX::XMFLOAT2 ShadowPass::ShadowMapsSize[TextureType::MAX] = { {4096,4096},{1024 ,1024},{512,512} };
 DXGI_FORMAT ShadowPass::ShadowMapsFormat;
 
 ShadowPass::ShadowPass()
@@ -23,9 +23,6 @@ ShadowPass::ShadowPass()
 	CascadeAreas.push_back(1000);
 	pCamera = SceneManager::GetCurrentScene()->GetGameObject<CameraBase>();
 
-	ShadowMapsSize[Near] = { WINDOW_WIDTH * 2,WINDOW_HEIGHT * 2 };
-	ShadowMapsSize[Middle] = { WINDOW_WIDTH ,WINDOW_HEIGHT };
-	ShadowMapsSize[Far] = { WINDOW_WIDTH / 2,WINDOW_HEIGHT / 2 };
 	ShadowMapsFormat = DXGI_FORMAT_R16G16_FLOAT;
 }
 
@@ -190,17 +187,12 @@ void ShadowPass::Init(
 		DepthStencil::Description desc = {};
 		desc.pDSVHeap = dsvHeap.get();
 
-		desc.width = WINDOW_WIDTH * 2;
-		desc.height = WINDOW_HEIGHT * 2;
-		DSVs.push_back(std::make_unique<DepthStencil>(desc));
-
-		desc.width = WINDOW_WIDTH;
-		desc.height = WINDOW_HEIGHT;
-		DSVs.push_back(std::make_unique<DepthStencil>(desc));
-
-		desc.width = WINDOW_WIDTH / 2;
-		desc.height = WINDOW_HEIGHT / 2;
-		DSVs.push_back(std::make_unique<DepthStencil>(desc));
+		for (int i = 0; i < TextureType::MAX; ++i)
+		{
+			desc.width = ShadowMapsSize[i].x;
+			desc.height = ShadowMapsSize[i].y;
+			DSVs.push_back(std::make_unique<DepthStencil>(desc));
+		}
 	}
 }
 

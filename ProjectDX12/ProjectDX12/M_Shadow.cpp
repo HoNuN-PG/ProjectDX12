@@ -112,7 +112,7 @@ void M_ShadowRecieverBase::Bind()
 
 	// テクスチャコピー
 	std::weak_ptr<RenderingEngine> Engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
-	Engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Near], Material::Shadow, 0, ShadowPass::Near);
-	Engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Middle], Material::Shadow, 0, ShadowPass::Middle);
-	Engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Far], Material::Shadow, 0, ShadowPass::Far);
+	Engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Near].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Near);
+	Engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Middle].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Middle);
+	Engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Far].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Far);
 }

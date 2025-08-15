@@ -30,11 +30,14 @@ public:
 	virtual void Init() {};
 	virtual void Draw() {};
 
+public:
+	static void CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest);
+	static void CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key);
+
 protected:
 	void BindPostProcessRTV();
-	void BindPipeline();
+	void BindPipeline(UINT idx);
 	void BindHeap();
-	void GetGlobalSRV(std::shared_ptr<RenderTarget> dest, UINT key);
 	void Rendering();
 
 public:
@@ -56,7 +59,7 @@ protected:
 	static std::unique_ptr<RenderTarget>								PostProcessRTV;
 protected:
 	std::unique_ptr<RootSignature>										RootSignatureData;
-	std::unique_ptr<Pipeline>											PipelineData;
+	std::vector<std::unique_ptr<Pipeline>>								PipelineData;
 	std::vector<std::unique_ptr<RenderTarget>>							CustomRTVs;
 private:
 	bool																bDestroy = false;
