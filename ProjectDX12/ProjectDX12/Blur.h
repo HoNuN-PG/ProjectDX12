@@ -16,13 +16,15 @@ namespace BlurParam
 	struct ScreenParam
 	{
 		float width;
-		float heights;
+		float height;
 		DirectX::XMFLOAT2 pad1;
 
 	public:
 		ScreenParam(float w, float h)
 			:pad1({0,0})
 		{
+			width = w;
+			height = h;
 		}
 	};
 
@@ -51,6 +53,14 @@ public:
 
 		RTVs_MAX
 	};
+	enum GaussParamsType
+	{
+		ScreenX = 0,
+		ScreenY,
+		GaussWeights,
+
+		Params_MAX
+	};
 
 public:
 	struct Vertex
@@ -64,7 +74,7 @@ public:
 	~Gauss() {};
 	static void Load();
 	static void ExecuteGauss(std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest,
-		std::weak_ptr<float[]> weights);
+		std::weak_ptr<float[]> weights = std::weak_ptr<float[]>{});
 	static void CalcWeights(std::weak_ptr<float[]> weights, float blur);
 
 private:

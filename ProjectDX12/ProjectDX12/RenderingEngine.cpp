@@ -193,6 +193,7 @@ void RenderingEngine::Draw()
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
 	Copy::ExecuteCopy(RenderingHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU, GetRTV());
+	Gauss::ExecuteGauss(GlobalTexture[GlobalTextureResourceKey::MainTexture], GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture]);
 	ViewShadowMaps();
 	ViewDepthNormal();
 	ViewGBuffers();

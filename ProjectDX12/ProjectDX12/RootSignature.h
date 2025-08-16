@@ -14,13 +14,6 @@ public:
 		UINT						num;	// ディスクリプタのレンジ数
 		D3D12_SHADER_VISIBILITY		shader;	// 使用先のシェーダー
 	};
-	/// <summary>
-	/// ルートパラメータの種類,
-	/// 対応レジストリの開始番号, 
-	/// ディスクリプタ数,
-	/// ディスクリプタのレンジ,
-	/// 使用先のシェーダー,
-	/// </summary>
 	struct ParameterTables
 	{
 		std::vector<D3D12_DESCRIPTOR_RANGE_TYPE>	type;	// レンジごとのルートパラメータの種類

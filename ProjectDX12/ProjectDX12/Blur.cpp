@@ -77,12 +77,12 @@ void Gauss::Load()
 		desc.pRootSignature = RootSignatureData->Get();
 		desc.RenderTargetNum = 1;
 
-		desc.VSFile = L"assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"assets/shader/PS_Copy.cso";
+		desc.VSFile = L"assets/shader/VS_BlurX.cso";
+		desc.PSFile = L"assets/shader/PS_Blur.cso";
 		PipelineData[GaussPipelineType::XBlurPipeline] = std::make_unique<Pipeline>(desc);
 
-		desc.VSFile = L"assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"assets/shader/PS_Copy.cso";
+		desc.VSFile = L"assets/shader/VS_BlurY.cso";
+		desc.PSFile = L"assets/shader/PS_Blur.cso";
 		PipelineData[GaussPipelineType::YBlurPipeline] = std::make_unique<Pipeline>(desc);
 	}
 	// GaussRTVs
@@ -108,15 +108,17 @@ void Gauss::Load()
 	}
 	// パラメーター定数バッファ
 	{
+		Params.resize(GaussParamsType::Params_MAX);
+
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = Heap.get();
 
 		desc.size = sizeof(BlurParam::ScreenParam);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+		Params[GaussParamsType::ScreenX] = std::make_unique<ConstantBuffer>(desc);
+		Params[GaussParamsType::ScreenY] = std::make_unique<ConstantBuffer>(desc);
 
-		desc.size = sizeof(sizeof(float) * BlurParam::GAUSS_WEIGHTS);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+		desc.size = sizeof(float) * BlurParam::GAUSS_WEIGHTS;
+		Params[GaussParamsType::GaussWeights] = std::make_unique<ConstantBuffer>(desc);
 	}
 
 	// GaussWeights
@@ -130,16 +132,20 @@ void Gauss::ExecuteGauss(std::shared_ptr<RenderTarget> src, std::shared_ptr<Rend
 	// スクリーンサイズ
 	BlurParam::ScreenParam p1(GaussRTVs[GaussRTVsType::XBlur]->Width, GaussRTVs[GaussRTVsType::XBlur]->Height);
 	BlurParam::ScreenParam p2(GaussRTVs[GaussRTVsType::YBlur]->Width, GaussRTVs[GaussRTVsType::YBlur]->Height);
-	Params[0]->Write(&p1);
-	Params[1]->Write(&p2);
+	Params[GaussParamsType::ScreenX]->Write(&p1);
+	Params[GaussParamsType::ScreenY]->Write(&p2);
 	// 重みの設定
-	if (weights.expired())
+	if (!weights.expired())
 	{
-		Params[2]->Write(weights.lock().get());
+		float w[BlurParam::GAUSS_WEIGHTS];
+		for (int i = 0; i < BlurParam::GAUSS_WEIGHTS; ++i) { w[i] = weights.lock()[i]; }
+		Params[GaussParamsType::GaussWeights]->Write(&w);
 	}
 	else
 	{
-		Params[2]->Write(Weights.weights.get());
+		float w[BlurParam::GAUSS_WEIGHTS];
+		for (int i = 0; i < BlurParam::GAUSS_WEIGHTS; ++i) { w[i] = Weights.weights[i]; }
+		Params[GaussParamsType::GaussWeights]->Write(&w);
 	}
 
 	// レンダーターゲット切り替え
@@ -159,9 +165,9 @@ void Gauss::ExecuteGauss(std::shared_ptr<RenderTarget> src, std::shared_ptr<Rend
 	DescriptorHeap::Bind(heaps1, 1);
 	Volume::CopyTextureSRV(src->GetHandleSRV().hCPU,GaussRTVs[GaussRTVsType::Buffer]->GetHandleSRV().hCPU);
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen1[] = {
-		Params[0]->GetHandle().hGPU,
+		Params[GaussParamsType::ScreenX]->GetHandle().hGPU,
 		GaussRTVs[GaussRTVsType::Buffer]->GetHandleSRV().hGPU,
-		Params[2]->GetHandle().hGPU,
+		Params[GaussParamsType::GaussWeights]->GetHandle().hGPU,
 	};
 	RootSignatureData->Bind(hScreen1, _countof(hScreen1));
 	Screen->Draw();
@@ -183,9 +189,9 @@ void Gauss::ExecuteGauss(std::shared_ptr<RenderTarget> src, std::shared_ptr<Rend
 	};
 	DescriptorHeap::Bind(heaps2, 1);
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen2[] = {
-		Params[1]->GetHandle().hGPU,
+		Params[GaussParamsType::ScreenY]->GetHandle().hGPU,
 		GaussRTVs[GaussRTVsType::XBlur]->GetHandleSRV().hGPU,
-		Params[2]->GetHandle().hGPU,
+		Params[GaussParamsType::GaussWeights]->GetHandle().hGPU,
 	};
 	RootSignatureData->Bind(hScreen2, _countof(hScreen2));
 	Screen->Draw();

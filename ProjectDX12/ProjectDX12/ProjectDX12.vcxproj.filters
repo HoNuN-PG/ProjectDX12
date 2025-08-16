@@ -112,9 +112,6 @@
     <Filter Include="ソース ファイル\System\Rendering\Volume">
       <UniqueIdentifier>{68183fac-d14d-4edd-ad8f-0613d6ddcdac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\PS\Volume">
-      <UniqueIdentifier>{598a5ca8-8d1e-4a47-8eb8-37a44f56391a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\System\Rendering\Pass">
       <UniqueIdentifier>{bc501b4f-a12b-427a-96c6-0d36f39929e4}</UniqueIdentifier>
     </Filter>
@@ -141,6 +138,12 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\System\Rendering\Texture">
       <UniqueIdentifier>{c2464eb1-b870-4066-b3c0-25339bc17e45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Volume">
+      <UniqueIdentifier>{20042cb3-e1e4-4f04-8eab-0113371faf0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Volume\Blur">
+      <UniqueIdentifier>{1b4c8a7f-b891-4e31-8c7b-2b26c4a6610b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -481,9 +484,6 @@
     <FxCompile Include="VS_DepthNormal.hlsl">
       <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Vignette.hlsl">
-      <Filter>リソース ファイル\PS\Volume</Filter>
-    </FxCompile>
     <FxCompile Include="VS_WorldObject.hlsl">
       <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
@@ -510,6 +510,18 @@
     </FxCompile>
     <FxCompile Include="CommonShadow.hlsl">
       <Filter>リソース ファイル\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Vignette.hlsl">
+      <Filter>リソース ファイル\Volume</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_BlurX.hlsl">
+      <Filter>リソース ファイル\Volume\Blur</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_BlurY.hlsl">
+      <Filter>リソース ファイル\Volume\Blur</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Blur.hlsl">
+      <Filter>リソース ファイル\Volume\Blur</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
