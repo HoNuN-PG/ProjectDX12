@@ -193,7 +193,6 @@ void RenderingEngine::Draw()
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
 	Copy::ExecuteCopy(RenderingHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU, GetRTV());
-	Gauss::ExecuteGauss(GlobalTexture[GlobalTextureResourceKey::MainTexture], GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture]);
 	ViewShadowMaps();
 	ViewDepthNormal();
 	ViewGBuffers();
@@ -487,6 +486,18 @@ void RenderingEngine::ViewShadowMaps()
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			RenderingHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::Far).get()), { 240,135 });
+		ImGui::Text("VSMShadowMap1");
+		ImGui::Image(DebugImGUI::GetImGUIImage(
+			RenderingHeap.get(),
+			ShadowMapsPass->GetTexture(ShadowPass::NearVSM).get()), { 240,135 });
+		ImGui::Text("VSMShadowMap2");
+		ImGui::Image(DebugImGUI::GetImGUIImage(
+			RenderingHeap.get(),
+			ShadowMapsPass->GetTexture(ShadowPass::MiddleVSM).get()), { 240,135 });
+		ImGui::Text("VSMShadowMap3");
+		ImGui::Image(DebugImGUI::GetImGUIImage(
+			RenderingHeap.get(),
+			ShadowMapsPass->GetTexture(ShadowPass::FarVSM).get()), { 240,135 });
 	}
 	ImGui::End();
 }

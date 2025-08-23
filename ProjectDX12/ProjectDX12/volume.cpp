@@ -1,13 +1,13 @@
 
 #include "volume.h"
 
+#include "GlobalResourceKey.h"
+#include "RenderingEngine.h"
+
 std::unique_ptr<MeshBuffer>					Volume::Screen;
 std::shared_ptr<DescriptorHeap>				Volume::Heap;
 std::shared_ptr<DescriptorHeap>				Volume::RTVHeap;
 std::unique_ptr<RenderTarget>				Volume::PostProcessRTV;
-
-#include "GlobalResourceKey.h"
-#include "RenderingEngine.h"
 
 void Volume::Load()
 {

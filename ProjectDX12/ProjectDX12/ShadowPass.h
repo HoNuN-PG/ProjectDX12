@@ -26,6 +26,10 @@ public:
 		Middle,
 		Far,
 
+		NearVSM,
+		MiddleVSM,
+		FarVSM,
+
 		MAX
 	};
 public:
@@ -57,13 +61,14 @@ private:
 	std::shared_ptr<CameraBase> pCamera;
 	std::vector<std::unique_ptr<DepthStencil>> DSVs;
 	std::vector<std::shared_ptr<RenderTarget>> ShadowMaps;
+	std::vector<std::shared_ptr<RenderTarget>> VSMShadowMaps;
 
 private:
 	ShadowParam::ShadowMapsParam ShadowMapsParam;
 	ShadowParam::ShadowReceieverParam ShadowReceiveParam;
 
 public:
-	static DirectX::XMFLOAT2 ShadowMapsSize[TextureType::MAX];
+	static DirectX::XMFLOAT2 ShadowMapsSize[TextureType::Far + 1];
 	static DXGI_FORMAT ShadowMapsFormat;
 
 };

@@ -8,6 +8,7 @@
 #include "volume.h"
 #include "Copy.h"
 
+UINT Gauss::GaussIdx = 0;
 std::shared_ptr<DescriptorHeap>	Gauss::Heap;
 std::shared_ptr<DescriptorHeap>	Gauss::RTVHeap;
 std::unique_ptr<MeshBuffer>	Gauss::Screen;
@@ -40,14 +41,14 @@ void Gauss::Load()
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		desc.num = 8;
+		desc.num = BlurParam::GAUSS_MAX * GaussRTVsType::RTVs_MAX + GaussParamsType::Params_MAX;
 		Heap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ボリュームディスクリプターヒープ(レンダーターゲット)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-		desc.num = 8;
+		desc.num = BlurParam::GAUSS_MAX * GaussRTVsType::RTVs_MAX;
 		RTVHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ルートシグネチャ
@@ -123,37 +124,55 @@ void Gauss::Load()
 
 	// GaussWeights
 	Weights.weights = std::make_shared<float[]>(BlurParam::GAUSS_WEIGHTS);
-	CalcWeights(Weights.weights,25);
-}
+	CalcWeights(Weights.weights,50);
 
-void Gauss::ExecuteGauss(std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest,
-	std::weak_ptr<float[]> weights)
-{
 	// スクリーンサイズ
 	BlurParam::ScreenParam p1(GaussRTVs[GaussRTVsType::XBlur]->Width, GaussRTVs[GaussRTVsType::XBlur]->Height);
 	BlurParam::ScreenParam p2(GaussRTVs[GaussRTVsType::YBlur]->Width, GaussRTVs[GaussRTVsType::YBlur]->Height);
 	Params[GaussParamsType::ScreenX]->Write(&p1);
 	Params[GaussParamsType::ScreenY]->Write(&p2);
 	// 重みの設定
-	if (!weights.expired())
-	{
-		float w[BlurParam::GAUSS_WEIGHTS];
-		for (int i = 0; i < BlurParam::GAUSS_WEIGHTS; ++i) { w[i] = weights.lock()[i]; }
-		Params[GaussParamsType::GaussWeights]->Write(&w);
-	}
-	else
 	{
 		float w[BlurParam::GAUSS_WEIGHTS];
 		for (int i = 0; i < BlurParam::GAUSS_WEIGHTS; ++i) { w[i] = Weights.weights[i]; }
 		Params[GaussParamsType::GaussWeights]->Write(&w);
 	}
+}
+
+void Gauss::UnLoad()
+{
+
+}
+
+void Gauss::ExecuteScreenGauss2(std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest)
+{
+	// GaussRTVs
+	if (GaussRTVs.size() < (GaussIdx + 1) * 3)
+	{
+		RenderTarget::Description desc = {};
+		desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		desc.pRTVHeap = RTVHeap.get();
+		desc.pSRVHeap = Heap.get();
+
+		desc.width = WINDOW_WIDTH;
+		desc.height = WINDOW_HEIGHT;
+		GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
+
+		desc.width = WINDOW_WIDTH / 2;
+		desc.height = WINDOW_HEIGHT;
+		GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
+
+		desc.width = WINDOW_WIDTH / 2;
+		desc.height = WINDOW_HEIGHT / 2;
+		GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
+	}
 
 	// レンダーターゲット切り替え
-	SetViewPort(GaussRTVs[GaussRTVsType::XBlur]->Width, GaussRTVs[GaussRTVsType::XBlur]->Height);
-	GaussRTVs[GaussRTVsType::XBlur]->SRV2RTV();
-	GaussRTVs[GaussRTVsType::XBlur]->Clear();
+	SetViewPort(GaussRTVs[GaussRTVsType::XBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->Width, GaussRTVs[GaussRTVsType::XBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->Height);
+	GaussRTVs[GaussRTVsType::XBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->SRV2RTV();
+	GaussRTVs[GaussRTVsType::XBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->Clear();
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs1[] = {
-		GaussRTVs[GaussRTVsType::XBlur]->GetHandleRTV().hCPU,
+		GaussRTVs[GaussRTVsType::XBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(1, rtvs1);
 	// XBlur
@@ -163,22 +182,22 @@ void Gauss::ExecuteGauss(std::shared_ptr<RenderTarget> src, std::shared_ptr<Rend
 		Heap->Get(),
 	};
 	DescriptorHeap::Bind(heaps1, 1);
-	Volume::CopyTextureSRV(src->GetHandleSRV().hCPU,GaussRTVs[GaussRTVsType::Buffer]->GetHandleSRV().hCPU);
+	Volume::CopyTextureSRV(src->GetHandleSRV().hCPU,GaussRTVs[GaussRTVsType::Buffer + (GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleSRV().hCPU);
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen1[] = {
 		Params[GaussParamsType::ScreenX]->GetHandle().hGPU,
-		GaussRTVs[GaussRTVsType::Buffer]->GetHandleSRV().hGPU,
+		GaussRTVs[GaussRTVsType::Buffer + (GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleSRV().hGPU,
 		Params[GaussParamsType::GaussWeights]->GetHandle().hGPU,
 	};
 	RootSignatureData->Bind(hScreen1, _countof(hScreen1));
 	Screen->Draw();
-	GaussRTVs[GaussRTVsType::XBlur]->RTV2SRV();
+	GaussRTVs[GaussRTVsType::XBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->RTV2SRV();
 
 	// レンダーターゲット切り替え
-	SetViewPort(GaussRTVs[GaussRTVsType::YBlur]->Width, GaussRTVs[GaussRTVsType::YBlur]->Height);
-	GaussRTVs[GaussRTVsType::YBlur]->SRV2RTV();
-	GaussRTVs[GaussRTVsType::YBlur]->Clear();
+	SetViewPort(GaussRTVs[GaussRTVsType::YBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->Width, GaussRTVs[GaussRTVsType::YBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->Height);
+	GaussRTVs[GaussRTVsType::YBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->SRV2RTV();
+	GaussRTVs[GaussRTVsType::YBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->Clear();
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs2[] = {
-		GaussRTVs[GaussRTVsType::YBlur]->GetHandleRTV().hCPU,
+		GaussRTVs[GaussRTVsType::YBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(1, rtvs2);
 	// YBlur
@@ -190,15 +209,17 @@ void Gauss::ExecuteGauss(std::shared_ptr<RenderTarget> src, std::shared_ptr<Rend
 	DescriptorHeap::Bind(heaps2, 1);
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen2[] = {
 		Params[GaussParamsType::ScreenY]->GetHandle().hGPU,
-		GaussRTVs[GaussRTVsType::XBlur]->GetHandleSRV().hGPU,
+		GaussRTVs[GaussRTVsType::XBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleSRV().hGPU,
 		Params[GaussParamsType::GaussWeights]->GetHandle().hGPU,
 	};
 	RootSignatureData->Bind(hScreen2, _countof(hScreen2));
 	Screen->Draw();
-	GaussRTVs[GaussRTVsType::YBlur]->RTV2SRV();
+	GaussRTVs[GaussRTVsType::YBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->RTV2SRV();
 
 	// コピー
-	Copy::ExecuteCopy(Heap.get(), GaussRTVs[GaussRTVsType::YBlur]->GetHandleSRV().hGPU, dest);
+	Copy::ExecuteCopy(Heap.get(), GaussRTVs[GaussRTVsType::YBlur + (GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleSRV().hGPU, dest);
+
+	++GaussIdx;
 }
 
 void Gauss::CalcWeights(std::weak_ptr<float[]> weights, float blur)
@@ -219,4 +240,9 @@ void Gauss::CalcWeights(std::weak_ptr<float[]> weights, float blur)
 	{
 		weights.lock()[i] /= total;
 	}
+}
+
+void Gauss::Refresh()
+{
+	GaussIdx = 0;
 }

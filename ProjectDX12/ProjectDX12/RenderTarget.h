@@ -16,6 +16,7 @@ public:
 	};
 
 public:
+	RenderTarget() = delete;
 	RenderTarget(Description desc);
 	~RenderTarget();
 	void RTV2SRV();

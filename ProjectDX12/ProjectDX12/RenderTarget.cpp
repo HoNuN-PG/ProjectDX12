@@ -60,7 +60,7 @@ RenderTarget::RenderTarget(Description desc)
 
 RenderTarget::~RenderTarget()
 {
-	Resource->Release();
+	if(Resource) Resource->Release();
 }
 
 void RenderTarget::RTV2SRV()

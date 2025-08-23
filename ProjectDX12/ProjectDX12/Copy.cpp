@@ -101,4 +101,6 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, st
 	};
 	RootSignatureData->Bind(hScreen, _countof(hScreen));
 	Screen->Draw();
+
+	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);
 }

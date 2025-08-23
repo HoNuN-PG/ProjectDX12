@@ -33,6 +33,9 @@ namespace BlurParam
 	{
 		std::shared_ptr<float[]> weights;
 	};
+
+	// ƒKƒEƒX‚ğÀs‚Å‚«‚éÅ‘å”
+	enum { GAUSS_MAX = 64 };
 }
 
 class Gauss
@@ -73,11 +76,13 @@ public:
 	Gauss() {};
 	~Gauss() {};
 	static void Load();
-	static void ExecuteGauss(std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest,
-		std::weak_ptr<float[]> weights = std::weak_ptr<float[]>{});
+	static void UnLoad();
+	static void ExecuteScreenGauss2(std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	static void CalcWeights(std::weak_ptr<float[]> weights, float blur);
+	static void Refresh();
 
 private:
+	static UINT															GaussIdx;
 	static std::shared_ptr<DescriptorHeap>								Heap;
 	static std::shared_ptr<DescriptorHeap>								RTVHeap;
 	static std::unique_ptr<MeshBuffer>									Screen;

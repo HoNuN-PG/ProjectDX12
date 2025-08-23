@@ -1,5 +1,6 @@
 
 #include "ShadowPass.h"
+#include "Blur.h"
 
 #include "CameraBase.h"
 #include "LightBase.h"
@@ -12,7 +13,7 @@
 
 #include "GlobalResourceKey.h"
 
-DirectX::XMFLOAT2 ShadowPass::ShadowMapsSize[TextureType::MAX] = { {4096,4096},{1024 ,1024},{512,512} };
+DirectX::XMFLOAT2 ShadowPass::ShadowMapsSize[TextureType::Far + 1] = { {4096,4096},{1024 ,1024},{512,512} };
 DXGI_FORMAT ShadowPass::ShadowMapsFormat;
 
 ShadowPass::ShadowPass()
@@ -87,6 +88,11 @@ void ShadowPass::Execute()
 	// ƒpƒ‰ƒ[ƒ^Ý’è
 	ShadowReceiveParam.CascadeAreas = DirectX::XMFLOAT4( CascadeAreas[Near],CascadeAreas[Middle],CascadeAreas[Far],0 );
 	Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever,&ShadowReceiveParam);
+
+	// ‚Ú‚©‚µ
+	Gauss::ExecuteScreenGauss2(ShadowMaps[TextureType::Near], VSMShadowMaps[TextureType::Near]);
+	Gauss::ExecuteScreenGauss2(ShadowMaps[TextureType::Middle], VSMShadowMaps[TextureType::Middle]);
+	Gauss::ExecuteScreenGauss2(ShadowMaps[TextureType::Far], VSMShadowMaps[TextureType::Far]);
 
 	RenderObjects.clear();
 }
@@ -175,11 +181,14 @@ void ShadowPass::Init(
 		desc.pRTVHeap = rtvHeap.get();
 		desc.pSRVHeap = srvHeap.get();
 
-		for (int i = 0; i < TextureType::MAX; ++i)
+		for (int i = 0; i < TextureType::Far + 1; ++i)
 		{
 			desc.width = ShadowMapsSize[i].x;
 			desc.height = ShadowMapsSize[i].y;
 			ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
+			desc.width = ShadowMapsSize[i].x;
+			desc.height = ShadowMapsSize[i].y;
+			VSMShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
 		}
 	}
 	// DSV
@@ -187,7 +196,7 @@ void ShadowPass::Init(
 		DepthStencil::Description desc = {};
 		desc.pDSVHeap = dsvHeap.get();
 
-		for (int i = 0; i < TextureType::MAX; ++i)
+		for (int i = 0; i < TextureType::Far + 1; ++i)
 		{
 			desc.width = ShadowMapsSize[i].x;
 			desc.height = ShadowMapsSize[i].y;
@@ -208,6 +217,10 @@ std::shared_ptr<RenderTarget> ShadowPass::GetTexture(UINT idx)
 	{
 		return ShadowMaps[idx];
 	}
+	else if(idx - TextureType::NearVSM < VSMShadowMaps.size())
+	{
+		return VSMShadowMaps[idx - TextureType::NearVSM];
+	}
 	return nullptr;
 }
 
@@ -217,6 +230,10 @@ DescriptorHeap::Handle ShadowPass::GetTextureRTV(UINT idx)
 	{
 		return ShadowMaps[idx]->GetHandleRTV();
 	}
+	else if (idx - TextureType::NearVSM < VSMShadowMaps.size())
+	{
+		return VSMShadowMaps[idx - TextureType::NearVSM]->GetHandleRTV();
+	}
 	return DescriptorHeap::Handle();
 }
 
@@ -225,6 +242,10 @@ DescriptorHeap::Handle ShadowPass::GetTextureSRV(UINT idx)
 	if (idx < ShadowMaps.size())
 	{
 		return ShadowMaps[idx]->GetHandleSRV();
+	}
+	else if (idx - TextureType::NearVSM < VSMShadowMaps.size())
+	{
+		return VSMShadowMaps[idx - TextureType::NearVSM]->GetHandleSRV();
 	}
 	return DescriptorHeap::Handle();
 }
