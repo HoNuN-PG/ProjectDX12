@@ -29,7 +29,7 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap)
 	pipeline.PSFile = L"assets/shader/PS_DepthNormal.cso";
 	pipeline.RenderTargetNum = 2;
 
-	Material::Create
+	Material::SetUp
 	(
 		heap,
 		rootsignature,

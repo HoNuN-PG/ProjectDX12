@@ -144,6 +144,8 @@ private:
 public:
 	static Material::RenderingTiming GetCurrentRenderingPass() { return CurrentRenderingTiming; }
 private:
+	static Material::RenderingTiming CurrentRenderingTiming;
+private:
 	void ShadowMapsRendering();
 	void OpaqueDepthNormalRendering();
 	void AfterOpaqueDepthNormalRendering();
@@ -159,8 +161,6 @@ private:
 	void ViewGBuffers();
 	void ViewPasses();
 	void EndRendering();
-private:
-	static Material::RenderingTiming CurrentRenderingTiming;
 
 };
 

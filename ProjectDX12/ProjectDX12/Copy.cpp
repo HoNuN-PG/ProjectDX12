@@ -4,9 +4,24 @@
 #include "DescriptorHeap.h"
 #include "RenderTarget.h"
 
-std::unique_ptr<MeshBuffer>	Copy::Screen;
-std::unique_ptr<RootSignature> Copy::RootSignatureData;
-std::unique_ptr<Pipeline> Copy::PipelineData;
+std::unique_ptr<Copy> Copy::Instance;
+
+void Copy::Create()
+{
+	if (!Instance)
+	{
+		Instance = std::make_unique<Copy>();
+		Instance->Load();
+	}
+}
+
+void Copy::Destroy()
+{
+	if (Instance)
+	{
+		Instance.reset(nullptr);
+	}
+}
 
 void Copy::Load()
 {
@@ -25,7 +40,7 @@ void Copy::Load()
 	desc.vtxSize = sizeof(Vertex);
 	desc.vtxCount = _countof(screenVtx);
 	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-	Screen = std::make_unique<MeshBuffer>(desc);
+	Instance->Screen = std::make_unique<MeshBuffer>(desc);
 
 	// ルートシグネチャ
 	{
@@ -35,7 +50,7 @@ void Copy::Load()
 		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
-		RootSignatureData = std::make_unique<RootSignature>(desc);
+		Instance->RootSignatureData = std::make_unique<RootSignature>(desc);
 	}
 	// パイプライン
 	{
@@ -49,9 +64,9 @@ void Copy::Load()
 		desc.InputLayoutNum = _countof(layout);
 		desc.VSFile = L"assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"assets/shader/PS_Copy.cso";
-		desc.pRootSignature = RootSignatureData->Get();
+		desc.pRootSignature = Instance->RootSignatureData->Get();
 		desc.RenderTargetNum = 1;
-		PipelineData = std::make_unique<Pipeline>(desc);
+		Instance->PipelineData = std::make_unique<Pipeline>(desc);
 	}
 }
 
@@ -66,7 +81,7 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3
 	};
 	SetRenderTarget(1, rtvs);
 
-	PipelineData->Bind();
+	Instance->PipelineData->Bind();
 	ID3D12DescriptorHeap* heaps[] =
 	{
 		heap->Get(),
@@ -75,8 +90,8 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = {
 		src,
 	};
-	RootSignatureData->Bind(hScreen, _countof(hScreen));
-	Screen->Draw();
+	Instance->RootSignatureData->Bind(hScreen, _countof(hScreen));
+	Instance->Screen->Draw();
 }
 
 void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, std::shared_ptr<RenderTarget> dest)
@@ -90,7 +105,7 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, st
 	};
 	SetRenderTarget(1, rtvs);
 
-	PipelineData->Bind();
+	Instance->PipelineData->Bind();
 	ID3D12DescriptorHeap* heaps[] =
 	{
 		heap->Get(),
@@ -99,8 +114,8 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, st
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = {
 		src,
 	};
-	RootSignatureData->Bind(hScreen, _countof(hScreen));
-	Screen->Draw();
+	Instance->RootSignatureData->Bind(hScreen, _countof(hScreen));
+	Instance->Screen->Draw();
 
 	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);
 }

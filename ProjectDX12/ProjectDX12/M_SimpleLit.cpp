@@ -37,7 +37,7 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap)
 	pipeline.PSFile = L"assets/shader/PS_SimpleLit.cso";
 	pipeline.RenderTargetNum = 1;
 
-	Material::Create
+	Material::SetUp
 	(
 		heap,
 		rootsignature,

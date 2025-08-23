@@ -28,12 +28,6 @@ Material::RenderingTiming RenderingEngine::CurrentRenderingTiming;
 
 void RenderingEngine::Init()
 {
-	// マテリアル初期化
-	Material::Init();
-
-	// ボリュームの作成
-	Volume::Load();
-
 	// グローバルディスクリプタヒープ
 	{
 		DescriptorHeap::Description desc = {};
@@ -104,8 +98,9 @@ void RenderingEngine::Init()
 	}
 
 	// 汎用クラス作成
-	Copy::Load();
-	Gauss::Load();
+	Volume::Load();
+	Copy::Create();
+	Gauss::Create();
 
 	// リソースオブジェクト
 	Camera = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
@@ -124,6 +119,9 @@ void RenderingEngine::Init()
 
 void RenderingEngine::Uninit()
 {
+	Gauss::Destroy();
+	Copy::Destroy();
+	Volume::Unload();
 }
 
 void RenderingEngine::Update()

@@ -30,7 +30,7 @@ void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap)
 	pipeline.PSFile = L"assets/shader/PS_Deffered.cso";
 	pipeline.RenderTargetNum = 2;
 
-	Material::Create
+	Material::SetUp
 	(
 		heap,
 		rootsignature,

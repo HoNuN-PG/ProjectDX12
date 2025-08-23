@@ -21,16 +21,24 @@ public:
 	};
 
 public:
+	static void Create();
+	static void Destroy();
+private:
+	static std::unique_ptr<Copy> Instance;
+
+public:
 	Copy() {};
 	~Copy() {};
-	static void Load();
 	static void ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest);
 	static void ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, std::shared_ptr<RenderTarget> dest);
 
 private:
-	static std::unique_ptr<MeshBuffer>									Screen;
-	static std::unique_ptr<RootSignature>								RootSignatureData;
-	static std::unique_ptr<Pipeline>									PipelineData;
+	void Load();
+
+private:
+	std::unique_ptr<MeshBuffer>		Screen;
+	std::unique_ptr<RootSignature>	RootSignatureData;
+	std::unique_ptr<Pipeline>		PipelineData;
 
 };
 

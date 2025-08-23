@@ -20,7 +20,7 @@ DescriptorHeap::DescriptorHeap(Description desc)
 
 DescriptorHeap::~DescriptorHeap()
 {
-	Heap->Release();
+	if(Heap) Heap->Release();
 }
 
 DescriptorHeap::Handle DescriptorHeap::Allocate()

@@ -51,7 +51,7 @@ RootSignature::RootSignature(DescriptionTables desc)
 
 RootSignature::~RootSignature()
 {
-	RootSignatureData->Release();
+	if(RootSignatureData) RootSignatureData->Release();
 }
 
 void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, UINT num)

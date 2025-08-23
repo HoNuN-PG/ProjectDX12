@@ -42,7 +42,7 @@ void M_Grid::Initialize(DescriptorHeap* heap)
 	pipeline.PSFile = L"assets/shader/PS_Grid.cso";
 	pipeline.RenderTargetNum = 1;
 
-	Material::Create
+	Material::SetUp
 	(
 		heap,
 		rootsignature,
@@ -67,8 +67,6 @@ void M_Grid::Bind()
 
 void M_GridShadow::Initialize(DescriptorHeap* heap)
 {
-	M_ShadowRecieverBase::Initialize(heap);
-
 	// 定数バッファ
 	{
 		ConstantBuffer::Description desc = {};
@@ -108,12 +106,14 @@ void M_GridShadow::Initialize(DescriptorHeap* heap)
 	pipeline.PSFile = L"assets/shader/PS_GridShadow.cso";
 	pipeline.RenderTargetNum = 1;
 
-	Material::Create
+	Material::SetUp
 	(
 		heap,
 		rootsignature,
-		pipeline
+		pipeline,
+		3
 	);
+	M_ShadowRecieverBase::Initialize(heap);
 
 	GridParam.GridWidth = 0.05f;
 }

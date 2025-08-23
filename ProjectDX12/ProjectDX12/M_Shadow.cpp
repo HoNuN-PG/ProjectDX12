@@ -48,7 +48,7 @@ void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap)
 	pipeline.PSFile = L"assets/shader/PS_SimpleShadowMap.cso";
 	pipeline.RenderTargetNum = 1;
 
-	Material::Create
+	Material::SetUp
 	(
 		heap,
 		rootsignature,

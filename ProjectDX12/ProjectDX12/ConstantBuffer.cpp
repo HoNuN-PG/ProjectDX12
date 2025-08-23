@@ -55,5 +55,5 @@ ConstantBuffer::ConstantBuffer(Description desc)
 
 ConstantBuffer::~ConstantBuffer()
 {
-	Resource->Release();
+	if(Resource) Resource->Release();
 }

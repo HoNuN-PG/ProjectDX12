@@ -91,5 +91,5 @@ Pipeline::Pipeline(Description desc)
 
 Pipeline::~Pipeline()
 {
-	PipelineData->Release();
+	if(PipelineData) PipelineData->Release();
 }

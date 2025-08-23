@@ -12,6 +12,8 @@
 
 void Vignette::Init()
 {
+	Volume::Init(4,2);
+
 	// ルートシグネチャ
 	{
 		RootSignature::ParameterTable param[] = {

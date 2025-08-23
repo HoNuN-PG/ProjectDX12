@@ -30,7 +30,7 @@ void M_SkyBox::Initialize(DescriptorHeap* heap)
 	pipeline.PSFile = L"assets/shader/PS_UnLit.cso";
 	pipeline.RenderTargetNum = 1;
 
-	Material::Create
+	Material::SetUp
 	(
 		heap,
 		rootsignature,

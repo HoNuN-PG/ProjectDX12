@@ -7,6 +7,7 @@
 #include "MeshBuffer.h"
 #include "Pipeline.h"
 #include "RootSignature.h"
+#include "ConstantBuffer.h"
 
 class DescriptorHeap;
 class RenderTarget;
@@ -73,24 +74,28 @@ public:
 	};
 
 public:
+	static void Create();
+	static void Destroy();
+private:
+	static std::unique_ptr<Gauss> Instance;
+
+public:
 	Gauss() {};
 	~Gauss() {};
-	static void Load();
-	static void UnLoad();
 	static void ExecuteScreenGauss2(std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	static void CalcWeights(std::weak_ptr<float[]> weights, float blur);
 	static void Refresh();
 
 private:
-	static UINT															GaussIdx;
-	static std::shared_ptr<DescriptorHeap>								Heap;
-	static std::shared_ptr<DescriptorHeap>								RTVHeap;
-	static std::unique_ptr<MeshBuffer>									Screen;
-	static std::unique_ptr<RootSignature>								RootSignatureData;
-	static std::vector<std::unique_ptr<Pipeline>>						PipelineData;
-	static std::vector<std::unique_ptr<RenderTarget>>					GaussRTVs;
-	static BlurParam::GaussParam										Weights;
-	static std::vector<std::unique_ptr<class ConstantBuffer>>			Params;
+	UINT														GaussIdx;
+	std::shared_ptr<DescriptorHeap>								Heap;
+	std::shared_ptr<DescriptorHeap>								RTVHeap;
+	std::unique_ptr<MeshBuffer>									Screen;
+	std::unique_ptr<RootSignature>								RootSignatureData;
+	std::vector<std::unique_ptr<Pipeline>>						PipelineData;
+	std::vector<std::unique_ptr<RenderTarget>>					GaussRTVs;
+	std::vector<std::unique_ptr<class ConstantBuffer>>			Params;
+	BlurParam::GaussParam										Weights;
 
 };
 

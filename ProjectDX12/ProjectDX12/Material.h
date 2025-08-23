@@ -37,32 +37,33 @@ public:
 	virtual ~Material() {};
 
 public:
-	static void Init();
-
-public:
-	static void Initialize(
-		std::shared_ptr<Material> material,
-		DescriptorHeap* heap,
-		RenderingTiming timing = RenderingTiming::Forward,
-		RenderingPass::RenderingPassType passType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE);
+	static void Initialize(std::shared_ptr<Material> material,DescriptorHeap* heap,
+		RenderingTiming timing = RenderingTiming::Forward,RenderingPass::RenderingPassType passType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE);
 protected:
 	virtual void Initialize(DescriptorHeap* heap) = 0;
-	void Create
+	void SetUp
 	(
 		DescriptorHeap* heap,
-		RootSignature::DescriptionTable,
-		Pipeline::Description pipeline
+		RootSignature::DescriptionTable rootsignature,Pipeline::Description pipeline,
+		UINT rtvNum = 0
 	);
 	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
 
 public:
 	void SetOwner(std::weak_ptr<class GameObject> owner) { Owner = owner; }
+	/// <summary>
+	/// マテリアルインスタンスの追加
+	/// </summary>
 	void AddMaterialInstance();
 	/// <summary>
 	/// マテリアル設定
 	/// 設定後MaterialInstanceIdxが更新される
 	/// </summary>
 	virtual void Bind() = 0;
+	/// <summary>
+	/// テクスチャ追加
+	/// </summary>
+	/// <param name="path"></param>
 	void AddTexture(const char* path);
 	/// <summary>
 	/// MaterialInstanceIdxにWVPを書き込み
@@ -85,7 +86,7 @@ protected:
 	RenderingTiming									Timing;
 	RenderingPass::RenderingPassType				PassType;
 	DescriptorHeap*									Heap;
-	static std::shared_ptr<DescriptorHeap>			RTVHeap;
+	std::shared_ptr<DescriptorHeap>					RTVHeap;
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;
 	std::vector<std::unique_ptr<Texture>>			Textures;

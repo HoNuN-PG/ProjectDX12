@@ -4,30 +4,14 @@
 #include "SceneManager.h"
 #include "RenderingEngine.h"
 
-std::shared_ptr<DescriptorHeap> Material::RTVHeap;
-
 Material::Material()
 {
 	MaterialInstanceCount = 0;
 	MaterialInstanceIdx = 0;
 }
 
-void Material::Init()
-{
-	// マテリアルディスクリプターヒープ(レンダーターゲット)
-	{
-		DescriptorHeap::Description desc = {};
-		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-		desc.num = 64;
-		RTVHeap = std::make_shared<DescriptorHeap>(desc);
-	}
-}
-
-void Material::Initialize(
-	std::shared_ptr<Material> material, 
-	DescriptorHeap* heap, 
-	RenderingTiming timing, 
-	RenderingPass::RenderingPassType passType)
+void Material::Initialize(std::shared_ptr<Material> material, DescriptorHeap* heap, 
+	RenderingTiming timing, RenderingPass::RenderingPassType passType)
 {
 	material->Timing = timing;
 	material->PassType = passType;
@@ -35,10 +19,10 @@ void Material::Initialize(
 	SceneManager::GetCurrentScene()->GetRenderingEngine()->AddRenderingMaterial(material);
 }
 
-void Material::Create(
+void Material::SetUp(
 	DescriptorHeap* heap, 
-	RootSignature::DescriptionTable rootsignature,
-	Pipeline::Description pipeline)
+	RootSignature::DescriptionTable rootsignature,Pipeline::Description pipeline,
+	UINT rtvNum)
 {
 	Heap = heap;
 
@@ -58,6 +42,14 @@ void Material::Create(
 		desc.RenderTargetNum = pipeline.RenderTargetNum;
 		PipelineData = std::make_unique<Pipeline>(desc);
 	}
+	// マテリアルディスクリプターヒープ(レンダーターゲット)
+	if(rtvNum > 0)
+	{
+		DescriptorHeap::Description desc = {};
+		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+		desc.num = rtvNum;
+		RTVHeap = std::make_shared<DescriptorHeap>(desc);
+	}
 }
 
 void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
@@ -73,14 +65,6 @@ void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 	MaterialInstanceIdx = (MaterialInstanceIdx + 1 >= MaterialInstanceCount) ? 0 : MaterialInstanceIdx + 1;
 }
 
-void Material::AddTexture(const char* path)
-{
-	Texture::Description desc = {};
-	desc.fileName = path;
-	desc.pHeap = Heap;
-	Textures.push_back(std::make_unique<Texture>(desc));
-}
-
 void Material::AddMaterialInstance()
 {
 	MaterialInstanceCount++;
@@ -89,6 +73,14 @@ void Material::AddMaterialInstance()
 	// WVP
 	desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
 	WVP.push_back(std::make_unique<ConstantBuffer>(desc));
+}
+
+void Material::AddTexture(const char* path)
+{
+	Texture::Description desc = {};
+	desc.fileName = path;
+	desc.pHeap = Heap;
+	Textures.push_back(std::make_unique<Texture>(desc));
 }
 
 void Material::WriteWVP(void* data)
