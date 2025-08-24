@@ -24,6 +24,10 @@ ShadowPass::ShadowPass()
 	CascadeAreas.push_back(500);
 	CascadeAreas.push_back(1000);
 	pCamera = SceneManager::GetCurrentScene()->GetGameObject<CameraBase>();
+	for (int i = 0; i < TextureType::Far + 1; ++i)
+	{
+		GaussIdx[i] = -1;
+	}
 }
 
 void ShadowPass::Execute()
@@ -89,9 +93,12 @@ void ShadowPass::Execute()
 	Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever,&ShadowReceiveParam);
 
 	// ‚Ú‚©‚µ
-	Gauss::ExecuteScreenGauss2(ShadowMaps[TextureType::Near], VSMShadowMaps[TextureType::Near]);
-	Gauss::ExecuteScreenGauss2(ShadowMaps[TextureType::Middle], VSMShadowMaps[TextureType::Middle]);
-	Gauss::ExecuteScreenGauss2(ShadowMaps[TextureType::Far], VSMShadowMaps[TextureType::Far]);
+	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Near],{ ShadowMaps[TextureType::Near]->Width / 2,ShadowMaps[TextureType::Near]->Height / 2 }, 
+		ShadowMaps[TextureType::Near], VSMShadowMaps[TextureType::Near]);
+	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Middle], { ShadowMaps[TextureType::Middle]->Width / 2,ShadowMaps[TextureType::Middle]->Height / 2 },
+		ShadowMaps[TextureType::Middle], VSMShadowMaps[TextureType::Middle]);
+	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Far], { ShadowMaps[TextureType::Far]->Width / 2,ShadowMaps[TextureType::Far]->Height / 2 },
+		ShadowMaps[TextureType::Far], VSMShadowMaps[TextureType::Far]);
 
 	RenderObjects.clear();
 }

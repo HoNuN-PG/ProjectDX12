@@ -61,7 +61,6 @@ public:
 	{
 		ScreenX = 0,
 		ScreenY,
-		GaussWeights,
 
 		Params_MAX
 	};
@@ -82,12 +81,18 @@ private:
 public:
 	Gauss() {};
 	~Gauss() {};
-	static void ExecuteScreenGauss2(std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	/// <summary>
+	/// ガウスの実行
+	/// </summary>
+	/// <param name="gaussIdx">ガウススロット：初期値として-1を与えると対応するスロット番号を取得できる</param>
+	/// <param name="screen">テクスチャサイズ</param>
+	/// <param name="src"></param>
+	/// <param name="dest"></param>
+	static void ExecuteScreenGauss2(int& gaussIdx,DirectX::XMFLOAT2 screen,
+		std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	static void CalcWeights(std::weak_ptr<float[]> weights, float blur);
-	static void Refresh();
 
 private:
-	UINT														GaussIdx;
 	std::shared_ptr<DescriptorHeap>								Heap;
 	std::shared_ptr<DescriptorHeap>								RTVHeap;
 	std::unique_ptr<MeshBuffer>									Screen;
@@ -95,6 +100,7 @@ private:
 	std::vector<std::unique_ptr<Pipeline>>						PipelineData;
 	std::vector<std::unique_ptr<RenderTarget>>					GaussRTVs;
 	std::vector<std::unique_ptr<class ConstantBuffer>>			Params;
+	std::unique_ptr<ConstantBuffer>								GaussParam;
 	BlurParam::GaussParam										Weights;
 
 };

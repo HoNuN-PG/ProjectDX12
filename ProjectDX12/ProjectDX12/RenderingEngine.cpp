@@ -190,7 +190,7 @@ void RenderingEngine::Draw()
 	ViewDepthNormal();
 	ViewGBuffers();
 	ViewPasses();
-	EndRendering();
+	RefreshRendering();
 
 	// 最終的にバックバッファに描画
 	auto hRTV = GetRTV();
@@ -558,7 +558,7 @@ void RenderingEngine::ViewPasses()
 	ImGui::End();
 }
 
-void RenderingEngine::EndRendering()
+void RenderingEngine::RefreshRendering()
 {
 	RenderingMaterials.remove_if(
 		[](std::weak_ptr<Material> object)

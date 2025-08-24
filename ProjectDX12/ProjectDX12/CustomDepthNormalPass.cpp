@@ -34,14 +34,13 @@ void CustomDepthNormalPass::Execute()
 	{
 		RenderObjects[i].obj.RenderingBase();
 	}
+	RenderObjects.clear();
 
 	// ƒŠƒ\[ƒX‰»
 	Depth->ResourceBarrier(
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	Normal->ResourceBarrier(
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-	RenderObjects.clear();
 }
 
 void CustomDepthNormalPass::Init(

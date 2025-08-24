@@ -166,7 +166,7 @@ private:
 	void ViewDepthNormal();
 	void ViewGBuffers();
 	void ViewPasses();
-	void EndRendering();
+	void RefreshRendering();
 
 };
 

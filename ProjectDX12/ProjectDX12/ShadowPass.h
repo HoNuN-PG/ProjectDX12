@@ -65,6 +65,9 @@ private:
 	ShadowParam::ShadowMapsParam ShadowMapsParam;
 	ShadowParam::ShadowReceieverParam ShadowReceiveParam;
 
+private:
+	int GaussIdx[TextureType::Far + 1];
+
 public:
 	static DirectX::XMFLOAT2 ShadowMapsSize[TextureType::Far + 1];
 	static DXGI_FORMAT ShadowMapsFormat;

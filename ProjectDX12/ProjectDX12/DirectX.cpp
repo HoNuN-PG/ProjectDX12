@@ -1,8 +1,6 @@
 
 #include "DirectX.h"
 
-#include "Blur.h"
-
 ID3D12Device*				g_pDevice;			// DirectX12デバイスオブジェクト
 IDXGIFactory6*				g_pFactory;			// ディスプレイへの出力機能の制御
 ID3D12CommandAllocator*		g_pCmdAllocator;	// 描画命令を蓄積
@@ -193,9 +191,6 @@ void DrawDirectX(void(func)(void), const float clearColor[4])
 		WaitForSingleObject(hWait, INFINITE);						// イベントが発行されるまで待機
 		CloseHandle(hWait);											// イベントの破棄
 	}
-
-	// 描画完了処理
-	Gauss::Refresh();
 }
 
 ID3D12Device * GetDevice()
