@@ -1,10 +1,11 @@
 
 #include "vignette.h"
 
-#include "ConstantBuffer.h"
+#include "SceneManager.h"
 
-#include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
+#include "GlobalResourceKey.h"
+#include "ConstantBuffer.h"
 
 #include "Copy.h"
 
@@ -79,6 +80,8 @@ void Vignette::Draw()
 	memcpy(&VignetteParam.color,color,sizeof(DirectX::XMFLOAT4));
 	ImGui::End();
 
+	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+
 	// バッファに書き込み
 	Params->Write(&VignetteParam);
 	// ポストプロセス用RTVをバインド
@@ -87,7 +90,7 @@ void Vignette::Draw()
 	BindPipeline(0);
 	BindHeap();
 	// MainTextureを取得
-	CopyGlobalTextureSRV(RTV.get()->GetHandleSRV().hCPU, GlobalTextureResourceKey::MainTexture);
+	engine.lock()->CopyGlobalTextureSRV(RTV.get()->GetHandleSRV().hCPU, GlobalTextureResourceKey::MainTexture);
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = {
 		RTV.get()->GetHandleSRV().hGPU,
 		Params.get()->GetHandle().hGPU,
@@ -98,7 +101,7 @@ void Vignette::Draw()
 
 	// MainTextureに張り付け
 	PostProcessRTV->RTV2SRV();
-	RenderingEngine::GlobalTextureSRV2RTV(GlobalTextureResourceKey::MainTexture);
-	Copy::ExecuteCopy(Heap.get(), PostProcessRTV.get()->GetHandleSRV().hGPU, RenderingEngine::GetGlobalTextureRTV(GlobalTextureResourceKey::MainTexture).hCPU);
-	RenderingEngine::GlobalTextureRTV2SRV(GlobalTextureResourceKey::MainTexture);
+	engine.lock()->GlobalTextureSRV2RTV(GlobalTextureResourceKey::MainTexture);
+	Copy::ExecuteCopy(Heap.get(), PostProcessRTV.get()->GetHandleSRV().hGPU, engine.lock()->GetGlobalTextureRTV(GlobalTextureResourceKey::MainTexture).hCPU);
+	engine.lock()->GlobalTextureRTV2SRV(GlobalTextureResourceKey::MainTexture);
 }

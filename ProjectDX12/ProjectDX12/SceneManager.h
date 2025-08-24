@@ -30,6 +30,8 @@ public:
 public:
 	static SceneBase* GetCurrentScene()
 	{ return Scenes[CurrentScene].get(); }
+	static std::shared_ptr<class RenderingEngine> GetRenderingEngine()
+	{ return Scenes[CurrentScene].get()->GetRenderingEngine(); }
 
 };
 

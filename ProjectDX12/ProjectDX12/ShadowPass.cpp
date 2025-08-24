@@ -1,20 +1,21 @@
 
 #include "ShadowPass.h"
-#include "Blur.h"
 
+#include "SceneManager.h"
 #include "CameraBase.h"
 #include "LightBase.h"
 
 #include "MyMath.h"
-#include "SceneManager.h"
+
 #include "RenderingEngine.h"
+#include "GlobalResourceKey.h"
 
 #include "M_Shadow.h"
 
-#include "GlobalResourceKey.h"
+#include "Blur.h"
 
 DirectX::XMFLOAT2 ShadowPass::ShadowMapsSize[TextureType::Far + 1] = { {4096,4096},{1024 ,1024},{512,512} };
-DXGI_FORMAT ShadowPass::ShadowMapsFormat;
+DXGI_FORMAT ShadowPass::ShadowMapsFormat = DXGI_FORMAT_R16G16_FLOAT;
 
 ShadowPass::ShadowPass()
 {
@@ -23,8 +24,6 @@ ShadowPass::ShadowPass()
 	CascadeAreas.push_back(500);
 	CascadeAreas.push_back(1000);
 	pCamera = SceneManager::GetCurrentScene()->GetGameObject<CameraBase>();
-
-	ShadowMapsFormat = DXGI_FORMAT_R16G16_FLOAT;
 }
 
 void ShadowPass::Execute()

@@ -1,8 +1,8 @@
 
 #include "Blur.h"
 
+#include "RenderingEngine.h"
 #include "DescriptorHeap.h"
-#include "RenderTarget.h"
 
 #include "volume.h"
 #include "Copy.h"
@@ -148,43 +148,45 @@ void Gauss::ExecuteScreenGauss2(std::shared_ptr<RenderTarget> src, std::shared_p
 	}
 
 	// レンダーターゲット切り替え
-	SetViewPort(Instance->GaussRTVs[GaussRTVsType::XBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->Width, 
-		Instance->GaussRTVs[GaussRTVsType::XBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->Height);
-	Instance->GaussRTVs[GaussRTVsType::XBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->SRV2RTV();
-	Instance->GaussRTVs[GaussRTVsType::XBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->Clear();
+	UINT xIdx = GaussRTVsType::XBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX);
+	SetViewPort(Instance->GaussRTVs[xIdx]->Width, Instance->GaussRTVs[xIdx]->Height);
+	// リソース設定
+	Instance->GaussRTVs[xIdx]->SRV2RTV();
+	Instance->GaussRTVs[xIdx]->Clear();
+	// RTV設定
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs1[] = {
-		Instance->GaussRTVs[GaussRTVsType::XBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleRTV().hCPU,
+		Instance->GaussRTVs[xIdx]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(1, rtvs1);
-
 	// XBlur
+	UINT bIdx = GaussRTVsType::Buffer + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX);
 	Instance->PipelineData[GaussPipelineType::XBlurPipeline]->Bind();
 	ID3D12DescriptorHeap* heaps1[] =
 	{
 		Instance->Heap->Get(),
 	};
 	DescriptorHeap::Bind(heaps1, 1);
-	Volume::CopyTextureSRV(src->GetHandleSRV().hCPU, 
-		Instance->GaussRTVs[GaussRTVsType::Buffer + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleSRV().hCPU);
+	RenderingEngine::CopyTextureSRV(src->GetHandleSRV().hCPU, Instance->GaussRTVs[bIdx]->GetHandleSRV().hCPU);
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen1[] = {
 		Instance->Params[GaussParamsType::ScreenX]->GetHandle().hGPU,
-		Instance->GaussRTVs[GaussRTVsType::Buffer + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleSRV().hGPU,
+		Instance->GaussRTVs[bIdx]->GetHandleSRV().hGPU,
 		Instance->Params[GaussParamsType::GaussWeights]->GetHandle().hGPU,
 	};
 	Instance->RootSignatureData->Bind(hScreen1, _countof(hScreen1));
 	Instance->Screen->Draw();
-	Instance->GaussRTVs[GaussRTVsType::XBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->RTV2SRV();
+	Instance->GaussRTVs[xIdx]->RTV2SRV();
 
 	// レンダーターゲット切り替え
-	SetViewPort(Instance->GaussRTVs[GaussRTVsType::YBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->Width,
-		Instance->GaussRTVs[GaussRTVsType::YBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->Height);
-	Instance->GaussRTVs[GaussRTVsType::YBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->SRV2RTV();
-	Instance->GaussRTVs[GaussRTVsType::YBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->Clear();
+	UINT yIdx = GaussRTVsType::YBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX);
+	SetViewPort(Instance->GaussRTVs[yIdx]->Width,Instance->GaussRTVs[yIdx]->Height);
+	// リソース設定
+	Instance->GaussRTVs[yIdx]->SRV2RTV();
+	Instance->GaussRTVs[yIdx]->Clear();
+	// RTV設定
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs2[] = {
-		Instance->GaussRTVs[GaussRTVsType::YBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleRTV().hCPU,
+		Instance->GaussRTVs[yIdx]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(1, rtvs2);
-
 	// YBlur
 	Instance->PipelineData[GaussPipelineType::YBlurPipeline]->Bind();
 	ID3D12DescriptorHeap* heaps2[] =
@@ -194,16 +196,16 @@ void Gauss::ExecuteScreenGauss2(std::shared_ptr<RenderTarget> src, std::shared_p
 	DescriptorHeap::Bind(heaps2, 1);
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen2[] = {
 		Instance->Params[GaussParamsType::ScreenY]->GetHandle().hGPU,
-		Instance->GaussRTVs[GaussRTVsType::XBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleSRV().hGPU,
+		Instance->GaussRTVs[xIdx]->GetHandleSRV().hGPU,
 		Instance->Params[GaussParamsType::GaussWeights]->GetHandle().hGPU,
 	};
 	Instance->RootSignatureData->Bind(hScreen2, _countof(hScreen2));
 	Instance->Screen->Draw();
-	Instance->GaussRTVs[GaussRTVsType::YBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->RTV2SRV();
+	Instance->GaussRTVs[yIdx]->RTV2SRV();
 
 	// コピー
 	Copy::ExecuteCopy(Instance->Heap.get(), 
-		Instance->GaussRTVs[GaussRTVsType::YBlur + (Instance->GaussIdx * GaussRTVsType::RTVs_MAX)]->GetHandleSRV().hGPU, dest);
+		Instance->GaussRTVs[yIdx]->GetHandleSRV().hGPU, dest);
 
 	++Instance->GaussIdx;
 }

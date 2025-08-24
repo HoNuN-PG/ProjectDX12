@@ -2,6 +2,7 @@
 #include "Material.h"
 
 #include "SceneManager.h"
+
 #include "RenderingEngine.h"
 
 Material::Material()

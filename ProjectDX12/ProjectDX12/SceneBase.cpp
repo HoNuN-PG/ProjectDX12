@@ -1,5 +1,6 @@
 
 #include "SceneBase.h"
+
 #include "RenderingEngine.h"
 
 HRESULT SceneBase::InitBase()

@@ -1,8 +1,9 @@
 #ifndef ___ROOT_SIGNATURE_H___
 #define ___ROOT_SIGNATURE_H___
 
-#include "DirectX.h"
 #include <vector>
+
+#include "DirectX.h"
 
 class RootSignature
 {

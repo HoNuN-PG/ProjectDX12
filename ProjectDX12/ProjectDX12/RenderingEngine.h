@@ -6,15 +6,16 @@
 #include <memory>
 #include <unordered_map>
 
-#include "ConstantBuffer.h"
 #include "DescriptorHeap.h"
-
 #include "DepthStencil.h"
 #include "RenderTarget.h"
+#include "ConstantBuffer.h"
 
 #include "Material.h"
 #include "M_Shadow.h"
+
 #include "RenderingPass.h"
+
 #include "PostProcess.h"
 
 class GameObject;
@@ -53,6 +54,10 @@ public:
 	void Update();
 	void Draw();
 
+	// Utillity
+public:
+	static void CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest);
+
 	// 描画ヒープ
 public:
 	DescriptorHeap* GetRenderingHeap() { return RenderingHeap.get(); }
@@ -70,17 +75,18 @@ private:
 	// グローバルリソース
 public:
 	// グローバル定数バッファ
-	static DescriptorHeap::Handle GetGlobalConstantBufferResource(UINT key);
-	static void WriteGlobalConstantBufferResource(UINT key, void* data);
+	DescriptorHeap::Handle GetGlobalConstantBufferResource(UINT key);
+	void WriteGlobalConstantBufferResource(UINT key, void* data);
 	// グローバルテクスチャ
-	static std::shared_ptr<RenderTarget> GetGlobalRenderTarget(UINT key);
-	static DescriptorHeap::Handle GetGlobalTextureRTV(UINT key);
-	static DescriptorHeap::Handle GetGlobalTextureSRV(UINT key);
-	static void GlobalTextureRTV2SRV(UINT key);
-	static void GlobalTextureSRV2RTV(UINT key);
+	std::shared_ptr<RenderTarget> GetGlobalRenderTarget(UINT key);
+	DescriptorHeap::Handle GetGlobalTextureRTV(UINT key);
+	DescriptorHeap::Handle GetGlobalTextureSRV(UINT key);
+	void CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key);
+	void GlobalTextureRTV2SRV(UINT key);
+	void GlobalTextureSRV2RTV(UINT key);
 private:
-	static std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
-	static std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
+	std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
+	std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
 
 	// 環境
 private:
@@ -102,7 +108,7 @@ public:
 private:
 	std::unique_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
 	std::unique_ptr<RenderingPass> ODepthNormalPass;		// 不透明深度法線パス
-	std::unordered_map<UINT, // 描画タイミング
+	std::unordered_map<UINT,								// 描画タイミング
 		PASSES> RenderingPasses;							// 描画パス群
 
 	// レンダリングオブジェクト
@@ -142,9 +148,9 @@ private:
 
 	// レンダリング関数
 public:
-	static Material::RenderingTiming GetCurrentRenderingPass() { return CurrentRenderingTiming; }
+	Material::RenderingTiming GetCurrentRenderingPass() { return CurrentRenderingTiming; }
 private:
-	static Material::RenderingTiming CurrentRenderingTiming;
+	Material::RenderingTiming CurrentRenderingTiming;
 private:
 	void ShadowMapsRendering();
 	void OpaqueDepthNormalRendering();

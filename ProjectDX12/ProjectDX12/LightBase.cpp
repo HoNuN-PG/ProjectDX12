@@ -1,7 +1,9 @@
 
 #include "LightBase.h"
-#include "CameraBase.h"
+
 #include "Input.h"
+
+#include "CameraBase.h"
 
 DirectX::XMFLOAT4X4 LightBase::m_ViewMatrix;
 DirectX::XMFLOAT4X4 LightBase::m_ProjectionMatrix;

@@ -1,30 +1,25 @@
 
-#include "GlobalResourceKey.h"
+#include "RenderingEngine.h"
+
 #include "DebugImGUI.h"
 
-#include "RenderingEngine.h"
+#include "GlobalResourceKey.h"
+#include "ConstantWVP.h"
+
 #include "DirectX.h"
-
-#include "volume.h"
-#include "Copy.h"
-#include "Blur.h"
-
+#include "SceneManager.h"
+#include "SceneBase.h"
 #include "GameObject.h"
 #include "CameraBase.h"
 #include "LightBase.h"
-
-#include "SceneManager.h"
-#include "SceneBase.h"
 
 #include "ShadowPass.h"
 #include "DepthNormalPass.h"
 #include "CustomDepthNormalPass.h"
 
-#include "ConstantWVP.h"
-
-std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> RenderingEngine::GlobalConstantBuffer;
-std::unordered_map<UINT, std::shared_ptr<RenderTarget>>	RenderingEngine::GlobalTexture;
-Material::RenderingTiming RenderingEngine::CurrentRenderingTiming;
+#include "volume.h"
+#include "Copy.h"
+#include "Blur.h"
 
 void RenderingEngine::Init()
 {
@@ -207,6 +202,15 @@ void RenderingEngine::Draw()
 	ForwardObjects.clear();
 }
 
+void RenderingEngine::CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest)
+{
+	GetDevice()->CopyDescriptorsSimple(
+		1,
+		dest,
+		src,
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+}
+
 DescriptorHeap::Handle RenderingEngine::GetGlobalConstantBufferResource(UINT key)
 {
 	if (!GlobalConstantBuffer.contains(key))
@@ -233,6 +237,15 @@ DescriptorHeap::Handle RenderingEngine::GetGlobalTextureSRV(UINT key)
 	if (!GlobalTexture.contains(key))
 		return DescriptorHeap::Handle();
 	return GlobalTexture[key]->GetHandleSRV();
+}
+
+void RenderingEngine::CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key)
+{
+	GetDevice()->CopyDescriptorsSimple(
+		1,
+		dest,
+		GetGlobalTextureSRV(key).hCPU,
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 void RenderingEngine::GlobalTextureRTV2SRV(UINT key)

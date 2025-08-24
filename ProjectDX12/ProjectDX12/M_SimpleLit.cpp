@@ -1,7 +1,10 @@
 
 #include "M_SimpleLit.h"
-#include "GlobalResourceKey.h"
+
+#include "SceneManager.h"
+
 #include "RenderingEngine.h"
+#include "GlobalResourceKey.h"
 
 void M_SimpleLit::Initialize(DescriptorHeap* heap)
 {
@@ -47,9 +50,11 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap)
 
 void M_SimpleLit::Bind()
 {
+	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+
 	// 定数バッファの設定
 	WriteParams((UINT)2, 0,
-		RenderingEngine::GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{

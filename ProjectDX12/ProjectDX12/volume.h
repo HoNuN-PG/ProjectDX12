@@ -5,12 +5,10 @@
 #include <vector>
 
 #include "DescriptorHeap.h"
-#include "Pipeline.h"
 #include "RootSignature.h"
-
-#include "MeshBuffer.h"
-
+#include "Pipeline.h"
 #include "RenderTarget.h"
+#include "MeshBuffer.h"
 
 class Volume
 {
@@ -24,8 +22,6 @@ public:
 public:
 	static void Load();
 	static void Unload();
-	static void CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key);
-	static void CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest);
 
 public:
 	Volume() {};

@@ -2,6 +2,7 @@
 #define ___LIGHT_BASE_H___
 
 #include "GameObject.h"
+
 #include "imgui/imgui.h"
 
 #define LIGHT_LENGTH (1000)

@@ -1,8 +1,8 @@
 
 #include "volume.h"
 
-#include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
+#include "GlobalResourceKey.h"
 
 std::unique_ptr<MeshBuffer>	Volume::Screen;
 
@@ -33,24 +33,6 @@ void Volume::Unload()
 	{
 		Screen.reset(nullptr);
 	}
-}
-
-void Volume::CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest)
-{
-	GetDevice()->CopyDescriptorsSimple(
-		1,
-		dest,
-		src,
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-}
-
-void Volume::CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key)
-{
-	GetDevice()->CopyDescriptorsSimple(
-		1,
-		dest,
-		RenderingEngine::GetGlobalTextureSRV(key).hCPU,
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 void Volume::Init(UINT heapNum, UINT rtvNum)

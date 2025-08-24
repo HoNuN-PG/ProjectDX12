@@ -1,3 +1,4 @@
+
 #include "timer.h"
 
 DWORD TimerFPS::ObservationFPS(int avg)

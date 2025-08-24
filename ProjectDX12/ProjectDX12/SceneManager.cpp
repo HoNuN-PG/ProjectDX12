@@ -1,9 +1,10 @@
 
 #include "SceneManager.h"
-#include "SceneSandBoxDX12.h"
-#include "Input.h"
 
 #include <algorithm>
+#include "Input.h"
+
+#include "SceneSandBoxDX12.h"
 
 int SceneManager::CurrentScene = SceneManager::SceneType::SANDBOXDX12;
 std::vector<std::unique_ptr<SceneBase>> SceneManager::Scenes;

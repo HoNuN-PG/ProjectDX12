@@ -1,9 +1,10 @@
 #ifndef ___MESH_BUFFER_H___
 #define ___MESH_BUFFER_H___
 
-#include "DirectX.h"
 #include <DirectXMath.h>
 #include <vector>
+
+#include "DirectX.h"
 
 struct InstanceData
 {

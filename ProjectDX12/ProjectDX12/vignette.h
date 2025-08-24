@@ -1,10 +1,10 @@
 #ifndef ___VIGNETTE_H___
 #define ___VIGNETTE_H___
 
+#include "volume.h"
+
 #include <DirectXMath.h>
 #include <memory>
-
-#include "volume.h"
 
 class ConstantBuffer;
 

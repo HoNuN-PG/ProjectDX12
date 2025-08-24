@@ -1,12 +1,13 @@
 
 #include "M_Shadow.h"
-#include "GlobalResourceKey.h"
+
 #include "SceneManager.h"
+#include "GameObject.h"
+
 #include "RenderingEngine.h"
+#include "GlobalResourceKey.h"
 
 #include "ShadowPass.h"
-
-#include "GameObject.h"
 
 UINT M_ShadowMapsBase::CurrentShadowMapsNo = 0;
 
@@ -58,11 +59,13 @@ void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap)
 
 void M_SimpleShadowMaps::Bind()
 {
+	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+
 	// 定数バッファの設定
 	WriteParams((UINT)1, 0,
-		RenderingEngine::GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Light).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Light).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	WriteParams((UINT)1, 1 + CurrentShadowMapsNo,
-		RenderingEngine::GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + CurrentShadowMapsNo).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + CurrentShadowMapsNo).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
@@ -104,11 +107,13 @@ void M_ShadowRecieverBase::Initialize(DescriptorHeap* heap)
 
 void M_ShadowRecieverBase::Bind()
 {
+	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+
 	// 定数バッファの設定
 	WriteParams((UINT)2, 0,
-		RenderingEngine::GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	WriteParams((UINT)1, 2,
-		RenderingEngine::GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// テクスチャコピー
 	std::weak_ptr<RenderingEngine> Engine = SceneManager::GetCurrentScene()->GetRenderingEngine();

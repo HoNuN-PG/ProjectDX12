@@ -7,11 +7,9 @@
 #include <memory>
 
 #include "RenderingEngine.h"
-
+#include "DescriptorHeap.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
-
-#include "DescriptorHeap.h"
 
 class CustomDepthNormalPass : public RenderingPass
 {

@@ -1,18 +1,18 @@
 #ifndef ___MATERIAL_H___
 #define ___MATERIAL_H___
 
-#include "ConstantBuffer.h"
-#include "DescriptorHeap.h"
-#include "Pipeline.h"
-#include "RootSignature.h"
-#include "Texture.h"
-
-#include "RenderingPass.h"
-
 #include <string>
 #include <vector>
 #include <memory>
 #include <DirectXMath.h>
+
+#include "DescriptorHeap.h"
+#include "RootSignature.h"
+#include "Pipeline.h"
+#include "Texture.h"
+#include "ConstantBuffer.h"
+
+#include "RenderingPass.h"
 
 class Material
 {

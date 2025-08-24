@@ -1,12 +1,12 @@
 
-#include "GlobalResourceKey.h"
 
 #include "SceneSandBoxDX12.h"
 
-#include "ConstantBuffer.h"
-#include "DepthStencil.h"
-#include "Pipeline.h"
+#include "GlobalResourceKey.h"
 #include "RootSignature.h"
+#include "Pipeline.h"
+#include "ConstantBuffer.h"
+#include "ConstantWVP.h"
 #include "plane.h"
 #include "sphere.h"
 #include "Model.h"
@@ -19,8 +19,6 @@
 #include "M_SimpleLit.h"
 #include "M_Grid.h"
 #include "M_SkyBox.h"
-
-#include "ConstantWVP.h"
 
 // ポストプロセス
 #include "vignette.h"

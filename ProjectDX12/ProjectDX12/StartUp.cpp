@@ -6,19 +6,19 @@
 
 #include <Windows.h>
 #include <tchar.h>
-
-#include "DirectX.h"
 #include "Input.h"
+#include "timer.h"
+
+#include "DebugImGUI.h"
+
+#include "SceneManager.h"
+#include "DirectX.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx12.h"
 
 #pragma comment(lib,"winmm.lib")
-
-#include "SceneManager.h"
-#include "DebugImGUI.h"
-#include "timer.h"
 
 std::unique_ptr<SceneManager> gSceneManager;
 std::unique_ptr<DebugImGUI> gDebugImGUI;

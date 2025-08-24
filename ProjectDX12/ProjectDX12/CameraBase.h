@@ -3,10 +3,9 @@
 
 #include <DirectXMath.h>
 #include <Windows.h>
-
-#include "DirectX.h"
 #include "MyMath.h"
 
+#include "DirectX.h"
 #include "GameObject.h"
 
 #define CAM_NEAR (0.01)
@@ -47,19 +46,19 @@ public:
 	float m_MoveSpeed;
 	float m_MouseSpeed;
 
+public:
+	static DirectX::XMFLOAT3 m_MainPos;
+	static DirectX::XMFLOAT3 m_MainUp;
+	static DirectX::XMFLOAT3 m_MainTarget;
 protected:
 	void SetMainParams();
 protected:
 	bool m_IsMain;
 
+protected:
 	DirectX::XMFLOAT3 m_Pos;			// カメラ座標
 	DirectX::XMFLOAT3 m_Up;				// アップベクトル
 	DirectX::XMFLOAT3 m_Target;			// 注視点
-
-public:
-	static DirectX::XMFLOAT3 m_MainPos;
-	static DirectX::XMFLOAT3 m_MainUp;
-	static DirectX::XMFLOAT3 m_MainTarget;
 
 };
 

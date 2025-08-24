@@ -4,13 +4,13 @@
 #include <memory>
 #include <vector>
 
-#include "MeshBuffer.h"
-#include "Pipeline.h"
 #include "RootSignature.h"
+#include "Pipeline.h"
+#include "MeshBuffer.h"
+#include "RenderTarget.h"
 #include "ConstantBuffer.h"
 
 class DescriptorHeap;
-class RenderTarget;
 
 namespace BlurParam
 {

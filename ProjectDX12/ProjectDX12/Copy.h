@@ -4,9 +4,9 @@
 #include <memory>
 #include <vector>
 
-#include "MeshBuffer.h"
-#include "Pipeline.h"
 #include "RootSignature.h"
+#include "Pipeline.h"
+#include "MeshBuffer.h"
 
 class DescriptorHeap;
 class RenderTarget;

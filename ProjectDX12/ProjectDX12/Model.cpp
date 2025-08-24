@@ -1,10 +1,12 @@
 
 #include "Model.h"
-#include "StartUp.h"
 
+#include "StartUp.h"
+#include "SceneManager.h"
 #include "GameObject.h"
-#include "ConstantWVP.h"
+
 #include "RenderingEngine.h"
+#include "ConstantWVP.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -113,7 +115,8 @@ void Model::Draw()
 
 void Model::Rendering()
 {
-	Material::RenderingTiming current = RenderingEngine::GetCurrentRenderingPass();
+	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingPass();
 	for (auto material : MeshMaterialsData[MeshIdx])
 	{
 		if (material->GetRenderTiming() == current)

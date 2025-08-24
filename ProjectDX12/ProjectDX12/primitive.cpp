@@ -1,9 +1,11 @@
 
 #include "primitive.h"
+
+#include "SceneManager.h"
 #include "GameObject.h"
-#include "ConstantWVP.h"
 
 #include "RenderingEngine.h"
+#include "ConstantWVP.h"
 
 void Primitive::Draw()
 {
@@ -18,7 +20,8 @@ void Primitive::Draw()
 
 void Primitive::Rendering()
 {
-	Material::RenderingTiming current = RenderingEngine::GetCurrentRenderingPass();
+	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingPass();
 	for (int i = 0; i < MeshData.size(); ++i)
 	{
 		for (auto material : MeshMaterialsData[i])

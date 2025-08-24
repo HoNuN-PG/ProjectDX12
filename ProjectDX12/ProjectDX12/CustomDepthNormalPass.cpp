@@ -2,6 +2,7 @@
 #include "CustomDepthNormalPass.h"
 
 #include "GameObject.h"
+
 #include "RenderTarget.h"
 
 CustomDepthNormalPass::CustomDepthNormalPass()

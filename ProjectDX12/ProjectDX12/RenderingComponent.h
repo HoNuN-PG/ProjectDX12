@@ -2,11 +2,13 @@
 #define ___RENDERING_COMPONENT_H___
 
 #include "Component.h"
-#include "MeshBuffer.h"
-#include "Material.h"
 
 #include <memory>
 #include <vector>
+
+#include "MeshBuffer.h"
+
+#include "Material.h"
 
 class RenderingComponent : public Component
 {

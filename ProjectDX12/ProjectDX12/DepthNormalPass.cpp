@@ -1,9 +1,9 @@
 
 #include "DepthNormalPass.h"
 
-#include "GlobalResourceKey.h"
-
 #include "GameObject.h"
+
+#include "GlobalResourceKey.h"
 
 OpaqueDepthNormalPass::OpaqueDepthNormalPass()
 {
