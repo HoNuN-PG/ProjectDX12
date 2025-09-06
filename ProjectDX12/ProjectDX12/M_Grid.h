@@ -43,4 +43,18 @@ private:
 	Grid::GridParam GridParam;
 };
 
+class M_GridShadowVSM : public M_ShadowVSMRecieverBase
+{
+public:
+	virtual void Initialize(DescriptorHeap* heap) override;
+	virtual void Bind() override;
+
+public:
+	void SetGridSize(float size) { GridParam.GridSize = size; }
+	void SetSubGridSize(float size) { GridParam.SubGridSize = size; }
+	void SetGridWidth(float width) { GridParam.GridWidth = width; }
+private:
+	Grid::GridParam GridParam;
+};
+
 #endif

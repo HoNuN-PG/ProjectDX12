@@ -1,4 +1,7 @@
 
+#ifndef ___COMMON_LIGHTING_HLSL___
+#define ___COMMON_LIGHTING_HLSL___
+
 struct CameraParam
 {
     float4 CameraPos;
@@ -19,3 +22,5 @@ float CalcLambert(float3 normal, float3 ligDir)
 	float3 N = normalize(normal);
 	return saturate(dot(L, N));
 }
+
+#endif

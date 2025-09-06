@@ -1,4 +1,7 @@
 
+#ifndef ___COMMON_FUNCTION_HLSL___
+#define ___COMMON_FUNCTION_HLSL___
+
 float rand(float2 vec)
 {
 	return frac(sin(dot(vec, float2(12.9898f, 78.233f))) * 43758.5453f);
@@ -148,3 +151,5 @@ void GetVoronoi(float2 uv, float CellDensity, float AngleOffset,
 		}
 	}
 }
+
+#endif

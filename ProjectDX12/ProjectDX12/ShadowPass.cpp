@@ -14,17 +14,17 @@
 
 #include "Blur.h"
 
-DirectX::XMFLOAT2 ShadowPass::ShadowMapsSize[TextureType::Far + 1] = { {4096,4096},{1024 ,1024},{512,512} };
+DirectX::XMFLOAT2 ShadowPass::ShadowMapsSize[TextureType::MAX] = { {4096,4096},{1024 ,1024},{512,512} };
 DXGI_FORMAT ShadowPass::ShadowMapsFormat = DXGI_FORMAT_R16G16_FLOAT;
 
 ShadowPass::ShadowPass()
 {
 	PassType = RenderingPass::RenderingPassType::Shadow;
 	CascadeAreas.push_back(100);
-	CascadeAreas.push_back(500);
-	CascadeAreas.push_back(1000);
+	CascadeAreas.push_back(300);
+	CascadeAreas.push_back(CAM_FAR);
 	pCamera = SceneManager::GetCurrentScene()->GetGameObject<CameraBase>();
-	for (int i = 0; i < TextureType::Far + 1; ++i)
+	for (int i = 0; i < TextureType::MAX; ++i)
 	{
 		GaussIdx[i] = -1;
 	}
@@ -93,11 +93,11 @@ void ShadowPass::Execute()
 	Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever,&ShadowReceiveParam);
 
 	// ‚Ú‚©‚µ
-	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Near],{ ShadowMaps[TextureType::Near]->Width / 2,ShadowMaps[TextureType::Near]->Height / 2 }, 
+	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Near],{ ShadowMaps[TextureType::Near]->Width,ShadowMaps[TextureType::Near]->Height }, 
 		ShadowMaps[TextureType::Near], VSMShadowMaps[TextureType::Near]);
-	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Middle], { ShadowMaps[TextureType::Middle]->Width / 2,ShadowMaps[TextureType::Middle]->Height / 2 },
+	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Middle], { ShadowMaps[TextureType::Middle]->Width,ShadowMaps[TextureType::Middle]->Height },
 		ShadowMaps[TextureType::Middle], VSMShadowMaps[TextureType::Middle]);
-	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Far], { ShadowMaps[TextureType::Far]->Width / 2,ShadowMaps[TextureType::Far]->Height / 2 },
+	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Far], { ShadowMaps[TextureType::Far]->Width,ShadowMaps[TextureType::Far]->Height },
 		ShadowMaps[TextureType::Far], VSMShadowMaps[TextureType::Far]);
 
 	RenderObjects.clear();
@@ -192,8 +192,8 @@ void ShadowPass::Init(
 			desc.width = ShadowMapsSize[i].x;
 			desc.height = ShadowMapsSize[i].y;
 			ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
-			desc.width = ShadowMapsSize[i].x;
-			desc.height = ShadowMapsSize[i].y;
+			desc.width = ShadowMapsSize[i].x / 2;
+			desc.height = ShadowMapsSize[i].y / 2;
 			VSMShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
 		}
 	}
@@ -223,9 +223,9 @@ std::shared_ptr<RenderTarget> ShadowPass::GetTexture(UINT idx)
 	{
 		return ShadowMaps[idx];
 	}
-	else if(idx - TextureType::NearVSM < VSMShadowMaps.size())
+	else if(idx - (TextureType::MAX + 1) < VSMShadowMaps.size())
 	{
-		return VSMShadowMaps[idx - TextureType::NearVSM];
+		return VSMShadowMaps[idx - (TextureType::MAX + 1)];
 	}
 	return nullptr;
 }
@@ -236,9 +236,9 @@ DescriptorHeap::Handle ShadowPass::GetTextureRTV(UINT idx)
 	{
 		return ShadowMaps[idx]->GetHandleRTV();
 	}
-	else if (idx - TextureType::NearVSM < VSMShadowMaps.size())
+	else if (idx - (TextureType::MAX + 1) < VSMShadowMaps.size())
 	{
-		return VSMShadowMaps[idx - TextureType::NearVSM]->GetHandleRTV();
+		return VSMShadowMaps[idx - (TextureType::MAX + 1)]->GetHandleRTV();
 	}
 	return DescriptorHeap::Handle();
 }
@@ -249,9 +249,9 @@ DescriptorHeap::Handle ShadowPass::GetTextureSRV(UINT idx)
 	{
 		return ShadowMaps[idx]->GetHandleSRV();
 	}
-	else if (idx - TextureType::NearVSM < VSMShadowMaps.size())
+	else if (idx - (TextureType::MAX + 1) < VSMShadowMaps.size())
 	{
-		return VSMShadowMaps[idx - TextureType::NearVSM]->GetHandleSRV();
+		return VSMShadowMaps[idx - (TextureType::MAX + 1)]->GetHandleSRV();
 	}
 	return DescriptorHeap::Handle();
 }

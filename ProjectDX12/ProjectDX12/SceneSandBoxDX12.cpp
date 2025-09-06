@@ -60,10 +60,16 @@ HRESULT SceneSandBoxDX12::Init()
 	Material::Initialize(grid, Heap.get());
 	grid->SetGridSize(1);
 	grid->SetSubGridSize(5);
+
 	std::shared_ptr<M_GridShadow> grid_shadow = std::make_shared<M_GridShadow>();
 	Material::Initialize(grid_shadow, Heap.get());
 	grid_shadow->SetGridSize(1);
 	grid_shadow->SetSubGridSize(5);
+
+	std::shared_ptr<M_GridShadowVSM> grid_shadow_vsm = std::make_shared<M_GridShadowVSM>();
+	Material::Initialize(grid_shadow_vsm, Heap.get());
+	grid_shadow_vsm->SetGridSize(1);
+	grid_shadow_vsm->SetSubGridSize(5);
 
 	// SimpleLit
 	std::shared_ptr<M_SimpleLit> simple_lit = std::make_shared<M_SimpleLit>();
@@ -84,7 +90,7 @@ HRESULT SceneSandBoxDX12::Init()
 	{// ƒOƒŠƒbƒh
 		std::vector<std::shared_ptr<Material>> materials;
 		materials.push_back(opaque_depth_normal);
-		materials.push_back(grid_shadow);
+		materials.push_back(grid_shadow_vsm);
 
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,-1,0 });

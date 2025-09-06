@@ -47,4 +47,15 @@ protected:
 
 };
 
+class M_ShadowVSMRecieverBase : public Material
+{
+public:
+	virtual void Initialize(DescriptorHeap* heap) override;
+	virtual void Bind() override;
+
+protected:
+	std::vector<std::shared_ptr<RenderTarget>> ShadowMaps;
+
+};
+
 #endif

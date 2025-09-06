@@ -36,14 +36,14 @@ void Gauss::Create()
 		{
 			DescriptorHeap::Description desc = {};
 			desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-			desc.num = BlurParam::GAUSS_MAX * GaussRTVsType::RTVs_MAX + BlurParam::GAUSS_MAX * (GaussParamsType::Params_MAX - 1);
+			desc.num = BlurParam::GAUSS_MAX * GaussRTVType::RTV_MAX + BlurParam::GAUSS_MAX * (GaussParamsType::Params_MAX - 1);
 			Instance->Heap = std::make_shared<DescriptorHeap>(desc);
 		}
 		// ボリュームディスクリプターヒープ(レンダーターゲット)
 		{
 			DescriptorHeap::Description desc = {};
 			desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-			desc.num = BlurParam::GAUSS_MAX * GaussRTVsType::RTVs_MAX;
+			desc.num = BlurParam::GAUSS_MAX * GaussRTVType::RTV_MAX;
 			Instance->RTVHeap = std::make_shared<DescriptorHeap>(desc);
 		}
 		// ルートシグネチャ
@@ -152,19 +152,22 @@ void Gauss::ExecuteScreenGauss2(int& gaussIdx, DirectX::XMFLOAT2 screen,
 		}
 	}
 
-	// レンダーターゲット切り替え
-	UINT xIdx = GaussRTVsType::XBlur + (gaussIdx * GaussRTVsType::RTVs_MAX);
+	// ビューポート設定
+	UINT xIdx = GaussRTVType::XBlur + (gaussIdx * GaussRTVType::RTV_MAX);
 	SetViewPort(Instance->GaussRTVs[xIdx]->Width, Instance->GaussRTVs[xIdx]->Height);
+
 	// リソース設定
 	Instance->GaussRTVs[xIdx]->SRV2RTV();
 	Instance->GaussRTVs[xIdx]->Clear();
+
 	// RTV設定
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs1[] = {
 		Instance->GaussRTVs[xIdx]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(1, rtvs1);
+
 	// XBlur
-	UINT bIdx = GaussRTVsType::Buffer + (gaussIdx * GaussRTVsType::RTVs_MAX);
+	UINT bIdx = GaussRTVType::Buffer + (gaussIdx * GaussRTVType::RTV_MAX);
 	Instance->PipelineData[GaussPipelineType::XBlurPipeline]->Bind();
 	ID3D12DescriptorHeap* heaps1[] =
 	{
@@ -181,17 +184,20 @@ void Gauss::ExecuteScreenGauss2(int& gaussIdx, DirectX::XMFLOAT2 screen,
 	Instance->Screen->Draw();
 	Instance->GaussRTVs[xIdx]->RTV2SRV();
 
-	// レンダーターゲット切り替え
-	UINT yIdx = GaussRTVsType::YBlur + (gaussIdx * GaussRTVsType::RTVs_MAX);
+	// ビューポート設定
+	UINT yIdx = GaussRTVType::YBlur + (gaussIdx * GaussRTVType::RTV_MAX);
 	SetViewPort(Instance->GaussRTVs[yIdx]->Width, Instance->GaussRTVs[yIdx]->Height);
+
 	// リソース設定
 	Instance->GaussRTVs[yIdx]->SRV2RTV();
 	Instance->GaussRTVs[yIdx]->Clear();
+
 	// RTV設定
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs2[] = {
 		Instance->GaussRTVs[yIdx]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(1, rtvs2);
+
 	// YBlur
 	Instance->PipelineData[GaussPipelineType::YBlurPipeline]->Bind();
 	ID3D12DescriptorHeap* heaps2[] =

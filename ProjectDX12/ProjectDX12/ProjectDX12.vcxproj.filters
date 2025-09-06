@@ -523,6 +523,15 @@
     <FxCompile Include="PS_Blur.hlsl">
       <Filter>リソース ファイル\Volume\Blur</Filter>
     </FxCompile>
+    <FxCompile Include="PS_GridShadowVSM.hlsl">
+      <Filter>リソース ファイル\PS\Common\Grid</Filter>
+    </FxCompile>
+    <FxCompile Include="CommonShadowParam.hlsl">
+      <Filter>リソース ファイル\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="CommonShadowVSM.hlsl">
+      <Filter>リソース ファイル\Common</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

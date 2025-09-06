@@ -49,13 +49,13 @@ public:
 
 		Pipeline_MAX
 	};
-	enum GaussRTVsType
+	enum GaussRTVType
 	{
 		Buffer = 0,
 		XBlur,
 		YBlur,
 
-		RTVs_MAX
+		RTV_MAX
 	};
 	enum GaussParamsType
 	{

@@ -1,18 +1,8 @@
 
-struct ShadowRecieverParam
-{
-    float4x4 LVP[3];
-    float4 CascadeAreas;
-};
+#ifndef ___COMMON_SHADOW_HLSL___
+#define ___COMMON_SHADOW_HLSL___
 
-struct CalcShadowParam
-{
-    float3 posWS;
-    float4 reciever[3];
-    float3 camPos;
-    float3 camForward;
-    float4 cascadeArea;
-};
+#include "CommonShadowParam.hlsl"
 
 // シャドウマップ
 Texture2D shadowMap1 : register(t10);
@@ -75,3 +65,5 @@ float CalcShadow(CalcShadowParam param, SamplerState samp)
     }
     return shadow;
 }
+
+#endif

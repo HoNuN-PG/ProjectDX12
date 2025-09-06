@@ -24,11 +24,13 @@ public:
 		Middle,
 		Far,
 
+		MAX,
+
 		NearVSM,
 		MiddleVSM,
 		FarVSM,
 
-		MAX
+		MAX_VSM
 	};
 public:
 	explicit ShadowPass();
