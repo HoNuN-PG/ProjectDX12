@@ -91,7 +91,7 @@ void Gauss::Create()
 
 		// GaussWeights
 		Instance->Weights.weights = std::make_shared<float[]>(BlurParam::GAUSS_WEIGHTS);
-		CalcWeights(Instance->Weights.weights, 50);
+		CalcWeights(Instance->Weights.weights, 1);
 		// 重みの設定
 		{
 			float w[BlurParam::GAUSS_WEIGHTS];
@@ -112,6 +112,8 @@ void Gauss::Destroy()
 void Gauss::ExecuteScreenGauss2(int& gaussIdx, DirectX::XMFLOAT2 screen, 
 	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest)
 {
+	static const int split = 2;
+
 	// GaussRTVs
 	if (gaussIdx < 0)
 	{
@@ -128,12 +130,12 @@ void Gauss::ExecuteScreenGauss2(int& gaussIdx, DirectX::XMFLOAT2 screen,
 			desc.height = screen.y;
 			Instance->GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
 
-			desc.width = screen.x / 2;
+			desc.width = screen.x / split;
 			desc.height = screen.y;
 			Instance->GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
 
-			desc.width = screen.x / 2;
-			desc.height = screen.y / 2;
+			desc.width = screen.x / split;
+			desc.height = screen.y / split;
 			Instance->GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
 		}
 		// ConstantBuffer
@@ -145,8 +147,8 @@ void Gauss::ExecuteScreenGauss2(int& gaussIdx, DirectX::XMFLOAT2 screen,
 			Instance->Params.push_back(std::make_unique<ConstantBuffer>(desc));
 
 			// スクリーンサイズ
-			BlurParam::ScreenParam p1(screen.x, screen.y / 2);
-			BlurParam::ScreenParam p2(screen.x / 2, screen.y / 2);
+			BlurParam::ScreenParam p1(screen.x, screen.y / split,1);
+			BlurParam::ScreenParam p2(screen.x / split, screen.y / split,1);
 			Instance->Params[gaussIdx * 2]->Write(&p1);
 			Instance->Params[gaussIdx * 2 + 1]->Write(&p2);
 		}

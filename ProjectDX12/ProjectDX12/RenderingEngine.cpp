@@ -483,32 +483,34 @@ void RenderingEngine::CanvasPostProcessRendering()
 
 void RenderingEngine::ViewShadowMaps()
 {
+	static const ImVec2 size = { 480,270 };
+
 	ImGui::Begin("ShadowMaps");
 	{
 		ImGui::Text("ShadowMap1");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			RenderingHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::Near).get()), { 240,135 });
+			ShadowMapsPass->GetTexture(ShadowPass::Near).get()), size);
 		ImGui::Text("ShadowMap2");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			RenderingHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::Middle).get()), { 240,135 });
+			ShadowMapsPass->GetTexture(ShadowPass::Middle).get()), size);
 		ImGui::Text("ShadowMap3");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			RenderingHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::Far).get()), { 240,135 });
+			ShadowMapsPass->GetTexture(ShadowPass::Far).get()), size);
 		ImGui::Text("VSMShadowMap1");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			RenderingHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::NearVSM).get()), { 240,135 });
+			ShadowMapsPass->GetTexture(ShadowPass::NearVSM).get()), size);
 		ImGui::Text("VSMShadowMap2");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			RenderingHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::MiddleVSM).get()), { 240,135 });
+			ShadowMapsPass->GetTexture(ShadowPass::MiddleVSM).get()), size);
 		ImGui::Text("VSMShadowMap3");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			RenderingHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::FarVSM).get()), { 240,135 });
+			ShadowMapsPass->GetTexture(ShadowPass::FarVSM).get()), size);
 	}
 	ImGui::End();
 }

@@ -20,10 +20,13 @@ DXGI_FORMAT ShadowPass::ShadowMapsFormat = DXGI_FORMAT_R16G16_FLOAT;
 ShadowPass::ShadowPass()
 {
 	PassType = RenderingPass::RenderingPassType::Shadow;
+
 	CascadeAreas.push_back(100);
 	CascadeAreas.push_back(300);
 	CascadeAreas.push_back(CAM_FAR);
+
 	pCamera = SceneManager::GetCurrentScene()->GetGameObject<CameraBase>();
+
 	for (int i = 0; i < TextureType::MAX; ++i)
 	{
 		GaussIdx[i] = -1;
@@ -54,6 +57,7 @@ void ShadowPass::Execute()
 				DirectX::XMLoadFloat4x4(&lvpc4x4)
 			)
 		);
+
 		// ƒpƒ‰ƒ[ƒ^Ý’è
 		M_ShadowMapsBase::CurrentShadowMapsNo = i;
 		ShadowMapsParam = ShadowParam::ShadowMapsParam(lvpc4x4);

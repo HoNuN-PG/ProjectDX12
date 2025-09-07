@@ -23,6 +23,7 @@ cbuffer ScreenParam : register(b0)
 {
     float width;
     float height;
+    float uvScale;
 }
 
 VS_OUT main(VS_IN input)
@@ -56,14 +57,14 @@ VS_OUT main(VS_IN input)
     output.tex6.zw = output.tex6.xy * -1.0f;
     output.tex7.zw = output.tex7.xy * -1.0f;
 	// Šî€ƒeƒNƒZƒ‹‚ğ‰ÁZ
-    output.tex0 += float4(tex, tex);
-    output.tex1 += float4(tex, tex);
-    output.tex2 += float4(tex, tex);
-    output.tex3 += float4(tex, tex);
-    output.tex4 += float4(tex, tex);
-    output.tex5 += float4(tex, tex);
-    output.tex6 += float4(tex, tex);
-    output.tex7 += float4(tex, tex);
+    output.tex0 = output.tex0 * uvScale + float4(tex, tex);
+    output.tex1 = output.tex1 * uvScale + float4(tex, tex);
+    output.tex2 = output.tex2 * uvScale + float4(tex, tex);
+    output.tex3 = output.tex3 * uvScale + float4(tex, tex);
+    output.tex4 = output.tex4 * uvScale + float4(tex, tex);
+    output.tex5 = output.tex5 * uvScale + float4(tex, tex);
+    output.tex6 = output.tex6 * uvScale + float4(tex, tex);
+    output.tex7 = output.tex7 * uvScale + float4(tex, tex);
 
     output.uv = tex;
 

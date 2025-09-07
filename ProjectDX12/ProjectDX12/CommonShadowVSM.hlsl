@@ -57,11 +57,10 @@ float CalcShadowVSM(CalcShadowParam param, SamplerState samp)
         if (shadowUV.x >= 0.0f && shadowUV.x <= 1.0f
 			&& shadowUV.y >= 0.0f && shadowUV.y <= 1.0f)
         {
-            if (zInLVP > zInShadowMap.r + 0.0025f)
+            if (zInLVP > zInShadowMap.r + DEPTH_THRESHOLD)
             {
                 float depth_sq = zInShadowMap.r * zInShadowMap.r;
-                float variance = max(zInShadowMap.g - depth_sq, 0.0025f);
-                variance = pow(variance, 1.5f);
+                float variance = max(zInShadowMap.g - depth_sq, DEPTH_THRESHOLD);
                 float md = zInLVP - zInShadowMap.r;
                 float rate = variance / (variance + md * md);
                 shadow = 1 - rate;

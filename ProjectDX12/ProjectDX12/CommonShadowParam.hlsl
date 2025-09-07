@@ -2,6 +2,8 @@
 #ifndef ___COMMON_SHADOW_PARAM_HLSL___
 #define ___COMMON_SHADOW_PARAM_HLSL___
 
+#include "CommonDefine.hlsl"
+
 struct ShadowRecieverParam
 {
     float4x4 LVP[3];

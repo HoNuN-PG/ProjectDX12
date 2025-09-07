@@ -18,14 +18,16 @@ namespace BlurParam
 	{
 		float width;
 		float height;
-		DirectX::XMFLOAT2 pad1;
+		float uvScale;
+		float pad1;
 
 	public:
-		ScreenParam(float w, float h)
-			:pad1({0,0})
+		ScreenParam(float w, float h,float scale)
+			:pad1(0)
 		{
 			width = w;
 			height = h;
+			uvScale = scale;
 		}
 	};
 
