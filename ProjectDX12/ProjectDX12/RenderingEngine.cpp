@@ -185,6 +185,8 @@ void RenderingEngine::Draw()
 	CurrentRenderingTiming = Material::RenderingTiming::Other;
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
+	static int i = -1;
+	// Gauss::ExecuteScreenGauss2(i,{WINDOW_WIDTH,WINDOW_HEIGHT}, GlobalTexture[GlobalTextureResourceKey::MainTexture],GlobalTexture[GlobalTextureResourceKey::MainTexture]);
 	Copy::ExecuteCopy(RenderingHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU, GetRTV());
 	ViewShadowMaps();
 	ViewDepthNormal();

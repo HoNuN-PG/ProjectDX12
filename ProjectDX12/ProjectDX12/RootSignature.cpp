@@ -58,10 +58,11 @@ void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE
 {
 	// ƒTƒ“ƒvƒ‰
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
-	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+	sampler.Filter = D3D12_FILTER_ANISOTROPIC;
 	sampler.AddressU = sample;
 	sampler.AddressV = sample;
 	sampler.AddressW = sample;
+	sampler.MaxAnisotropy = 4;
 	sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
 	sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
 	sampler.MinLOD = 0.0f;
