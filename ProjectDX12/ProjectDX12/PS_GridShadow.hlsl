@@ -82,7 +82,7 @@ float4 main(PS_IN input) : SV_TARGET
     param.reciever[2] = input.reciever[2];
     float shadow = CalcShadow(param, samp);
     
-    color.xyz = lerp(color.xyz, 0, shadow);
+    color.xyz = lerp(color.xyz, color.xyz * 0.5f, shadow);
     
     return float4(color, 1);
 }

@@ -20,7 +20,7 @@ RootSignature::RootSignature(DescriptionTable desc)
 		param[i].ShaderVisibility						= desc.pParam[i].shader;
 	}
 
-	SetUp(param, desc.sample, desc.paramNum);
+	SetUp(param, desc.sample,desc.filter ,desc.paramNum);
 }
 
 RootSignature::RootSignature(DescriptionTables desc)
@@ -46,7 +46,7 @@ RootSignature::RootSignature(DescriptionTables desc)
 		param[i].ShaderVisibility						= desc.pParam[i].shader;
 	}
 
-	SetUp(param, desc.sample, desc.paramNum);
+	SetUp(param, desc.sample, desc.filter, desc.paramNum);
 }
 
 RootSignature::~RootSignature()
@@ -54,11 +54,11 @@ RootSignature::~RootSignature()
 	if(RootSignatureData) RootSignatureData->Release();
 }
 
-void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, UINT num)
+void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, UINT num)
 {
 	// ƒTƒ“ƒvƒ‰
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
-	sampler.Filter = D3D12_FILTER_ANISOTROPIC;
+	sampler.Filter = filter;
 	sampler.AddressU = sample;
 	sampler.AddressV = sample;
 	sampler.AddressW = sample;

@@ -91,7 +91,7 @@ void Gauss::Create()
 
 		// GaussWeights
 		Instance->Weights.weights = std::make_shared<float[]>(BlurParam::GAUSS_WEIGHTS);
-		CalcWeights(Instance->Weights.weights, 5);
+		CalcWeights(Instance->Weights.weights, 1);
 		// d‚İ‚Ìİ’è
 		{
 			float w[BlurParam::GAUSS_WEIGHTS];

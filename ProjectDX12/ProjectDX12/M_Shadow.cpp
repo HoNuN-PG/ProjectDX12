@@ -78,6 +78,9 @@ void M_SimpleShadowMaps::Bind()
 
 void M_ShadowRecieverBase::Initialize(DescriptorHeap* heap)
 {
+	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	std::weak_ptr<ShadowPass> pass = engine.lock()->GetShadowMapsPass();
+
 	// 定数バッファ
 	{
 		ConstantBuffer::Description desc = {};
@@ -92,14 +95,14 @@ void M_ShadowRecieverBase::Initialize(DescriptorHeap* heap)
 	// RTV
 	{
 		RenderTarget::Description desc = {};
-		desc.format = ShadowPass::ShadowMapsFormat;
+		desc.format = pass.lock()->ShadowMapsFormat;
 		desc.pRTVHeap = RTVHeap.get();
 		desc.pSRVHeap = heap;
 
 		for (int i = 0; i < ShadowPass::TextureType::MAX; ++i)
 		{
-			desc.width = ShadowPass::ShadowMapsSize[i].x;
-			desc.height = ShadowPass::ShadowMapsSize[i].y;
+			desc.width = pass.lock()->ShadowMapsSize[i].x;
+			desc.height = pass.lock()->ShadowMapsSize[i].y;
 			ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
 		}
 	}
@@ -124,6 +127,9 @@ void M_ShadowRecieverBase::Bind()
 
 void M_ShadowVSMRecieverBase::Initialize(DescriptorHeap* heap)
 {
+	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	std::weak_ptr<ShadowPass> pass = engine.lock()->GetShadowMapsPass();
+
 	// 定数バッファ
 	{
 		ConstantBuffer::Description desc = {};
@@ -138,14 +144,14 @@ void M_ShadowVSMRecieverBase::Initialize(DescriptorHeap* heap)
 	// RTV
 	{
 		RenderTarget::Description desc = {};
-		desc.format = ShadowPass::ShadowMapsFormat;
+		desc.format = pass.lock()->ShadowMapsFormat;
 		desc.pRTVHeap = RTVHeap.get();
 		desc.pSRVHeap = heap;
 
 		for (int i = 0; i < ShadowPass::TextureType::MAX; ++i)
 		{
-			desc.width = ShadowPass::ShadowMapsSize[i].x / 2;
-			desc.height = ShadowPass::ShadowMapsSize[i].y / 2;
+			desc.width = pass.lock()->VSMShadowMapsSize[i].x / 2;
+			desc.height = pass.lock()->VSMShadowMapsSize[i].y / 2;
 			ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
 		}
 	}

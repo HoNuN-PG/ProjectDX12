@@ -82,7 +82,9 @@ float4 main(PS_IN input) : SV_TARGET
     param.reciever[2] = input.reciever[2];
     float shadow = CalcShadowVSM(param, samp);
     
-    color.xyz = lerp(color.xyz, 0, shadow);
+    color.xyz = lerp(color.xyz, color.xyz * 0.5f, shadow);
+    
+    // color.xyz = bokeh_shadowMap1.Sample(samp, input.uv);
     
     return float4(color, 1);
 }

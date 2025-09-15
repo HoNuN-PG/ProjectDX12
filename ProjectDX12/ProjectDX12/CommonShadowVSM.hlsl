@@ -50,7 +50,6 @@ float CalcShadowVSM(CalcShadowParam param, SamplerState samp)
             zInShadowMap = bokeh_shadowMap3.Sample(samp, shadowUV).rg;
             break;
     }
-
 	// ŽÕ•Á”»’è
     if (zInLVP >= 0 && zInLVP <= 1.0f)
     {

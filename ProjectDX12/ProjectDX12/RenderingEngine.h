@@ -103,10 +103,20 @@ public:
 		RenderingPasses[timing][passType] = std::make_unique<T>();
 		RenderingPasses[timing][passType]->Init(RTVHeap,RenderingHeap,DSVHeap);
 	}
+	std::shared_ptr<class ShadowPass> GetShadowMapsPass();
+	template<typename T>
+	T* GetRenderingPass(UINT timing, UINT passType)
+	{
+		if (RenderingPasses[timing].contains(passType))
+		{
+			return static_cast<T*>(RenderingPasses[timing][passType].get());
+		}
+		return nullptr;
+	}
 	std::shared_ptr<RenderTarget> GetPassTexture(UINT timing, UINT type, UINT idx);
 	void CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx);
 private:
-	std::unique_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
+	std::shared_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
 	std::unique_ptr<RenderingPass> ODepthNormalPass;		// 不透明深度法線パス
 	std::unordered_map<UINT,								// 描画タイミング
 		PASSES> RenderingPasses;							// 描画パス群

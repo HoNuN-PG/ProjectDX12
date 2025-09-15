@@ -102,7 +102,7 @@ void RenderingEngine::Init()
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
 
 	// レンダリングパス
-	ShadowMapsPass = std::make_unique<ShadowPass>();
+	ShadowMapsPass = std::make_shared<ShadowPass>();
 	ShadowMapsPass->Init(RTVHeap, RenderingHeap, DSVHeap);
 	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>();
 	ODepthNormalPass->Init(RTVHeap, RenderingHeap, DSVHeap);
@@ -267,6 +267,11 @@ void RenderingEngine::GlobalTextureSRV2RTV(UINT key)
 void RenderingEngine::WriteGlobalConstantBufferResource(UINT key, void* data)
 {
 	GlobalConstantBuffer[key]->Write(data);
+}
+
+std::shared_ptr<ShadowPass> RenderingEngine::GetShadowMapsPass()
+{
+	return std::dynamic_pointer_cast<ShadowPass>(ShadowMapsPass);
 }
 
 std::shared_ptr<RenderTarget> RenderingEngine::GetPassTexture(UINT timing, UINT type, UINT idx)

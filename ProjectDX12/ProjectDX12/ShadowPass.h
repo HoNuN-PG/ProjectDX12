@@ -71,8 +71,9 @@ private:
 	int GaussIdx[TextureType::MAX];
 
 public:
-	static DirectX::XMFLOAT2 ShadowMapsSize[TextureType::MAX];
-	static DXGI_FORMAT ShadowMapsFormat;
+	DirectX::XMFLOAT2 ShadowMapsSize[TextureType::MAX];
+	DirectX::XMFLOAT2 VSMShadowMapsSize[TextureType::MAX];
+	DXGI_FORMAT ShadowMapsFormat;
 
 };
 

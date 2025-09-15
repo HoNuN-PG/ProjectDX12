@@ -50,6 +50,7 @@ void Copy::Load()
 		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
+		desc.filter = D3D12_FILTER_ANISOTROPIC;
 		Instance->RootSignatureData = std::make_unique<RootSignature>(desc);
 	}
 	// パイプライン

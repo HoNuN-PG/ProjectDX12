@@ -106,7 +106,7 @@ void Model::Draw()
 {
 	for (int i = 0; i < MeshMaterialsData.size(); ++i)
 	{
-		for (auto material : MeshMaterialsData[i]) // ‚P‰ñ‚Ì•`‰æ“o˜^‚Å•¡”ƒƒbƒVƒ…‚ð•`‰æ‚·‚é‚©‚ç“o˜^”•ª•`‰æ‚³‚ê‚Ä‚µ‚Ü‚¤
+		for (auto material : MeshMaterialsData[i])
 		{
 			Owner.lock()->BindRenderingEngine(material->GetRenderTiming(), material->GetPassType());
 		}

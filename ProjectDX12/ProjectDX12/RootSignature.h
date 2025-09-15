@@ -28,11 +28,13 @@ public:
 		ParameterTable*	pParam;
 		UINT			paramNum;
 		D3D12_TEXTURE_ADDRESS_MODE sample;
+		D3D12_FILTER filter;
 
 		DescriptionTable() :
 			pParam(nullptr),
 			paramNum(0),
-			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
+			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP),
+			filter(D3D12_FILTER_MIN_MAG_MIP_POINT)
 		{}
 	};
 	struct DescriptionTables
@@ -40,11 +42,13 @@ public:
 		ParameterTables*	pParam;
 		UINT				paramNum;
 		D3D12_TEXTURE_ADDRESS_MODE sample;
+		D3D12_FILTER filter;
 
 		DescriptionTables() :
 			pParam(nullptr),
 			paramNum(0),
-			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP)
+			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP),
+			filter(D3D12_FILTER_MIN_MAG_MIP_POINT)
 		{
 		}
 	};
@@ -54,7 +58,7 @@ public:
 	RootSignature(DescriptionTables desc);
 	~RootSignature();
 private:
-	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, UINT num);
+	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample,D3D12_FILTER filter ,UINT num);
 
 public:
 	ID3D12RootSignature* Get() 

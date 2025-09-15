@@ -74,8 +74,8 @@ void CameraDebug::Draw()
 {
 	ImGui::Begin("Camera");
 	{
-		ImGui::SliderFloat("Camera_MoveSpeed", &m_MoveSpeed, 0.01f, 1.0f);
-		ImGui::SliderFloat("Camera_MouseSpeed", &m_MouseSpeed, 0.01f, 2.0f);
+		ImGui::SliderFloat("Camera_MoveSpeed", &m_MoveSpeed, 0.0f, 5.0f);
+		ImGui::SliderFloat("Camera_MouseSpeed", &m_MouseSpeed, 0.0f, 5.0f);
 	}
 	ImGui::End();
 }
