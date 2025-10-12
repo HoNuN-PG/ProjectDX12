@@ -28,7 +28,6 @@ void M_Grid::Initialize(DescriptorHeap* heap)
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	rootsignature.filter = D3D12_FILTER_ANISOTROPIC;
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},

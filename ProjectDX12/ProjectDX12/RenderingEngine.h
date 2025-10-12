@@ -89,6 +89,8 @@ private:
 	std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
 
 	// ŠÂ‹«
+public:
+	std::shared_ptr<CameraBase> GetCamera() { return Camera; }
 private:
 	std::shared_ptr<CameraBase> Camera;
 	std::shared_ptr<LightBase> Light;

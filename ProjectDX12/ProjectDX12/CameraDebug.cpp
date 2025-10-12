@@ -68,6 +68,9 @@ void CameraDebug::Update()
 		(float)CAM_FAR);
 	proj = DirectX::XMMatrixTranspose(proj);
 	DirectX::XMStoreFloat4x4(&m_ProjMatrix, proj);
+
+	// ç¿ïWê›íË
+	SetPosition(m_Pos);
 }
 
 void CameraDebug::Draw()

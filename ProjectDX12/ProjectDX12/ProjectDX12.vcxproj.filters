@@ -145,6 +145,12 @@
     <Filter Include="リソース ファイル\Volume\Blur">
       <UniqueIdentifier>{1b4c8a7f-b891-4e31-8c7b-2b26c4a6610b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\System\Component">
+      <UniqueIdentifier>{4645607a-d2ea-498d-b639-3d54c8a9da13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\System\Component">
+      <UniqueIdentifier>{b41cab3f-d1fb-44b5-b7e7-8ce33e2d8f9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectX.cpp">
@@ -290,6 +296,9 @@
     </ClCompile>
     <ClCompile Include="DepthStencil.cpp">
       <Filter>ソース ファイル\System\Rendering\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="FollowActorComponent.cpp">
+      <Filter>ソース ファイル\System\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -454,6 +463,9 @@
     </ClInclude>
     <ClInclude Include="DepthStencil.h">
       <Filter>ヘッダー ファイル\System\Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowActorComponent.h">
+      <Filter>ヘッダー ファイル\System\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -23,6 +23,8 @@
 std::unique_ptr<SceneManager> gSceneManager;
 std::unique_ptr<DebugImGUI> gDebugImGUI;
 std::unique_ptr<TimerFPS> gTimer;
+std::unique_ptr<TimerFPS> gUpdateTimer;
+std::unique_ptr<TimerFPS> gDrawTimer;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
@@ -48,11 +50,10 @@ void Draw()
 
 	gSceneManager->Draw();
 
-	// FPS計測終了
-	gTimer->et = timeGetTime();
-	DWORD ms = gTimer->ObservationFPS(100);
+	// FPS出力
+	float fps = gTimer->GetObsevationGameFPS(100);
 	ImGui::Begin("GameFPS [ms]");
-	ImGui::Text("fps:%5.3f", 1000.0f / ms);
+	ImGui::Text("fps:%5.3f", fps);
 	ImGui::End();
 
 	ImGui::Render();
@@ -87,15 +88,24 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 
 	MSG msg = {};
 
+	//---------------------------------
 	// Init
 	srand((unsigned int)timeGetTime());
+
 	InitDirectX(hWnd,WINDOW_WIDTH,WINDOW_HEIGHT,false);
+
 	gTimer = std::make_unique<TimerFPS>();
+	gUpdateTimer = std::make_unique<TimerFPS>();
+	gDrawTimer = std::make_unique<TimerFPS>();
+
 	gDebugImGUI = std::make_unique<DebugImGUI>();
 	msg = gDebugImGUI->Create(hWnd);
+
 	gSceneManager = std::make_unique<SceneManager>();
 	gSceneManager->Init();
+
 	Input::Init();
+	//---------------------------------
 
 	timeBeginPeriod(1);
 
@@ -105,13 +115,19 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		else {
+		else if(gTimer->CheckGameFPS()){
 			Input::Update();
 
-			// FPS計測開始
-			gTimer->st = timeGetTime();
+			// FPS計測
+			gUpdateTimer->st = timeGetTime();
 			gSceneManager->Update();
+			gUpdateTimer->et = timeGetTime();
+			float upf = gUpdateTimer->GetObservationDbFPS(1);
+
+			gDrawTimer->st = timeGetTime();
 			DrawDirectX(Draw, clear);
+			gDrawTimer->et = timeGetTime();
+			float drf = gDrawTimer->GetObservationDbFPS(1);
 
 			gDebugImGUI->CompletedDraw();
 		}

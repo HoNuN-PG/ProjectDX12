@@ -12,6 +12,10 @@
 #include "sphere.h"
 #include "Model.h"
 
+#include "GameObject.h"
+#include "CameraBase.h"
+#include "FollowActorComponent.h"
+
 // マテリアル
 #include "M_Shadow.h"
 #include "M_DepthNormal.h"
@@ -80,11 +84,13 @@ HRESULT SceneSandBoxDX12::Init()
 	{// スカイボックス
 		std::vector<std::shared_ptr<Material>> materials;
 		materials.push_back(sky_box);
-
+	
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>(SceneBase::Layer::Environment);
 		obj->SetPosition({ 0,0,0 });
 		obj->SetRotation({ 0,0,0 });
 		obj->SetScale({ 100,100,100 });
+		std::shared_ptr<FollowActorComponent> cmp = obj->AddComponent<FollowActorComponent>(obj);
+		cmp->SetFollowActor(GetRenderingEngine()->GetCamera());
 		std::shared_ptr<Sphere> model = GameObject::AddComponent<Sphere>(obj);
 		model->Create(materials);
 	}
@@ -92,7 +98,7 @@ HRESULT SceneSandBoxDX12::Init()
 		std::vector<std::shared_ptr<Material>> materials;
 		materials.push_back(opaque_depth_normal);
 		materials.push_back(grid_shadow_vsm);
-
+	
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,-1,0 });
 		obj->SetRotation({ DirectX::XMConvertToRadians(90),0,0 });
@@ -107,7 +113,7 @@ HRESULT SceneSandBoxDX12::Init()
 		materials.push_back(opaque_depth_normal);
 		materials.push_back(custom_opaque_depth_normal);
 		materials.push_back(simple_lit);
-
+	
 		meshmaterials.push_back(materials);
 		meshmaterials.push_back(materials);
 		
