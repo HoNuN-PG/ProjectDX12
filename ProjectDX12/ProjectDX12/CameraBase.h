@@ -3,10 +3,12 @@
 
 #include <DirectXMath.h>
 #include <Windows.h>
+
 #include "MyMath.h"
 
-#include "DirectX.h"
 #include "GameObject.h"
+
+#include "DirectX.h"
 
 #define CAM_NEAR (0.01)
 #define CAM_FAR (1000)

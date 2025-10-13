@@ -1,8 +1,8 @@
 #ifndef ___TIMER_H___
 #define ___TIMER_H___
 
-#include <Windows.h>
 #include <list>
+#include <Windows.h>
 
 class TimerFPS
 {
@@ -19,8 +19,8 @@ private:
 public:
 	void SetGameFPS(DWORD fps) { fix = fps; };
 	float GetGameFPS() { return 1000.0f / fps; }
-	float GetObsevationGameFPS(int avg);
 	bool CheckGameFPS();
+	float GetObsevationGameFPS(int avg);
 
 public:
 	DWORD st;  // FPSŒv‘ªŠJŽn

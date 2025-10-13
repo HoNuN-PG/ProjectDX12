@@ -1,7 +1,7 @@
 
-#include "RenderingPass.h"
-
 #include "SceneManager.h"
+
+#include "RenderingPass.h"
 
 #include "RenderingEngine.h"
 

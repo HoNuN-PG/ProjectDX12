@@ -1,9 +1,9 @@
 #ifndef ___DEPTH_NORMAL_PASS_H___
 #define ___DEPTH_NORMAL_PASS_H___
 
-#include "renderingPass.h"
-
 #include <vector>
+
+#include "renderingPass.h"
 
 #include "RenderingEngine.h"
 

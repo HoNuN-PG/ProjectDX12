@@ -1,10 +1,10 @@
 #ifndef ___MODEL_H___
 #define ___MODEL_H___
 
-#include "RenderingComponent.h"
-
-#include <memory>
 #include <DirectXMath.h>
+#include <memory>
+
+#include "RenderingComponent.h"
 
 struct aiMesh;
 

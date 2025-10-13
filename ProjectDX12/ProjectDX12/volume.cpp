@@ -1,8 +1,8 @@
 
 #include "volume.h"
 
-#include "RenderingEngine.h"
 #include "GlobalResourceKey.h"
+#include "RenderingEngine.h"
 
 std::unique_ptr<MeshBuffer>	Volume::Screen;
 

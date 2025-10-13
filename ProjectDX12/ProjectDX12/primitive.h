@@ -1,9 +1,9 @@
 #ifndef ___PRIMITIVE_H___
 #define ___PRIMITIVE_H___
 
-#include "RenderingComponent.h"
-
 #include <memory>
+
+#include "RenderingComponent.h"
 
 class Primitive : public RenderingComponent
 {

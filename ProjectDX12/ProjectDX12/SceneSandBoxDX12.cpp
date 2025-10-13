@@ -1,20 +1,7 @@
 
-
-#include "SceneSandBoxDX12.h"
-
-#include "GlobalResourceKey.h"
-#include "RootSignature.h"
-#include "Pipeline.h"
-#include "ConstantBuffer.h"
-#include "ConstantWVP.h"
-
-#include "plane.h"
-#include "sphere.h"
-#include "Model.h"
-
-#include "GameObject.h"
-#include "CameraBase.h"
 #include "FollowActorComponent.h"
+
+#include "CameraBase.h"
 
 // マテリアル
 #include "M_Shadow.h"
@@ -25,11 +12,27 @@
 #include "M_Grid.h"
 #include "M_SkyBox.h"
 
-// ポストプロセス
-#include "vignette.h"
+#include "Model.h"
+#include "plane.h"
+#include "sphere.h"
+
+#include "SceneSandBoxDX12.h"
+
+#include "GameObject.h"
+
+#include "ConstantBuffer.h"
+#include "ConstantWVP.h"
+
+#include "Pipeline.h"
+#include "RootSignature.h"
 
 // パス
 #include "CustomDepthNormalPass.h"
+
+// ポストプロセス
+#include "vignette.h"
+
+#include "GlobalResourceKey.h"
 
 HRESULT SceneSandBoxDX12::Init()
 {

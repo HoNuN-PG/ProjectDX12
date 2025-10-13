@@ -1,12 +1,12 @@
 #ifndef __SCENE_SAND_BOX_DX12_H__
 #define __SCENE_SAND_BOX_DX12_H__
 
-#include "SceneBase.h"
-
-#include <vector>
 #include <memory>
+#include <vector>
 
 #include "Material.h"
+
+#include "SceneBase.h"
 
 class SceneSandBoxDX12 : public SceneBase
 {

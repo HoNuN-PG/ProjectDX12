@@ -2,12 +2,13 @@
 #include "M_Shadow.h"
 
 #include "SceneManager.h"
+
 #include "GameObject.h"
 
-#include "RenderingEngine.h"
-#include "GlobalResourceKey.h"
-
 #include "ShadowPass.h"
+
+#include "GlobalResourceKey.h"
+#include "RenderingEngine.h"
 
 UINT M_ShadowMapsBase::CurrentShadowMapsNo = 0;
 

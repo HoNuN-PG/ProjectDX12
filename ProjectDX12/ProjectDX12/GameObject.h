@@ -1,10 +1,10 @@
 #ifndef ___GAMEOBJECT_H___
 #define ___GAMEOBJECT_H___
 
-#include <vector>
+#include <DirectXMath.h>
 #include <list>
 #include <memory>
-#include <DirectXMath.h>
+#include <vector>
 #include <Windows.h>
 
 #include "Component.h"

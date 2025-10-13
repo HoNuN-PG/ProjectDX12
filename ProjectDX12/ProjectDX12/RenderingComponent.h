@@ -1,14 +1,14 @@
 #ifndef ___RENDERING_COMPONENT_H___
 #define ___RENDERING_COMPONENT_H___
 
-#include "Component.h"
-
 #include <memory>
 #include <vector>
 
+#include "Material.h"
+
 #include "MeshBuffer.h"
 
-#include "Material.h"
+#include "Component.h"
 
 class RenderingComponent : public Component
 {

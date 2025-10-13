@@ -1,7 +1,7 @@
 
-#include "DepthNormalPass.h"
-
 #include "GameObject.h"
+
+#include "DepthNormalPass.h"
 
 #include "GlobalResourceKey.h"
 

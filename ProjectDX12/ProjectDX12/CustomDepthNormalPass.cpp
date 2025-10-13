@@ -1,7 +1,7 @@
 
-#include "CustomDepthNormalPass.h"
-
 #include "GameObject.h"
+
+#include "CustomDepthNormalPass.h"
 
 #include "RenderTarget.h"
 

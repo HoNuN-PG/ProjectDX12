@@ -1,12 +1,12 @@
 #ifndef ___SCENE_BACE_H___
 #define ___SCENE_BACE_H___
 
-#include <Windows.h>
-#include <vector>
-#include <list>
 #include <array>
+#include <list>
 #include <memory>
 #include <unordered_map>
+#include <vector>
+#include <Windows.h>
 
 #include "GameObject.h"
 

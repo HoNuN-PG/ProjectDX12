@@ -1,8 +1,9 @@
 
-#include "Copy.h"
-
 #include "DescriptorHeap.h"
+
 #include "RenderTarget.h"
+
+#include "Copy.h"
 
 std::unique_ptr<Copy> Copy::Instance;
 

@@ -1,11 +1,10 @@
 
 #include "CameraBase.h"
 
-#include "Input.h"
+#include "imgui/imgui.h"
 
 #include "DirectX.h"
-
-#include "imgui/imgui.h"
+#include "Input.h"
 
 CameraDebug::CameraDebug()
 {

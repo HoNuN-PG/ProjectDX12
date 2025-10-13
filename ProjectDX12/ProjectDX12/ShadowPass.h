@@ -1,17 +1,19 @@
 #ifndef ___SHADOW_PASS_H___
 #define ___SHADOW_PASS_H___
 
+#include <memory>
+#include <vector>
+
+#include "M_Shadow.h"
+
 #include "renderingPass.h"
 
-#include <vector>
-#include <memory>
-
-#include "RenderingEngine.h"
 #include "DescriptorHeap.h"
+
 #include "DepthStencil.h"
 #include "RenderTarget.h"
 
-#include "M_Shadow.h"
+#include "RenderingEngine.h"
 
 class CameraBase;
 

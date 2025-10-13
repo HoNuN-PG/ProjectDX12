@@ -7,18 +7,6 @@ TimerFPS::TimerFPS():
 {
 }
 
-float TimerFPS::GetObsevationGameFPS(int avg)
-{
-	fpsList.push_back(fps);
-	if (fpsList.size() > avg)
-		fpsList.pop_front();
-	DWORD ms = 0;
-	for (std::list<DWORD>::iterator it = fpsList.begin(); it != fpsList.end(); ++it)
-		ms += *it;
-	ms /= fpsList.size();
-	return 1000.0f / ms;
-}
-
 bool TimerFPS::CheckGameFPS()
 {
 	current = timeGetTime();
@@ -30,6 +18,18 @@ bool TimerFPS::CheckGameFPS()
 		return true;
 	}
 	return false;
+}
+
+float TimerFPS::GetObsevationGameFPS(int avg)
+{
+	fpsList.push_back(fps);
+	if (fpsList.size() > avg)
+		fpsList.pop_front();
+	DWORD ms = 0;
+	for (std::list<DWORD>::iterator it = fpsList.begin(); it != fpsList.end(); ++it)
+		ms += *it;
+	ms /= fpsList.size();
+	return 1000.0f / ms;
 }
 
 float TimerFPS::GetObservationDbFPS(int avg)

@@ -1,8 +1,8 @@
 
-#include "Pipeline.h"
-
 #include <d3dcompiler.h>
 #include <vector>
+
+#include "Pipeline.h"
 
 Pipeline::Pipeline(Description desc)
 {

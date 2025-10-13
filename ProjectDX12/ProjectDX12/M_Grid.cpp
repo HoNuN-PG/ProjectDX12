@@ -2,12 +2,13 @@
 #include "M_Grid.h"
 
 #include "SceneManager.h"
-#include "GlobalResourceKey.h"
-#include "RenderingEngine.h"
 
 #include "GameObject.h"
 
 #include "ShadowPass.h"
+
+#include "GlobalResourceKey.h"
+#include "RenderingEngine.h"
 
 void M_Grid::Initialize(DescriptorHeap* heap)
 {

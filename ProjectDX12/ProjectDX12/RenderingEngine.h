@@ -1,20 +1,22 @@
 #ifndef ___RENDERING_ENGINE_H___
 #define ___RENDERING_ENGINE_H___
 
-#include <vector>
 #include <list>
 #include <memory>
 #include <unordered_map>
-
-#include "DescriptorHeap.h"
-#include "DepthStencil.h"
-#include "RenderTarget.h"
-#include "ConstantBuffer.h"
+#include <vector>
 
 #include "Material.h"
 #include "M_Shadow.h"
 
+#include "ConstantBuffer.h"
+
 #include "RenderingPass.h"
+
+#include "DescriptorHeap.h"
+
+#include "DepthStencil.h"
+#include "RenderTarget.h"
 
 #include "PostProcess.h"
 

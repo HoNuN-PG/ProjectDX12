@@ -1,9 +1,9 @@
 #ifndef __SCENE_MANAGER_H__
 #define __SCENE_MANAGER_H__
 
-#include <Windows.h>
-#include <vector>
 #include <memory>
+#include <vector>
+#include <Windows.h>
 
 #include "SceneBase.h"
 

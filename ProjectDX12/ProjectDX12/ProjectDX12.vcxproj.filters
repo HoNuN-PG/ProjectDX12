@@ -148,8 +148,11 @@
     <Filter Include="ヘッダー ファイル\System\Component">
       <UniqueIdentifier>{4645607a-d2ea-498d-b639-3d54c8a9da13}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\System\Component">
+    <Filter Include="ソース ファイル\Component">
       <UniqueIdentifier>{b41cab3f-d1fb-44b5-b7e7-8ce33e2d8f9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Component">
+      <UniqueIdentifier>{d7c46927-32bb-4771-809f-9993753d374c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -298,7 +301,7 @@
       <Filter>ソース ファイル\System\Rendering\Texture</Filter>
     </ClCompile>
     <ClCompile Include="FollowActorComponent.cpp">
-      <Filter>ソース ファイル\System\Component</Filter>
+      <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -389,9 +392,6 @@
     <ClInclude Include="RenderingEngine.h">
       <Filter>ヘッダー ファイル\System\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>ヘッダー ファイル\System\GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>ヘッダー ファイル\System\GameObject</Filter>
     </ClInclude>
@@ -464,8 +464,11 @@
     <ClInclude Include="DepthStencil.h">
       <Filter>ヘッダー ファイル\System\Rendering\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="FollowActorComponent.h">
+    <ClInclude Include="Component.h">
       <Filter>ヘッダー ファイル\System\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowActorComponent.h">
+      <Filter>ヘッダー ファイル\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,15 +1,17 @@
 #ifndef ___CUSTOM_DEPTH_PASS_H___
 #define ___CUSTOM_DEPTH_PASS_H___
 
+#include <memory>
+#include <vector>
+
 #include "renderingPass.h"
 
-#include <vector>
-#include <memory>
-
-#include "RenderingEngine.h"
 #include "DescriptorHeap.h"
+
 #include "DepthStencil.h"
 #include "RenderTarget.h"
+
+#include "RenderingEngine.h"
 
 class CustomDepthNormalPass : public RenderingPass
 {

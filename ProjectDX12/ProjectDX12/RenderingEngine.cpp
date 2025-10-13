@@ -1,25 +1,28 @@
 
-#include "RenderingEngine.h"
-
-#include "DebugImGUI.h"
-
-#include "GlobalResourceKey.h"
-#include "ConstantWVP.h"
-
-#include "DirectX.h"
-#include "SceneManager.h"
-#include "SceneBase.h"
-#include "GameObject.h"
 #include "CameraBase.h"
 #include "LightBase.h"
 
-#include "ShadowPass.h"
-#include "DepthNormalPass.h"
-#include "CustomDepthNormalPass.h"
+#include "DebugImGUI.h"
 
-#include "volume.h"
-#include "Copy.h"
+#include "ConstantWVP.h"
+
+#include "GameObject.h"
+
+#include "SceneBase.h"
+#include "SceneManager.h"
+
+#include "CustomDepthNormalPass.h"
+#include "DepthNormalPass.h"
+#include "ShadowPass.h"
+
 #include "Blur.h"
+#include "Copy.h"
+#include "volume.h"
+
+#include "GlobalResourceKey.h"
+#include "RenderingEngine.h"
+
+#include "DirectX.h"
 
 void RenderingEngine::Init()
 {

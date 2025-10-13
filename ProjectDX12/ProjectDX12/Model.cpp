@@ -1,17 +1,20 @@
 
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#pragma comment(lib, "assimp-vc141-mtd.lib")
+
 #include "Model.h"
 
-#include "StartUp.h"
 #include "SceneManager.h"
+
+#include "ConstantWVP.h"
+
 #include "GameObject.h"
 
 #include "RenderingEngine.h"
-#include "ConstantWVP.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#pragma comment(lib, "assimp-vc141-mtd.lib")
+#include "StartUp.h"
 
 void Model::Create(std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials, const char* path)
 {

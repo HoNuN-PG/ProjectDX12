@@ -2,23 +2,21 @@
 // ウィンドウの作成
 // https://qiita.com/okmonn/items/94ea48e0fdcb2c74dbbf
 
-#include "StartUp.h"
-
-#include <Windows.h>
 #include <tchar.h>
-#include "Input.h"
-#include "timer.h"
-
-#include "DebugImGUI.h"
+#include <Windows.h>
+#pragma comment(lib,"winmm.lib")
 
 #include "SceneManager.h"
-#include "DirectX.h"
 
+#include "DebugImGUI.h"
 #include "imgui/imgui.h"
-#include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx12.h"
+#include "imgui/imgui_impl_win32.h"
 
-#pragma comment(lib,"winmm.lib")
+#include "DirectX.h"
+#include "Input.h"
+#include "StartUp.h"
+#include "timer.h"
 
 std::unique_ptr<SceneManager> gSceneManager;
 std::unique_ptr<DebugImGUI> gDebugImGUI;

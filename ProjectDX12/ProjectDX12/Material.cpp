@@ -71,7 +71,6 @@ void Material::AddMaterialInstance()
 	MaterialInstanceCount++;
 	ConstantBuffer::Description desc = {};
 	desc.pHeap = Heap;
-	// WVP
 	desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
 	WVP.push_back(std::make_unique<ConstantBuffer>(desc));
 }

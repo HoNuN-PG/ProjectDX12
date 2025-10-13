@@ -2,10 +2,12 @@
 #include "primitive.h"
 
 #include "SceneManager.h"
+
 #include "GameObject.h"
 
-#include "RenderingEngine.h"
 #include "ConstantWVP.h"
+
+#include "RenderingEngine.h"
 
 void Primitive::Draw()
 {

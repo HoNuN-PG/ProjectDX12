@@ -1,7 +1,7 @@
 
-#include "sphere.h"
-
 #include <DirectXMath.h>
+
+#include "sphere.h"
 
 void Sphere::Create(std::vector<std::shared_ptr<Material>> materials)
 {

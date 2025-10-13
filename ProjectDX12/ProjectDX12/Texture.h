@@ -1,11 +1,11 @@
 #ifndef ___TEXTURE_H___
 #define ___TEXTURE_H___
 
-#include "DescriptorHeap.h"
-
-#include <TextureLoad.h>
 #include <DirectXTex.h>
+#include <TextureLoad.h>
 #pragma comment(lib, "DirectXTex.lib")
+
+#include "DescriptorHeap.h"
 
 class Texture
 {

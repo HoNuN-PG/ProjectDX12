@@ -1,13 +1,11 @@
 
-#include "DebugImGUI.h"
-
 #include <tchar.h>
 
-#include "imgui/imgui_impl_win32.h"
+#include "DebugImGUI.h"
 #include "imgui/imgui_impl_dx12.h"
+#include "imgui/imgui_impl_win32.h"
 
 #include "ConstantBuffer.h"
-
 #include "ConstantWVP.h"
 
 std::unique_ptr<MeshBuffer>									DebugImGUI::Screen;

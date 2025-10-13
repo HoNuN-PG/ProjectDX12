@@ -3,8 +3,8 @@
 
 #include "SceneManager.h"
 
-#include "RenderingEngine.h"
 #include "GlobalResourceKey.h"
+#include "RenderingEngine.h"
 
 void M_SimpleLit::Initialize(DescriptorHeap* heap)
 {

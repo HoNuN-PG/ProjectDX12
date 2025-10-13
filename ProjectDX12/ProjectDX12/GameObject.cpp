@@ -1,8 +1,9 @@
 
 #include "GameObject.h"
 
-#include "SceneManager.h"
 #include "SceneBase.h"
+#include "SceneManager.h"
+
 #include "RenderingComponent.h"
 
 #include "RenderingEngine.h"
