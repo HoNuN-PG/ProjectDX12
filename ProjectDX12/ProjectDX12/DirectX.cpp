@@ -24,17 +24,59 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	}
 #endif
 
+	HRESULT hr;
+#ifdef _DEBUG
+	hr = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&g_pFactory));
+#else
+	hr = CreateDXGIFactory1(IID_PPV_ARGS(&g_pFactory));
+#endif
+	if (FAILED(hr)) { return hr; }
+
+#if 1
+	Microsoft::WRL::ComPtr<IDXGIAdapter1> dxgiAdapter = nullptr;	//デバイス取得用
+	int adapterIndex = 0;											//列挙するデバイスのインデックス
+	bool adapterFound = false;										//目的のデバイスを見つけたか
+
+	// 目的のデバイスを探索
+	while (g_pFactory->EnumAdapters1(adapterIndex, &dxgiAdapter) != DXGI_ERROR_NOT_FOUND) 
+	{
+		DXGI_ADAPTER_DESC1 desc;
+		dxgiAdapter->GetDesc1(&desc);  // デバイスの情報を取得
+
+		// ハードウェアのみ選ぶ
+		if (!(desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)) 
+		{
+			D3D_FEATURE_LEVEL featureLevels[] = 
+			{
+				D3D_FEATURE_LEVEL_12_1,
+				D3D_FEATURE_LEVEL_12_0,
+				D3D_FEATURE_LEVEL_11_0,
+			};
+			bool succeeded = false;
+			for (auto lv : featureLevels) 
+			{
+				hr = D3D12CreateDevice(dxgiAdapter.Get(),lv, IID_PPV_ARGS(&g_pDevice));
+				if (SUCCEEDED(hr)) 
+				{ 
+					succeeded = true;
+					break; 
+				}
+			}
+		}
+		++adapterIndex;
+	}
+#else
 	D3D_FEATURE_LEVEL featureLevels[] = {
 		D3D_FEATURE_LEVEL_12_1,
 		D3D_FEATURE_LEVEL_12_0,
 	};
 	// ハードウェアの機能レベルを指定してデバイス初期化
-	HRESULT hr;
 	for (auto lv : featureLevels) {
 		hr = D3D12CreateDevice(nullptr,lv,IID_PPV_ARGS(&g_pDevice));
 		if (SUCCEEDED(hr)) { break; }
 	}
 	if (FAILED(hr)) { return hr; }
+#endif
 
 	// コマンドリスト/コマンドキュー/コマンドアロケーター
 	// コマンドの種類
@@ -53,13 +95,6 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	cmdQueueDesc.Flags		= D3D12_COMMAND_QUEUE_FLAG_NONE;		// GPUのタイムアウト有効
 	cmdQueueDesc.NodeMask	= 0;									// 複数のGPUの場合に、適用するGPUを識別するビット
 	hr = g_pDevice->CreateCommandQueue(&cmdQueueDesc,IID_PPV_ARGS(&g_pCmdQueue));
-	if (FAILED(hr)) { return hr; }
-
-#ifdef _DEBUG
-	hr = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG,IID_PPV_ARGS(&g_pFactory));
-#else
-	hr = CreateDXGIFactory1(IID_PPV_ARGS(&g_pFactory));
-#endif
 	if (FAILED(hr)) { return hr; }
 
 	// スワップチェーン
