@@ -15,6 +15,7 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap)
 	RootSignature::DescriptionTable rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
+
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
@@ -23,10 +24,10 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap)
 	};
 	Pipeline::Description pipeline;
 	pipeline.cull = D3D12_CULL_MODE_BACK;
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.VSFile = L"assets/shader/VS_DepthNormal.cso";
 	pipeline.PSFile = L"assets/shader/PS_DepthNormal.cso";
+	pipeline.pInputLayout = layout;
+	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 2;
 
 	Material::SetUp

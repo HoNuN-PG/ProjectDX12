@@ -52,25 +52,31 @@ protected:
 		RootSignature::DescriptionTable rootsignature,Pipeline::Description pipeline,
 		UINT rtvNum = 0
 	);
-	// マテリアル設定
-	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
 
 public:
-	void SetOwner(std::weak_ptr<class GameObject> owner) { Owner = owner; }
-	/// <summary>
-	/// マテリアルインスタンスの追加
-	/// </summary>
-	void AddMaterialInstance();
 	/// <summary>
 	/// マテリアル個別設定
 	/// 設定後MaterialInstanceIdxが更新される
 	/// </summary>
 	virtual void Bind() = 0;
+protected:
+	// マテリアル全体設定
+	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
+
+public:
+	// オーナー設定
+	void SetOwner(std::weak_ptr<class GameObject> owner) { Owner = owner; }
+
+	/// <summary>
+	/// マテリアルインスタンスの追加
+	/// </summary>
+	void AddMaterialInstance();
 	/// <summary>
 	/// テクスチャ追加
 	/// </summary>
 	/// <param name="path"></param>
 	void AddTexture(const char* path);
+
 	/// <summary>
 	/// MaterialInstanceIdxにWVPを書き込み
 	/// WVPの書き込み直後にBindすることでMaterialInstanceIdxに書き込まれたWVPで設定を行う

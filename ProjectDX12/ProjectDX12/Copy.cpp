@@ -51,7 +51,7 @@ void Copy::Load()
 		RootSignature::DescriptionTable desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
-		desc.filter = D3D12_FILTER_ANISOTROPIC;
+		desc.filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 		Instance->RootSignatureData = std::make_unique<RootSignature>(desc);
 	}
 	// パイプライン
@@ -62,10 +62,10 @@ void Copy::Load()
 		};
 		Pipeline::Description desc = {};
 		desc.cull = D3D12_CULL_MODE_BACK;
-		desc.pInputLayout = layout;
-		desc.InputLayoutNum = _countof(layout);
 		desc.VSFile = L"assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"assets/shader/PS_Copy.cso";
+		desc.pInputLayout = layout;
+		desc.InputLayoutNum = _countof(layout);
 		desc.pRootSignature = Instance->RootSignatureData->Get();
 		desc.RenderTargetNum = 1;
 		Instance->PipelineData = std::make_unique<Pipeline>(desc);

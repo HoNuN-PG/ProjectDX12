@@ -154,6 +154,7 @@ void Gauss::ExecuteScreenGauss2(int& gaussIdx, DirectX::XMFLOAT2 screen,
 		}
 	}
 
+	//-------------------------------------------------------------------------------
 	// ビューポート設定
 	UINT xIdx = GaussRTVType::XBlur + (gaussIdx * GaussRTVType::RTV_MAX);
 	SetViewPort(Instance->GaussRTVs[xIdx]->Width, Instance->GaussRTVs[xIdx]->Height);
@@ -186,6 +187,7 @@ void Gauss::ExecuteScreenGauss2(int& gaussIdx, DirectX::XMFLOAT2 screen,
 	Instance->Screen->Draw();
 	Instance->GaussRTVs[xIdx]->RTV2SRV();
 
+	//-------------------------------------------------------------------------------
 	// ビューポート設定
 	UINT yIdx = GaussRTVType::YBlur + (gaussIdx * GaussRTVType::RTV_MAX);
 	SetViewPort(Instance->GaussRTVs[yIdx]->Width, Instance->GaussRTVs[yIdx]->Height);
@@ -216,6 +218,7 @@ void Gauss::ExecuteScreenGauss2(int& gaussIdx, DirectX::XMFLOAT2 screen,
 	Instance->Screen->Draw();
 	Instance->GaussRTVs[yIdx]->RTV2SRV();
 
+	//-------------------------------------------------------------------------------
 	// コピー
 	Copy::ExecuteCopy(Instance->Heap.get(),
 		Instance->GaussRTVs[yIdx]->GetHandleSRV().hGPU, dest);

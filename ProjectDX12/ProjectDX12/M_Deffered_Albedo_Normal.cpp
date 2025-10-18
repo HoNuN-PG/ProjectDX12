@@ -9,6 +9,7 @@ void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap)
 		desc.pHeap = heap;
 	}
 
+	// ルートシグネチャ
 	RootSignature::ParameterTable param[] = {
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
@@ -16,6 +17,8 @@ void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap)
 	RootSignature::DescriptionTable rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
+
+	// パイプライン
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
@@ -24,10 +27,10 @@ void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap)
 	};
 	Pipeline::Description pipeline;
 	pipeline.cull = D3D12_CULL_MODE_BACK;
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.VSFile = L"assets/shader/VS_Object.cso";
 	pipeline.PSFile = L"assets/shader/PS_Deffered.cso";
+	pipeline.pInputLayout = layout;
+	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 2;
 
 	Material::SetUp

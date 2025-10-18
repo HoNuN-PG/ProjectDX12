@@ -34,10 +34,10 @@ void Vignette::Init()
 		};
 		Pipeline::Description desc = {};
 		desc.cull = D3D12_CULL_MODE_BACK;
-		desc.pInputLayout = layout;
-		desc.InputLayoutNum = _countof(layout);
 		desc.VSFile = L"assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"assets/shader/PS_Vignette.cso";
+		desc.pInputLayout = layout;
+		desc.InputLayoutNum = _countof(layout);
 		desc.pRootSignature = RootSignatureData->Get();
 		desc.RenderTargetNum = 1;
 		PipelineData.push_back(std::make_unique<Pipeline>(desc));

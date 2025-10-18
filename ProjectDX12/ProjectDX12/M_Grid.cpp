@@ -16,7 +16,6 @@ void M_Grid::Initialize(DescriptorHeap* heap)
 	{
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = heap;
-		// Params
 		desc.size = sizeof(Grid::GridParam);
 		Params.push_back(std::make_unique<ConstantBuffer>(desc));
 	}
@@ -29,6 +28,7 @@ void M_Grid::Initialize(DescriptorHeap* heap)
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
@@ -37,10 +37,10 @@ void M_Grid::Initialize(DescriptorHeap* heap)
 	};
 	Pipeline::Description pipeline;
 	pipeline.cull = D3D12_CULL_MODE_BACK;
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.VSFile = L"assets/shader/VS_WorldObject.cso";
 	pipeline.PSFile = L"assets/shader/PS_Grid.cso";
+	pipeline.pInputLayout = layout;
+	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
 
 	Material::SetUp
@@ -93,6 +93,7 @@ void M_GridShadow::Initialize(DescriptorHeap* heap)
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
@@ -101,10 +102,10 @@ void M_GridShadow::Initialize(DescriptorHeap* heap)
 	};
 	Pipeline::Description pipeline;
 	pipeline.cull = D3D12_CULL_MODE_BACK;
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.VSFile = L"assets/shader/VS_ShadowReciever.cso";
 	pipeline.PSFile = L"assets/shader/PS_GridShadow.cso";
+	pipeline.pInputLayout = layout;
+	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
 
 	Material::SetUp
@@ -170,7 +171,8 @@ void M_GridShadowVSM::Initialize(DescriptorHeap* heap)
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	rootsignature.filter = D3D12_FILTER_ANISOTROPIC;
+	rootsignature.filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
@@ -179,10 +181,10 @@ void M_GridShadowVSM::Initialize(DescriptorHeap* heap)
 	};
 	Pipeline::Description pipeline;
 	pipeline.cull = D3D12_CULL_MODE_BACK;
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.VSFile = L"assets/shader/VS_ShadowReciever.cso";
 	pipeline.PSFile = L"assets/shader/PS_GridShadowVSM.cso";
+	pipeline.pInputLayout = layout;
+	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
 
 	Material::SetUp

@@ -50,7 +50,6 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 			{
 				D3D_FEATURE_LEVEL_12_1,
 				D3D_FEATURE_LEVEL_12_0,
-				D3D_FEATURE_LEVEL_11_0,
 			};
 			bool succeeded = false;
 			for (auto lv : featureLevels) 

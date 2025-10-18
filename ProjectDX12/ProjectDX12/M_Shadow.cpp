@@ -36,6 +36,7 @@ void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap)
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
@@ -44,10 +45,10 @@ void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap)
 	};
 	Pipeline::Description pipeline;
 	pipeline.cull = D3D12_CULL_MODE_BACK;
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.VSFile = L"assets/shader/VS_ShadowMap.cso";
 	pipeline.PSFile = L"assets/shader/PS_SimpleShadowMap.cso";
+	pipeline.pInputLayout = layout;
+	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
 
 	Material::SetUp
