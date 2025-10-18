@@ -86,6 +86,7 @@ private:
 public:
 	Gauss() {};
 	~Gauss() {};
+
 	/// <summary>
 	/// ガウスの実行
 	/// </summary>
@@ -93,9 +94,15 @@ public:
 	/// <param name="screen">テクスチャサイズ</param>
 	/// <param name="src"></param>
 	/// <param name="dest"></param>
+	static void ExecuteScreenGauss(int& gaussIdx,DirectX::XMFLOAT2 screen,
+	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	static void ExecuteScreenGauss2(int& gaussIdx,DirectX::XMFLOAT2 screen,
 		std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	static void CalcWeights(std::weak_ptr<float[]> weights, float blur);
+
+private:
+	void ExecuteScreenGauss(int& gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	void MakeGaussData(int& gaussIdx, DirectX::XMFLOAT2 screen ,int split);
 
 private:
 	std::shared_ptr<DescriptorHeap>								Heap;

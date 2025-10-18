@@ -109,51 +109,42 @@ void Gauss::Destroy()
 	}
 }
 
-void Gauss::ExecuteScreenGauss2(int& gaussIdx, DirectX::XMFLOAT2 screen, 
+void Gauss::ExecuteScreenGauss(int& gaussIdx, DirectX::XMFLOAT2 screen, 
 	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest)
 {
-	static const int split = 2;
+	Instance->MakeGaussData(gaussIdx, screen, 1);
+	Instance->ExecuteScreenGauss(gaussIdx, src, dest);
+}
 
-	// GaussRTVs
-	if (gaussIdx < 0)
+void Gauss::ExecuteScreenGauss2(int& gaussIdx, DirectX::XMFLOAT2 screen,
+	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest)
+{
+ 	Instance->MakeGaussData(gaussIdx,screen,2);
+	Instance->ExecuteScreenGauss(gaussIdx,src,dest);
+}
+
+void Gauss::CalcWeights(std::weak_ptr<float[]> weights, float blur)
+{
+	// 重みの合計
+	float total = 0;
+
+	// ここからガウス関数を用いて重みを計算している
+	// ループ変数のxが基準テクセルからの距離
+	for (int x = 0; x < BlurParam::GAUSS_WEIGHTS; x++)
 	{
-		// Idx計算
-		gaussIdx = Instance->GaussRTVs.size() / 3;
-		// RTV
-		{
-			RenderTarget::Description desc = {};
-			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-			desc.pRTVHeap = Instance->RTVHeap.get();
-			desc.pSRVHeap = Instance->Heap.get();
-
-			desc.width = screen.x;
-			desc.height = screen.y;
-			Instance->GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
-
-			desc.width = screen.x / split;
-			desc.height = screen.y;
-			Instance->GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
-
-			desc.width = screen.x / split;
-			desc.height = screen.y / split;
-			Instance->GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
-		}
-		// ConstantBuffer
-		{
-			ConstantBuffer::Description desc = {};
-			desc.pHeap = Instance->Heap.get();
-			desc.size = sizeof(BlurParam::ScreenParam);
-			Instance->Params.push_back(std::make_unique<ConstantBuffer>(desc));
-			Instance->Params.push_back(std::make_unique<ConstantBuffer>(desc));
-
-			// スクリーンサイズ
-			BlurParam::ScreenParam p1(screen.x, screen.y / split,1);
-			BlurParam::ScreenParam p2(screen.x / split, screen.y / split,1);
-			Instance->Params[gaussIdx * 2]->Write(&p1);
-			Instance->Params[gaussIdx * 2 + 1]->Write(&p2);
-		}
+		weights.lock()[x] = expf((float)(-x * x) / (2 * blur * blur));
+		total += 2.0f * weights.lock()[x];
 	}
 
+	// 重みの合計で除算することで、重みの合計を1にしている
+	for (int i = 0; i < BlurParam::GAUSS_WEIGHTS; i++)
+	{
+		weights.lock()[i] /= total;
+	}
+}
+
+void Gauss::ExecuteScreenGauss(int& gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest)
+{
 	//-------------------------------------------------------------------------------
 	// ビューポート設定
 	UINT xIdx = GaussRTVType::XBlur + (gaussIdx * GaussRTVType::RTV_MAX);
@@ -224,22 +215,43 @@ void Gauss::ExecuteScreenGauss2(int& gaussIdx, DirectX::XMFLOAT2 screen,
 		Instance->GaussRTVs[yIdx]->GetHandleSRV().hGPU, dest);
 }
 
-void Gauss::CalcWeights(std::weak_ptr<float[]> weights, float blur)
+void Gauss::MakeGaussData(int& gaussIdx, DirectX::XMFLOAT2 screen, int split)
 {
-	// 重みの合計
-	float total = 0;
+	if (gaussIdx >= 0) return;
 
-	// ここからガウス関数を用いて重みを計算している
-	// ループ変数のxが基準テクセルからの距離
-	for (int x = 0; x < BlurParam::GAUSS_WEIGHTS; x++)
+	// Idx計算
+	gaussIdx = Instance->GaussRTVs.size() / 3;
+	// RTV
 	{
-		weights.lock()[x] = expf((float)(-x * x) / (2 * blur * blur));
-		total += 2.0f * weights.lock()[x];
+		RenderTarget::Description desc = {};
+		desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		desc.pRTVHeap = Instance->RTVHeap.get();
+		desc.pSRVHeap = Instance->Heap.get();
+
+		desc.width = screen.x;
+		desc.height = screen.y;
+		Instance->GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
+
+		desc.width = screen.x / split;
+		desc.height = screen.y;
+		Instance->GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
+
+		desc.width = screen.x / split;
+		desc.height = screen.y / split;
+		Instance->GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
 	}
-
-	// 重みの合計で除算することで、重みの合計を1にしている
-	for (int i = 0; i < BlurParam::GAUSS_WEIGHTS; i++)
+	// ConstantBuffer
 	{
-		weights.lock()[i] /= total;
+		ConstantBuffer::Description desc = {};
+		desc.pHeap = Instance->Heap.get();
+		desc.size = sizeof(BlurParam::ScreenParam);
+		Instance->Params.push_back(std::make_unique<ConstantBuffer>(desc));
+		Instance->Params.push_back(std::make_unique<ConstantBuffer>(desc));
+
+		// スクリーンサイズ
+		BlurParam::ScreenParam p1(screen.x, screen.y / split, 1);
+		BlurParam::ScreenParam p2(screen.x / split, screen.y / split, 1);
+		Instance->Params[gaussIdx * 2]->Write(&p1);
+		Instance->Params[gaussIdx * 2 + 1]->Write(&p2);
 	}
 }

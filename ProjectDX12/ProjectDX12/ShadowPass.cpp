@@ -31,11 +31,11 @@ ShadowPass::ShadowPass()
 	}
 
 	ShadowMapsSize[TextureType::Near] = { 4096,4096 };
-	ShadowMapsSize[TextureType::Middle] = { 1024 ,1024 };
-	ShadowMapsSize[TextureType::Far] = {512,512};
+	ShadowMapsSize[TextureType::Middle] = {2048 ,2048 };
+	ShadowMapsSize[TextureType::Far] = {1024,1024};
 	VSMShadowMapsSize[TextureType::Near] = { 4096,4096 };
-	VSMShadowMapsSize[TextureType::Middle] = { 1024 ,1024 };
-	VSMShadowMapsSize[TextureType::Far] = { 512,512 };
+	VSMShadowMapsSize[TextureType::Middle] = { 2048 ,2048 };
+	VSMShadowMapsSize[TextureType::Far] = { 1024,1024 };
 	ShadowMapsFormat = DXGI_FORMAT_R16G16_FLOAT;
 }
 
@@ -105,9 +105,9 @@ void ShadowPass::Execute()
 	// ‚Ú‚©‚µ
 	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Near],{ VSMShadowMaps[TextureType::Near]->Width,VSMShadowMaps[TextureType::Near]->Height },
 		ShadowMaps[TextureType::Near], VSMShadowMaps[TextureType::Near]);
-	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Middle], { VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height },
+	Gauss::ExecuteScreenGauss(GaussIdx[TextureType::Middle], { VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height },
 		ShadowMaps[TextureType::Middle], VSMShadowMaps[TextureType::Middle]);
-	Gauss::ExecuteScreenGauss2(GaussIdx[TextureType::Far], { VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height },
+	Gauss::ExecuteScreenGauss(GaussIdx[TextureType::Far], { VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height },
 		ShadowMaps[TextureType::Far], VSMShadowMaps[TextureType::Far]);
 
 	RenderObjects.clear();
