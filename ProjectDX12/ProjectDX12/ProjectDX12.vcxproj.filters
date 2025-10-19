@@ -154,6 +154,15 @@
     <Filter Include="ヘッダー ファイル\Component">
       <UniqueIdentifier>{d7c46927-32bb-4771-809f-9993753d374c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\Volume\Blur\Blur8">
+      <UniqueIdentifier>{71fca452-b89b-4b6c-8ad9-3d07bd3ea052}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Volume\Blur\Blur4">
+      <UniqueIdentifier>{7a471adb-2a84-4dd7-a690-593972b80f7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\Volume\Blur\Blur2">
+      <UniqueIdentifier>{eab2913d-d286-4bed-9dfc-e4fe91019ed8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectX.cpp">
@@ -529,15 +538,6 @@
     <FxCompile Include="PS_Vignette.hlsl">
       <Filter>リソース ファイル\Volume</Filter>
     </FxCompile>
-    <FxCompile Include="VS_BlurX.hlsl">
-      <Filter>リソース ファイル\Volume\Blur</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_BlurY.hlsl">
-      <Filter>リソース ファイル\Volume\Blur</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Blur.hlsl">
-      <Filter>リソース ファイル\Volume\Blur</Filter>
-    </FxCompile>
     <FxCompile Include="PS_GridShadowVSM.hlsl">
       <Filter>リソース ファイル\PS\Common\Grid</Filter>
     </FxCompile>
@@ -546,6 +546,33 @@
     </FxCompile>
     <FxCompile Include="CommonShadowVSM.hlsl">
       <Filter>リソース ファイル\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Blur8.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur8</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Blur8X.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur8</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Blur8Y.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur8</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Blur4X.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Blur4Y.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Blur4.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Blur2X.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Blur2Y.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Blur2.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

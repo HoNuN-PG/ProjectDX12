@@ -34,7 +34,10 @@ namespace BlurParam
 		}
 	};
 
-	enum{GAUSS_WEIGHTS = 8};
+	enum{GAUSS_WEIGHTS_TYPE = 3};
+	enum{GAUSS2_WEIGHTS = 2};
+	enum{GAUSS4_WEIGHTS = 4};
+	enum{GAUSS8_WEIGHTS = 8};
 	struct GaussParam
 	{
 		std::shared_ptr<float[]> weights;
@@ -94,26 +97,40 @@ public:
 	/// <param name="screen">テクスチャサイズ</param>
 	/// <param name="src"></param>
 	/// <param name="dest"></param>
-	static void ExecuteScreenGauss(int& gaussIdx,DirectX::XMFLOAT2 screen,
+	static void ExecuteScreenGauss2D1(int& gaussIdx,DirectX::XMFLOAT2 screen,
 	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
-	static void ExecuteScreenGauss2(int& gaussIdx,DirectX::XMFLOAT2 screen,
+	static void ExecuteScreenGauss4D1(int& gaussIdx,DirectX::XMFLOAT2 screen,
+	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	static void ExecuteScreenGauss8D1(int& gaussIdx,DirectX::XMFLOAT2 screen,
+	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	static void ExecuteScreenGauss8D2(int& gaussIdx,DirectX::XMFLOAT2 screen,
 		std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
-	static void CalcWeights(std::weak_ptr<float[]> weights, float blur);
+	static void CalcWeights(std::weak_ptr<float[]> weights,int num, float blur);
 
 private:
-	void ExecuteScreenGauss(int& gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	void ExecuteScreenGauss2(int& gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	void ExecuteScreenGauss4(int& gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	void ExecuteScreenGauss8(int& gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	void MakeGaussData(int& gaussIdx, DirectX::XMFLOAT2 screen ,int split);
 
 private:
 	std::shared_ptr<DescriptorHeap>								Heap;
 	std::shared_ptr<DescriptorHeap>								RTVHeap;
 	std::unique_ptr<MeshBuffer>									Screen;
-	std::unique_ptr<RootSignature>								RootSignatureData;
-	std::vector<std::unique_ptr<Pipeline>>						PipelineData;
+	std::unique_ptr<RootSignature>								Gauss2RootSignatureData;
+	std::vector<std::unique_ptr<Pipeline>>						Gauss2PipelineData;
+	std::unique_ptr<RootSignature>								Gauss4RootSignatureData;
+	std::vector<std::unique_ptr<Pipeline>>						Gauss4PipelineData;
+	std::unique_ptr<RootSignature>								Gauss8RootSignatureData;
+	std::vector<std::unique_ptr<Pipeline>>						Gauss8PipelineData;
 	std::vector<std::unique_ptr<RenderTarget>>					GaussRTVs;
 	std::vector<std::unique_ptr<class ConstantBuffer>>			Params;
-	std::unique_ptr<ConstantBuffer>								GaussParam;
-	BlurParam::GaussParam										Weights;
+	std::unique_ptr<ConstantBuffer>								Gauss2Param;
+	std::unique_ptr<ConstantBuffer>								Gauss4Param;
+	std::unique_ptr<ConstantBuffer>								Gauss8Param;
+	BlurParam::GaussParam										Weights2;
+	BlurParam::GaussParam										Weights4;
+	BlurParam::GaussParam										Weights8;
 
 };
 
