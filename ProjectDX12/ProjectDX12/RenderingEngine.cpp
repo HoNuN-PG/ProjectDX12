@@ -104,6 +104,9 @@ void RenderingEngine::Init()
 	Camera = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
 
+	// ディファードシェーダー
+	SetupDefferedShader();
+
 	// レンダリングパス
 	ShadowMapsPass = std::make_shared<ShadowPass>();
 	ShadowMapsPass->Init(RTVHeap, RenderingHeap, DSVHeap);
@@ -203,6 +206,51 @@ void RenderingEngine::Draw()
 	EnvironmentObjects.clear();
 	DefferedObjects.clear();
 	ForwardObjects.clear();
+}
+
+void RenderingEngine::SetupDefferedShader()
+{
+	// ルートシグネチャ
+	{
+		RootSignature::ParameterTable param[] = {
+			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+		};
+		RootSignature::DescriptionTable desc = {};
+		desc.pParam = param;
+		desc.paramNum = _countof(param);
+		DefferedLightingShader.RootSignatureData = std::make_unique<RootSignature>(desc);
+	}
+	// パイプライン
+	{
+		Pipeline::InputLayout layout[] = {
+			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
+			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
+		};
+		Pipeline::Description desc = {};
+		desc.cull = D3D12_CULL_MODE_BACK;
+		desc.VSFile = L"assets/shader/VS_Sprite.cso";
+		desc.PSFile = L"assets/shader/PS_DefferedLighting.cso";
+		desc.pInputLayout = layout;
+		desc.InputLayoutNum = _countof(layout);
+		desc.pRootSignature = DefferedLightingShader.RootSignatureData->Get();
+		desc.RenderTargetNum = 1;
+		DefferedLightingShader.PipelineData = std::make_unique<Pipeline>(desc);
+	}
+	// パラメーター定数バッファ
+	{
+		ConstantBuffer::Description desc = {};
+		desc.pHeap = RenderingHeap.get();
+		// Params
+		desc.size = sizeof(DirectX::XMFLOAT4X4);
+		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
+		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
+		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // VPINV
+	}
 }
 
 void RenderingEngine::CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest)
@@ -448,7 +496,50 @@ void RenderingEngine::DefferedRendering()
 
 void RenderingEngine::DefferedLighting()
 {
+	// ターゲット化
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
+	// RTVの設定
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+		GlobalTexture[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
+	};
+	SetRenderTarget(_countof(rtvs), rtvs);
+
+	// 定数バッファ構築
+	GetDevice()->CopyDescriptorsSimple(
+		(UINT)2,
+		DefferedLightingShader.Params[0]->GetHandle().hCPU,
+		GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU,
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	DirectX::XMFLOAT4X4 vpInv = CameraBase::GetViewProjectionInvMatrix();
+	DefferedLightingShader.Params[2]->Write(&vpInv);
+
+	// 各種オブジェクトをバインド
+	DefferedLightingShader.PipelineData->Bind();
+	ID3D12DescriptorHeap* heaps[] =
+	{
+		RenderingHeap->Get(),
+	};
+	DescriptorHeap::Bind(heaps, 1);
+
+	// MainTextureを取得
+	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = {
+		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture].get()->GetHandleSRV().hGPU,
+		ODepthNormalPass->GetTextureSRV(OpaqueDepthNormalPass::NormalTexture).hGPU,
+		ODepthNormalPass->GetTextureSRV(OpaqueDepthNormalPass::DepthTexture).hGPU,
+		DefferedLightingShader.Params[0].get()->GetHandle().hGPU,
+		DefferedLightingShader.Params[1].get()->GetHandle().hGPU,
+		DefferedLightingShader.Params[2].get()->GetHandle().hGPU,
+	};
+	DefferedLightingShader.RootSignatureData->Bind(desc, _countof(desc));
+
+	// 描画
+	Copy::ExecuteScreenDraw();
+
+	// リソース化
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
 void RenderingEngine::ForwardRendering()

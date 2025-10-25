@@ -163,6 +163,9 @@
     <Filter Include="リソース ファイル\Volume\Blur\Blur2">
       <UniqueIdentifier>{eab2913d-d286-4bed-9dfc-e4fe91019ed8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\PS\Deffered\DefferedLighting">
+      <UniqueIdentifier>{c31d6886-f288-4e84-a0fd-b478543bad29}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectX.cpp">
@@ -573,6 +576,9 @@
     </FxCompile>
     <FxCompile Include="PS_Blur2.hlsl">
       <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_DefferedLighting.hlsl">
+      <Filter>リソース ファイル\PS\Deffered\DefferedLighting</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

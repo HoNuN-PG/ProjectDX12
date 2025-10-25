@@ -39,19 +39,21 @@ public:
 	}
 
 public:
-	static DirectX::XMFLOAT4X4 m_ViewMatrix;
-	static DirectX::XMFLOAT4X4 m_ProjMatrix;
-	static float GetViewAngle() { return DirectX::XMConvertToRadians(VIEW_ANGLE); }
-	static float GetAspect() { return (float)WINDOW_WIDTH / WINDOW_HEIGHT; }
-
-public:
 	float m_MoveSpeed;
 	float m_MouseSpeed;
+
+public:
+	static float GetViewAngle() { return DirectX::XMConvertToRadians(VIEW_ANGLE); }
+	static float GetAspect() { return (float)WINDOW_WIDTH / WINDOW_HEIGHT; }
+	static DirectX::XMFLOAT4X4 GetViewProjectionInvMatrix();
+
 
 public:
 	static DirectX::XMFLOAT3 m_MainPos;
 	static DirectX::XMFLOAT3 m_MainUp;
 	static DirectX::XMFLOAT3 m_MainTarget;
+	static DirectX::XMFLOAT4X4 m_MainViewMatrix;
+	static DirectX::XMFLOAT4X4 m_MainProjMatrix;
 protected:
 	void SetMainParams();
 protected:

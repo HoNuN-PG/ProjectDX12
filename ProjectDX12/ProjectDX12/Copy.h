@@ -29,6 +29,7 @@ private:
 public:
 	Copy() {};
 	~Copy() {};
+	static void ExecuteScreenDraw();
 	static void ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest);
 	static void ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, std::shared_ptr<RenderTarget> dest);
 

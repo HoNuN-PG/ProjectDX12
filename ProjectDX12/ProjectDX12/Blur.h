@@ -117,14 +117,20 @@ private:
 	std::shared_ptr<DescriptorHeap>								Heap;
 	std::shared_ptr<DescriptorHeap>								RTVHeap;
 	std::unique_ptr<MeshBuffer>									Screen;
+
+	// Gauss2
 	std::unique_ptr<RootSignature>								Gauss2RootSignatureData;
 	std::vector<std::unique_ptr<Pipeline>>						Gauss2PipelineData;
+	// Gauss4
 	std::unique_ptr<RootSignature>								Gauss4RootSignatureData;
 	std::vector<std::unique_ptr<Pipeline>>						Gauss4PipelineData;
+	// Gauss4
 	std::unique_ptr<RootSignature>								Gauss8RootSignatureData;
 	std::vector<std::unique_ptr<Pipeline>>						Gauss8PipelineData;
+
 	std::vector<std::unique_ptr<RenderTarget>>					GaussRTVs;
 	std::vector<std::unique_ptr<class ConstantBuffer>>			Params;
+
 	std::unique_ptr<ConstantBuffer>								Gauss2Param;
 	std::unique_ptr<ConstantBuffer>								Gauss4Param;
 	std::unique_ptr<ConstantBuffer>								Gauss8Param;

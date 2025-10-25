@@ -18,49 +18,45 @@ float CalcShadow(CalcShadowParam param, SamplerState samp)
     float3 toPixel = param.posWS.xyz - param.camPos.xyz;
     float area = dot(param.camForward.xyz, toPixel);
 	// カスケードの選択
-    int idx = 2;
-    if (area < param.cascadeArea.x)
-    {
-        idx = 0;
-    }
-    else if (area < param.cascadeArea.y)
-    {
-        idx = 1;
-    }
+    int idx = (area < param.cascadeArea.x) ? 0 : (area < param.cascadeArea.y) ? 1 : 2;
     
-	// 深度の取得
-    float zInLVP = param.reciever[idx].z;
-    
-	// ライトビュースクリーンからUVへ
+    // ライトビュースクリーンからUVへ
     float2 shadowUV = param.reciever[idx].xy / param.reciever[idx].w;
     shadowUV *= float2(0.5f, -0.5f);
     shadowUV += 0.5f;
+    
+    [branch]
+    if (!(shadowUV.x >= 0.0f && shadowUV.x <= 1.0f && shadowUV.y >= 0.0f && shadowUV.y <= 1.0f))
+    {
+        return 0;
+    }
     
     // シャドウマップ
     float2 zInShadowMap;
     switch (idx)
     {
-        case (0):
-            zInShadowMap = shadowMap1.Sample(samp, shadowUV).rg;
+        case 0:
+            zInShadowMap = shadowMap1.Sample(samp, shadowUV);
             break;
-        case (1):
-            zInShadowMap = shadowMap2.Sample(samp, shadowUV).rg;
+        case 1:
+            zInShadowMap = shadowMap2.Sample(samp, shadowUV);
+            break;
+        case 2:
+            zInShadowMap = shadowMap3.Sample(samp, shadowUV);
             break;
         default:
-            zInShadowMap = shadowMap3.Sample(samp, shadowUV).rg;
             break;
     }
+    
+	// 深度の取得
+    float zInLVP = param.reciever[idx].z;
 
 	// 遮蔽判定
     if (zInLVP >= 0 && zInLVP <= 1.0f)
     {
-        if (shadowUV.x >= 0.0f && shadowUV.x <= 1.0f
-			&& shadowUV.y >= 0.0f && shadowUV.y <= 1.0f)
+        if (zInLVP > zInShadowMap.r + DEPTH_THRESHOLD)
         {
-            if (zInLVP > zInShadowMap.r + DEPTH_THRESHOLD)
-            {
-                shadow = 1;
-            }
+            shadow = 1;
         }
     }
     return shadow;

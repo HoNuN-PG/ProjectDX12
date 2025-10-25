@@ -19,6 +19,8 @@
 void Model::Create(std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials, const char* path)
 {
 	MeshIdx = 0;
+
+	// ƒ}ƒeƒŠƒAƒ‹İ’è
 	MeshMaterialsData = meshmaterials;
 	for (int i = 0; i < MeshMaterialsData.size(); ++i)
 	{

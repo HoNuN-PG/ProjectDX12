@@ -59,14 +59,14 @@ void CameraDebug::Update()
 		DirectX::XMLoadFloat3(&m_MainTarget),
 		XMLoadFloat3(&m_MainUp));
 	view = DirectX::XMMatrixTranspose(view);
-	DirectX::XMStoreFloat4x4(&m_ViewMatrix, view);
+	DirectX::XMStoreFloat4x4(&m_MainViewMatrix, view);
 	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(
 		GetViewAngle(),
 		(float)WINDOW_WIDTH / WINDOW_HEIGHT, 
 		(float)CAM_NEAR, 
 		(float)CAM_FAR);
 	proj = DirectX::XMMatrixTranspose(proj);
-	DirectX::XMStoreFloat4x4(&m_ProjMatrix, proj);
+	DirectX::XMStoreFloat4x4(&m_MainProjMatrix, proj);
 
 	// ç¿ïWê›íË
 	SetPosition(m_Pos);

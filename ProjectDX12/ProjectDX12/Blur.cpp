@@ -489,7 +489,7 @@ void Gauss::MakeGaussData(int& gaussIdx, DirectX::XMFLOAT2 screen, int split)
 {
 	if (gaussIdx >= 0) return;
 
-	// Idx計算
+	// インデックス計算
 	gaussIdx = Instance->GaussRTVs.size() / 3;
 	// RTV
 	{

@@ -72,6 +72,11 @@ void Copy::Load()
 	}
 }
 
+void Copy::ExecuteScreenDraw()
+{
+	Instance->Screen->Draw();
+}
+
 void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest)
 {
 	// •\¦—Ìˆæ‚Ìİ’è

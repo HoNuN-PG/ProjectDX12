@@ -24,6 +24,13 @@ class GameObject;
 class CameraBase;
 class LightBase;
 
+struct DefferedData
+{
+	std::unique_ptr<RootSignature>					RootSignatureData;
+	std::unique_ptr<Pipeline>						PipelineData;
+	std::vector<std::unique_ptr<ConstantBuffer>>	Params;
+};
+
 class RenderingEngine
 {
 public:
@@ -55,6 +62,12 @@ public:
 	void Uninit();
 	void Update();
 	void Draw();
+
+	// Deffered
+private:
+	void SetupDefferedShader();
+private:
+	DefferedData DefferedLightingShader;
 
 	// Utillity
 public:
@@ -117,6 +130,10 @@ public:
 		}
 		return nullptr;
 	}
+	// パスのテクスチャの取得
+	// timing:描画タイミング
+	// type:描画タイミング内の種類
+	// idx:パス内のテクスチャインデックス
 	std::shared_ptr<RenderTarget> GetPassTexture(UINT timing, UINT type, UINT idx);
 	void CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx);
 private:

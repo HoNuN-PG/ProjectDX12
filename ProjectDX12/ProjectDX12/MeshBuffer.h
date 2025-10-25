@@ -43,6 +43,7 @@ public:
 	MeshBuffer() {};
 	MeshBuffer(Description desc);
 	virtual ~MeshBuffer();
+public:
 	virtual void Draw();
 
 protected:
