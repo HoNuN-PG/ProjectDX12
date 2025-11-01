@@ -58,6 +58,8 @@ MSG DebugImGUI::Create(HWND _hwnd)
 			msg.message = WM_QUIT;
 		}
 		else {
+			ImGuiIO& io = ImGui::GetIO();
+			io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
 			if (!ImGui_ImplWin32_Init(_hwnd)) {
 				MessageBox(_hwnd, _T("Error"), _T("Failed [Imgui]."), MB_OK);
 				msg.message = WM_QUIT;

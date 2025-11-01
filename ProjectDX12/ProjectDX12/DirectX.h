@@ -7,8 +7,8 @@
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
 
-#define WINDOW_WIDTH (1280)
-#define WINDOW_HEIGHT (720)
+#define WINDOW_WIDTH (1920)
+#define WINDOW_HEIGHT (1080)
 
 #define SAFE_RELEASE(p) do {if(p){p->Release();p = nullptr;}} while(0)
 
@@ -21,8 +21,8 @@ ID3D12GraphicsCommandList* GetCommandList();
 D3D12_CPU_DESCRIPTOR_HANDLE GetRTV();
 
 void SetViewPort(float width, float height);
+void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE * hRTV);
 void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV);
-void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV);
 void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV);
 
 #endif

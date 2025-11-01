@@ -256,16 +256,16 @@ void SetViewPort(float width, float height)
 	pCmdList->RSSetScissorRects(1, &scissor);
 }
 
-void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV)
-{
-	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
-	pCmdList->OMSetRenderTargets(1, &hRTV, FALSE, hDSV.ptr ? &hDSV : nullptr);
-}
-
 void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV)
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	pCmdList->OMSetRenderTargets(num, hRTV, FALSE, nullptr);
+}
+
+void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV)
+{
+	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
+	pCmdList->OMSetRenderTargets(1, &hRTV, FALSE, hDSV.ptr ? &hDSV : nullptr);
 }
 
 void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV)
