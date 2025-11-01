@@ -186,6 +186,7 @@
     <ClCompile Include="FollowActorComponent.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MeshMaterialManager.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="M_Deffered_Albedo_Normal.cpp" />
     <ClCompile Include="M_DepthNormal.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GlobalResourceKey.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="MeshMaterialManager.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyMath.h" />
     <ClInclude Include="M_Deffered_Albedo_Normal.h" />

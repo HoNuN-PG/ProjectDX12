@@ -40,16 +40,22 @@ public:
 
 public:
 	// マテリアル全体初期化
-	static void Initialize(std::shared_ptr<Material> material,DescriptorHeap* heap,
-		RenderingTiming timing = RenderingTiming::Forward,RenderingPass::RenderingPassType passType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE);
+	static void Initialize(
+		std::shared_ptr<Material> material,
+		DescriptorHeap* heap,
+		RenderingTiming timing = RenderingTiming::Forward,
+		RenderingPass::RenderingPassType passType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE
+	);
 protected:
 	// マテリアル個別初期化
 	virtual void Initialize(DescriptorHeap* heap) = 0;
+
+protected:
 	// セットアップ
-	void SetUp
-	(
+	void SetUp(
 		DescriptorHeap* heap,
-		RootSignature::DescriptionTable rootsignature,Pipeline::Description pipeline,
+		RootSignature::DescriptionTable rootsignature,
+		Pipeline::Description pipeline,
 		UINT rtvNum = 0
 	);
 

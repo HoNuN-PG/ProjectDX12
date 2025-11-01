@@ -4,33 +4,11 @@
 #include <memory>
 #include <vector>
 
-#include "Material.h"
+#include "MeshMaterialManager.h"
 
 #include "MeshBuffer.h"
 
 #include "Component.h"
-
-/// <summary>
-/// メッシュが持つマテリアルの管理
-/// </summary>
-class MeshMaterialManager
-{
-public:
-	void SetupMaterialsData(std::vector<std::vector<std::shared_ptr<Material>>> data);
-	void BindRenderingEngine(std::weak_ptr<class GameObject> owner);
-	std::shared_ptr<Material> GetMeshMaterial(UINT timing, UINT& idx);
-	void RefreshRendering();
-
-public:
-	std::vector<std::vector<std::shared_ptr<Material>>> GetMeshMaterialsData() { return MeshMaterialsData; }
-
-private:
-	std::vector<std::vector<std::shared_ptr<Material>>>	MeshMaterialsData;
-	std::vector<std::vector<bool>>						bUsedList;
-
-private:
-
-};
 
 class RenderingComponent : public Component
 {
@@ -57,7 +35,7 @@ protected:
 	bool									 bInstanced;
 	std::unique_ptr<InstanceMeshBuffer>		 InstanceMeshData;
 
-	// メッシュがもつマテリアル
+	// メッシュのマテリアル
 	std::unique_ptr<MeshMaterialManager>	 MeshMaterial;
 
 };

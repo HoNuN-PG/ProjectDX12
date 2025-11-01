@@ -85,9 +85,6 @@
     <Filter Include="ヘッダー ファイル\Material\Materials">
       <UniqueIdentifier>{d08ec512-921f-483d-a204-ee90d2e781ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Material\Mterials">
-      <UniqueIdentifier>{d78f6a5e-abc0-47b4-96a1-dec250921816}</UniqueIdentifier>
-    </Filter>
     <Filter Include="リソース ファイル\PS\Deffered">
       <UniqueIdentifier>{97472983-d64e-45a2-9716-855aa7b81ce2}</UniqueIdentifier>
     </Filter>
@@ -166,6 +163,9 @@
     <Filter Include="リソース ファイル\PS\Deffered\DefferedLighting">
       <UniqueIdentifier>{c31d6886-f288-4e84-a0fd-b478543bad29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Material\Materials">
+      <UniqueIdentifier>{d78f6a5e-abc0-47b4-96a1-dec250921816}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectX.cpp">
@@ -235,13 +235,13 @@
       <Filter>ソース ファイル\Model</Filter>
     </ClCompile>
     <ClCompile Include="M_SimpleLit.cpp">
-      <Filter>ソース ファイル\Material\Mterials</Filter>
+      <Filter>ソース ファイル\Material\Materials</Filter>
     </ClCompile>
     <ClCompile Include="plane.cpp">
       <Filter>ソース ファイル\Model</Filter>
     </ClCompile>
     <ClCompile Include="M_Deffered_Albedo_Normal.cpp">
-      <Filter>ソース ファイル\Material\Mterials</Filter>
+      <Filter>ソース ファイル\Material\Materials</Filter>
     </ClCompile>
     <ClCompile Include="RenderingEngine.cpp">
       <Filter>ソース ファイル\System\Rendering</Filter>
@@ -256,7 +256,7 @@
       <Filter>ソース ファイル\System\Rendering\Volume</Filter>
     </ClCompile>
     <ClCompile Include="M_DepthNormal.cpp">
-      <Filter>ソース ファイル\Material\Mterials</Filter>
+      <Filter>ソース ファイル\Material\Materials</Filter>
     </ClCompile>
     <ClCompile Include="PostProcess.cpp">
       <Filter>ソース ファイル\System\Rendering</Filter>
@@ -277,10 +277,10 @@
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
     <ClCompile Include="M_Grid.cpp">
-      <Filter>ソース ファイル\Material\Mterials</Filter>
+      <Filter>ソース ファイル\Material\Materials</Filter>
     </ClCompile>
     <ClCompile Include="M_SkyBox.cpp">
-      <Filter>ソース ファイル\Material\Mterials</Filter>
+      <Filter>ソース ファイル\Material\Materials</Filter>
     </ClCompile>
     <ClCompile Include="CustomDepthNormalPass.cpp">
       <Filter>ソース ファイル\System\Rendering\Pass</Filter>
@@ -289,7 +289,7 @@
       <Filter>ソース ファイル\System\Rendering\Pass</Filter>
     </ClCompile>
     <ClCompile Include="M_Shadow.cpp">
-      <Filter>ソース ファイル\Material\Mterials</Filter>
+      <Filter>ソース ファイル\Material\Materials</Filter>
     </ClCompile>
     <ClCompile Include="DescriptorHeap.cpp">
       <Filter>ソース ファイル\System\Rendering\System</Filter>
@@ -316,6 +316,9 @@
       <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
     <ClCompile Include="RenderingComponent.cpp">
+      <Filter>ソース ファイル\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshMaterialManager.cpp">
       <Filter>ソース ファイル\Model</Filter>
     </ClCompile>
   </ItemGroup>
@@ -484,6 +487,9 @@
     </ClInclude>
     <ClInclude Include="FollowActorComponent.h">
       <Filter>ヘッダー ファイル\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshMaterialManager.h">
+      <Filter>ヘッダー ファイル\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

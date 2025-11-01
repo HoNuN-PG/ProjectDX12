@@ -11,8 +11,12 @@ Material::Material()
 	MaterialInstanceIdx = 0;
 }
 
-void Material::Initialize(std::shared_ptr<Material> material, DescriptorHeap* heap, 
-	RenderingTiming timing, RenderingPass::RenderingPassType passType)
+void Material::Initialize(
+	std::shared_ptr<Material> material, 
+	DescriptorHeap* heap, 
+	RenderingTiming timing, 
+	RenderingPass::RenderingPassType passType
+)
 {
 	material->Timing = timing;
 	material->PassType = passType;
@@ -22,8 +26,10 @@ void Material::Initialize(std::shared_ptr<Material> material, DescriptorHeap* he
 
 void Material::SetUp(
 	DescriptorHeap* heap, 
-	RootSignature::DescriptionTable rootsignature,Pipeline::Description pipeline,
-	UINT rtvNum)
+	RootSignature::DescriptionTable rootsignature,
+	Pipeline::Description pipeline,
+	UINT rtvNum
+)
 {
 	Heap = heap;
 
@@ -63,7 +69,7 @@ void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 	DescriptorHeap::Bind(heaps,1);
 	RootSignatureData->Bind(handle, handleNum);
 
-	MaterialInstanceIdx = (MaterialInstanceIdx + 1 >= MaterialInstanceCount) ? 0 : MaterialInstanceIdx + 1;
+	MaterialInstanceIdx = (MaterialInstanceIdx + 1) % MaterialInstanceCount;
 }
 
 void Material::AddMaterialInstance()
