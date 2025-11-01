@@ -45,7 +45,7 @@ float4 main(PS_IN input) : SV_TARGET
     float4 color = albedoTex.Sample(samp, input.uv);
 
 	// 法線
-    float3 N = normalTex.Sample(samp, input.uv).xyz;
+    float3 N = normalTex.Sample(samp, input.uv).xyz * 2 - 1;
     
 	// ワールド座標
 	// 射影空間逆行列を用いてデプス値からワールド座標を計算

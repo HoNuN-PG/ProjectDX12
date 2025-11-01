@@ -85,16 +85,6 @@ void GameObject::RenderingBase()
 	}
 }
 
-bool GameObject::Destroy()
-{
-	if (bDestroy)
-	{
-		UninitBase();
-		return true;
-	}
-	return false;
-}
-
 DirectX::XMFLOAT3 GameObject::GetForwardVector()
 {
 	DirectX::XMFLOAT4X4 rot;
@@ -108,4 +98,19 @@ DirectX::XMFLOAT3 GameObject::GetForwardVector()
 	forward.z = rot._33;
 
 	return forward;
+}
+
+bool GameObject::Destroy()
+{
+	if (bDestroy)
+	{
+		UninitBase();
+		return true;
+	}
+	return false;
+}
+
+void GameObject::AddRenderingComponent2Engine(std::shared_ptr<class RenderingComponent> comp)
+{
+	Engine->AddRenderingComponent(comp);
 }

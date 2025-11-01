@@ -6,29 +6,21 @@
 void Sphere::Create(std::vector<std::shared_ptr<Material>> materials)
 {
 	CreatePrimitive(0);
-	MeshMaterialsData.push_back(materials);
-	for (int i = 0; i < MeshMaterialsData.size(); ++i)
-	{
-		for (auto material : MeshMaterialsData[i])
-		{
-			material->SetOwner(Owner);
-			material->AddMaterialInstance();
-		}
-	}
+	// マテリアル設定
+	MeshMaterial = std::make_unique<MeshMaterialManager>();
+	std::vector<std::vector<std::shared_ptr<Material>>> data;
+	data.push_back(materials);
+	MeshMaterial->SetupMaterialsData(data);
 }
 
 void Sphere::Create(std::vector<std::shared_ptr<Material>> materials, unsigned int instanced)
 {
 	CreatePrimitive(instanced);
-	MeshMaterialsData.push_back(materials);
-	for (int i = 0; i < MeshMaterialsData.size(); ++i)
-	{
-		for (auto material : MeshMaterialsData[i])
-		{
-			material->SetOwner(Owner);
-			material->AddMaterialInstance();
-		}
-	}
+	// マテリアル設定
+	MeshMaterial = std::make_unique<MeshMaterialManager>();
+	std::vector<std::vector<std::shared_ptr<Material>>> data;
+	data.push_back(materials);
+	MeshMaterial->SetupMaterialsData(data);
 }
 
 void Sphere::CreatePrimitive(unsigned int instanced)

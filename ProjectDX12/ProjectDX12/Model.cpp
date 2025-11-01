@@ -18,18 +18,9 @@
 
 void Model::Create(std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials, const char* path)
 {
-	MeshIdx = 0;
-
 	// マテリアル設定
-	MeshMaterialsData = meshmaterials;
-	for (int i = 0; i < MeshMaterialsData.size(); ++i)
-	{
-		for (auto material : MeshMaterialsData[i])
-		{
-			material->SetOwner(Owner);
-			material->AddMaterialInstance();
-		}
-	}
+	MeshMaterial = std::make_unique<MeshMaterialManager>();
+	MeshMaterial->SetupMaterialsData(meshmaterials);
 
 	// モデル読込
 	Assimp::Importer importer;
@@ -109,31 +100,21 @@ void Model::CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV)
 
 void Model::Draw()
 {
-	for (int i = 0; i < MeshMaterialsData.size(); ++i)
-	{
-		for (auto material : MeshMaterialsData[i])
-		{
-			Owner.lock()->BindRenderingEngine(material->GetRenderTiming(), material->GetPassType());
-		}
-	}
+	MeshMaterial->BindRenderingEngine(Owner);
 }
 
 void Model::Rendering()
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
-	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingPass();
-	for (auto material : MeshMaterialsData[MeshIdx])
+	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingTiming();
+	UINT idx;
+	if (auto ret = MeshMaterial->GetMeshMaterial(current, idx))
 	{
-		if (material->GetRenderTiming() == current)
-		{
-			material->WriteWVP(ConstantWVP::Calc3DMatrix(
-				Owner.lock()->GetPosition(),
-				Owner.lock()->GetRotation(),
-				Owner.lock()->GetScale()));
-			material->Bind();
-			MeshData[MeshIdx]->Draw();
-			break;
-		}
+		ret->WriteWVP(ConstantWVP::Calc3DMatrix(
+			Owner.lock()->GetPosition(),
+			Owner.lock()->GetRotation(),
+			Owner.lock()->GetScale()));
+		ret->Bind();
+		MeshData[idx]->Draw();
 	}
-	MeshIdx = MeshIdx + 1 >= MeshData.size() ? 0 : MeshIdx + 1;
 }

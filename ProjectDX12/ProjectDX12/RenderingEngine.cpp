@@ -4,6 +4,8 @@
 
 #include "DebugImGUI.h"
 
+#include "RenderingComponent.h"
+
 #include "ConstantWVP.h"
 
 #include "GameObject.h"
@@ -82,8 +84,6 @@ void RenderingEngine::Init()
 			desc.pRTVHeap = RTVHeap.get();
 			desc.pSRVHeap = RenderingHeap.get();
 			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_shared<RenderTarget>(desc);
-			desc.format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture] = std::make_shared<RenderTarget>(desc);
 		}
 	}
 	// 深度バッファ
@@ -173,29 +173,40 @@ void RenderingEngine::Draw()
 		WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Light, &light);
 	}
 
+	// シャドウマップ描画
 	CurrentRenderingTiming = Material::RenderingTiming::Shadow;
 	ShadowMapsRendering();
+	// 不透明デプス描画
 	CurrentRenderingTiming = Material::RenderingTiming::OpaqueDepthNormal;
 	OpaqueDepthNormalRendering();
+	// 不透明デプス描画後パス
 	CurrentRenderingTiming = Material::RenderingTiming::AfterOpaqueDepthNormal;
 	AfterOpaqueDepthNormalRendering();
+	// 環境描画
 	CurrentRenderingTiming = Material::Environment;
 	EnvironmentRendering();
+	// ディファード描画
 	CurrentRenderingTiming = Material::Deffered;
 	DefferedRendering();
 	DefferedLighting();
+	// フォワード描画
 	CurrentRenderingTiming = Material::Forward;
 	ForwardRendering();
+	// 不透明デプス描画
 	CurrentRenderingTiming = Material::RenderingTiming::TranslucentDepthNormal;
 	TranslucentDepthNormalRendering();
+	// その他描画
 	CurrentRenderingTiming = Material::RenderingTiming::Other;
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
+	// メインテクスチャへのコピー
 	Copy::ExecuteCopy(RenderingHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU, GetRTV());
+	// バッファ描画
 	ViewShadowMaps();
 	ViewDepthNormal();
 	ViewGBuffers();
 	ViewPasses();
+	// 描画リフレッシュ
 	RefreshRendering();
 
 	// 最終的にバックバッファに描画
@@ -406,6 +417,11 @@ void RenderingEngine::AddRenderObject(
 	}
 }
 
+void RenderingEngine::AddRenderingComponent(std::shared_ptr<RenderingComponent> component)
+{
+	RenderingComponents.push_back(component);
+}
+
 void RenderingEngine::AddRenderingMaterial(std::shared_ptr<Material> material)
 {
 	RenderingMaterials.push_back(material);
@@ -476,7 +492,6 @@ void RenderingEngine::DefferedRendering()
 	}
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
 		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture]->GetHandleRTV().hCPU,
-		GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
@@ -638,10 +653,6 @@ void RenderingEngine::ViewGBuffers()
 		ImGui::Image(DebugImGUI::GetImGUIImage(
 			RenderingHeap.get(), 
 			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture].get()), { 240,135 });
-		ImGui::Text("DefferedNormal");
-		ImGui::Image(DebugImGUI::GetImGUIImage(
-			RenderingHeap.get(),
-			GlobalTexture[GlobalTextureResourceKey::DefferedNormalTexture].get()), { 240,135 });
 	}
 	ImGui::End();
 }
@@ -661,6 +672,16 @@ void RenderingEngine::ViewPasses()
 
 void RenderingEngine::RefreshRendering()
 {
+	RenderingComponents.remove_if(
+		[](std::weak_ptr<RenderingComponent> object)
+		{
+			return object.expired();
+		});
+	for (auto component : RenderingComponents)
+	{
+		component.lock()->RefreshRendering();
+	}
+
 	RenderingMaterials.remove_if(
 		[](std::weak_ptr<Material> object)
 		{
@@ -668,6 +689,6 @@ void RenderingEngine::RefreshRendering()
 		});
 	for (auto material : RenderingMaterials)
 	{
-		material.lock()->EndRendering();
+		material.lock()->RefreshRendering();
 	}
 }

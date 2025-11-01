@@ -10,7 +10,6 @@ struct PS_IN
 struct PS_OUT
 {
     float4 albedo   : SV_TARGET0;
-    float4 normal   : SV_TARGET1;
 };
 
 Texture2D tex : register(t0);
@@ -20,10 +19,7 @@ PS_OUT main(PS_IN input)
 {
     PS_OUT output;
 
-    output.albedo       = tex.Sample(samp, input.uv);
-
-    output.normal.xyz   = input.normal * 0.5f + 0.5f;
-    output.normal.w     = 1;
+    output.albedo = tex.Sample(samp, input.uv);
 
     return output;
 }

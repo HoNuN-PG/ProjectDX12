@@ -20,9 +20,10 @@
 
 #include "PostProcess.h"
 
-class GameObject;
 class CameraBase;
 class LightBase;
+
+class GameObject;
 
 struct DefferedData
 {
@@ -49,8 +50,7 @@ public:
 private:
 	enum GBuffer
 	{
-		Albedo = 0,		// アルベド
-		Normal,			// 法線
+		Albedo = 0,	// アルベド
 
 		MAX_GBUFFER
 	};
@@ -167,19 +167,22 @@ public:
 	{
 		return CanvasPostProcess->GetVolume<T>();
 	}
-	// 作成したマテリアルの追加
+	// 作成した描画コンポーネントの参照を追加
+	void AddRenderingComponent(std::shared_ptr<class RenderingComponent> component);
+	// 作成したマテリアルの参照を追加
 	void AddRenderingMaterial(std::shared_ptr<Material> material);
 private:
-	std::vector<RenderingInfo> EnvironmentObjects;			// 環境描画オブジェクト
-	std::vector<RenderingInfo> DefferedObjects;				// ディファードライティングオブジェクト
-	std::vector<RenderingInfo> ForwardObjects;				// フォワードライティングオブジェクト
-	std::unique_ptr<PostProcess> ObjectPostProcess;			// オブジェクト描画後のポストプロセス
-	std::unique_ptr<PostProcess> CanvasPostProcess;			// キャンバス描画後のポストプロセス
-	std::list<std::weak_ptr<Material>> RenderingMaterials;	// 作成されたマテリアル群
+	std::vector<RenderingInfo> EnvironmentObjects;							// 環境描画オブジェクト
+	std::vector<RenderingInfo> DefferedObjects;								// ディファードライティングオブジェクト
+	std::vector<RenderingInfo> ForwardObjects;								// フォワードライティングオブジェクト
+	std::unique_ptr<PostProcess> ObjectPostProcess;							// オブジェクト描画後のポストプロセス
+	std::unique_ptr<PostProcess> CanvasPostProcess;							// キャンバス描画後のポストプロセス
+	std::list<std::weak_ptr<class RenderingComponent>> RenderingComponents;	// 作成された描画コンポーネントの参照
+	std::list<std::weak_ptr<Material>> RenderingMaterials;					// 作成されたマテリアルの参照
 
 	// レンダリング関数
 public:
-	Material::RenderingTiming GetCurrentRenderingPass() { return CurrentRenderingTiming; }
+	Material::RenderingTiming GetCurrentRenderingTiming() { return CurrentRenderingTiming; }
 private:
 	Material::RenderingTiming CurrentRenderingTiming;
 private:

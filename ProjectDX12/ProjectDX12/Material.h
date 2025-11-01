@@ -64,13 +64,12 @@ protected:
 	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
 
 public:
-	// オーナー設定
-	void SetOwner(std::weak_ptr<class GameObject> owner) { Owner = owner; }
-
 	/// <summary>
 	/// マテリアルインスタンスの追加
+	/// <return>マテリアルインスタンスUID</return>
 	/// </summary>
 	void AddMaterialInstance();
+
 	/// <summary>
 	/// テクスチャ追加
 	/// </summary>
@@ -89,25 +88,30 @@ public:
 	/// <summary>
 	/// 描画終了時に呼び出し
 	/// </summary>
-	void EndRendering();
+	void RefreshRendering();
 
 public:
 	RenderingTiming GetRenderTiming() { return Timing; };
 	RenderingPass::RenderingPassType GetPassType() { return PassType; }
+
 protected:
+	// マテリアルパラメータ
 	RenderingTiming									Timing;
 	RenderingPass::RenderingPassType				PassType;
+
 	DescriptorHeap*									Heap;
 	std::shared_ptr<DescriptorHeap>					RTVHeap;
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;
+
 	std::vector<std::unique_ptr<Texture>>			Textures;
-	unsigned int									MaterialInstanceCount;
-	unsigned int									MaterialInstanceIdx;
+
+	// マテリアルインスタンス情報
+	unsigned int									MaterialInstanceCount;				// マテリアルインスタンスの総数
+	unsigned int									MaterialInstanceIdx;				// マテリアルインスタンスのインデックス
+
 	std::vector<std::unique_ptr<ConstantBuffer>>	WVP;
 	std::vector<std::unique_ptr<ConstantBuffer>>	Params;
-protected:
-	std::weak_ptr<class GameObject>					Owner;
 
 };
 

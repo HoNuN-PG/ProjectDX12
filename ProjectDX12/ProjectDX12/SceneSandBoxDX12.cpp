@@ -86,6 +86,7 @@ HRESULT SceneSandBoxDX12::Init()
 	// モデル作成
 	{// スカイボックス
 		std::vector<std::shared_ptr<Material>> materials;
+
 		materials.push_back(sky_box);
 	
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>(SceneBase::Layer::Environment);
@@ -94,11 +95,12 @@ HRESULT SceneSandBoxDX12::Init()
 		obj->SetScale({ 100,100,100 });
 		std::shared_ptr<FollowActorComponent> cmp = obj->AddComponent<FollowActorComponent>(obj);
 		cmp->SetFollowActor(GetRenderingEngine()->GetCamera());
-		std::shared_ptr<Sphere> model = GameObject::AddComponent<Sphere>(obj);
+		std::shared_ptr<Sphere> model = obj->AddComponent<Sphere>(obj);
 		model->Create(materials);
 	}
 	{// グリッド
 		std::vector<std::shared_ptr<Material>> materials;
+
 		materials.push_back(opaque_depth_normal);
 		materials.push_back(grid_shadow_vsm);
 	
@@ -106,24 +108,45 @@ HRESULT SceneSandBoxDX12::Init()
 		obj->SetPosition({ 0,-1,0 });
 		obj->SetRotation({ DirectX::XMConvertToRadians(90),0,0 });
 		obj->SetScale({100,100,1});
-		std::shared_ptr<Plane> model = GameObject::AddComponent<Plane>(obj);
+		std::shared_ptr<Plane> model = obj->AddComponent<Plane>(obj);
 		model->Create(materials);
 	}
-	{// 木
+	{// 木1
 		std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials;
 		std::vector<std::shared_ptr<Material>> materials;
+
 		materials.push_back(shadow_map);
 		materials.push_back(opaque_depth_normal);
 		materials.push_back(custom_opaque_depth_normal);
 		materials.push_back(simple_lit);
-	
 		meshmaterials.push_back(materials);
 		meshmaterials.push_back(materials);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
-		obj->SetPosition({ 0,-2.5f,0 });
+		obj->SetPosition({ 10,-2.5f,0 });
 		obj->SetScale({2.5f,2.5f,2.5f});
-		std::shared_ptr<Model> model = GameObject::AddComponent<Model>(obj);
+		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
+		model->Create(meshmaterials, "assets/model/tree/height_tree.fbx");
+	}
+	{// 木2
+		std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials;
+		std::vector<std::shared_ptr<Material>> materials;
+
+		materials.push_back(shadow_map);
+		materials.push_back(opaque_depth_normal);
+		materials.push_back(custom_opaque_depth_normal);
+		materials.push_back(simple_lit);
+		meshmaterials.push_back(materials);
+
+		materials.clear();
+		materials.push_back(shadow_map);
+		materials.push_back(simple_lit);
+		meshmaterials.push_back(materials);
+
+		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
+		obj->SetPosition({ -10,-2.5f,0 });
+		obj->SetScale({ 2.5f,2.5f,2.5f });
+		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
 		model->Create(meshmaterials, "assets/model/tree/height_tree.fbx");
 	}
 	{// 牛
@@ -135,14 +158,14 @@ HRESULT SceneSandBoxDX12::Init()
 		
 		std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials;
 		std::vector<std::shared_ptr<Material>> materials;
+
 		materials.push_back(opaque_depth_normal);
 		materials.push_back(deffered_albedo_normal);
-		
 		meshmaterials.push_back(materials);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,10 });
-		std::shared_ptr<Model> model = GameObject::AddComponent<Model>(obj);
+		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
 		model->Create(meshmaterials, "assets/model/spot/spot.fbx");
 	}
 

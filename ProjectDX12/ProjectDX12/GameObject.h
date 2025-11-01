@@ -69,11 +69,17 @@ public:
 
 	// コンポーネントの追加・取得
 	template <typename T>
-	static std::shared_ptr<T> AddComponent(std::shared_ptr<GameObject> own)
+	std::shared_ptr<T> AddComponent(std::shared_ptr<GameObject> own)
 	{
 		std::shared_ptr<T> component = std::make_shared<T>(own);
 		own->Components.push_back(component);
 		own->Components.back()->Init();
+
+		if (std::shared_ptr<class RenderingComponent> c = std::dynamic_pointer_cast<RenderingComponent>(component))
+		{
+			AddRenderingComponent2Engine(c);
+		}
+
 		return component;
 	}
 	template <typename T>
@@ -106,6 +112,9 @@ public:
 	void SetDestroy() { bDestroy = true; }
 	bool IsDestroy() { return bDestroy; }
 	bool Destroy();
+
+private:
+	void AddRenderingComponent2Engine(std::shared_ptr<class RenderingComponent> comp);
 
 private:
 	std::shared_ptr<RenderingEngine> Engine;

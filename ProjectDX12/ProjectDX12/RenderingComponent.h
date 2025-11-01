@@ -10,6 +10,28 @@
 
 #include "Component.h"
 
+/// <summary>
+/// メッシュが持つマテリアルの管理
+/// </summary>
+class MeshMaterialManager
+{
+public:
+	void SetupMaterialsData(std::vector<std::vector<std::shared_ptr<Material>>> data);
+	void BindRenderingEngine(std::weak_ptr<class GameObject> owner);
+	std::shared_ptr<Material> GetMeshMaterial(UINT timing, UINT& idx);
+	void RefreshRendering();
+
+public:
+	std::vector<std::vector<std::shared_ptr<Material>>> GetMeshMaterialsData() { return MeshMaterialsData; }
+
+private:
+	std::vector<std::vector<std::shared_ptr<Material>>>	MeshMaterialsData;
+	std::vector<std::vector<bool>>						bUsedList;
+
+private:
+
+};
+
 class RenderingComponent : public Component
 {
 public:
@@ -22,16 +44,21 @@ public:
 	virtual void Update() override {}
 	virtual void Draw() override {}
 	virtual void Rendering() = 0;
+	virtual void RefreshRendering();
 
 public:
-	std::vector<std::shared_ptr<Material>> GetMaterials(int idx) { return MeshMaterialsData[idx]; }
+	std::vector<std::shared_ptr<Material>> GetMeshMaterials(int meshIdx) { return MeshMaterial->GetMeshMaterialsData()[meshIdx]; }
 
 protected:
+	// メッシュデータ
 	std::vector<std::unique_ptr<MeshBuffer>> MeshData;
-	UINT									 MeshIdx;
+
+	// インスタンスメッシュデータ
 	bool									 bInstanced;
 	std::unique_ptr<InstanceMeshBuffer>		 InstanceMeshData;
-	std::vector<std::vector<std::shared_ptr<Material>>>MeshMaterialsData;
+
+	// メッシュがもつマテリアル
+	std::unique_ptr<MeshMaterialManager>	 MeshMaterial;
 
 };
 

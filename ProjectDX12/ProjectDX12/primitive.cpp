@@ -11,33 +11,21 @@
 
 void Primitive::Draw()
 {
-	for (int i = 0; i < MeshMaterialsData.size(); ++i)
-	{
-		for (auto material : MeshMaterialsData[i])
-		{
-			Owner.lock()->BindRenderingEngine(material->GetRenderTiming(), material->GetPassType());
-		}
-	}
+	MeshMaterial->BindRenderingEngine(Owner);
 }
 
 void Primitive::Rendering()
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
-	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingPass();
-	for (int i = 0; i < MeshData.size(); ++i)
+	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingTiming();
+	UINT idx;
+	if (auto ret = MeshMaterial->GetMeshMaterial(current, idx))
 	{
-		for (auto material : MeshMaterialsData[i])
-		{
-			if (material->GetRenderTiming() == current)
-			{
-				material->WriteWVP(ConstantWVP::Calc3DMatrix(
-					Owner.lock()->GetPosition(),
-					Owner.lock()->GetRotation(),
-					Owner.lock()->GetScale()));
-				material->Bind();
-				MeshData[i]->Draw();
-				break;
-			}
-		}
+		ret->WriteWVP(ConstantWVP::Calc3DMatrix(
+			Owner.lock()->GetPosition(),
+			Owner.lock()->GetRotation(),
+			Owner.lock()->GetScale()));
+		ret->Bind();
+		MeshData[idx]->Draw();
 	}
 }
