@@ -22,6 +22,7 @@ public:
 	virtual void Update() override {}
 	virtual void Draw() override {}
 	virtual void Rendering() = 0;
+	virtual void ReuseRendering();
 	virtual void RefreshRendering();
 
 public:

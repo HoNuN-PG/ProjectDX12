@@ -89,6 +89,11 @@ void ShadowPass::Execute()
 			RenderObjects[j].obj.
 				RenderingBase();
 		}
+		for (int j = 0; j < RenderObjects.size(); ++j)
+		{
+			RenderObjects[j].obj.
+				ReuseRenderingBase();
+		}
 
 		// ƒŠƒ\[ƒX‰»
 		ShadowMaps[i]->ResourceBarrier(

@@ -9,8 +9,6 @@
 
 #include "Component.h"
 
-class RenderingEngine;
-
 class GameObject
 {
 public:
@@ -23,12 +21,14 @@ public:
 	void DrawBase(DirectX::XMFLOAT4X4 ParentMatrix);
 	void BindRenderingEngine(UINT timing, UINT passType);
 	void RenderingBase();
+	void ReuseRenderingBase();
 
 	virtual void Init() {}
 	virtual void Uninit() {}
 	virtual void Update() {}
 	virtual void Draw() {}
 	virtual void Rendering() {}
+	virtual void ReuseRendering(){}
 
 protected:
 	// トランスフォーム
@@ -77,6 +77,7 @@ public:
 
 		if (std::shared_ptr<class RenderingComponent> c = std::dynamic_pointer_cast<RenderingComponent>(component))
 		{
+			RenderingComponents.push_back(c);
 			AddRenderingComponent2Engine(c);
 		}
 
@@ -117,7 +118,8 @@ private:
 	void AddRenderingComponent2Engine(std::shared_ptr<class RenderingComponent> comp);
 
 private:
-	std::shared_ptr<RenderingEngine> Engine;
+	std::vector<std::weak_ptr<class RenderingComponent>> RenderingComponents;
+	std::shared_ptr<class RenderingEngine> Engine;
 
 };
 

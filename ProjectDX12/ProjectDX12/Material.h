@@ -121,6 +121,8 @@ protected:
 	// マテリアルインスタンス情報
 	unsigned int									MaterialInstanceCount;				// マテリアルインスタンスの総数
 	unsigned int									MaterialInstanceIdx;				// マテリアルインスタンスのインデックス
+																						// １つのマテリアルインスタンスで複数回オブジェクトを描画する際は
+																						// マテリアルインスタンスを使い切ってから描画する
 
 	std::vector<std::unique_ptr<ConstantBuffer>>	WVP;
 	std::vector<std::unique_ptr<ConstantBuffer>>	Params;

@@ -79,9 +79,18 @@ void GameObject::BindRenderingEngine(UINT timing, UINT passType)
 void GameObject::RenderingBase()
 {
 	Rendering();
-	for (std::weak_ptr<RenderingComponent> comp : GetComponents<RenderingComponent>())
+	for (std::weak_ptr<RenderingComponent> comp : RenderingComponents)
 	{
 		comp.lock()->Rendering();
+	}
+}
+
+void GameObject::ReuseRenderingBase()
+{
+	ReuseRendering();
+	for (std::weak_ptr<RenderingComponent> comp : RenderingComponents)
+	{
+		comp.lock()->ReuseRendering();
 	}
 }
 

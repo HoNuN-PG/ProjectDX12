@@ -285,9 +285,6 @@
     <ClCompile Include="CustomDepthNormalPass.cpp">
       <Filter>ソース ファイル\System\Rendering\Pass</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowPass.cpp">
-      <Filter>ソース ファイル\System\Rendering\Pass</Filter>
-    </ClCompile>
     <ClCompile Include="M_Shadow.cpp">
       <Filter>ソース ファイル\Material\Materials</Filter>
     </ClCompile>
@@ -320,6 +317,9 @@
     </ClCompile>
     <ClCompile Include="MeshMaterialManager.cpp">
       <Filter>ソース ファイル\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowPass.cpp">
+      <Filter>ソース ファイル\System\Rendering\Pass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

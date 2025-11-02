@@ -15,6 +15,7 @@ public:
 	void SetupMaterialsData(std::vector<std::vector<std::shared_ptr<Material>>> data);
 	void BindRenderingEngine(std::weak_ptr<class GameObject> owner);
 	std::shared_ptr<Material> GetMeshMaterial(UINT timing, UINT& idx);
+	void ReuseRendering();
 	void RefreshRendering();
 
 public:
@@ -22,7 +23,7 @@ public:
 
 private:
 	std::vector<std::vector<std::shared_ptr<Material>>>	MeshMaterialsData;
-	std::vector<std::vector<bool>>						bUsedList;
+	std::vector<std::vector<bool>>						UsedList;
 
 };
 

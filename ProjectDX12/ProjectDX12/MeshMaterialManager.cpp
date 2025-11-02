@@ -8,11 +8,11 @@ void MeshMaterialManager::SetupMaterialsData(std::vector<std::vector<std::shared
 	MeshMaterialsData = data;
 	for (int i = 0; i < MeshMaterialsData.size(); ++i)
 	{
-		bUsedList.push_back(std::vector<bool>());
+		UsedList.push_back(std::vector<bool>());
 		for (int j = 0; j < MeshMaterialsData[i].size(); ++j)
 		{
 			MeshMaterialsData[i][j]->AddMaterialInstance();
-			bUsedList[i].push_back(false);
+			UsedList[i].push_back(false);
 		}
 	}
 }
@@ -41,25 +41,40 @@ std::shared_ptr<Material> MeshMaterialManager::GetMeshMaterial(UINT timing, UINT
 				continue;
 			}
 			// Šù‚Ég—pÏ‚È‚ç–³Œø
-			if (bUsedList[i][j])
+			if (UsedList[i][j])
 			{
 				continue;
 			}
 			idx = i;
-			bUsedList[i][j] = true;
+			UsedList[i][j] = true;
 			return MeshMaterialsData[i][j];
 		}
 	}
 	return nullptr;
 }
 
+void MeshMaterialManager::ReuseRendering()
+{
+	for (int i = 0; i < UsedList.size(); ++i)
+	{
+		for (int j = UsedList[i].size() - 1; j >= 0 ; --j)
+		{
+			if (UsedList[i][j])
+			{
+				UsedList[i][j] = false;
+				break;
+			}
+		}
+	}
+}
+
 void MeshMaterialManager::RefreshRendering()
 {
-	for (int i = 0; i < bUsedList.size(); ++i)
+	for (int i = 0; i < UsedList.size(); ++i)
 	{
-		for (int j = 0; j < bUsedList[i].size(); ++j)
+		for (int j = 0; j < UsedList[i].size(); ++j)
 		{
-			bUsedList[i][j] = false;
+			UsedList[i][j] = false;
 		}
 	}
 }
