@@ -11,4 +11,15 @@ public:
 
 };
 
+class M_OpaqueSimpleLit : public Material
+{
+public:
+	virtual void Initialize(DescriptorHeap* heap) override;
+	virtual void Bind() override;
+
+private:
+	CommonParam common;
+
+};
+
 #endif

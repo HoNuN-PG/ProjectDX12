@@ -34,8 +34,8 @@ void Vignette::Init()
 		};
 		Pipeline::Description desc = {};
 		desc.cull = D3D12_CULL_MODE_BACK;
-		desc.VSFile = L"assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"assets/shader/PS_Vignette.cso";
+		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
+		desc.PSFile = L"../exe/assets/shader/PS_Vignette.cso";
 		desc.pInputLayout = layout;
 		desc.InputLayoutNum = _countof(layout);
 		desc.pRootSignature = RootSignatureData->Get();

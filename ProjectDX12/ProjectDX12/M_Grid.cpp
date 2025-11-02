@@ -37,8 +37,8 @@ void M_Grid::Initialize(DescriptorHeap* heap)
 	};
 	Pipeline::Description pipeline;
 	pipeline.cull = D3D12_CULL_MODE_BACK;
-	pipeline.VSFile = L"assets/shader/VS_WorldObject.cso";
-	pipeline.PSFile = L"assets/shader/PS_Grid.cso";
+	pipeline.VSFile = L"../exe/assets/shader/VS_WorldObject.cso";
+	pipeline.PSFile = L"../exe/assets/shader/PS_Grid.cso";
 	pipeline.pInputLayout = layout;
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
@@ -102,8 +102,8 @@ void M_GridShadow::Initialize(DescriptorHeap* heap)
 	};
 	Pipeline::Description pipeline;
 	pipeline.cull = D3D12_CULL_MODE_BACK;
-	pipeline.VSFile = L"assets/shader/VS_ShadowReciever.cso";
-	pipeline.PSFile = L"assets/shader/PS_GridShadow.cso";
+	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowReciever.cso";
+	pipeline.PSFile = L"../exe/assets/shader/PS_GridShadow.cso";
 	pipeline.pInputLayout = layout;
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
@@ -181,8 +181,8 @@ void M_GridShadowVSM::Initialize(DescriptorHeap* heap)
 	};
 	Pipeline::Description pipeline;
 	pipeline.cull = D3D12_CULL_MODE_BACK;
-	pipeline.VSFile = L"assets/shader/VS_ShadowReciever.cso";
-	pipeline.PSFile = L"assets/shader/PS_GridShadowVSM.cso";
+	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowReciever.cso";
+	pipeline.PSFile = L"../exe/assets/shader/PS_GridShadowVSM.cso";
 	pipeline.pInputLayout = layout;
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;

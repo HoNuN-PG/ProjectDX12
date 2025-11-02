@@ -244,8 +244,8 @@ void RenderingEngine::SetupDefferedShader()
 		};
 		Pipeline::Description desc = {};
 		desc.cull = D3D12_CULL_MODE_BACK;
-		desc.VSFile = L"assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"assets/shader/PS_DefferedLighting.cso";
+		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
+		desc.PSFile = L"../exe/assets/shader/PS_DefferedLighting.cso";
 		desc.pInputLayout = layout;
 		desc.InputLayoutNum = _countof(layout);
 		desc.pRootSignature = DefferedLightingShader.RootSignatureData->Get();

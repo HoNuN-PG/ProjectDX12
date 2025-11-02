@@ -62,8 +62,8 @@ void Copy::Load()
 		};
 		Pipeline::Description desc = {};
 		desc.cull = D3D12_CULL_MODE_BACK;
-		desc.VSFile = L"assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"assets/shader/PS_Copy.cso";
+		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
+		desc.PSFile = L"../exe/assets/shader/PS_Copy.cso";
 		desc.pInputLayout = layout;
 		desc.InputLayoutNum = _countof(layout);
 		desc.pRootSignature = Instance->RootSignatureData->Get();

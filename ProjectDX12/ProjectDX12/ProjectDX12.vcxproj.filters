@@ -589,6 +589,12 @@
     <FxCompile Include="PS_DefferedLighting.hlsl">
       <Filter>リソース ファイル\PS\Deffered\DefferedLighting</Filter>
     </FxCompile>
+    <FxCompile Include="PS_OpaqueSimpleLit.hlsl">
+      <Filter>リソース ファイル\PS\Lit</Filter>
+    </FxCompile>
+    <FxCompile Include="CommonParam.hlsl">
+      <Filter>リソース ファイル\Common</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

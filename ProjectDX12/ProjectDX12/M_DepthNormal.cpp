@@ -24,8 +24,8 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap)
 	};
 	Pipeline::Description pipeline;
 	pipeline.cull = D3D12_CULL_MODE_BACK;
-	pipeline.VSFile = L"assets/shader/VS_DepthNormal.cso";
-	pipeline.PSFile = L"assets/shader/PS_DepthNormal.cso";
+	pipeline.VSFile = L"../exe/assets/shader/VS_DepthNormal.cso";
+	pipeline.PSFile = L"../exe/assets/shader/PS_DepthNormal.cso";
 	pipeline.pInputLayout = layout;
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 2;

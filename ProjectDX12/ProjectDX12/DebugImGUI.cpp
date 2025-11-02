@@ -94,8 +94,8 @@ MSG DebugImGUI::Create(HWND _hwnd)
 		desc.cull = D3D12_CULL_MODE_BACK;
 		desc.pInputLayout = layout;
 		desc.InputLayoutNum = _countof(layout);
-		desc.VSFile = L"assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"assets/shader/PS_Copy.cso";
+		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
+		desc.PSFile = L"../exe/assets/shader/PS_Copy.cso";
 		desc.pRootSignature = RootSignatureData->Get();
 		desc.RenderTargetNum = 1;
 		PipelineData = std::make_unique<Pipeline>(desc);

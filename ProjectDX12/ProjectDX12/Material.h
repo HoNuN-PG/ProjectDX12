@@ -16,6 +16,12 @@
 
 #include "Texture.h"
 
+struct CommonParam
+{
+	float AlphaCut;
+	DirectX::XMFLOAT3 pad1;
+};
+
 class Material
 {
 public:
