@@ -1,7 +1,7 @@
 
 #include "M_SkyBox.h"
 
-void M_SkyBox::Initialize(DescriptorHeap* heap)
+void M_SkyBox::Initialize(DescriptorHeap* heap, Description desc)
 {
 	// 定数バッファ
 	{
@@ -24,7 +24,8 @@ void M_SkyBox::Initialize(DescriptorHeap* heap)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = D3D12_CULL_MODE_FRONT;
+	pipeline.cull = desc.cull;
+	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_Object.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_UnLit.cso";
 	pipeline.pInputLayout = layout;

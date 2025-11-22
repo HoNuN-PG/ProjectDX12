@@ -45,16 +45,24 @@ public:
 	virtual ~Material() {};
 
 public:
+	struct Description
+	{
+		D3D12_CULL_MODE cull = D3D12_CULL_MODE_BACK;
+		BOOL			WriteDepth = TRUE;
+	};
+
+public:
 	// マテリアル全体初期化
 	static void Initialize(
 		std::shared_ptr<Material> material,
 		DescriptorHeap* heap,
+		Description desc,
 		RenderingTiming timing = RenderingTiming::Forward,
 		RenderingPass::RenderingPassType passType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE
 	);
 protected:
 	// マテリアル個別初期化
-	virtual void Initialize(DescriptorHeap* heap) = 0;
+	virtual void Initialize(DescriptorHeap* heap, Description desc) = 0;
 
 protected:
 	// セットアップ
@@ -121,7 +129,7 @@ protected:
 	// マテリアルインスタンス情報
 	unsigned int									MaterialInstanceCount;				// マテリアルインスタンスの総数
 	unsigned int									MaterialInstanceIdx;				// マテリアルインスタンスのインデックス
-																						// １つのマテリアルインスタンスで複数回オブジェクトを描画する際は
+																						// １つのマテリアルで複数回オブジェクトを描画する際は
 																						// マテリアルインスタンスを使い切ってから描画する
 
 	std::vector<std::unique_ptr<ConstantBuffer>>	WVP;

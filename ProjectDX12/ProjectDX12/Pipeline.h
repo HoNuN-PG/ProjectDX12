@@ -15,6 +15,7 @@ public:
 	struct Description
 	{
 		D3D12_CULL_MODE			cull;
+		BOOL					WriteDepth = TRUE;
 		ID3D12RootSignature*	pRootSignature;
 		const wchar_t*			VSFile;
 		const wchar_t*			PSFile;

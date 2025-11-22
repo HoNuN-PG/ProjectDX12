@@ -51,7 +51,10 @@ void CameraDebug::Update()
 	ProcDCC(arg);
 
 	// メインカメラパラメータの設定
-	if (m_IsMain) SetMainParams();
+	if (m_IsMain) 
+	{
+		SetMainParams();
+	}
 	
 	// マトリクス計算
 	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
@@ -60,6 +63,7 @@ void CameraDebug::Update()
 		XMLoadFloat3(&m_MainUp));
 	view = DirectX::XMMatrixTranspose(view);
 	DirectX::XMStoreFloat4x4(&m_MainViewMatrix, view);
+
 	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(
 		GetViewAngle(),
 		(float)WINDOW_WIDTH / WINDOW_HEIGHT, 
@@ -67,9 +71,6 @@ void CameraDebug::Update()
 		(float)CAM_FAR);
 	proj = DirectX::XMMatrixTranspose(proj);
 	DirectX::XMStoreFloat4x4(&m_MainProjMatrix, proj);
-
-	// 座標設定
-	SetPosition(m_Pos);
 }
 
 void CameraDebug::Draw()
@@ -111,6 +112,9 @@ void CameraDebug::ProcDCC(Argument& arg)
 	DirectX::XMStoreFloat3(&m_Pos, vCamPos);
 	DirectX::XMStoreFloat3(&m_Target, DirectX::XMVectorAdd(vCamPos, DirectX::XMVectorScale(vFrontAxis, arg.focus)));
 	DirectX::XMStoreFloat3(&m_Up, DirectX::XMVector3Normalize(DirectX::XMVector3Cross(vFrontAxis, vSideAxis)));
+
+	// Transform更新
+	SetPosition(m_Pos);
 }
 
 DirectX::XMFLOAT4X4 CameraDebug::GetCustomProjMatrix(UINT32 with, UINT32 height)

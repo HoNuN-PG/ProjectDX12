@@ -1,7 +1,7 @@
 
 #include "M_Deffered_Albedo_Normal.h"
 
-void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap)
+void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap, Description desc)
 {
 	// 定数バッファ
 	{
@@ -26,7 +26,8 @@ void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = D3D12_CULL_MODE_BACK;
+	pipeline.cull = desc.cull;
+	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_Object.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_Deffered.cso";
 	pipeline.pInputLayout = layout;

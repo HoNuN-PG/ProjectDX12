@@ -597,7 +597,7 @@ void RenderingEngine::CanvasPostProcessRendering()
 
 void RenderingEngine::ViewShadowMaps()
 {
-	static const ImVec2 size = { 480,270 };
+	static const ImVec2 size = { 480,480 };
 
 	ImGui::Begin("ShadowMaps");
 	{

@@ -29,10 +29,12 @@ Pipeline::Pipeline(Description desc)
 
 	// 深度
 	D3D12_DEPTH_STENCIL_DESC dsDesc = {};
-	dsDesc.DepthEnable				= TRUE;
-	dsDesc.DepthWriteMask			= D3D12_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc				= D3D12_COMPARISON_FUNC_LESS_EQUAL;
-	dsDesc.StencilEnable			= FALSE;
+	if (dsDesc.DepthEnable = desc.WriteDepth)
+	{
+		dsDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		dsDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		dsDesc.StencilEnable = FALSE;
+	}
 
 	// シェーダー
 	HRESULT hr;
@@ -79,10 +81,16 @@ Pipeline::Pipeline(Description desc)
 	pipelineDesc.NumRenderTargets		= desc.RenderTargetNum;
 	for(int i = 0;i < desc.RenderTargetNum;++i)
 		pipelineDesc.RTVFormats[i]		= DXGI_FORMAT_R8G8B8A8_UNORM;
-	pipelineDesc.DSVFormat				= DXGI_FORMAT_UNKNOWN;
 	// 深度バッファ
 	pipelineDesc.DepthStencilState	= dsDesc;
-	pipelineDesc.DSVFormat			= DXGI_FORMAT_D32_FLOAT;
+	if (dsDesc.DepthEnable)
+	{
+		pipelineDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+	}
+	else
+	{
+		pipelineDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;;
+	}
 
 	// パイプラインの生成
 	hr = GetDevice()->CreateGraphicsPipelineState(&pipelineDesc, IID_PPV_ARGS(&PipelineData));

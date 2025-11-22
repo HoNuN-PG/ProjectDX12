@@ -19,9 +19,10 @@ ShadowPass::ShadowPass()
 {
 	PassType = RenderingPass::RenderingPassType::Shadow;
 
-	CascadeAreas.push_back(100);
-	CascadeAreas.push_back(300);
-	CascadeAreas.push_back(CAM_FAR);
+	CascadeAreas.resize(SHADOW_MAP_COUNT);
+	CascadeAreas[0] = (100);
+	CascadeAreas[1] = (300);
+	CascadeAreas[2] = (CAM_FAR);
 
 	pCamera = SceneManager::GetCurrentScene()->GetGameObject<CameraBase>();
 
@@ -45,8 +46,9 @@ void ShadowPass::Execute()
 	
 	// シャドウマップの描画
 	float nearDepth = CAM_NEAR;
-	for (int i = 0; i < CascadeAreas.size(); ++i) // 3枚のシャドウマップに描画
+	for (int i = 0; i < SHADOW_MAP_COUNT; ++i) // 3枚のシャドウマップに描画
 	{
+#if 0
 		// クロップ行列の計算
 		DirectX::XMFLOAT4X4 LVP = LightBase::GetLightViewProjectionMat();
 		DirectX::XMFLOAT4X4 crop = CalcCrop(nearDepth, i, LVP);
@@ -63,7 +65,24 @@ void ShadowPass::Execute()
 				DirectX::XMLoadFloat4x4(&lvpc4x4)
 			)
 		);
+#else 
+		// 行列の計算
+		DirectX::XMFLOAT4X4 LV = LightBase::GetLightViewMat();
+		DirectX::XMFLOAT4X4 crop = CalcTexelSnappedCrop(nearDepth, i, ShadowMapsSize[i].x,LV);
 
+		// ライトビュープロジェクション行列とクロップ行列を乗算
+		DirectX::XMMATRIX lvpc;
+		DirectX::XMMATRIX m1 = DirectX::XMLoadFloat4x4(&LV);
+		DirectX::XMMATRIX m2 = DirectX::XMLoadFloat4x4(&crop);
+		lvpc = DirectX::XMMatrixMultiply(m1, m2);
+		DirectX::XMFLOAT4X4 lvpc4x4;
+		DirectX::XMStoreFloat4x4(&lvpc4x4, lvpc);
+		DirectX::XMStoreFloat4x4(&lvpc4x4,
+			DirectX::XMMatrixTranspose(
+				DirectX::XMLoadFloat4x4(&lvpc4x4)
+			)
+		);
+#endif
 		// パラメータ設定
 		M_ShadowMapsBase::CurrentShadowMapsNo = i;
 		ShadowMapsParam = ShadowParam::ShadowMapsParam(lvpc4x4);
@@ -110,7 +129,7 @@ void ShadowPass::Execute()
 	// ぼかし
 	Gauss::ExecuteScreenGauss8D2(GaussIdx[TextureType::Near],{ VSMShadowMaps[TextureType::Near]->Width,VSMShadowMaps[TextureType::Near]->Height },
 		ShadowMaps[TextureType::Near], VSMShadowMaps[TextureType::Near]);
-	Gauss::ExecuteScreenGauss4D1(GaussIdx[TextureType::Middle], { VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height },
+	Gauss::ExecuteScreenGauss4D2(GaussIdx[TextureType::Middle], { VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height },
 		ShadowMaps[TextureType::Middle], VSMShadowMaps[TextureType::Middle]);
 	Gauss::ExecuteScreenGauss2D1(GaussIdx[TextureType::Far], { VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height },
 		ShadowMaps[TextureType::Far], VSMShadowMaps[TextureType::Far]);
@@ -190,6 +209,96 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(
 	return crop;
 }
 
+DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(float depth, int area, float res, DirectX::XMFLOAT4X4 lv)
+{
+	const float cascadeSize[3] = { 40.0f, 80.0f, 200.0f };
+	float size = cascadeSize[area];
+
+	// 手前の距離
+	float nearY = tanf(CameraBase::GetViewAngle() * 0.5f) * depth;
+	float nearX = nearY * CameraBase::GetAspect();
+
+	// 奥の距離
+	float farY = tanf(CameraBase::GetViewAngle() * 0.5f) * CascadeAreas[area];
+	float farX = farY * CameraBase::GetAspect();
+
+	// 手前の面の中心位置
+	DirectX::XMFLOAT3 nearPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), depth));
+	// 奥の面の中心位置
+	DirectX::XMFLOAT3 farPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), CascadeAreas[area]));
+
+	// ８頂点の計算
+	DirectX::XMFLOAT3 vertex[8];
+
+	DirectX::XMFLOAT3 up = CameraBase::m_MainUp;
+	DirectX::XMFLOAT3 nearUp = DXFL::Scale(up, nearY);
+	DirectX::XMFLOAT3 farUp = DXFL::Scale(up, farY);
+
+	DirectX::XMFLOAT3 right = pCamera->GetRight();
+	DirectX::XMFLOAT3 nearRight = DXFL::Scale(right, nearX);
+	DirectX::XMFLOAT3 farRight = DXFL::Scale(right, farX);
+
+	vertex[0] = DXFL::Add(nearPos, DXFL::Add(nearUp, nearRight));
+	vertex[1] = DXFL::Add(nearPos, DXFL::Add(nearUp, DXFL::Scale(nearRight, -1)));
+	vertex[2] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), nearRight));
+	vertex[3] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), DXFL::Scale(nearRight, -1)));
+	vertex[4] = DXFL::Add(farPos, DXFL::Add(farUp, farRight));
+	vertex[5] = DXFL::Add(farPos, DXFL::Add(farUp, DXFL::Scale(farRight, -1)));
+	vertex[6] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), farRight));
+	vertex[7] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), DXFL::Scale(farRight, -1)));
+
+	// ライトビュー変換
+	for (int i = 0; i < 8; ++i)
+	{
+		DirectX::XMVECTOR vec;
+		vec = DirectX::XMLoadFloat3(&vertex[i]);
+		vec = DirectX::XMVector3Transform(vec, DirectX::XMLoadFloat4x4(&lv));
+		DirectX::XMFLOAT3 v;
+		DirectX::XMStoreFloat3(&v, vec);
+		vertex[i] = v;
+	}
+
+	// 最大値と最小値の計算
+	float maxX, minX, maxY, minY,maxZ,minZ;
+	maxX = -1000; minX = 1000; maxY = -1000; minY = 1000; maxZ = -1000; minZ = 1000;
+	for (int i = 0; i < 8; ++i)
+	{
+		maxX = (std::max)(maxX, vertex[i].x);
+		minX = (std::min)(minX, vertex[i].x);
+		maxY = (std::max)(maxY, vertex[i].y);
+		minY = (std::min)(minY, vertex[i].y);
+		maxZ = (std::max)(maxZ, vertex[i].z);
+		minZ = (std::min)(minZ, vertex[i].z);
+	}
+
+	// テクセルスナップ
+	float width = (std::max)(1.0f,(maxX - minX));
+	float height = (std::max)(1.0f,(maxY - minY));
+	float worldUnitsPerTexelX = width / res;
+	float worldUnitsPerTexelY = height / res;
+
+	// 中心
+	float xCenter = (maxX + minX) * (0.5f);
+	float yCenter = (maxY + minY) * (0.5f);
+	xCenter = roundf(xCenter / worldUnitsPerTexelX) * worldUnitsPerTexelX;
+	yCenter = roundf(yCenter / worldUnitsPerTexelY) * worldUnitsPerTexelY;
+
+	// スナップ中心から最大最小を調整
+	float halfWidth = width * 0.5f;
+	float halfHeight = height * 0.5f;
+	minX = xCenter - halfWidth;
+	maxX = xCenter + halfWidth;
+	minY = yCenter - halfHeight;
+	maxY = yCenter + halfHeight;
+
+	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicOffCenterLH(minX, maxX, minY, maxY, 
+		minZ, maxZ);
+
+	DirectX::XMFLOAT4X4 out;
+	DirectX::XMStoreFloat4x4(&out, lightProj);
+	return out;
+}
+
 void ShadowPass::Init(
 	std::shared_ptr<DescriptorHeap> rtvHeap, 
 	std::shared_ptr<DescriptorHeap> srvHeap, 
@@ -202,7 +311,7 @@ void ShadowPass::Init(
 		desc.pRTVHeap = rtvHeap.get();
 		desc.pSRVHeap = srvHeap.get();
 
-		for (int i = 0; i < TextureType::Far + 1; ++i)
+		for (int i = 0; i <= TextureType::Far; ++i)
 		{
 			desc.width = ShadowMapsSize[i].x;
 			desc.height = ShadowMapsSize[i].y;
@@ -217,7 +326,7 @@ void ShadowPass::Init(
 		DepthStencil::Description desc = {};
 		desc.pDSVHeap = dsvHeap.get();
 
-		for (int i = 0; i < TextureType::Far + 1; ++i)
+		for (int i = 0; i <= TextureType::Far; ++i)
 		{
 			desc.width = ShadowMapsSize[i].x;
 			desc.height = ShadowMapsSize[i].y;

@@ -44,7 +44,7 @@ LightBase::LightBase()
 
 	// プロジェクションマトリクス設定
 	DirectX::XMStoreFloat4x4(&m_ProjectionMatrix,
-		DirectX::XMMatrixOrthographicLH(WINDOW_WIDTH / 100, WINDOW_HEIGHT / 100, CAM_NEAR, LIGHT_LENGTH)
+		DirectX::XMMatrixOrthographicLH(100, 100, CAM_NEAR, LIGHT_LENGTH)
 	);
 }
 

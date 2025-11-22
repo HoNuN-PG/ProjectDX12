@@ -94,6 +94,5 @@ void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE
 void RootSignature::Bind(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num)
 {
 	GetCommandList()->SetGraphicsRootSignature(RootSignatureData);
-	for (int i = 0; i < num; ++i)
-		GetCommandList()->SetGraphicsRootDescriptorTable(i, handle[i]);
+	for (int i = 0; i < num; ++i) GetCommandList()->SetGraphicsRootDescriptorTable(i, handle[i]);
 }

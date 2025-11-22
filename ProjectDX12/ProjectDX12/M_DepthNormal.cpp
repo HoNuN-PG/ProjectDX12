@@ -1,7 +1,7 @@
 
 #include "M_DepthNormal.h"
 
-void M_DepthNormal::Initialize(DescriptorHeap* heap)
+void M_DepthNormal::Initialize(DescriptorHeap* heap, Description desc)
 {
 	// 定数バッファ
 	{
@@ -23,7 +23,8 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = D3D12_CULL_MODE_BACK;
+	pipeline.cull = desc.cull;
+	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_DepthNormal.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_DepthNormal.cso";
 	pipeline.pInputLayout = layout;

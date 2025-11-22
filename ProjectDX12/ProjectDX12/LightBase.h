@@ -43,7 +43,7 @@ public:
 	static DirectX::XMFLOAT4X4 GetLightViewMat() { return m_ViewMatrix; }
 	static DirectX::XMFLOAT4X4 GetLightProjectionMat() { return m_ProjectionMatrix; }
 	static DirectX::XMFLOAT4X4 GetLightViewProjectionMat();
-
+	
 private:
 	/**
 	 * ライトパラメータ

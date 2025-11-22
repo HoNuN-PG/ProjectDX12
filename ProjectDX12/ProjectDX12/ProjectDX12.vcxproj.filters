@@ -595,6 +595,9 @@
     <FxCompile Include="CommonParam.hlsl">
       <Filter>リソース ファイル\Common</Filter>
     </FxCompile>
+    <FxCompile Include="PS_OpaqueSimpleShadowMap.hlsl">
+      <Filter>リソース ファイル\PS\ShadowMap</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

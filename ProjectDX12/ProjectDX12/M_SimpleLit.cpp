@@ -6,7 +6,7 @@
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
-void M_SimpleLit::Initialize(DescriptorHeap* heap)
+void M_SimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 {
 	// 定数バッファ
 	{
@@ -34,7 +34,8 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = D3D12_CULL_MODE_BACK;
+	pipeline.cull = desc.cull;
+	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_Object.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_SimpleLit.cso";
 	pipeline.pInputLayout = layout;
@@ -66,7 +67,7 @@ void M_SimpleLit::Bind()
 	Material::BindBase(desc, _countof(desc));
 }
 
-void M_OpaqueSimpleLit::Initialize(DescriptorHeap* heap)
+void M_OpaqueSimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 {
 	// 定数バッファ
 	{
@@ -98,7 +99,8 @@ void M_OpaqueSimpleLit::Initialize(DescriptorHeap* heap)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = D3D12_CULL_MODE_BACK;
+	pipeline.cull = desc.cull;
+	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_Object.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_OpaqueSimpleLit.cso";
 	pipeline.pInputLayout = layout;

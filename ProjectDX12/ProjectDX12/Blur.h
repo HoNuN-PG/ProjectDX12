@@ -101,9 +101,13 @@ public:
 	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	static void ExecuteScreenGauss4D1(int& gaussIdx,DirectX::XMFLOAT2 screen,
 	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	static void ExecuteScreenGauss4D2(int& gaussIdx, DirectX::XMFLOAT2 screen,
+		std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	static void ExecuteScreenGauss8D1(int& gaussIdx,DirectX::XMFLOAT2 screen,
 	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	static void ExecuteScreenGauss8D2(int& gaussIdx,DirectX::XMFLOAT2 screen,
+		std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	static void ExecuteScreenGauss8D4(int& gaussIdx, DirectX::XMFLOAT2 screen,
 		std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	static void CalcWeights(std::weak_ptr<float[]> weights,int num, float blur);
 

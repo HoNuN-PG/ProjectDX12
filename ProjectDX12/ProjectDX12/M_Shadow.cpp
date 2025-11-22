@@ -12,7 +12,7 @@
 
 UINT M_ShadowMapsBase::CurrentShadowMapsNo = 0;
 
-void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap)
+void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc)
 {
 	// 定数バッファ
 	{
@@ -44,7 +44,8 @@ void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = D3D12_CULL_MODE_BACK;
+	pipeline.cull = desc.cull;
+	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowMap.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_SimpleShadowMap.cso";
 	pipeline.pInputLayout = layout;
@@ -78,7 +79,84 @@ void M_SimpleShadowMaps::Bind()
 	Material::BindBase(desc, _countof(desc));
 }
 
-void M_ShadowRecieverBase::Initialize(DescriptorHeap* heap)
+void M_OpaqueSimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc)
+{
+	// 定数バッファ
+	{
+		ConstantBuffer::Description desc = {};
+		desc.pHeap = heap;
+		// Params
+		desc.size = sizeof(DirectX::XMFLOAT4X4);
+		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
+		desc.size = sizeof(ShadowParam::ShadowMapsParam);
+		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ1
+		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ2
+		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ3
+		desc.size = sizeof(CommonParam);
+		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+	}
+
+	RootSignature::ParameterTable param[] = {
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_VERTEX},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_VERTEX},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+	};
+	RootSignature::DescriptionTable rootsignature;
+	rootsignature.pParam = param;
+	rootsignature.paramNum = _countof(param);
+	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+
+	Pipeline::InputLayout layout[] = {
+			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
+			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
+			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
+			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
+	};
+	Pipeline::Description pipeline;
+	pipeline.cull = desc.cull;
+	pipeline.WriteDepth = desc.WriteDepth;
+	pipeline.WriteDepth = FALSE;
+	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowMap.cso";
+	pipeline.PSFile = L"../exe/assets/shader/PS_OpaqueSimpleShadowMap.cso";
+	pipeline.pInputLayout = layout;
+	pipeline.InputLayoutNum = _countof(layout);
+	pipeline.RenderTargetNum = 1;
+
+	Material::SetUp
+	(
+		heap,
+		rootsignature,
+		pipeline
+	);
+
+	common.AlphaCut = 0.9f;
+}
+
+void M_OpaqueSimpleShadowMaps::Bind()
+{
+	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+
+	// 定数バッファの設定
+	WriteParams((UINT)1, 0,
+		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Light).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	WriteParams((UINT)1, 1 + CurrentShadowMapsNo,
+		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + CurrentShadowMapsNo).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	Params[1 + SHADOW_MAP_COUNT]->Write(&common);
+
+	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
+	{
+		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		Params[0]->GetHandle().hGPU,
+		Params[1 + CurrentShadowMapsNo]->GetHandle().hGPU,
+		Textures[0]->GetHandle().hGPU,
+		Params[1 + SHADOW_MAP_COUNT]->GetHandle().hGPU,
+	};
+	Material::BindBase(desc, _countof(desc));
+}
+
+void M_ShadowRecieverBase::Initialize(DescriptorHeap* heap, Description desc)
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 	std::weak_ptr<ShadowPass> pass = engine.lock()->GetShadowMapsPass();
@@ -127,7 +205,7 @@ void M_ShadowRecieverBase::Bind()
 	Engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Far].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Far);
 }
 
-void M_ShadowVSMRecieverBase::Initialize(DescriptorHeap* heap)
+void M_ShadowVSMRecieverBase::Initialize(DescriptorHeap* heap, Description desc)
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 	std::weak_ptr<ShadowPass> pass = engine.lock()->GetShadowMapsPass();
@@ -169,7 +247,7 @@ void M_ShadowVSMRecieverBase::Bind()
 	WriteParams((UINT)1, 2,
 		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	// テクスチャコピー
+	// テクスチャコピ
 	std::weak_ptr<RenderingEngine> Engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
 	Engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Near].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::NearVSM);
 	Engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Middle].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::MiddleVSM);

@@ -47,15 +47,16 @@ public:
 	static float GetAspect() { return (float)WINDOW_WIDTH / WINDOW_HEIGHT; }
 	static DirectX::XMFLOAT4X4 GetViewProjectionInvMatrix();
 
-
 public:
 	static DirectX::XMFLOAT3 m_MainPos;
 	static DirectX::XMFLOAT3 m_MainUp;
 	static DirectX::XMFLOAT3 m_MainTarget;
 	static DirectX::XMFLOAT4X4 m_MainViewMatrix;
 	static DirectX::XMFLOAT4X4 m_MainProjMatrix;
+
 protected:
 	void SetMainParams();
+
 protected:
 	bool m_IsMain;
 

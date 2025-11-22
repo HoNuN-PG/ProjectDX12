@@ -10,7 +10,7 @@
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
-void M_Grid::Initialize(DescriptorHeap* heap)
+void M_Grid::Initialize(DescriptorHeap* heap, Description desc)
 {
 	// 定数バッファ
 	{
@@ -36,7 +36,8 @@ void M_Grid::Initialize(DescriptorHeap* heap)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = D3D12_CULL_MODE_BACK;
+	pipeline.cull = desc.cull;
+	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_WorldObject.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_Grid.cso";
 	pipeline.pInputLayout = layout;
@@ -66,7 +67,7 @@ void M_Grid::Bind()
 	Material::BindBase(desc, _countof(desc));
 }
 
-void M_GridShadow::Initialize(DescriptorHeap* heap)
+void M_GridShadow::Initialize(DescriptorHeap* heap, Description desc)
 {
 	// 定数バッファ
 	{
@@ -101,7 +102,8 @@ void M_GridShadow::Initialize(DescriptorHeap* heap)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = D3D12_CULL_MODE_BACK;
+	pipeline.cull = desc.cull;
+	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowReciever.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_GridShadow.cso";
 	pipeline.pInputLayout = layout;
@@ -115,7 +117,7 @@ void M_GridShadow::Initialize(DescriptorHeap* heap)
 		pipeline,
 		3
 	);
-	M_ShadowRecieverBase::Initialize(heap);
+	M_ShadowRecieverBase::Initialize(heap, desc);
 
 	GridParam.GridWidth = 0.05f;
 }
@@ -144,7 +146,7 @@ void M_GridShadow::Bind()
 	Material::BindBase(desc, _countof(desc));
 }
 
-void M_GridShadowVSM::Initialize(DescriptorHeap* heap)
+void M_GridShadowVSM::Initialize(DescriptorHeap* heap, Description desc)
 {
 	// 定数バッファ
 	{
@@ -180,7 +182,8 @@ void M_GridShadowVSM::Initialize(DescriptorHeap* heap)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = D3D12_CULL_MODE_BACK;
+	pipeline.cull = desc.cull;
+	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowReciever.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_GridShadowVSM.cso";
 	pipeline.pInputLayout = layout;
@@ -194,7 +197,7 @@ void M_GridShadowVSM::Initialize(DescriptorHeap* heap)
 		pipeline,
 		3
 	);
-	M_ShadowVSMRecieverBase::Initialize(heap);
+	M_ShadowVSMRecieverBase::Initialize(heap, desc);
 
 	GridParam.GridWidth = 0.05f;
 }

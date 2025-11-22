@@ -17,7 +17,7 @@ namespace Grid
 class M_Grid : public Material
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap) override;
+	virtual void Initialize(DescriptorHeap* heap, Description desc) override;
 	virtual void Bind() override;
 
 public:
@@ -32,7 +32,7 @@ private:
 class M_GridShadow : public M_ShadowRecieverBase
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap) override;
+	virtual void Initialize(DescriptorHeap* heap, Description desc) override;
 	virtual void Bind() override;
 
 public:
@@ -46,7 +46,7 @@ private:
 class M_GridShadowVSM : public M_ShadowVSMRecieverBase
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap) override;
+	virtual void Initialize(DescriptorHeap* heap, Description desc) override;
 	virtual void Bind() override;
 
 public:

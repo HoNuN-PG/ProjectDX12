@@ -77,7 +77,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	if (FAILED(hr)) { return hr; }
 #endif
 
-	// コマンドリスト/コマンドキュー/コマンドアロケーター
+	// コマンドアロケーター/コマンドリスト/コマンドキュー
 	// コマンドの種類
 	D3D12_COMMAND_LIST_TYPE cmdListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	

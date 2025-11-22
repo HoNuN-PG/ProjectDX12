@@ -14,13 +14,14 @@ Material::Material()
 void Material::Initialize(
 	std::shared_ptr<Material> material, 
 	DescriptorHeap* heap, 
+	Description desc,
 	RenderingTiming timing, 
 	RenderingPass::RenderingPassType passType
 )
 {
 	material->Timing = timing;
 	material->PassType = passType;
-	material->Initialize(heap);
+	material->Initialize(heap,desc);
 	SceneManager::GetCurrentScene()->GetRenderingEngine()->AddRenderingMaterial(material);
 }
 
@@ -41,6 +42,7 @@ void Material::SetUp(
 	{
 		Pipeline::Description desc = {};
 		desc.cull = pipeline.cull;
+		desc.WriteDepth = pipeline.WriteDepth;
 		desc.pInputLayout = pipeline.pInputLayout;
 		desc.InputLayoutNum = pipeline.InputLayoutNum;
 		desc.VSFile = pipeline.VSFile;

@@ -32,7 +32,7 @@ VS_OUT main(VS_IN input)
     output.pos = wvp;
 
     float2 tex = input.uv;
-	// 横方向にテクセルをずらした座標を格納
+	// 縦方向にテクセルをずらした座標を格納
     output.tex0.xy = float2(0.0f, 1.0f / height);
     output.tex1.xy = float2(0.0f, 2.0f / height);
 	// 反対方向にテクセルをずらした座標を格納

@@ -49,7 +49,7 @@ void Gauss::Create()
 			Instance->RTVHeap = std::make_shared<DescriptorHeap>(desc);
 		}
 
-		// Gauss4-----------------------------------------------------------------------
+		// Gauss2-----------------------------------------------------------------------
 		// ルートシグネチャ
 		{
 			RootSignature::ParameterTable param[] = {
@@ -205,7 +205,7 @@ void Gauss::Create()
 		}
 
 		Instance->Weights8.weights = std::make_shared<float[]>(BlurParam::GAUSS8_WEIGHTS);
-		CalcWeights(Instance->Weights8.weights, BlurParam::GAUSS8_WEIGHTS, 10);
+		CalcWeights(Instance->Weights8.weights, BlurParam::GAUSS8_WEIGHTS, 1);
 		// 重みの設定
 		{
 			float w[BlurParam::GAUSS8_WEIGHTS];
@@ -235,6 +235,12 @@ void Gauss::ExecuteScreenGauss4D1(int& gaussIdx, DirectX::XMFLOAT2 screen, std::
 	Instance->ExecuteScreenGauss4(gaussIdx, src, dest);
 }
 
+void Gauss::ExecuteScreenGauss4D2(int& gaussIdx, DirectX::XMFLOAT2 screen, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest)
+{
+	Instance->MakeGaussData(gaussIdx, screen, 2);
+	Instance->ExecuteScreenGauss4(gaussIdx, src, dest);
+}
+
 void Gauss::ExecuteScreenGauss8D1(int& gaussIdx, DirectX::XMFLOAT2 screen,
 	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest)
 {
@@ -247,6 +253,12 @@ void Gauss::ExecuteScreenGauss8D2(int& gaussIdx, DirectX::XMFLOAT2 screen,
 {
  	Instance->MakeGaussData(gaussIdx,screen,2);
 	Instance->ExecuteScreenGauss8(gaussIdx,src,dest);
+}
+
+void Gauss::ExecuteScreenGauss8D4(int& gaussIdx, DirectX::XMFLOAT2 screen, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest)
+{
+	Instance->MakeGaussData(gaussIdx, screen, 4);
+	Instance->ExecuteScreenGauss8(gaussIdx, src, dest);
 }
 
 void Gauss::CalcWeights(std::weak_ptr<float[]> weights, int num, float blur)
@@ -519,7 +531,7 @@ void Gauss::MakeGaussData(int& gaussIdx, DirectX::XMFLOAT2 screen, int split)
 		Instance->Params.push_back(std::make_unique<ConstantBuffer>(desc));
 
 		// スクリーンサイズ
-		BlurParam::ScreenParam p1(screen.x, screen.y / split, 1);
+		BlurParam::ScreenParam p1(screen.x / split, screen.y, 1);
 		BlurParam::ScreenParam p2(screen.x / split, screen.y / split, 1);
 		Instance->Params[gaussIdx * 2]->Write(&p1);
 		Instance->Params[gaussIdx * 2 + 1]->Write(&p2);

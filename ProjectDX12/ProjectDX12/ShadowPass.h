@@ -15,6 +15,8 @@
 
 #include "RenderingEngine.h"
 
+#define SHADOW_MAP_COUNT (3)
+
 class CameraBase;
 
 class ShadowPass : public RenderingPass
@@ -44,6 +46,11 @@ private:
 		float depth,
 		int area,
 		DirectX::XMFLOAT4X4 lvp);
+	DirectX::XMFLOAT4X4 CalcTexelSnappedCrop(
+		float depth,
+		int area,
+		float res,
+		DirectX::XMFLOAT4X4 lv);
 public:
 	virtual void Init(
 		std::shared_ptr<DescriptorHeap> rtvHeap,
