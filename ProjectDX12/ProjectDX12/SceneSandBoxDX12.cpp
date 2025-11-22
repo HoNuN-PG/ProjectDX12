@@ -125,7 +125,7 @@ HRESULT SceneSandBoxDX12::Init()
 		std::vector<std::shared_ptr<Material>> materials;
 
 		materials.push_back(opaque_depth_normal);
-		materials.push_back(grid_shadow);
+		materials.push_back(grid_shadow_vsm);
 	
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,-1,0 });

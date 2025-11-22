@@ -27,7 +27,6 @@ void M_Grid::Initialize(DescriptorHeap* heap, Description desc)
 	RootSignature::DescriptionTable rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
-	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
@@ -93,7 +92,6 @@ void M_GridShadow::Initialize(DescriptorHeap* heap, Description desc)
 	RootSignature::DescriptionTable rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
-	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
@@ -172,8 +170,6 @@ void M_GridShadowVSM::Initialize(DescriptorHeap* heap, Description desc)
 	RootSignature::DescriptionTable rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
-	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	rootsignature.filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 
 	Pipeline::InputLayout layout[] = {
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},

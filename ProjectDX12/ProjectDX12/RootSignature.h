@@ -34,7 +34,7 @@ public:
 			pParam(nullptr),
 			paramNum(0),
 			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP),
-			filter(D3D12_FILTER_MIN_MAG_MIP_POINT)
+			filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
 		{}
 	};
 	struct DescriptionTables

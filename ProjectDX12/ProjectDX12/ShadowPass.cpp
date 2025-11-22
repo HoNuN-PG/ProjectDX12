@@ -211,92 +211,44 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(
 
 DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(float depth, int area, float res, DirectX::XMFLOAT4X4 lv)
 {
-	const float cascadeSize[3] = { 40.0f, 80.0f, 200.0f };
-	float size = cascadeSize[area];
-
-	// 手前の距離
-	float nearY = tanf(CameraBase::GetViewAngle() * 0.5f) * depth;
-	float nearX = nearY * CameraBase::GetAspect();
-
-	// 奥の距離
-	float farY = tanf(CameraBase::GetViewAngle() * 0.5f) * CascadeAreas[area];
-	float farX = farY * CameraBase::GetAspect();
-
 	// 手前の面の中心位置
 	DirectX::XMFLOAT3 nearPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), depth));
 	// 奥の面の中心位置
 	DirectX::XMFLOAT3 farPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), CascadeAreas[area]));
 
-	// ８頂点の計算
-	DirectX::XMFLOAT3 vertex[8];
-
-	DirectX::XMFLOAT3 up = CameraBase::m_MainUp;
-	DirectX::XMFLOAT3 nearUp = DXFL::Scale(up, nearY);
-	DirectX::XMFLOAT3 farUp = DXFL::Scale(up, farY);
-
-	DirectX::XMFLOAT3 right = pCamera->GetRight();
-	DirectX::XMFLOAT3 nearRight = DXFL::Scale(right, nearX);
-	DirectX::XMFLOAT3 farRight = DXFL::Scale(right, farX);
-
-	vertex[0] = DXFL::Add(nearPos, DXFL::Add(nearUp, nearRight));
-	vertex[1] = DXFL::Add(nearPos, DXFL::Add(nearUp, DXFL::Scale(nearRight, -1)));
-	vertex[2] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), nearRight));
-	vertex[3] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), DXFL::Scale(nearRight, -1)));
-	vertex[4] = DXFL::Add(farPos, DXFL::Add(farUp, farRight));
-	vertex[5] = DXFL::Add(farPos, DXFL::Add(farUp, DXFL::Scale(farRight, -1)));
-	vertex[6] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), farRight));
-	vertex[7] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), DXFL::Scale(farRight, -1)));
-
+	// 視錐台の中心と半径を求める
+	DirectX::XMFLOAT3 center = DXFL::Scale(DXFL::Add(nearPos,farPos),0.5f);
+	float radius = DXFL::Magnitude(DXFL::Subtraction(farPos,nearPos)) * 0.5f;
+	
 	// ライトビュー変換
-	for (int i = 0; i < 8; ++i)
 	{
 		DirectX::XMVECTOR vec;
-		vec = DirectX::XMLoadFloat3(&vertex[i]);
+		vec = DirectX::XMLoadFloat3(&center);
 		vec = DirectX::XMVector3Transform(vec, DirectX::XMLoadFloat4x4(&lv));
 		DirectX::XMFLOAT3 v;
 		DirectX::XMStoreFloat3(&v, vec);
-		vertex[i] = v;
-	}
-
-	// 最大値と最小値の計算
-	float maxX, minX, maxY, minY,maxZ,minZ;
-	maxX = -1000; minX = 1000; maxY = -1000; minY = 1000; maxZ = -1000; minZ = 1000;
-	for (int i = 0; i < 8; ++i)
-	{
-		maxX = (std::max)(maxX, vertex[i].x);
-		minX = (std::min)(minX, vertex[i].x);
-		maxY = (std::max)(maxY, vertex[i].y);
-		minY = (std::min)(minY, vertex[i].y);
-		maxZ = (std::max)(maxZ, vertex[i].z);
-		minZ = (std::min)(minZ, vertex[i].z);
+		center = v;
 	}
 
 	// テクセルスナップ
-	float width = (std::max)(1.0f,(maxX - minX));
-	float height = (std::max)(1.0f,(maxY - minY));
-	float worldUnitsPerTexelX = width / res;
-	float worldUnitsPerTexelY = height / res;
+	float worldUnitsPerTexel = (radius * 2.0f) / res;
+	center.x = roundf(center.x / worldUnitsPerTexel) * worldUnitsPerTexel;
+	center.y = roundf(center.y / worldUnitsPerTexel) * worldUnitsPerTexel;
 
-	// 中心
-	float xCenter = (maxX + minX) * (0.5f);
-	float yCenter = (maxY + minY) * (0.5f);
-	xCenter = roundf(xCenter / worldUnitsPerTexelX) * worldUnitsPerTexelX;
-	yCenter = roundf(yCenter / worldUnitsPerTexelY) * worldUnitsPerTexelY;
-
-	// スナップ中心から最大最小を調整
-	float halfWidth = width * 0.5f;
-	float halfHeight = height * 0.5f;
-	minX = xCenter - halfWidth;
-	maxX = xCenter + halfWidth;
-	minY = yCenter - halfHeight;
-	maxY = yCenter + halfHeight;
+	float minX, maxX, minY, maxY,minZ,maxZ;
+	minX = center.x - radius;
+	maxX = center.x + radius;
+	minY = center.y - radius;
+	maxY = center.y + radius;
+	minZ = DXFL::Magnitude(DXFL::Subtraction(nearPos,pCamera->GetPosition()));
+	maxZ = DXFL::Magnitude(DXFL::Subtraction(farPos, pCamera->GetPosition()));
 
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicOffCenterLH(minX, maxX, minY, maxY, 
-		minZ, maxZ);
+		-radius, radius);
 
-	DirectX::XMFLOAT4X4 out;
-	DirectX::XMStoreFloat4x4(&out, lightProj);
-	return out;
+	DirectX::XMFLOAT4X4 crop;
+	DirectX::XMStoreFloat4x4(&crop, lightProj);
+	return crop;
 }
 
 void ShadowPass::Init(
