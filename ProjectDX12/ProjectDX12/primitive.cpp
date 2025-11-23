@@ -18,14 +18,14 @@ void Primitive::Rendering()
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingTiming();
-	UINT idx;
-	if (auto ret = MeshMaterial->GetMeshMaterial(current, idx))
+	MeshMaterialManager::MeshMaterialInfo info = MeshMaterial->GetMeshMaterial(current);
+	if (info.material)
 	{
-		ret->WriteWVP(ConstantWVP::Calc3DMatrix(
+		info.material->WriteWVP(ConstantWVP::Calc3DMatrix(
 			Owner.lock()->GetPosition(),
 			Owner.lock()->GetRotation(),
 			Owner.lock()->GetScale()));
-		ret->Bind();
-		MeshData[idx]->Draw();
+		info.material->Bind();
+		MeshData[info.meshIdx]->Draw();
 	}
 }

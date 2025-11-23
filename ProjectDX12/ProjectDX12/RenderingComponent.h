@@ -36,7 +36,7 @@ protected:
 	bool									 bInstanced;
 	std::unique_ptr<InstanceMeshBuffer>		 InstanceMeshData;
 
-	// メッシュのマテリアル
+	// メッシュのマテリアル所有者
 	std::unique_ptr<MeshMaterialManager>	 MeshMaterial;
 
 };

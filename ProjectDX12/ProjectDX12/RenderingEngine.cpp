@@ -672,6 +672,7 @@ void RenderingEngine::ViewPasses()
 
 void RenderingEngine::RefreshRendering()
 {
+	// メッシュのマテリアル使用状況リセット
 	RenderingComponents.remove_if(
 		[](std::weak_ptr<RenderingComponent> object)
 		{
@@ -682,6 +683,7 @@ void RenderingEngine::RefreshRendering()
 		component.lock()->RefreshRendering();
 	}
 
+	// マテリアルインスタンスのリセット
 	RenderingMaterials.remove_if(
 		[](std::weak_ptr<Material> object)
 		{

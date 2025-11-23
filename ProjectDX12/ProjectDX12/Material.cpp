@@ -22,6 +22,8 @@ void Material::Initialize(
 	material->Timing = timing;
 	material->PassType = passType;
 	material->Initialize(heap,desc);
+
+	// レンダリングエンジンにマテリアルを登録
 	SceneManager::GetCurrentScene()->GetRenderingEngine()->AddRenderingMaterial(material);
 }
 

@@ -75,10 +75,11 @@ public:
 		own->Components.push_back(component);
 		own->Components.back()->Init();
 
+		// •`‰æƒRƒ“ƒ|[ƒlƒ“ƒg‚Ì’Ç‰Á/“o˜^
 		if (std::shared_ptr<class RenderingComponent> c = std::dynamic_pointer_cast<RenderingComponent>(component))
 		{
 			RenderingComponents.push_back(c);
-			AddRenderingComponent2Engine(c);
+			AddRenderingComponent(c);
 		}
 
 		return component;
@@ -115,7 +116,7 @@ public:
 	bool Destroy();
 
 private:
-	void AddRenderingComponent2Engine(std::shared_ptr<class RenderingComponent> comp);
+	void AddRenderingComponent(std::shared_ptr<class RenderingComponent> comp);
 
 private:
 	std::vector<std::weak_ptr<class RenderingComponent>> RenderingComponents;

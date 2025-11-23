@@ -245,7 +245,6 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(float depth, int area, floa
 	vertex[6] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), farRight));
 	vertex[7] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), DXFL::Scale(farRight, -1)));
 
-
 	// ‹‘ä‚Ì’†S‚Æ”¼Œa‚ğ‹‚ß‚é
 	DirectX::XMFLOAT3 center = DXFL::Scale(DXFL::Add(nearPos,farPos),0.5f);
 	float radius = 0.0f;

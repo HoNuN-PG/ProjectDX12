@@ -28,9 +28,8 @@ void MeshMaterialManager::BindRenderingEngine(std::weak_ptr<class GameObject> ow
 	}
 }
 
-std::shared_ptr<Material> MeshMaterialManager::GetMeshMaterial(UINT timing, UINT& idx)
+MeshMaterialManager::MeshMaterialInfo MeshMaterialManager::GetMeshMaterial(UINT timing)
 {
-	idx = 0;
 	for (int i = 0; i < MeshMaterialsData.size(); ++i)
 	{
 		for (int j = 0; j < MeshMaterialsData[i].size(); ++j)
@@ -45,12 +44,16 @@ std::shared_ptr<Material> MeshMaterialManager::GetMeshMaterial(UINT timing, UINT
 			{
 				continue;
 			}
-			idx = i;
 			UsedList[i][j] = true;
-			return MeshMaterialsData[i][j];
+
+			MeshMaterialInfo info;
+			info.material = MeshMaterialsData[i][j];
+			info.meshIdx = i;
+
+			return info;
 		}
 	}
-	return nullptr;
+	return MeshMaterialInfo();
 }
 
 void MeshMaterialManager::ReuseRendering()

@@ -119,7 +119,7 @@ bool GameObject::Destroy()
 	return false;
 }
 
-void GameObject::AddRenderingComponent2Engine(std::shared_ptr<class RenderingComponent> comp)
+void GameObject::AddRenderingComponent(std::shared_ptr<class RenderingComponent> comp)
 {
 	Engine->AddRenderingComponent(comp);
 }

@@ -136,6 +136,7 @@ public:
 	// idx:パス内のテクスチャインデックス
 	std::shared_ptr<RenderTarget> GetPassTexture(UINT timing, UINT type, UINT idx);
 	void CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx);
+
 private:
 	std::shared_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
 	std::unique_ptr<RenderingPass> ODepthNormalPass;		// 不透明深度法線パス
@@ -167,10 +168,12 @@ public:
 	{
 		return CanvasPostProcess->GetVolume<T>();
 	}
+
 	// 作成した描画コンポーネントの参照を追加
 	void AddRenderingComponent(std::shared_ptr<class RenderingComponent> component);
 	// 作成したマテリアルの参照を追加
 	void AddRenderingMaterial(std::shared_ptr<Material> material);
+
 private:
 	std::vector<RenderingInfo> EnvironmentObjects;							// 環境描画オブジェクト
 	std::vector<RenderingInfo> DefferedObjects;								// ディファードライティングオブジェクト
