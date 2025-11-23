@@ -211,14 +211,47 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(
 
 DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(float depth, int area, float res, DirectX::XMFLOAT4X4 lv)
 {
+	// 手前の距離
+	float nearY = tanf(CameraBase::GetViewAngle() * 0.5f) * depth;
+	float nearX = nearY * CameraBase::GetAspect();
+
+	// 奥の距離
+	float farY = tanf(CameraBase::GetViewAngle() * 0.5f) * CascadeAreas[area];
+	float farX = farY * CameraBase::GetAspect();
+
 	// 手前の面の中心位置
 	DirectX::XMFLOAT3 nearPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), depth));
 	// 奥の面の中心位置
 	DirectX::XMFLOAT3 farPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), CascadeAreas[area]));
 
+	// ８頂点の計算
+	DirectX::XMFLOAT3 vertex[8];
+
+	DirectX::XMFLOAT3 up = CameraBase::m_MainUp;
+	DirectX::XMFLOAT3 nearUp = DXFL::Scale(up, nearY);
+	DirectX::XMFLOAT3 farUp = DXFL::Scale(up, farY);
+
+	DirectX::XMFLOAT3 right = pCamera->GetRight();
+	DirectX::XMFLOAT3 nearRight = DXFL::Scale(right, nearX);
+	DirectX::XMFLOAT3 farRight = DXFL::Scale(right, farX);
+
+	vertex[0] = DXFL::Add(nearPos, DXFL::Add(nearUp, nearRight));
+	vertex[1] = DXFL::Add(nearPos, DXFL::Add(nearUp, DXFL::Scale(nearRight, -1)));
+	vertex[2] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), nearRight));
+	vertex[3] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), DXFL::Scale(nearRight, -1)));
+	vertex[4] = DXFL::Add(farPos, DXFL::Add(farUp, farRight));
+	vertex[5] = DXFL::Add(farPos, DXFL::Add(farUp, DXFL::Scale(farRight, -1)));
+	vertex[6] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), farRight));
+	vertex[7] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), DXFL::Scale(farRight, -1)));
+
 	// 視錐台の中心と半径を求める
 	DirectX::XMFLOAT3 center = DXFL::Scale(DXFL::Add(nearPos,farPos),0.5f);
-	float radius = DXFL::Magnitude(DXFL::Subtraction(farPos,nearPos)) * 0.5f;
+	float radius = 0.0f;
+	for (int i = 0; i < 8; ++i)
+	{
+		float temp = DXFL::Magnitude(DXFL::Subtraction(vertex[i],center));
+		radius = radius < temp ? temp : radius;
+	}
 	
 	// ライトビュー変換
 	{
