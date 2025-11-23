@@ -20,8 +20,8 @@ ShadowPass::ShadowPass()
 	PassType = RenderingPass::RenderingPassType::Shadow;
 
 	CascadeAreas.resize(SHADOW_MAP_COUNT);
-	CascadeAreas[0] = (100);
-	CascadeAreas[1] = (300);
+	CascadeAreas[0] = (50);
+	CascadeAreas[1] = (250);
 	CascadeAreas[2] = (CAM_FAR);
 
 	pCamera = SceneManager::GetCurrentScene()->GetGameObject<CameraBase>();
@@ -185,6 +185,7 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(
 		DirectX::XMStoreFloat3(&v, vec);
 		vertex[i] = v;
 	}
+
 	// 最大値と最小値の計算
 	float maxX, minX, maxY, minY;
 	maxX = -1000; minX = 1000; maxY = -1000; minY = 1000;
@@ -244,6 +245,7 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(float depth, int area, floa
 	vertex[6] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), farRight));
 	vertex[7] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), DXFL::Scale(farRight, -1)));
 
+
 	// 視錐台の中心と半径を求める
 	DirectX::XMFLOAT3 center = DXFL::Scale(DXFL::Add(nearPos,farPos),0.5f);
 	float radius = 0.0f;
@@ -252,7 +254,15 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(float depth, int area, floa
 		float temp = DXFL::Magnitude(DXFL::Subtraction(vertex[i],center));
 		radius = radius < temp ? temp : radius;
 	}
-	
+
+	// 半径の調整
+	radius *= 1.01f;
+
+	// スナップ単位
+	float unitsPerTexel = (radius * 2.0f) / res;
+
+	radius = roundf(radius / unitsPerTexel) * unitsPerTexel;
+
 	// ライトビュー変換
 	{
 		DirectX::XMVECTOR vec;
@@ -264,9 +274,8 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(float depth, int area, floa
 	}
 
 	// テクセルスナップ
-	float worldUnitsPerTexel = (radius * 2.0f) / res;
-	center.x = roundf(center.x / worldUnitsPerTexel) * worldUnitsPerTexel;
-	center.y = roundf(center.y / worldUnitsPerTexel) * worldUnitsPerTexel;
+	center.x = roundf(center.x / unitsPerTexel) * unitsPerTexel;
+	center.y = roundf(center.y / unitsPerTexel) * unitsPerTexel;
 
 	float minX, maxX, minY, maxY,minZ,maxZ;
 	minX = center.x - radius;

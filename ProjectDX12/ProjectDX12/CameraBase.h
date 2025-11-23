@@ -84,15 +84,12 @@ private:
 public:
 	CameraDebug();
 	~CameraDebug() {}
+	virtual void Init() override;
 	virtual void Update() override;
 	virtual void Draw() override;
 
 private:
 	void ProcDCC(Argument& arg);
-
-public:
-	static DirectX::XMFLOAT4X4 GetCustomProjMatrix(UINT32 with, UINT32 height);
-	static DirectX::XMFLOAT4X4 GetCustomProjMatrix_Perspective(UINT32 with, UINT32 height);
 
 private:
 	POINT m_oldPos;

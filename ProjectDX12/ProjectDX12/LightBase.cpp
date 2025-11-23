@@ -30,22 +30,7 @@ LightBase::LightBase()
 	m_Power						= 1.0f;
 	m_Ambient					= 0.2f;
 
-	// 角度と距離・注視点からカメラ位置を計算
-	m_Position.x = cosf(m_Rad.lateY) * sinf(m_Rad.lateXZ) * (m_Dist)+m_Target.x;
-	m_Position.y = sinf(m_Rad.lateY) * (m_Dist)+m_Target.y;
-	m_Position.z = cosf(m_Rad.lateY) * (-cosf(m_Rad.lateXZ)) * (m_Dist)+m_Target.z;
-
-	// ビューマトリクス設定
-	DirectX::XMFLOAT3 up = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-	DirectX::XMStoreFloat4x4(&m_ViewMatrix,
-		DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&m_Position),
-			DirectX::XMLoadFloat3(&m_Target), XMLoadFloat3(&up))
-	);
-
-	// プロジェクションマトリクス設定
-	DirectX::XMStoreFloat4x4(&m_ProjectionMatrix,
-		DirectX::XMMatrixOrthographicLH(100, 100, CAM_NEAR, LIGHT_LENGTH)
-	);
+	Update();
 }
 
 void LightBase::Update()

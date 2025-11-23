@@ -8,16 +8,48 @@
 
 CameraDebug::CameraDebug()
 {
+	m_MoveSpeed = 0.5;
+	m_MouseSpeed = 1.0f;
+
 	m_IsMain = true;
 
 	m_Pos		= { 0,5,-10 };
 	m_Up		= { 0,1,0 };
 	m_Target	= { 0,0,0 };
 
-	m_MoveSpeed		= 0.5;
-	m_MouseSpeed	= 1.0f;
-
 	SetMainParams();
+}
+
+void CameraDebug::Init()
+{
+	GetCursorPos(&m_oldPos);
+
+	Argument arg;
+	// マウス移動量
+	POINT cursorPos;
+	GetCursorPos(&cursorPos);
+	arg.mouseMove = DirectX::XMFLOAT2((float)cursorPos.x - m_oldPos.x, (float)cursorPos.y - m_oldPos.y);
+	m_oldPos = cursorPos;
+
+	// カメラ情報
+	arg.vCamPos = DirectX::XMLoadFloat3(&m_Pos);
+	arg.vCamLook = DirectX::XMLoadFloat3(&m_Target);
+	DirectX::XMVECTOR vCamUp = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&m_Up));
+	DirectX::XMVECTOR vFront = DirectX::XMVectorSubtract(arg.vCamLook, arg.vCamPos);
+	// カメラ姿勢
+	arg.vCamFront = DirectX::XMVector3Normalize(vFront);
+	arg.vCamSide = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(vCamUp, arg.vCamFront));
+	arg.vCamUp = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(arg.vCamFront, arg.vCamSide));
+	// フォーカス距離
+	DirectX::XMStoreFloat(&arg.focus, DirectX::XMVector3Length(vFront));
+
+	ProcDCC(arg);
+
+	// メインカメラパラメータの設定
+	if (m_IsMain)
+	{
+		SetMainParams();
+	}
 }
 
 void CameraDebug::Update()
@@ -55,22 +87,6 @@ void CameraDebug::Update()
 	{
 		SetMainParams();
 	}
-	
-	// マトリクス計算
-	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
-		DirectX::XMLoadFloat3(&m_MainPos),
-		DirectX::XMLoadFloat3(&m_MainTarget),
-		XMLoadFloat3(&m_MainUp));
-	view = DirectX::XMMatrixTranspose(view);
-	DirectX::XMStoreFloat4x4(&m_MainViewMatrix, view);
-
-	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(
-		GetViewAngle(),
-		(float)WINDOW_WIDTH / WINDOW_HEIGHT, 
-		(float)CAM_NEAR, 
-		(float)CAM_FAR);
-	proj = DirectX::XMMatrixTranspose(proj);
-	DirectX::XMStoreFloat4x4(&m_MainProjMatrix, proj);
 }
 
 void CameraDebug::Draw()
@@ -115,29 +131,20 @@ void CameraDebug::ProcDCC(Argument& arg)
 
 	// Transform更新
 	SetPosition(m_Pos);
-}
 
-DirectX::XMFLOAT4X4 CameraDebug::GetCustomProjMatrix(UINT32 with, UINT32 height)
-{
+	// マトリクス計算
+	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
+		DirectX::XMLoadFloat3(&m_MainPos),
+		DirectX::XMLoadFloat3(&m_MainTarget),
+		XMLoadFloat3(&m_MainUp));
+	view = DirectX::XMMatrixTranspose(view);
+	DirectX::XMStoreFloat4x4(&m_MainViewMatrix, view);
+
 	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(
 		GetViewAngle(),
-		(float)with / height,
+		(float)WINDOW_WIDTH / WINDOW_HEIGHT,
 		(float)CAM_NEAR,
 		(float)CAM_FAR);
 	proj = DirectX::XMMatrixTranspose(proj);
-	DirectX::XMFLOAT4X4 mat;
-	DirectX::XMStoreFloat4x4(&mat, proj);
-	return mat;
-}
-
-DirectX::XMFLOAT4X4 CameraDebug::GetCustomProjMatrix_Perspective(UINT32 with, UINT32 height)
-{
-	DirectX::XMFLOAT4X4 mat;
-	DirectX::XMStoreFloat4x4(&mat,
-		DirectX::XMMatrixOrthographicLH(
-			with,
-			height,
-			(float)CAM_NEAR,
-			(float)CAM_FAR));
-	return mat;
+	DirectX::XMStoreFloat4x4(&m_MainProjMatrix, proj);
 }
