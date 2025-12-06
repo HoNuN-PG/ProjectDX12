@@ -109,13 +109,13 @@
       <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>assimp;DirectX12;DirectXTex</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>assimp;DirectXHeaders</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>assimp;DirectX12;DirectXTex</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>assimp</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)D$(TargetExt)</OutputFile>
     </Link>
     <FxCompile>
@@ -155,15 +155,15 @@
       <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>assimp;DirectX12;DirectXTex</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>assimp;DirectXHeaders</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>assimp;DirectX12;DirectXTex</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>assimp</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
@@ -237,7 +237,6 @@
     <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="DirectX.h" />
-    <ClInclude Include="DirectXTex\TextureLoad.h" />
     <ClInclude Include="FollowActorComponent.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GlobalResourceKey.h" />
@@ -278,6 +277,7 @@
     <ClInclude Include="sphere.h" />
     <ClInclude Include="StartUp.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureLoad.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="vignette.h" />
     <ClInclude Include="volume.h" />
@@ -598,11 +598,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\directxtk12_uwp.2025.10.28.1\build\native\directxtk12_uwp.targets" Condition="Exists('..\packages\directxtk12_uwp.2025.10.28.1\build\native\directxtk12_uwp.targets')" />
+    <Import Project="..\packages\directxtex_uwp.2025.10.28.1\build\native\directxtex_uwp.targets" Condition="Exists('..\packages\directxtex_uwp.2025.10.28.1\build\native\directxtex_uwp.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\directxtk12_uwp.2025.10.28.1\build\native\directxtk12_uwp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk12_uwp.2025.10.28.1\build\native\directxtk12_uwp.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtex_uwp.2025.10.28.1\build\native\directxtex_uwp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtex_uwp.2025.10.28.1\build\native\directxtex_uwp.targets'))" />
   </Target>
 </Project>

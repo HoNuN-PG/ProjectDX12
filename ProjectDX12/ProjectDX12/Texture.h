@@ -1,9 +1,9 @@
 #ifndef ___TEXTURE_H___
 #define ___TEXTURE_H___
 
-#include <TextureLoad.h>
-
 #include "DescriptorHeap.h"
+
+#include "TextureLoad.h"
 
 class Texture
 {

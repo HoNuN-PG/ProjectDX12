@@ -2,10 +2,12 @@
 #define ___DIRECTX_H___
 
 #include <d3d12.h>
-#include <directx/d3dx12.h>
+#include <dxgi.h>
 #include <dxgi1_6.h>
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
+
+#include <directx/d3dx12.h>
 
 #define WINDOW_WIDTH (1920)
 #define WINDOW_HEIGHT (1080)

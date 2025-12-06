@@ -159,31 +159,10 @@ HRESULT SceneSandBoxDX12::Init()
 		meshmaterials.push_back(materials);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
-		obj->SetPosition({ 10,-2.5f,0 });
+		obj->SetPosition({ 0,-2.5f,0 });
 		obj->SetScale({2.5f,2.5f,2.5f});
 		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
 		model->Create(meshmaterials, "../exe/assets/model/tree/height_tree.fbx");
-	}
-	{// ñÿ2
-		/*std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials;
-		std::vector<std::shared_ptr<Material>> materials;
-
-		materials.push_back(shadow_map);
-		materials.push_back(opaque_depth_normal);
-		materials.push_back(custom_opaque_depth_normal);
-		materials.push_back(simple_lit);
-		meshmaterials.push_back(materials);
-
-		materials.clear();
-		materials.push_back(shadow_map);
-		materials.push_back(simple_lit);
-		meshmaterials.push_back(materials);
-
-		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
-		obj->SetPosition({ -10,-2.5f,0 });
-		obj->SetScale({ 2.5f,2.5f,2.5f });
-		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
-		model->Create(meshmaterials, "../exe/assets/model/tree/height_tree.fbx");*/
 	}
 	{// ãç
 		// Deffered
