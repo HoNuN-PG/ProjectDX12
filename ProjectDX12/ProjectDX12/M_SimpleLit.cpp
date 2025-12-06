@@ -114,7 +114,7 @@ void M_OpaqueSimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 		pipeline
 	);
 
-	common.AlphaCut = 0.9f;
+	common.AlphaCut = 0.1f;
 }
 
 void M_OpaqueSimpleLit::Bind()

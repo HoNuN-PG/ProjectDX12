@@ -1,9 +1,7 @@
 #ifndef ___TEXTURE_H___
 #define ___TEXTURE_H___
 
-#include <DirectXTex.h>
 #include <TextureLoad.h>
-#pragma comment(lib, "DirectXTex.lib")
 
 #include "DescriptorHeap.h"
 
@@ -24,6 +22,7 @@ public:
 
 private:
 	ID3D12Resource*			Resource;	// テクスチャリソース
+	ID3D12Resource*			Uploader;	// アップローダ
 	DescriptorHeap::Handle	Handle;
 
 };

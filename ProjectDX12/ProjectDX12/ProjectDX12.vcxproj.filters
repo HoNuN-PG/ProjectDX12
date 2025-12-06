@@ -166,6 +166,15 @@
     <Filter Include="ソース ファイル\Material\Materials">
       <UniqueIdentifier>{d78f6a5e-abc0-47b4-96a1-dec250921816}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\DirectXTex">
+      <UniqueIdentifier>{4ead2085-f823-4f6f-a6db-83cfcd50d853}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Debug">
+      <UniqueIdentifier>{bfa45a77-78b7-4254-bad8-0f85a9583fb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Debug">
+      <UniqueIdentifier>{d11d7630-a19d-4f4c-ab23-5503f491e1cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectX.cpp">
@@ -209,9 +218,6 @@
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>ソース ファイル\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugImGUI.cpp">
-      <Filter>ソース ファイル\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="StartUp.cpp">
       <Filter>ソース ファイル\System</Filter>
@@ -321,6 +327,9 @@
     <ClCompile Include="ShadowPass.cpp">
       <Filter>ソース ファイル\System\Rendering\Pass</Filter>
     </ClCompile>
+    <ClCompile Include="DebugImGUI.cpp">
+      <Filter>ソース ファイル\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectX.h">
@@ -373,9 +382,6 @@
     </ClInclude>
     <ClInclude Include="SceneBase.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugImGUI.h">
-      <Filter>ヘッダー ファイル\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="SceneSandBoxDX12.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
@@ -490,6 +496,12 @@
     </ClInclude>
     <ClInclude Include="MeshMaterialManager.h">
       <Filter>ヘッダー ファイル\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTex\TextureLoad.h">
+      <Filter>ヘッダー ファイル\DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugImGUI.h">
+      <Filter>ヘッダー ファイル\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

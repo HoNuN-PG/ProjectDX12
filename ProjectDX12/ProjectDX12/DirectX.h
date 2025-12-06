@@ -18,6 +18,7 @@ void DrawDirectX(void(func)(void),const float clearColor[4]);
 
 ID3D12Device* GetDevice();
 ID3D12GraphicsCommandList* GetCommandList();
+ID3D12CommandQueue* GetCommandQueue();
 D3D12_CPU_DESCRIPTOR_HANDLE GetRTV();
 
 void SetViewPort(float width, float height);

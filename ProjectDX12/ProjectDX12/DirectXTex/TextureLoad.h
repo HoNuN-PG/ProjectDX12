@@ -4,22 +4,10 @@
 #include "DirectXTex.h"
 
 #ifdef _DEBUG
-#if (_MSC_VER >= 1920)
-#ifdef _WIN64
-#pragma comment(lib, "DirectXTex/DirectXTexD_x64_vs2019.lib")
+#pragma comment(lib, "DirectXTex/Debug/DirectXTex.lib")
 #else
-#pragma comment(lib, "DirectXTex/DirectXTexD_x86_vs2019.lib")
-#endif
-#elif (_MSC_VER >= 1910)
-#ifdef _WIN64
-#pragma comment(lib, "DirectXTex/DirectXTexD_x64_vs2017.lib")
-#else
-#pragma comment(lib, "DirectXTex/DirectXTexD_x86_vs2017.lib")
-#endif
-#endif
-#else
-//#pragma comment(lib, "DirectXTex/DirectXTex.lib")
-#endif
+#pragma comment(lib, "DirectXTex/Relese/DirectXTex.lib")
+#endif // _DEBUG
 
 inline HRESULT LoadTexture(const char* fileName, DirectX::TexMetadata* pInfo, DirectX::ScratchImage* pImage)
 {
@@ -30,10 +18,12 @@ inline HRESULT LoadTexture(const char* fileName, DirectX::TexMetadata* pInfo, Di
 	MultiByteToWideChar(0, 0, fileName, -1, wPath, MAX_PATH);
 
 	// hdr‘Î‰ž
-	if (strstr(fileName, ".hdr")) {
+	if (strstr(fileName, ".hdr")) 
+	{
 		hr = DirectX::LoadFromHDRFile(wPath, pInfo, *pImage);
 	}
-	else {
+	else
+	{
 		hr = DirectX::LoadFromWICFile(wPath, DirectX::WIC_FLAGS_NONE, pInfo, *pImage);
 	}
 

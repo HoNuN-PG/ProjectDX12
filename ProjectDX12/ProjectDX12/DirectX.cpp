@@ -25,6 +25,8 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 #endif
 
 	HRESULT hr;
+
+	// ファクトリ作成
 #ifdef _DEBUG
 	hr = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&g_pFactory));
 #else
@@ -51,13 +53,11 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 				D3D_FEATURE_LEVEL_12_1,
 				D3D_FEATURE_LEVEL_12_0,
 			};
-			bool succeeded = false;
 			for (auto lv : featureLevels) 
 			{
 				hr = D3D12CreateDevice(dxgiAdapter.Get(),lv, IID_PPV_ARGS(&g_pDevice));
 				if (SUCCEEDED(hr)) 
-				{ 
-					succeeded = true;
+				{
 					break; 
 				}
 			}
@@ -171,30 +171,26 @@ void UninitDirectX()
 void DrawDirectX(void(func)(void), const float clearColor[4])
 {
 	// 描画準備
-	UINT bbIdx = g_pSwapChain->GetCurrentBackBufferIndex(); // 現在のバックバッファ
+	UINT bbIdx = g_pSwapChain->GetCurrentBackBufferIndex(); // 現在のバックバッファのインデックス
 	g_pCmdAllocator->Reset();								// コマンドアロケーターのクリア
-	g_pCmdList->Reset(g_pCmdAllocator, nullptr);			// コマンドリストのクローズを解除して再び描画命令を蓄積
+	g_pCmdList->Reset(g_pCmdAllocator, nullptr);			// コマンドリストのクリア
 
-	// バックバッファをレンダーターゲットとして利用
+	// バックバッファに対するリソースバリア
 	D3D12_RESOURCE_BARRIER barrierDesc = {};
-	barrierDesc.Type					= D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;	// 使用方法の移行
-	barrierDesc.Flags					= D3D12_RESOURCE_BARRIER_FLAG_NONE;			// フラグ無し
-	barrierDesc.Transition.pResource	= g_ppBackBuf[bbIdx];						// 移行するリソース
+	barrierDesc.Type					= D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrierDesc.Flags					= D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrierDesc.Transition.pResource	= g_ppBackBuf[bbIdx];
 	barrierDesc.Transition.Subresource	= 0;
-	barrierDesc.Transition.StateBefore	= D3D12_RESOURCE_STATE_PRESENT;				// 以前の使用方法
-	barrierDesc.Transition.StateAfter	= D3D12_RESOURCE_STATE_RENDER_TARGET;		// 移行後の使用方法
+	barrierDesc.Transition.StateBefore	= D3D12_RESOURCE_STATE_PRESENT;
+	barrierDesc.Transition.StateAfter	= D3D12_RESOURCE_STATE_RENDER_TARGET;
 	g_pCmdList->ResourceBarrier(1,&barrierDesc);
 
 	// レンダーターゲット設定
 	D3D12_CPU_DESCRIPTOR_HANDLE hRTV;
 	hRTV = g_RTVHeap->GetCPUDescriptorHandleForHeapStart();
 	hRTV.ptr += bbIdx * g_pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	g_pCmdList->OMSetRenderTargets(
-		1,
-		&hRTV,
-		false,
-		nullptr
-	);
+	SetRenderTarget(1,&hRTV);
+
 	// レンダーターゲットのクリア
 	g_pCmdList->ClearRenderTargetView(hRTV, clearColor, 0, nullptr);
 
@@ -202,15 +198,14 @@ void DrawDirectX(void(func)(void), const float clearColor[4])
 	ID3D12CommandList* pCmdList[] = { g_pCmdList };
 	func();
 
-	// 画面出力準備
+	// バックバッファに対するリソースバリア
 	barrierDesc.Transition.StateBefore	= D3D12_RESOURCE_STATE_RENDER_TARGET;
-	// 画面への出力リソース
 	barrierDesc.Transition.StateAfter	= D3D12_RESOURCE_STATE_PRESENT;
 	g_pCmdList->ResourceBarrier(1, &barrierDesc);
 
 	// 描画命令発行停止
-	g_pCmdList->Close();							// コマンドリストからの描画命令の発行を停止
-	g_pCmdQueue->ExecuteCommandLists(1, pCmdList);	// コマンドリストに紐づくアロケータから描画命令を送信
+	g_pCmdList->Close();							// コマンドリストの停止
+	g_pCmdQueue->ExecuteCommandLists(1, pCmdList);	// コマンドリストの内容を発行
 
 	// 画面出力
 	g_pSwapChain->Present(1, 0);
@@ -220,10 +215,10 @@ void DrawDirectX(void(func)(void), const float clearColor[4])
 	if (g_pFence->GetCompletedValue() != g_fenceLevel)
 	{
 		// Windowsのイベントで処理を待つ
-		auto hWait = CreateEvent(nullptr, false, false, nullptr);
-		g_pFence->SetEventOnCompletion(g_fenceLevel, hWait);		// 終了値に到達した際に通知するイベントを設定
-		WaitForSingleObject(hWait, INFINITE);						// イベントが発行されるまで待機
-		CloseHandle(hWait);											// イベントの破棄
+		auto event = CreateEvent(nullptr, false, false, nullptr);
+		g_pFence->SetEventOnCompletion(g_fenceLevel, event);		// 終了値に到達した際に通知するイベントを設定
+		WaitForSingleObject(event, INFINITE);						// イベントが発行されるまで待機
+		CloseHandle(event);											// イベントの破棄
 	}
 }
 
@@ -235,6 +230,11 @@ ID3D12Device * GetDevice()
 ID3D12GraphicsCommandList * GetCommandList()
 {
 	return g_pCmdList;
+}
+
+ID3D12CommandQueue* GetCommandQueue()
+{
+	return g_pCmdQueue;
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE GetRTV()
