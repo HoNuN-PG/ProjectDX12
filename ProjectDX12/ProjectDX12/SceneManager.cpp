@@ -1,9 +1,11 @@
 
 #include <algorithm>
 
+// Scene
 #include "SceneManager.h"
 #include "SceneSandBoxDX12.h"
 
+// System
 #include "Input.h"
 
 int SceneManager::CurrentScene = SceneManager::SceneType::SANDBOXDX12;
@@ -24,7 +26,8 @@ HRESULT SceneManager::Init()
 	HRESULT hr = E_FAIL;
 	if (!Scenes[CurrentScene])
 	{
-		switch (CurrentScene) {
+		switch (CurrentScene) 
+		{
 		default:break;
 		case SANDBOXDX12:Scenes[CurrentScene] = std::make_unique<SceneSandBoxDX12>();	break;
 		}	
@@ -48,7 +51,8 @@ void SceneManager::Update()
 		CurrentScene = min(CurrentScene + 1, MAX_SCENES - 1);
 	if (Input::GetKeyTrigger(VK_LEFT))
 		CurrentScene = max(0, CurrentScene - 1);
-	if (CurrentScene != preScene) {
+	if (CurrentScene != preScene) 
+	{
 		int newScene = CurrentScene;
 		CurrentScene = preScene;
 		Uninit();

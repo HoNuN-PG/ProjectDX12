@@ -1,8 +1,9 @@
 
+// System/GameObject
 #include "GameObject.h"
-
+// System/Rendering/Pass
 #include "CustomDepthNormalPass.h"
-
+// System/Rendering/Texture
 #include "RenderTarget.h"
 
 CustomDepthNormalPass::CustomDepthNormalPass()
@@ -24,7 +25,8 @@ void CustomDepthNormalPass::Execute()
 	Depth->Clear(clearColor);
 	Normal->Clear(clearColor);
 	DSV->Clear();
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
+	{
 		Depth->GetHandleRTV().hCPU,
 		Normal->GetHandleRTV().hCPU,
 	};

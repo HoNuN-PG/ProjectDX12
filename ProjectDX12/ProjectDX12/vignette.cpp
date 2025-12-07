@@ -1,13 +1,16 @@
 
+// ImGUI
 #include "imgui/imgui.h"
 
+// Scene
 #include "SceneManager.h"
 
+// System/Constant
 #include "ConstantBuffer.h"
-
+// System/Rendering/Volume
 #include "Copy.h"
 #include "vignette.h"
-
+// System/Rendering
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
@@ -17,7 +20,8 @@ void Vignette::Init()
 
 	// ルートシグネチャ
 	{
-		RootSignature::ParameterTable param[] = {
+		RootSignature::ParameterTable param[] = 
+		{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
@@ -28,7 +32,8 @@ void Vignette::Init()
 	}
 	// パイプライン
 	{
-		Pipeline::InputLayout layout[] = {
+		Pipeline::InputLayout layout[] = 
+		{
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 		};

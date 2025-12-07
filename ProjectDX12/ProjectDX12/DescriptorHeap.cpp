@@ -1,4 +1,5 @@
 
+// System/Pipeline
 #include "DescriptorHeap.h"
 
 DescriptorHeap::DescriptorHeap(Description desc)
@@ -8,7 +9,8 @@ DescriptorHeap::DescriptorHeap(Description desc)
 {
 	// ディスクリプターヒープ作成
 	D3D12_DESCRIPTOR_HEAP_DESC heap = {};
-	Type = heap.Type		= desc.heapType;
+	Type = heap.Type				= desc.heapType;
+
 	// シェーダーから参照するか
 	if (desc.heapType == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 		heap.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;

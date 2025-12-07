@@ -2,6 +2,7 @@
 #include <d3dcompiler.h>
 #include <vector>
 
+// System/Rendering/Pipeline
 #include "Pipeline.h"
 
 Pipeline::Pipeline(Description desc)

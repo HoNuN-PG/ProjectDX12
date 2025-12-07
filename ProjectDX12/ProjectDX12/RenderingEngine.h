@@ -6,18 +6,21 @@
 #include <unordered_map>
 #include <vector>
 
+// Material
 #include "Material.h"
+// Material/Materials
 #include "M_Shadow.h"
 
+// System/Constant
 #include "ConstantBuffer.h"
-
+// System/Rendering/Pass
 #include "RenderingPass.h"
-
+// System/Rendering/Pipeline
 #include "DescriptorHeap.h"
-
+// System/Rendering/Texture
 #include "DepthStencil.h"
 #include "RenderTarget.h"
-
+// System/Rendering
 #include "PostProcess.h"
 
 class CameraBase;
@@ -180,6 +183,7 @@ private:
 	std::vector<RenderingInfo> ForwardObjects;								// フォワードライティングオブジェクト
 	std::unique_ptr<PostProcess> ObjectPostProcess;							// オブジェクト描画後のポストプロセス
 	std::unique_ptr<PostProcess> CanvasPostProcess;							// キャンバス描画後のポストプロセス
+
 	std::list<std::weak_ptr<class RenderingComponent>> RenderingComponents;	// 作成された描画コンポーネントの参照
 	std::list<std::weak_ptr<Material>> RenderingMaterials;					// 作成されたマテリアルの参照
 

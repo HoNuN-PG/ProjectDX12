@@ -1,8 +1,11 @@
 
+// Material
 #include "Material.h"
 
+// Scene
 #include "SceneManager.h"
 
+// System/Rendering
 #include "RenderingEngine.h"
 
 Material::Material()
@@ -73,12 +76,15 @@ void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 	DescriptorHeap::Bind(heaps,1);
 	RootSignatureData->Bind(handle, handleNum);
 
+	// マテリアルインデックス更新
 	MaterialInstanceIdx = (MaterialInstanceIdx + 1) % MaterialInstanceCount;
 }
 
 void Material::AddMaterialInstance()
 {
+	// マテリアルインデックス追加
 	MaterialInstanceCount++;
+
 	ConstantBuffer::Description desc = {};
 	desc.pHeap = Heap;
 	desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
@@ -95,11 +101,12 @@ void Material::AddTexture(const char* path)
 
 void Material::WriteWVP(void* data)
 {
+	// WVP書き込み
 	if (MaterialInstanceIdx >= MaterialInstanceCount) return;
 	WVP[MaterialInstanceIdx]->Write(data);
 }
 
-void Material::WriteParams(void* data, UINT idx)
+void Material::WriteParam(void* data, UINT idx)
 {
 	Params[idx]->Write(data);
 }

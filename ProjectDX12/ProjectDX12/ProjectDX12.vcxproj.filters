@@ -121,12 +121,6 @@
     <Filter Include="リソース ファイル\PS\ShadowMap">
       <UniqueIdentifier>{c5fce56f-6b50-4e20-b8bf-b96f42f8b85c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\System\Rendering\System">
-      <UniqueIdentifier>{1f3f5fcd-7de8-46c3-b698-cff1b74b5fc1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\System\Rendering\System">
-      <UniqueIdentifier>{b67ee4c7-76ab-4b37-ab48-d54d5bae8c58}</UniqueIdentifier>
-    </Filter>
     <Filter Include="リソース ファイル\PS\Common\Grid">
       <UniqueIdentifier>{ca5af76f-2696-4ed5-9e12-2d20ea779ae0}</UniqueIdentifier>
     </Filter>
@@ -171,6 +165,12 @@
     </Filter>
     <Filter Include="ソース ファイル\Debug">
       <UniqueIdentifier>{d11d7630-a19d-4f4c-ab23-5503f491e1cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\System\Rendering\Pipeline">
+      <UniqueIdentifier>{1f3f5fcd-7de8-46c3-b698-cff1b74b5fc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\System\Rendering\Pipeline">
+      <UniqueIdentifier>{b67ee4c7-76ab-4b37-ab48-d54d5bae8c58}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -292,13 +292,13 @@
       <Filter>ソース ファイル\Material\Materials</Filter>
     </ClCompile>
     <ClCompile Include="DescriptorHeap.cpp">
-      <Filter>ソース ファイル\System\Rendering\System</Filter>
+      <Filter>ソース ファイル\System\Rendering\Pipeline</Filter>
     </ClCompile>
     <ClCompile Include="RootSignature.cpp">
-      <Filter>ソース ファイル\System\Rendering\System</Filter>
+      <Filter>ソース ファイル\System\Rendering\Pipeline</Filter>
     </ClCompile>
     <ClCompile Include="Pipeline.cpp">
-      <Filter>ソース ファイル\System\Rendering\System</Filter>
+      <Filter>ソース ファイル\System\Rendering\Pipeline</Filter>
     </ClCompile>
     <ClCompile Include="Blur.cpp">
       <Filter>ソース ファイル\System\Rendering\Volume</Filter>
@@ -465,13 +465,13 @@
       <Filter>ヘッダー ファイル\Material\Materials</Filter>
     </ClInclude>
     <ClInclude Include="DescriptorHeap.h">
-      <Filter>ヘッダー ファイル\System\Rendering\System</Filter>
+      <Filter>ヘッダー ファイル\System\Rendering\Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="Pipeline.h">
-      <Filter>ヘッダー ファイル\System\Rendering\System</Filter>
+      <Filter>ヘッダー ファイル\System\Rendering\Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="RootSignature.h">
-      <Filter>ヘッダー ファイル\System\Rendering\System</Filter>
+      <Filter>ヘッダー ファイル\System\Rendering\Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="Blur.h">
       <Filter>ヘッダー ファイル\System\Rendering\Volume</Filter>

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <Windows.h>
 
+// System/Rendering/Pipeline
 #include "DescriptorHeap.h"
 
 class GameObject;

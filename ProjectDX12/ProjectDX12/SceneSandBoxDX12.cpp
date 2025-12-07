@@ -1,37 +1,39 @@
 
+// Component
 #include "FollowActorComponent.h"
 
+// Game/Camera
 #include "CameraBase.h"
 
-// マテリアル
-#include "M_Shadow.h"
-#include "M_DepthNormal.h"
-#include "CustomDepthNormalPass.h"
+// Material/Materials
 #include "M_Deffered_Albedo_Normal.h"
-#include "M_SimpleLit.h"
+#include "M_DepthNormal.h"
 #include "M_Grid.h"
+#include "M_Shadow.h"
+#include "M_SimpleLit.h"
 #include "M_SkyBox.h"
 
+// Model
 #include "Model.h"
 #include "plane.h"
 #include "sphere.h"
 
+// Scene
 #include "SceneSandBoxDX12.h"
 
-#include "GameObject.h"
-
+// System/Constant
 #include "ConstantBuffer.h"
 #include "ConstantWVP.h"
-
+// System/GameObject
+#include "GameObject.h"
+// System/Rendering/Pass
+#include "CustomDepthNormalPass.h"
+// System/Rendering/Pipeline
 #include "Pipeline.h"
 #include "RootSignature.h"
-
-// パス
-#include "CustomDepthNormalPass.h"
-
-// ポストプロセス
+// System/Rendering/Volume
 #include "vignette.h"
-
+// System/Rendering
 #include "GlobalResourceKey.h"
 
 HRESULT SceneSandBoxDX12::Init()
@@ -50,7 +52,12 @@ HRESULT SceneSandBoxDX12::Init()
 	desc.cull = D3D12_CULL_MODE_FRONT;
 	// === cull ===
 	std::shared_ptr<M_SkyBox> sky_box = std::make_shared<M_SkyBox>();
-	Material::Initialize(sky_box, Heap.get(),desc, Material::RenderingTiming::Environment);
+	Material::Initialize(
+		sky_box, 
+		Heap.get(),
+		desc, 
+		Material::RenderingTiming::Environment
+	);
 	sky_box->AddTexture("../exe/assets/texture/HDRI/skybox2.hdr");
 	// === cull ===
 	desc.cull = D3D12_CULL_MODE_BACK;
@@ -58,13 +65,23 @@ HRESULT SceneSandBoxDX12::Init()
 	// ===============================
 	// ShadowMap
 	std::shared_ptr<M_SimpleShadowMaps> shadow_map = std::make_shared<M_SimpleShadowMaps>();
-	Material::Initialize(shadow_map, Heap.get(), desc, Material::RenderingTiming::Shadow);
+	Material::Initialize(
+		shadow_map, 
+		Heap.get(), 
+		desc, 
+		Material::RenderingTiming::Shadow
+	);
 	// 葉
 	desc.cull = D3D12_CULL_MODE_NONE;
 	desc.WriteDepth = FALSE;
 	// === cull ===
 	std::shared_ptr<M_OpaqueSimpleShadowMaps> leaf_shadow_map = std::make_shared<M_OpaqueSimpleShadowMaps>();
-	Material::Initialize(leaf_shadow_map, Heap.get(), desc, Material::RenderingTiming::Shadow);
+	Material::Initialize(
+		leaf_shadow_map, 
+		Heap.get(), 
+		desc, 
+		Material::RenderingTiming::Shadow
+	);
 	leaf_shadow_map->AddTexture("../exe/assets/model/tree/T_Leaves_Round_01_C.dds");
 	// === cull ===
 	desc.WriteDepth = TRUE;
@@ -73,44 +90,71 @@ HRESULT SceneSandBoxDX12::Init()
 	// ===============================
 	// DepthNormal
 	std::shared_ptr<M_DepthNormal> opaque_depth_normal = std::make_shared<M_DepthNormal>();
-	Material::Initialize(opaque_depth_normal, Heap.get(), desc, Material::RenderingTiming::OpaqueDepthNormal);
+	Material::Initialize(
+		opaque_depth_normal, 
+		Heap.get(), 
+		desc, 
+		Material::RenderingTiming::OpaqueDepthNormal
+	);
 
 	// ===============================
 	// CustomDepthNormal
 	std::shared_ptr<M_DepthNormal> custom_opaque_depth_normal = std::make_shared<M_DepthNormal>();
-	Material::Initialize(custom_opaque_depth_normal, Heap.get(), 
-		desc,Material::RenderingTiming::AfterOpaqueDepthNormal,RenderingPass::RenderingPassType::CustomDepthNormal);
+	Material::Initialize(
+		custom_opaque_depth_normal, 
+		Heap.get(), 
+		desc,
+		Material::RenderingTiming::AfterOpaqueDepthNormal,
+		RenderingPass::RenderingPassType::CustomDepthNormal);
 
 	// ===============================
 	// Grid
 	std::shared_ptr<M_Grid> grid = std::make_shared<M_Grid>();
-	Material::Initialize(grid, Heap.get(), desc);
+	Material::Initialize(
+		grid, 
+		Heap.get(), 
+		desc);
 	grid->SetGridSize(1);
 	grid->SetSubGridSize(5);
 	// 影Grid
 	std::shared_ptr<M_GridShadow> grid_shadow = std::make_shared<M_GridShadow>();
-	Material::Initialize(grid_shadow, Heap.get(), desc);
+	Material::Initialize(
+		grid_shadow, 
+		Heap.get(), 
+		desc);
 	grid_shadow->SetGridSize(1);
 	grid_shadow->SetSubGridSize(5);
 	// ソフト影Grid
 	std::shared_ptr<M_GridShadowVSM> grid_shadow_vsm = std::make_shared<M_GridShadowVSM>();
-	Material::Initialize(grid_shadow_vsm, Heap.get(), desc);
+	Material::Initialize(
+		grid_shadow_vsm, 
+		Heap.get(), 
+		desc);
 	grid_shadow_vsm->SetGridSize(1);
 	grid_shadow_vsm->SetSubGridSize(5);
 
 	// ===============================
 	// SimpleLit
 	std::shared_ptr<M_SimpleLit> simple_lit = std::make_shared<M_SimpleLit>();
-	Material::Initialize(simple_lit, Heap.get(), desc);
+	Material::Initialize(
+		simple_lit, 
+		Heap.get(), 
+		desc);
 	// 木
 	std::shared_ptr<M_OpaqueSimpleLit> tree_simple_lit = std::make_shared<M_OpaqueSimpleLit>();
-	Material::Initialize(tree_simple_lit, Heap.get(), desc);
+	Material::Initialize(
+		tree_simple_lit, 
+		Heap.get(), 
+		desc);
 	tree_simple_lit->AddTexture("../exe/assets/model/tree/T_Bark_Autumn_01_C.dds");
 	// 葉
 	desc.cull = D3D12_CULL_MODE_NONE;
 	// === cull ===
 	std::shared_ptr<M_OpaqueSimpleLit> leaf_simple_lit = std::make_shared<M_OpaqueSimpleLit>();
-	Material::Initialize(leaf_simple_lit, Heap.get(), desc);
+	Material::Initialize(
+		leaf_simple_lit, 
+		Heap.get(), 
+		desc);
 	leaf_simple_lit->AddTexture("../exe/assets/model/tree/T_Leaves_Round_02_C.dds");
 	// === cull ===
 	desc.cull = D3D12_CULL_MODE_BACK;

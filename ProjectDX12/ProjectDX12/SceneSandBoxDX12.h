@@ -4,8 +4,10 @@
 #include <memory>
 #include <vector>
 
+// Material
 #include "Material.h"
 
+// Scene
 #include "SceneBase.h"
 
 class SceneSandBoxDX12 : public SceneBase

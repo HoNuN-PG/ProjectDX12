@@ -1,6 +1,7 @@
 #ifndef ___PLANE_H___
 #define ___PLANE_H___
 
+// Model
 #include "primitive.h"
 
 class Plane : public Primitive

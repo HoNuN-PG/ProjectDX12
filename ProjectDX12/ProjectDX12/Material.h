@@ -6,14 +6,15 @@
 #include <string>
 #include <vector>
 
+// System/Constant
 #include "ConstantBuffer.h"
-
+// System/Rendering/Pass
 #include "RenderingPass.h"
-
+// System/Rendering/Pipeline
 #include "DescriptorHeap.h"
 #include "Pipeline.h"
 #include "RootSignature.h"
-
+// System/Rendering/Texture
 #include "Texture.h"
 
 struct CommonParam
@@ -54,9 +55,9 @@ public:
 public:
 	// マテリアル全体初期化
 	static void Initialize(
-		std::shared_ptr<Material> material,
-		DescriptorHeap* heap,
-		Description desc,
+		std::shared_ptr<Material> material, // 初期化するマテリアル
+		DescriptorHeap* heap,				// 使用ヒープ
+		Description desc,					// 初期化デスク
 		RenderingTiming timing = RenderingTiming::Forward,
 		RenderingPass::RenderingPassType passType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE
 	);
@@ -102,7 +103,7 @@ public:
 	/// </summary>
 	/// <param name="data"></param>
 	void WriteWVP(void* data);
-	void WriteParams(void* data, UINT idx);
+	void WriteParam(void* data, UINT idx);
 	void WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDLE startHandle, D3D12_DESCRIPTOR_HEAP_TYPE type);
 
 	/// <summary>

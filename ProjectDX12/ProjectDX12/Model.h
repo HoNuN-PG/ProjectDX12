@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 #include <memory>
 
+// Model
 #include "RenderingComponent.h"
 
 struct aiMesh;

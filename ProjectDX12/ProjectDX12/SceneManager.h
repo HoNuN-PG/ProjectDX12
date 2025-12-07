@@ -5,6 +5,7 @@
 #include <vector>
 #include <Windows.h>
 
+// Scene
 #include "SceneBase.h"
 
 class SceneManager
@@ -28,10 +29,8 @@ public:
 	static void Draw();
 
 public:
-	static SceneBase* GetCurrentScene()
-	{ return Scenes[CurrentScene].get(); }
-	static std::shared_ptr<class RenderingEngine> GetRenderingEngine()
-	{ return Scenes[CurrentScene].get()->GetRenderingEngine(); }
+	static SceneBase* GetCurrentScene(){ return Scenes[CurrentScene].get(); }
+	static std::shared_ptr<class RenderingEngine> GetRenderingEngine(){ return Scenes[CurrentScene].get()->GetRenderingEngine(); }
 
 };
 

@@ -1,15 +1,16 @@
 
-#include "Texture.h"
-
 #include <DDSTextureLoader.h>
 #include <ResourceUploadBatch.h>
 
 #include <wrl/client.h>
 
+// Rendering/Texture
+#include "Texture.h"
+
 Texture::Texture(Description desc)
 {
 	if (!strstr(desc.fileName, ".dds"))
-	{
+	{ // DDSà»äOÇÃì«Ç›çûÇ›
 		DirectX::TexMetadata info;
 		DirectX::ScratchImage image;
 		HRESULT hr = LoadTexture(desc.fileName, &info, &image);
@@ -56,7 +57,7 @@ Texture::Texture(Description desc)
 		GetDevice()->CreateShaderResourceView(Resource, &srvDesc, Handle.hCPU);
 	}
 	else
-	{
+	{ // DDSÇÃì«Ç›çûÇ›
 		wchar_t wPath[MAX_PATH];
 		size_t wLen = 0;
 		MultiByteToWideChar(0, 0, desc.fileName, -1, wPath, MAX_PATH);

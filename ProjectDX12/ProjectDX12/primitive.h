@@ -3,6 +3,7 @@
 
 #include <memory>
 
+// Model
 #include "RenderingComponent.h"
 
 class Primitive : public RenderingComponent

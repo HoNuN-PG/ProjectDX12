@@ -1,17 +1,22 @@
 
+// Model
 #include "MeshMaterialManager.h"
 
+// System/GameObject
 #include "GameObject.h"
 
 void MeshMaterialManager::SetupMaterialsData(std::vector<std::vector<std::shared_ptr<Material>>> data)
 {
 	MeshMaterialsData = data;
+
 	for (int i = 0; i < MeshMaterialsData.size(); ++i)
 	{
 		UsedList.push_back(std::vector<bool>());
 		for (int j = 0; j < MeshMaterialsData[i].size(); ++j)
 		{
+			// マテリアルインスタンス追加
 			MeshMaterialsData[i][j]->AddMaterialInstance();
+			// 使用リスト初期化
 			UsedList[i].push_back(false);
 		}
 	}

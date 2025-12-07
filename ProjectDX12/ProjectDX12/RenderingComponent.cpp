@@ -1,4 +1,5 @@
 
+// Model
 #include "RenderingComponent.h"
 
 void RenderingComponent::ReuseRendering()

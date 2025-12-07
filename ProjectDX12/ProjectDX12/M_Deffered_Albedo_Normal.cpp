@@ -1,4 +1,5 @@
 
+// Material/Materials
 #include "M_Deffered_Albedo_Normal.h"
 
 void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap, Description desc)
@@ -10,7 +11,8 @@ void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap, Description desc
 	}
 
 	// ルートシグネチャ
-	RootSignature::ParameterTable param[] = {
+	RootSignature::ParameterTable param[] = 
+	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
@@ -19,7 +21,8 @@ void M_Deffered_Albedo_Normal::Initialize(DescriptorHeap* heap, Description desc
 	rootsignature.paramNum = _countof(param);
 
 	// パイプライン
-	Pipeline::InputLayout layout[] = {
+	Pipeline::InputLayout layout[] = 
+	{
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},

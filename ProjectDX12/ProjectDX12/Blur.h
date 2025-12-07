@@ -4,13 +4,15 @@
 #include <memory>
 #include <vector>
 
+// Model
 #include "MeshBuffer.h"
 
+// System/Constant
 #include "ConstantBuffer.h"
-
-#include "Pipeline.h"
+// System/Rendering/Pipeline
 #include "RootSignature.h"
-
+#include "Pipeline.h"
+// System/Rendering/Texture
 #include "RenderTarget.h"
 
 class DescriptorHeap;

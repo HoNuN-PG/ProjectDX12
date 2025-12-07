@@ -1,6 +1,7 @@
 
 #include <DirectXMath.h>
 
+// Model
 #include "sphere.h"
 
 void Sphere::Create(std::vector<std::shared_ptr<Material>> materials)

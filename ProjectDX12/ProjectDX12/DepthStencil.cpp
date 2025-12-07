@@ -1,4 +1,5 @@
 
+// System/Rendering/Texture
 #include "DepthStencil.h"
 
 DepthStencil::DepthStencil(Description desc)
@@ -32,7 +33,8 @@ DepthStencil::DepthStencil(Description desc)
 		&prop, D3D12_HEAP_FLAG_NONE, &resDesc,
 		D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue, IID_PPV_ARGS(&Resource)
 	);
-	if (FAILED(hr)) {
+	if (FAILED(hr)) 
+	{
 		MessageBox(NULL, "DepthStencil.cpp", "Error", MB_OK);
 		return;
 	}

@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 #include <vector>
 
+// System
 #include "DirectX.h"
 
 struct InstanceData
@@ -60,7 +61,7 @@ class InstanceMeshBuffer : MeshBuffer
 public:
 	InstanceMeshBuffer() {};
 	InstanceMeshBuffer(Description desc,unsigned int count = 0);
-	virtual ~InstanceMeshBuffer() {};
+	virtual ~InstanceMeshBuffer();
 public:
 	void MappingUploder();
 	virtual void Draw() override;

@@ -7,6 +7,7 @@
 #include <vector>
 #include <Windows.h>
 
+// System/Component
 #include "Component.h"
 
 class GameObject

@@ -1,8 +1,11 @@
 
+// Material/Materials
 #include "M_SimpleLit.h"
 
+// Scene
 #include "SceneManager.h"
 
+// System/Rendering
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
@@ -18,7 +21,8 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ƒ‰ƒCƒg
 	}
 
-	RootSignature::ParameterTable param[] = {
+	RootSignature::ParameterTable param[] = 
+	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
@@ -27,7 +31,8 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
-	Pipeline::InputLayout layout[] = {
+	Pipeline::InputLayout layout[] = 
+	{
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
@@ -81,7 +86,8 @@ void M_OpaqueSimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 		Params.push_back(std::make_unique<ConstantBuffer>(desc));
 	}
 
-	RootSignature::ParameterTable param[] = {
+	RootSignature::ParameterTable param[] = 
+	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
@@ -92,7 +98,8 @@ void M_OpaqueSimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
-	Pipeline::InputLayout layout[] = {
+	Pipeline::InputLayout layout[] = 
+	{
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},

@@ -1,12 +1,15 @@
 
+// Model
 #include "primitive.h"
 
+// Scene
 #include "SceneManager.h"
 
+// System/GameObject
 #include "GameObject.h"
-
+// System/Constant
 #include "ConstantWVP.h"
-
+// System/Rendering
 #include "RenderingEngine.h"
 
 void Primitive::Draw()

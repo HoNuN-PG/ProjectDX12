@@ -3,6 +3,7 @@
 
 #include <vector>
 
+// System
 #include "DirectX.h"
 
 class RootSignature
@@ -61,8 +62,7 @@ private:
 	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample,D3D12_FILTER filter ,UINT num);
 
 public:
-	ID3D12RootSignature* Get() 
-	{ return RootSignatureData; }
+	ID3D12RootSignature* Get() { return RootSignatureData; }
 	/// <summary>
 	/// １つのディスクリプタヒープ内のディスクリプタをディスクリプタテーブルと紐づけ
 	/// </summary>

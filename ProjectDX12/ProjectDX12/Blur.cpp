@@ -1,10 +1,11 @@
 
+// System/Rendering/Pipeline
 #include "DescriptorHeap.h"
-
+// System/Rendering/Volume
 #include "Blur.h"
 #include "Copy.h"
 #include "volume.h"
-
+// System/Rendering
 #include "RenderingEngine.h"
 
 std::unique_ptr<Gauss> Gauss::Instance;
@@ -52,7 +53,8 @@ void Gauss::Create()
 		// Gauss2-----------------------------------------------------------------------
 		// ルートシグネチャ
 		{
-			RootSignature::ParameterTable param[] = {
+			RootSignature::ParameterTable param[] = 
+			{
 				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 				{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
@@ -66,7 +68,8 @@ void Gauss::Create()
 		{
 			Instance->Gauss2PipelineData.resize(GaussPipelineType::Pipeline_MAX);
 
-			Pipeline::InputLayout layout[] = {
+			Pipeline::InputLayout layout[] = 
+			{
 				{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 				{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 			};
@@ -107,7 +110,8 @@ void Gauss::Create()
 		// Gauss4-----------------------------------------------------------------------
 		// ルートシグネチャ
 		{
-			RootSignature::ParameterTable param[] = {
+			RootSignature::ParameterTable param[] = 
+			{
 				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 				{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
@@ -121,7 +125,8 @@ void Gauss::Create()
 		{
 			Instance->Gauss4PipelineData.resize(GaussPipelineType::Pipeline_MAX);
 
-			Pipeline::InputLayout layout[] = {
+			Pipeline::InputLayout layout[] = 
+			{
 				{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 				{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 			};
@@ -162,7 +167,8 @@ void Gauss::Create()
 		// Gauss8-----------------------------------------------------------------------
 		// ルートシグネチャ
 		{
-			RootSignature::ParameterTable param[] = {
+			RootSignature::ParameterTable param[] = 
+			{
 				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 				{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
@@ -176,7 +182,8 @@ void Gauss::Create()
 		{
 			Instance->Gauss8PipelineData.resize(GaussPipelineType::Pipeline_MAX);
 
-			Pipeline::InputLayout layout[] = {
+			Pipeline::InputLayout layout[] = 
+			{
 				{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 				{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 			};

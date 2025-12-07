@@ -1,6 +1,7 @@
 #ifndef ___SPHERE_H___
 #define ___SPHERE_H___
 
+// Model
 #include "primitive.h"
 
 class Sphere : public Primitive

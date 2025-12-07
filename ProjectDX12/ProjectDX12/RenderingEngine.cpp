@@ -1,29 +1,35 @@
 
+// Game/Camera
 #include "CameraBase.h"
+// Game/Light
 #include "LightBase.h"
 
+// Debug
 #include "DebugImGUI.h"
 
+// Model
 #include "RenderingComponent.h"
 
-#include "ConstantWVP.h"
-
-#include "GameObject.h"
-
+// Scene
 #include "SceneBase.h"
 #include "SceneManager.h"
 
+// System/Constant
+#include "ConstantWVP.h"
+// System/GameObject
+#include "GameObject.h"
+// System/Rendering/Pass
 #include "CustomDepthNormalPass.h"
 #include "DepthNormalPass.h"
 #include "ShadowPass.h"
-
+// System/Rendering/Volume
 #include "Blur.h"
 #include "Copy.h"
 #include "volume.h"
-
+// System/Rendering
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
-
+// System
 #include "DirectX.h"
 
 void RenderingEngine::Init()
@@ -223,7 +229,8 @@ void RenderingEngine::SetupDefferedShader()
 {
 	// ルートシグネチャ
 	{
-		RootSignature::ParameterTable param[] = {
+		RootSignature::ParameterTable param[] = 
+		{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
@@ -238,7 +245,8 @@ void RenderingEngine::SetupDefferedShader()
 	}
 	// パイプライン
 	{
-		Pipeline::InputLayout layout[] = {
+		Pipeline::InputLayout layout[] = 
+		{
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 		};
@@ -516,7 +524,8 @@ void RenderingEngine::DefferedLighting()
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 	// RTVの設定
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
+	{
 		GlobalTexture[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs);
@@ -539,7 +548,8 @@ void RenderingEngine::DefferedLighting()
 	DescriptorHeap::Bind(heaps, 1);
 
 	// MainTextureを取得
-	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = {
+	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = 
+	{
 		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture].get()->GetHandleSRV().hGPU,
 		ODepthNormalPass->GetTextureSRV(OpaqueDepthNormalPass::NormalTexture).hGPU,
 		ODepthNormalPass->GetTextureSRV(OpaqueDepthNormalPass::DepthTexture).hGPU,
@@ -564,7 +574,8 @@ void RenderingEngine::ForwardRendering()
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 	// RTVの設定
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
+	{
 		GlobalTexture[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);

@@ -8,8 +8,9 @@
 #include <vector>
 #include <Windows.h>
 
+// System/GameObject
 #include "GameObject.h"
-
+// System
 #include "RenderingEngine.h"
 
 class SceneBase

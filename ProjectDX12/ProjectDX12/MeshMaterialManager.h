@@ -4,19 +4,20 @@
 #include <memory>
 #include <vector>
 
+// Material
 #include "Material.h"
 
-/// <summary>
-/// メッシュのマテリアルを管理
-/// マテリアルの所有者
-/// </summary>
+/**
+* @class MeshMaterialManager
+* @brief メッシュのマテリアルの所有者
+*/
 class MeshMaterialManager
 {
 public:
 	struct MeshMaterialInfo
 	{
-		std::shared_ptr<Material> material;
-		UINT meshIdx;
+		std::shared_ptr<Material> material; // 使用されているマテリアル
+		UINT meshIdx;						// マテリアルが使用されているメッシュのインデックス
 	};
 
 public:

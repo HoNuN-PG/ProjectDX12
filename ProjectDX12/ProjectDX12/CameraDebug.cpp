@@ -1,8 +1,11 @@
 
+// Game/Camera
 #include "CameraBase.h"
 
+// ImGUI
 #include "imgui/imgui.h"
 
+// System
 #include "DirectX.h"
 #include "Input.h"
 
@@ -137,6 +140,7 @@ void CameraDebug::ProcDCC(Argument& arg)
 		DirectX::XMLoadFloat3(&m_MainPos),
 		DirectX::XMLoadFloat3(&m_MainTarget),
 		XMLoadFloat3(&m_MainUp));
+
 	view = DirectX::XMMatrixTranspose(view);
 	DirectX::XMStoreFloat4x4(&m_MainViewMatrix, view);
 
@@ -145,6 +149,7 @@ void CameraDebug::ProcDCC(Argument& arg)
 		(float)WINDOW_WIDTH / WINDOW_HEIGHT,
 		(float)CAM_NEAR,
 		(float)CAM_FAR);
+
 	proj = DirectX::XMMatrixTranspose(proj);
 	DirectX::XMStoreFloat4x4(&m_MainProjMatrix, proj);
 }

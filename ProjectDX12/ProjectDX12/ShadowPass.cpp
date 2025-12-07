@@ -1,17 +1,23 @@
 
+// Game/Camera
 #include "CameraBase.h"
+// Game/Light
 #include "LightBase.h"
 
+// Lib
 #include "MyMath.h"
 
+// Material/Materials
 #include "M_Shadow.h"
 
+// Scene
 #include "SceneManager.h"
 
+// System/Rendering/Pass
 #include "ShadowPass.h"
-
+// System/Rendering/Volume
 #include "Blur.h"
-
+// System/Rendering
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
@@ -19,6 +25,7 @@ ShadowPass::ShadowPass()
 {
 	PassType = RenderingPass::RenderingPassType::Shadow;
 
+	// カスケード設定
 	CascadeAreas.resize(SHADOW_MAP_COUNT);
 	CascadeAreas[0] = (50);
 	CascadeAreas[1] = (250);
@@ -31,6 +38,7 @@ ShadowPass::ShadowPass()
 		GaussIdx[i] = -1;
 	}
 
+	// シャドウマップテクスチャ設定
 	ShadowMapsSize[TextureType::Near] = { 4096,4096 };
 	ShadowMapsSize[TextureType::Middle] = {2048 ,2048 };
 	ShadowMapsSize[TextureType::Far] = {1024,1024};
@@ -46,7 +54,8 @@ void ShadowPass::Execute()
 	
 	// シャドウマップの描画
 	float nearDepth = CAM_NEAR;
-	for (int i = 0; i < SHADOW_MAP_COUNT; ++i) // 3枚のシャドウマップに描画
+	// 3枚のシャドウマップに描画
+	for (int i = 0; i < SHADOW_MAP_COUNT; ++i)
 	{
 #if 0
 		// クロップ行列の計算
@@ -85,8 +94,10 @@ void ShadowPass::Execute()
 #endif
 		// パラメータ設定
 		M_ShadowMapsBase::CurrentShadowMapsNo = i;
+		// シャドウマップ
 		ShadowMapsParam = ShadowParam::ShadowMapsParam(lvpc4x4);
 		Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + i, &ShadowMapsParam);
+		// シャドウレシーバ
 		ShadowReceiveParam.LVP[i] = lvpc4x4;
 
 		// ターゲット化
@@ -96,7 +107,8 @@ void ShadowPass::Execute()
 		// RTVの設定
 		ShadowMaps[i]->Clear(clearColor);
 		DSVs[i]->Clear();
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
+		{
 			ShadowMaps[i]->GetHandleRTV().hCPU,
 		};
 		SetRenderTarget(_countof(rtvs), rtvs, DSVs[i]->GetHandleDSV().hCPU);
@@ -210,7 +222,11 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(
 	return crop;
 }
 
-DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(float depth, int area, float res, DirectX::XMFLOAT4X4 lv)
+DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(
+	float depth, 
+	int area, 
+	float res, 
+	DirectX::XMFLOAT4X4 lv)
 {
 	// 手前の距離
 	float nearY = tanf(CameraBase::GetViewAngle() * 0.5f) * depth;
@@ -276,6 +292,7 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(float depth, int area, floa
 	center.x = roundf(center.x / unitsPerTexel) * unitsPerTexel;
 	center.y = roundf(center.y / unitsPerTexel) * unitsPerTexel;
 
+	// 最大最小計算
 	float minX, maxX, minY, maxY,minZ,maxZ;
 	minX = center.x - radius;
 	maxX = center.x + radius;

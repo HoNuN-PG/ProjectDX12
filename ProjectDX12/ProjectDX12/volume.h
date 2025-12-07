@@ -4,12 +4,14 @@
 #include <memory>
 #include <vector>
 
+// Model
 #include "MeshBuffer.h"
 
+// System/Rendering/Pipeline
 #include "DescriptorHeap.h"
 #include "Pipeline.h"
 #include "RootSignature.h"
-
+// System/Rendering/Texture
 #include "RenderTarget.h"
 
 class Volume
@@ -38,7 +40,8 @@ protected:
 public:
 	void SetDestroy() { bDestroy = true; }
 	bool IsDestroy() { return bDestroy; }
-	bool Destroy() {
+	bool Destroy() 
+	{
 		if (bDestroy)
 		{
 			return true;

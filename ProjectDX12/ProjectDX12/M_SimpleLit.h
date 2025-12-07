@@ -1,6 +1,7 @@
 #ifndef ___M_SIMPLE_LIT_H___
 #define ___M_SIMPLE_LIT_H___
 
+// Material
 #include "Material.h"
 
 class M_SimpleLit : public Material

@@ -1,8 +1,9 @@
 #ifndef ___TEXTURE_H___
 #define ___TEXTURE_H___
 
+// Rendering/Pipeline
 #include "DescriptorHeap.h"
-
+// Rendering/Texture
 #include "TextureLoad.h"
 
 class Texture
@@ -17,12 +18,10 @@ public:
 public:
 	Texture(Description desc);
 	~Texture();
-	DescriptorHeap::Handle GetHandle() 
-	{ return Handle; }
+	DescriptorHeap::Handle GetHandle() { return Handle; }
 
 private:
 	ID3D12Resource*			Resource;	// テクスチャリソース
-	ID3D12Resource*			Uploader;	// アップローダ
 	DescriptorHeap::Handle	Handle;
 
 };

@@ -4,10 +4,11 @@
 #include <memory>
 #include <vector>
 
+// Model
 #include "MeshMaterialManager.h"
-
 #include "MeshBuffer.h"
 
+// System/Component
 #include "Component.h"
 
 class RenderingComponent : public Component

@@ -4,10 +4,12 @@
 #include <DirectXMath.h>
 #include <Windows.h>
 
+// Lib
 #include "MyMath.h"
 
+// System/GameObject
 #include "GameObject.h"
-
+// System
 #include "DirectX.h"
 
 #define CAM_NEAR (0.01)

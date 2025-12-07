@@ -1,4 +1,5 @@
 
+// Model
 #include "MeshBuffer.h"
 
 MeshBuffer::MeshBuffer(Description desc)
@@ -40,7 +41,8 @@ MeshBuffer::MeshBuffer(Description desc)
 	// 頂点バッファの初期値設定
 	void* pVtxMap;
 	hr = Vtx->Map(0, nullptr, (void**)&pVtxMap);
-	if (SUCCEEDED(hr)) {
+	if (SUCCEEDED(hr)) 
+	{
 		memcpy_s(pVtxMap, resDesc.Width, desc.pVtx, resDesc.Width);
 	}
 	Vtx->Unmap(0, nullptr);
@@ -83,8 +85,7 @@ MeshBuffer::MeshBuffer(Description desc)
 
 MeshBuffer::~MeshBuffer()
 {
-	if (Idx)
-		Idx->Release();
+	if(Idx) Idx->Release();
 	Vtx->Release();
 }
 
@@ -97,7 +98,8 @@ void MeshBuffer::Draw()
 		GetCommandList()->IASetIndexBuffer(&Ibv);
 		GetCommandList()->DrawIndexedInstanced(Desc.idxCount, 1, 0, 0, 0);
 	}
-	else {
+	else 
+	{
 		GetCommandList()->DrawInstanced(Desc.vtxCount, 1, 0, 0);
 	}
 }
@@ -151,6 +153,12 @@ InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count) :
 	);
 }
 
+InstanceMeshBuffer::~InstanceMeshBuffer()
+{
+	Ins->Release();
+	InsUploader->Release();
+}
+
 void InstanceMeshBuffer::MappingUploder()
 {
 	InstanceData* mappedData;
@@ -183,7 +191,8 @@ void InstanceMeshBuffer::Draw()
 		GetCommandList()->IASetIndexBuffer(&Ibv);
 		GetCommandList()->DrawIndexedInstanced(Desc.idxCount, InsCount, 0, 0, 0);
 	}
-	else {
+	else 
+	{
 		GetCommandList()->DrawInstanced(Desc.vtxCount, 1, 0, 0);
 	}
 }

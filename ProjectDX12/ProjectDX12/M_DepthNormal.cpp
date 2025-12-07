@@ -1,4 +1,5 @@
 
+// Material/Materials
 #include "M_DepthNormal.h"
 
 void M_DepthNormal::Initialize(DescriptorHeap* heap, Description desc)
@@ -9,14 +10,16 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap, Description desc)
 		desc.pHeap = heap;
 	}
 
-	RootSignature::ParameterTable param[] = {
+	RootSignature::ParameterTable param[] = 
+	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 	};
 	RootSignature::DescriptionTable rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
-	Pipeline::InputLayout layout[] = {
+	Pipeline::InputLayout layout[] = 
+	{
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},

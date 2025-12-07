@@ -6,14 +6,17 @@
 #include <vector>
 #include <Windows.h>
 
+// ImGUI
 #include "imgui/imgui.h"
 
+// Model
 #include "MeshBuffer.h"
 
+// System/Rendering/Pipeline
 #include "DescriptorHeap.h"
 #include "Pipeline.h"
 #include "RootSignature.h"
-
+// System/Rendering/Texture
 #include "RenderTarget.h"
 
 class ConstantBuffer;

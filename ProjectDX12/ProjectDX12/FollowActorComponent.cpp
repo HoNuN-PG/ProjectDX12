@@ -1,6 +1,8 @@
 
+// Component
 #include "FollowActorComponent.h"
 
+// System/GameObject
 #include "GameObject.h"
 
 void FollowActorComponent::Init()

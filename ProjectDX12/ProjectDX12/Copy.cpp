@@ -1,8 +1,9 @@
 
+// System/Rendering/Pipeline
 #include "DescriptorHeap.h"
-
+// System/Rendering/Texture
 #include "RenderTarget.h"
-
+// System/Rendering/Volume
 #include "Copy.h"
 
 std::unique_ptr<Copy> Copy::Instance;
@@ -45,7 +46,8 @@ void Copy::Load()
 
 	// ルートシグネチャ
 	{
-		RootSignature::ParameterTable param[] = {
+		RootSignature::ParameterTable param[] = 
+		{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
 		RootSignature::DescriptionTable desc = {};
@@ -56,7 +58,8 @@ void Copy::Load()
 	}
 	// パイプライン
 	{
-		Pipeline::InputLayout layout[] = {
+		Pipeline::InputLayout layout[] = 
+		{
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 		};
@@ -83,7 +86,8 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3
 	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);
 
 	// レンダーターゲット切り替え
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
+	{
 		dest,
 	};
 	SetRenderTarget(1, rtvs);
@@ -94,7 +98,8 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3
 		heap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
-	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = {
+	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = 
+	{
 		src,
 	};
 	Instance->RootSignatureData->Bind(hScreen, _countof(hScreen));
@@ -107,7 +112,8 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, st
 	SetViewPort(dest->Width,dest->Height);
 
 	// レンダーターゲット切り替え
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
+	{
 		dest->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(1, rtvs);
@@ -118,7 +124,8 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, st
 		heap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
-	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = {
+	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = 
+	{
 		src,
 	};
 	Instance->RootSignatureData->Bind(hScreen, _countof(hScreen));

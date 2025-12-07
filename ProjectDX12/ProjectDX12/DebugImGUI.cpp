@@ -1,10 +1,14 @@
 
 #include <tchar.h>
 
+// Debug
 #include "DebugImGUI.h"
+
+// ImGUI
 #include "imgui/imgui_impl_dx12.h"
 #include "imgui/imgui_impl_win32.h"
 
+//System/ConstantBuffer
 #include "ConstantBuffer.h"
 #include "ConstantWVP.h"
 
@@ -60,6 +64,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 		else {
 			ImGuiIO& io = ImGui::GetIO();
 			io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
+
 			if (!ImGui_ImplWin32_Init(_hwnd)) {
 				MessageBox(_hwnd, _T("Error"), _T("Failed [Imgui]."), MB_OK);
 				msg.message = WM_QUIT;
@@ -76,7 +81,8 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	}
 	// ルートシグネチャ
 	{
-		RootSignature::ParameterTable param[] = {
+		RootSignature::ParameterTable param[] = 
+		{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
 		RootSignature::DescriptionTable desc = {};
@@ -151,7 +157,8 @@ ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* heap, RenderTarget* srv)
 	useRTV->ResourceBarrier(
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	useRTV->Clear();
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
+	{
 		useRTV->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(1, rtvs);
@@ -163,14 +170,14 @@ ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* heap, RenderTarget* srv)
 		heap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
-	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = {
+	D3D12_GPU_DESCRIPTOR_HANDLE handle[] = 
+	{
 		srv->GetHandleSRV().hGPU,
 	};
-	RootSignatureData->Bind(hScreen, _countof(hScreen));
+	RootSignatureData->Bind(handle, _countof(handle));
 	Screen->Draw();
 
-	useRTV->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	useRTV->ResourceBarrier(D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 	return (ImTextureID)useRTV->GetHandleSRV().hGPU.ptr;
 }

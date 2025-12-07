@@ -1,12 +1,15 @@
 
+// Material/Materials
 #include "M_Shadow.h"
 
+// Scene
 #include "SceneManager.h"
 
+// System/GameObject
 #include "GameObject.h"
-
+// System/Rendering/Pass
 #include "ShadowPass.h"
-
+// System/Rendering
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
@@ -27,7 +30,8 @@ void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc)
 		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ3
 	}
 
-	RootSignature::ParameterTable param[] = {
+	RootSignature::ParameterTable param[] = 
+	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_VERTEX},
@@ -37,7 +41,8 @@ void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc)
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
-	Pipeline::InputLayout layout[] = {
+	Pipeline::InputLayout layout[] = 
+	{
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
@@ -96,7 +101,8 @@ void M_OpaqueSimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc
 		Params.push_back(std::make_unique<ConstantBuffer>(desc));
 	}
 
-	RootSignature::ParameterTable param[] = {
+	RootSignature::ParameterTable param[] = 
+	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_VERTEX},
@@ -108,7 +114,8 @@ void M_OpaqueSimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
-	Pipeline::InputLayout layout[] = {
+	Pipeline::InputLayout layout[] = 
+	{
 			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},

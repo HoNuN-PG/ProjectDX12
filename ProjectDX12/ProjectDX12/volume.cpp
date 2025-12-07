@@ -1,6 +1,7 @@
 
+// System/Rendering/Volume
 #include "volume.h"
-
+// System/Rendering
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
@@ -83,7 +84,8 @@ void Volume::BindPostProcessRTV()
 	constexpr static float clearColor[4] = { 0,0,0,0 };
 	PostProcessRTV->SRV2RTV();
 	PostProcessRTV->Clear(clearColor);
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
+	{
 		PostProcessRTV->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs);

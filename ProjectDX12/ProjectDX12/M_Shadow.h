@@ -1,6 +1,7 @@
 #ifndef ___M_SHADOW_MAPS_H___
 #define ___M_SHADOW_MAPS_H___
 
+// Material
 #include "Material.h"
 
 namespace ShadowParam

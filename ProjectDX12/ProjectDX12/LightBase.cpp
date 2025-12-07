@@ -1,7 +1,11 @@
 
+// Game/Camera
 #include "CameraBase.h"
+
+// Game/Light
 #include "LightBase.h"
 
+// System
 #include "Input.h"
 
 DirectX::XMFLOAT4X4 LightBase::m_ViewMatrix;

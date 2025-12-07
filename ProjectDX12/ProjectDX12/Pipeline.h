@@ -1,6 +1,7 @@
 #ifndef ___PIPELINE_H___
 #define ___PIPELINE_H___
 
+// System
 #include "DirectX.h"
 
 class  Pipeline
@@ -27,8 +28,7 @@ public:
 public:
 	Pipeline(Description desc);
 	~Pipeline();
-	void Bind() 
-	{ GetCommandList()->SetPipelineState(PipelineData); }
+	void Bind() { GetCommandList()->SetPipelineState(PipelineData); }
 
 private:
 	ID3D12PipelineState* PipelineData;

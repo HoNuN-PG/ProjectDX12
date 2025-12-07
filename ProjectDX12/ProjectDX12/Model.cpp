@@ -4,16 +4,19 @@
 #include <assimp/scene.h>
 #pragma comment(lib, "assimp-vc141-mtd.lib")
 
+// Model
 #include "Model.h"
 
+// Scene
 #include "SceneManager.h"
 
+// System/Constant
 #include "ConstantWVP.h"
-
+// System/GameObject
 #include "GameObject.h"
-
+// System/Rendering
 #include "RenderingEngine.h"
-
+// System
 #include "StartUp.h"
 
 void Model::Create(std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials, const char* path)
@@ -34,7 +37,8 @@ void Model::Create(std::vector<std::vector<std::shared_ptr<Material>>> meshmater
 	flag |= aiProcess_OptimizeMeshes;
 	flag |= aiProcess_FlipUVs;
 	const aiScene* pScene = importer.ReadFile(path, flag);
-	if (!pScene) {
+	if (!pScene) 
+	{
 		MessageBox(nullptr, importer.GetErrorString(), "Assimp Error", MB_OK);
 		return;
 	}
@@ -110,11 +114,13 @@ void Model::Rendering()
 	MeshMaterialManager::MeshMaterialInfo info = MeshMaterial->GetMeshMaterial(current);
 	if (info.material)
 	{
+		// マテリアルのバインド
 		info.material->WriteWVP(ConstantWVP::Calc3DMatrix(
 			Owner.lock()->GetPosition(),
 			Owner.lock()->GetRotation(),
 			Owner.lock()->GetScale()));
 		info.material->Bind();
+		// 描画
 		MeshData[info.meshIdx]->Draw();
 	}
 }

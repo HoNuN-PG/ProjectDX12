@@ -1,8 +1,9 @@
 
+// System/GameObject
 #include "GameObject.h"
-
+// System/Rendering/Pass
 #include "DepthNormalPass.h"
-
+// System/Rendering
 #include "GlobalResourceKey.h"
 
 OpaqueDepthNormalPass::OpaqueDepthNormalPass()
@@ -24,7 +25,8 @@ void OpaqueDepthNormalPass::Execute()
 	// RTV‚ÌÝ’è
 	Depth->Clear(clearColor);
 	Normal->Clear(clearColor);
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
+	{
 		Depth->GetHandleRTV().hCPU,
 		Normal->GetHandleRTV().hCPU,
 	};
