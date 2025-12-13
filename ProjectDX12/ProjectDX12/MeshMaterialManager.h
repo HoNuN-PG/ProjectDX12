@@ -41,7 +41,6 @@ public:
 public:
 	// 直前に使用したマテリアルの使用状況をリセット
 	void Reuse();
-
 	// リフレッシュ
 	void Refresh();
 
@@ -49,8 +48,8 @@ public:
 	std::vector<std::shared_ptr<Material>> GetMaterials(UINT mesh) { Materials.find(mesh); }
 
 private:
-	std::unordered_map<UINT, std::vector<std::shared_ptr<Material>>>	Materials;	// メッシュごとのマテリアル
-	std::unordered_map<UINT, std::vector<bool>>							Usage;		// メッシュごとのマテリアルの使用状況
+	MeshMaterials								Materials;	// メッシュごとのマテリアル
+	std::unordered_map<UINT, std::vector<bool>>	Usage;		// メッシュごとのマテリアルの使用状況
 
 };
 

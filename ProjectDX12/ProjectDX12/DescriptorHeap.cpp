@@ -21,7 +21,6 @@ DescriptorHeap::DescriptorHeap(Description desc)
 
 DescriptorHeap::~DescriptorHeap()
 {
-	SAFE_RELEASE(Heap);
 }
 
 DescriptorHeap::Handle DescriptorHeap::Allocate()

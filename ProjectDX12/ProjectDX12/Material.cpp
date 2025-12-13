@@ -20,7 +20,7 @@ void Material::Initialize(std::shared_ptr<Material> material, Description desc)
 	material->PassType = desc.PassType;
 	material->Initialize(desc);
 
-	// レンダリングエンジンにマテリアルの参照を登録
+	// レンダリングエンジンにマテリアル本体の参照を登録
 	SceneManager::GetCurrentScene()->GetRenderingEngine()->RegisterMaterial(material);
 }
 
@@ -71,7 +71,7 @@ void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 	PipelineData->Bind();
 
 	// マテリアルインデックス更新
-	MaterialInstanceIdx = max(++MaterialInstanceIdx, MaterialInstanceCount);
+	MaterialInstanceIdx = ++MaterialInstanceIdx >= MaterialInstanceCount ? 0 : MaterialInstanceIdx;
 }
 
 void Material::AddMaterialInstance()

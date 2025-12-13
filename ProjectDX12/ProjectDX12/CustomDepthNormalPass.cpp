@@ -16,10 +16,8 @@ void CustomDepthNormalPass::Execute()
 	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
 
 	// ターゲット化
-	Depth->ResourceBarrier(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	Normal->ResourceBarrier(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	Depth->SRV2RTV();
+	Normal->SRV2RTV();
 
 	// RTVの設定
 	Depth->Clear(clearColor);
@@ -39,10 +37,8 @@ void CustomDepthNormalPass::Execute()
 	RenderObjects.clear();
 
 	// リソース化
-	Depth->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	Normal->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	Depth->RTV2SRV();
+	Normal->RTV2SRV();
 }
 
 void CustomDepthNormalPass::Init(

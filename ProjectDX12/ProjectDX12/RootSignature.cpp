@@ -52,7 +52,6 @@ RootSignature::RootSignature(Descriptions desc)
 
 RootSignature::~RootSignature()
 {
-	SAFE_RELEASE(RootSignatureData);
 }
 
 void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, UINT num)

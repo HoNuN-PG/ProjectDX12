@@ -76,7 +76,7 @@ void M_SimpleShadowMaps::Bind()
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		WVP[MaterialInstanceIdx]->GetHandle().hGPU, //
 		Params[0]->GetHandle().hGPU,
 		Params[1 + CurrentShadowMapsNo]->GetHandle().hGPU,
 	};

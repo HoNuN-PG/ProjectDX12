@@ -60,7 +60,6 @@ RenderTarget::RenderTarget(Description desc)
 
 RenderTarget::~RenderTarget()
 {
-	SAFE_RELEASE(Resource);
 }
 
 void RenderTarget::RTV2SRV()

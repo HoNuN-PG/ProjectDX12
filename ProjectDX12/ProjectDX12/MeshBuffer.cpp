@@ -92,8 +92,6 @@ MeshBuffer::MeshBuffer(Description desc)
 
 MeshBuffer::~MeshBuffer()
 {
-	SAFE_RELEASE(Idx);
-	SAFE_RELEASE(Vtx);
 }
 
 void MeshBuffer::Draw()
@@ -160,8 +158,6 @@ InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count)
 
 InstanceMeshBuffer::~InstanceMeshBuffer()
 {
-	SAFE_RELEASE(InsUploader);
-	SAFE_RELEASE(Ins);
 }
 
 void InstanceMeshBuffer::MappingUploder()

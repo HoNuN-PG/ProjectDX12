@@ -112,9 +112,6 @@ public:
 	void WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDLE startHandle, D3D12_DESCRIPTOR_HEAP_TYPE type);
 
 public:
-	/// <summary>
-	/// ƒŠƒtƒŒƒbƒVƒ…
-	/// </summary>
 	void Refresh();
 
 public:

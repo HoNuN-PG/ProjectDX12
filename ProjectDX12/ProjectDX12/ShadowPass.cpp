@@ -101,8 +101,7 @@ void ShadowPass::Execute()
 		ShadowReceiveParam.LVP[i] = lvpc4x4;
 
 		// ターゲット化
-		ShadowMaps[i]->ResourceBarrier(
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		ShadowMaps[i]->SRV2RTV();
 
 		// RTVの設定
 		ShadowMaps[i]->Clear(clearColor);
@@ -127,8 +126,7 @@ void ShadowPass::Execute()
 		}
 
 		// リソース化
-		ShadowMaps[i]->ResourceBarrier(
-			D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		ShadowMaps[i]->RTV2SRV();
 
 		nearDepth = CascadeAreas[i];
 	}
@@ -139,12 +137,24 @@ void ShadowPass::Execute()
 	Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever,&ShadowReceiveParam);
 
 	// ぼかし
-	Gauss::ExecuteScreenGauss8D2(GaussIdx[TextureType::Near],{ VSMShadowMaps[TextureType::Near]->Width,VSMShadowMaps[TextureType::Near]->Height },
-		ShadowMaps[TextureType::Near], VSMShadowMaps[TextureType::Near]);
-	Gauss::ExecuteScreenGauss4D2(GaussIdx[TextureType::Middle], { VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height },
-		ShadowMaps[TextureType::Middle], VSMShadowMaps[TextureType::Middle]);
-	Gauss::ExecuteScreenGauss2D1(GaussIdx[TextureType::Far], { VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height },
-		ShadowMaps[TextureType::Far], VSMShadowMaps[TextureType::Far]);
+	Gauss::ExecuteScreenGauss8D2(
+		GaussIdx[TextureType::Near],
+		{ VSMShadowMaps[TextureType::Near]->Width,VSMShadowMaps[TextureType::Near]->Height },
+		ShadowMaps[TextureType::Near], 
+		VSMShadowMaps[TextureType::Near]
+	);
+	Gauss::ExecuteScreenGauss4D2(
+		GaussIdx[TextureType::Middle],
+		{ VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height },
+		ShadowMaps[TextureType::Middle], 
+		VSMShadowMaps[TextureType::Middle]
+	);
+	Gauss::ExecuteScreenGauss2D1(
+		GaussIdx[TextureType::Far],
+		{ VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height },
+		ShadowMaps[TextureType::Far], 
+		VSMShadowMaps[TextureType::Far]
+	);
 
 	RenderObjects.clear();
 }

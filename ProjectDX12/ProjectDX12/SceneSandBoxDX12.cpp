@@ -130,9 +130,9 @@ HRESULT SceneSandBoxDX12::Init()
 
 	// モデル作成
 	{// スカイボックス
-		std::vector<std::shared_ptr<Material>> materials;
+		MeshMaterials materials;
 
-		materials.push_back(sky_box);
+		materials[0].push_back(sky_box);
 	
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>(SceneBase::Layer::Environment);
 		obj->SetPosition({ 0,0,0 });
@@ -144,10 +144,10 @@ HRESULT SceneSandBoxDX12::Init()
 		model->Create(materials);
 	}
 	{// グリッド
-		std::vector<std::shared_ptr<Material>> materials;
+		MeshMaterials materials;
 
-		materials.push_back(opaque_depth_normal);
-		materials.push_back(grid_shadow_vsm);
+		materials[0].push_back(opaque_depth_normal);
+		materials[0].push_back(grid_shadow_vsm);
 	
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,-1,0 });
@@ -157,25 +157,21 @@ HRESULT SceneSandBoxDX12::Init()
 		model->Create(materials);
 	}
 	{// 木1
-		std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials;
-		std::vector<std::shared_ptr<Material>> materials;
+		MeshMaterials materials;
 
-		materials.push_back(shadow_map);
-		materials.push_back(opaque_depth_normal);
-		materials.push_back(custom_opaque_depth_normal);
-		materials.push_back(tree_simple_lit);
-		meshmaterials.push_back(materials);
+		materials[0].push_back(shadow_map);
+		materials[0].push_back(opaque_depth_normal);
+		materials[0].push_back(custom_opaque_depth_normal);
+		materials[0].push_back(tree_simple_lit);
 
-		materials.clear();
-		materials.push_back(leaf_shadow_map);
-		materials.push_back(leaf_simple_lit);
-		meshmaterials.push_back(materials);
+		materials[1].push_back(leaf_shadow_map);
+		materials[1].push_back(leaf_simple_lit);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,-2.5f,0 });
 		obj->SetScale({2.5f,2.5f,2.5f});
 		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
-		model->Create(meshmaterials, "../exe/assets/model/tree/height_tree.fbx");
+		model->Create("../exe/assets/model/tree/height_tree.fbx", materials);
 	}
 	{// 牛
 		// Deffered
@@ -189,17 +185,15 @@ HRESULT SceneSandBoxDX12::Init()
 		Material::Initialize(deffered_albedo_normal, desc);
 		deffered_albedo_normal->AddTexture("../exe/assets/model/spot/spot_texture.png");
 		
-		std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials;
-		std::vector<std::shared_ptr<Material>> materials;
+		MeshMaterials materials;
 
-		materials.push_back(opaque_depth_normal);
-		materials.push_back(deffered_albedo_normal);
-		meshmaterials.push_back(materials);
+		materials[0].push_back(opaque_depth_normal);
+		materials[0].push_back(deffered_albedo_normal);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,10 });
 		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
-		model->Create(meshmaterials, "../exe/assets/model/spot/spot.fbx");
+		model->Create("../exe/assets/model/spot/spot.fbx", materials);
 	}
 
     return E_NOTIMPL;

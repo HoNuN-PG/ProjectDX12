@@ -55,9 +55,8 @@ DepthStencil::DepthStencil(Description desc)
 	GetDevice()->CreateDepthStencilView(Resource.Get(), &dsvDesc, DSV.hCPU);
 }
 
-void DepthStencil::~DepthStencil()
+DepthStencil::~DepthStencil()
 {
-	SAFE_RELEASE(Resource);
 }
 
 void DepthStencil::Clear()

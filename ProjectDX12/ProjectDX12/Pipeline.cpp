@@ -102,5 +102,4 @@ Pipeline::Pipeline(Description desc)
 
 Pipeline::~Pipeline()
 {
-	SAFE_RELEASE(PipelineData);
 }

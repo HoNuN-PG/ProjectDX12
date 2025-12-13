@@ -52,7 +52,7 @@ MeshMaterialManager::MeshMaterialInfo MeshMaterialManager::GetRenderingMaterial(
 			Usage[item->first][i] = true;
 			MeshMaterialInfo info;
 			info.material = item->second[i];
-			info.meshIdx = i;
+			info.meshIdx = item->first;
 
 			return info;
 		}
@@ -64,7 +64,7 @@ void MeshMaterialManager::Reuse()
 {
 	for (auto&& item = Usage.begin(); item != Usage.end(); ++item)
 	{
-		for (int i = item->second.size() - 1; i << item->second.size() >= 0; --i)
+		for (int i = item->second.size() - 1; i >= 0; --i)
 		{
 			if (item->second[i])
 			{
@@ -79,7 +79,7 @@ void MeshMaterialManager::Refresh()
 {
 	for (auto&& item = Usage.begin(); item != Usage.end(); ++item)
 	{
-		for (int i = item->second.size() - 1; i << item->second.size() >= 0; --i)
+		for (int i = item->second.size() - 1; i >= 0; --i)
 		{
 			item->second[i] = false;
 		}

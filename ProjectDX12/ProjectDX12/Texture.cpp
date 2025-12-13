@@ -92,5 +92,4 @@ Texture::Texture(Description desc)
 
 Texture::~Texture()
 {
-	SAFE_RELEASE(Resource);
 }

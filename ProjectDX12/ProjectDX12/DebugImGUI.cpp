@@ -51,7 +51,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		desc.num = HEAP_NUM;
+		desc.num = HEAP_NUM + 1;
 		ImGUIHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// ImGUIÇÃèâä˙âª
@@ -193,9 +193,4 @@ void DebugImGUI::Completed()
 	{
 		ImGUIRTVs[i].first = false;
 	}
-}
-
-DescriptorHeap* DebugImGUI::GetImGUIDescriptorHeap()
-{
-	return ImGUIHeap.get();
 }
