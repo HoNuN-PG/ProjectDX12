@@ -162,13 +162,13 @@ void RenderingEngine::Draw()
 
 		// ライト
 		DirectX::XMFLOAT4X4 light;
-		light._11 = Light->GetPos().x;
-		light._12 = Light->GetPos().y;
-		light._13 = Light->GetPos().z;
+		light._11 = Light->GetPosition().x;
+		light._12 = Light->GetPosition().y;
+		light._13 = Light->GetPosition().z;
 		light._14 = 0;
-		light._21 = Light->GetDir().x;
-		light._22 = Light->GetDir().y;
-		light._23 = Light->GetDir().z;
+		light._21 = Light->GetDirection().x;
+		light._22 = Light->GetDirection().y;
+		light._23 = Light->GetDirection().z;
 		light._24 = 0;
 		light._31 = Light->GetColor().x;
 		light._32 = Light->GetColor().y;
@@ -229,7 +229,7 @@ void RenderingEngine::SetupDefferedShader()
 {
 	// ルートシグネチャ
 	{
-		RootSignature::ParameterTable param[] = 
+		RootSignature::Parameter param[] = 
 		{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
@@ -238,7 +238,7 @@ void RenderingEngine::SetupDefferedShader()
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::DescriptionTable desc = {};
+		RootSignature::Description desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		DefferedLightingShader.RootSignatureData = std::make_unique<RootSignature>(desc);
@@ -251,7 +251,7 @@ void RenderingEngine::SetupDefferedShader()
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 		};
 		Pipeline::Description desc = {};
-		desc.cull = D3D12_CULL_MODE_BACK;
+		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"../exe/assets/shader/PS_DefferedLighting.cso";
 		desc.pInputLayout = layout;
@@ -425,12 +425,12 @@ void RenderingEngine::AddRenderObject(
 	}
 }
 
-void RenderingEngine::AddRenderingComponent(std::shared_ptr<RenderingComponent> component)
+void RenderingEngine::RegisterRenderingComponent(std::shared_ptr<RenderingComponent> component)
 {
 	RenderingComponents.push_back(component);
 }
 
-void RenderingEngine::AddRenderingMaterial(std::shared_ptr<Material> material)
+void RenderingEngine::RegisterMaterial(std::shared_ptr<Material> material)
 {
 	RenderingMaterials.push_back(material);
 }
@@ -702,6 +702,6 @@ void RenderingEngine::RefreshRendering()
 		});
 	for (auto material : RenderingMaterials)
 	{
-		material.lock()->RefreshRendering();
+		material.lock()->Refresh();
 	}
 }

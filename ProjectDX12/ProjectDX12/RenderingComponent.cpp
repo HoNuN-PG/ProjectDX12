@@ -4,10 +4,10 @@
 
 void RenderingComponent::ReuseRendering()
 {
-	MeshMaterial->ReuseRendering();
+	MeshMaterialData->Reuse();
 }
 
 void RenderingComponent::RefreshRendering()
 {
-	MeshMaterial->RefreshRendering();
+	MeshMaterialData->Refresh();
 }

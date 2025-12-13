@@ -14,14 +14,14 @@
 
 void Primitive::Draw()
 {
-	MeshMaterial->BindRenderingEngine(Owner);
+	MeshMaterialData->Register2RenderingEngine(Owner);
 }
 
 void Primitive::Rendering()
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingTiming();
-	MeshMaterialManager::MeshMaterialInfo info = MeshMaterial->GetMeshMaterial(current);
+	MeshMaterialManager::MeshMaterialInfo info = MeshMaterialData->GetRenderingMaterial(current);
 	if (info.material)
 	{
 		info.material->WriteWVP(ConstantWVP::Calc3DMatrix(

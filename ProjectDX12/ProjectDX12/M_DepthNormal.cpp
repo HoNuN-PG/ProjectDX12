@@ -2,19 +2,19 @@
 // Material/Materials
 #include "M_DepthNormal.h"
 
-void M_DepthNormal::Initialize(DescriptorHeap* heap, Description desc)
+void M_DepthNormal::Initialize(Description desc)
 {
 	// 定数バッファ
 	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = heap;
+		ConstantBuffer::Description constant = {};
+		constant.pHeap = desc.pHeap;
 	}
 
-	RootSignature::ParameterTable param[] = 
+	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 	};
-	RootSignature::DescriptionTable rootsignature;
+	RootSignature::Description rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
@@ -26,7 +26,7 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap, Description desc)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = desc.cull;
+	pipeline.CullMode = desc.CullMode;
 	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_DepthNormal.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_DepthNormal.cso";
@@ -34,9 +34,8 @@ void M_DepthNormal::Initialize(DescriptorHeap* heap, Description desc)
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 2;
 
-	Material::SetUp
-	(
-		heap,
+	Material::SetUp(
+		desc.pHeap,
 		rootsignature,
 		pipeline
 	);

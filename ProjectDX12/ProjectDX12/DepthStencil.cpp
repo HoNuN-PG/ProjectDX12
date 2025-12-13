@@ -3,7 +3,9 @@
 #include "DepthStencil.h"
 
 DepthStencil::DepthStencil(Description desc)
-	: Resource(nullptr), DSV{} 
+	: 
+	Resource(nullptr), 
+	DSV{} 
 {
 	// レンダーターゲットの作成
 	D3D12_HEAP_PROPERTIES prop	= {};
@@ -12,6 +14,7 @@ DepthStencil::DepthStencil(Description desc)
 	prop.MemoryPoolPreference	= D3D12_MEMORY_POOL_UNKNOWN;
 	prop.CreationNodeMask		= 1;
 	prop.VisibleNodeMask		= 1;
+
 	// リソース設定
 	D3D12_RESOURCE_DESC resDesc = {};
 	resDesc.Format				= DXGI_FORMAT_D32_FLOAT;					// 深度バッファフォーマット
@@ -24,26 +27,37 @@ DepthStencil::DepthStencil(Description desc)
 	resDesc.Dimension			= D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	resDesc.Layout				= D3D12_TEXTURE_LAYOUT_UNKNOWN;
 	resDesc.Flags				= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;	// 深度バッファの指定
+
 	// リソース作成
 	D3D12_CLEAR_VALUE clearValue;
 	clearValue.Format				= resDesc.Format;
 	clearValue.DepthStencil.Depth	= 1.0f;
 	clearValue.DepthStencil.Stencil = 0;
 	HRESULT hr = GetDevice()->CreateCommittedResource(
-		&prop, D3D12_HEAP_FLAG_NONE, &resDesc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue, IID_PPV_ARGS(&Resource)
+		&prop, 
+		D3D12_HEAP_FLAG_NONE, 
+		&resDesc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE, 
+		&clearValue, 
+		IID_PPV_ARGS(&Resource)
 	);
 	if (FAILED(hr)) 
 	{
 		MessageBox(NULL, "DepthStencil.cpp", "Error", MB_OK);
 		return;
 	}
+
 	// ビューの作成
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc	= {};
 	dsvDesc.Format							= resDesc.Format;
 	dsvDesc.ViewDimension					= D3D12_DSV_DIMENSION_TEXTURE2D;
-	DSV = desc.pDSVHeap->Allocate();
-	GetDevice()->CreateDepthStencilView(Resource, &dsvDesc, DSV.hCPU);
+	DSV										= desc.pDSVHeap->Allocate();
+	GetDevice()->CreateDepthStencilView(Resource.Get(), &dsvDesc, DSV.hCPU);
+}
+
+void DepthStencil::~DepthStencil()
+{
+	SAFE_RELEASE(Resource);
 }
 
 void DepthStencil::Clear()

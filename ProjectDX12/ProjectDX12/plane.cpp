@@ -2,24 +2,20 @@
 // Model
 #include "plane.h"
 
-void Plane::Create(std::vector<std::shared_ptr<Material>> materials)
+void Plane::Create(MeshMaterials materials)
 {
 	CreatePrimitive(0);
 	// マテリアル設定
-	MeshMaterial = std::make_unique<MeshMaterialManager>();
-	std::vector<std::vector<std::shared_ptr<Material>>> data; 
-	data.push_back(materials);
-	MeshMaterial->SetupMaterialsData(data);
+	MeshMaterialData = std::make_unique<MeshMaterialManager>();
+	MeshMaterialData->SetUp(materials);
 }
 
-void Plane::Create(std::vector<std::shared_ptr<Material>> materials, unsigned int instanced)
+void Plane::Create(MeshMaterials materials, unsigned int instanced)
 {
 	CreatePrimitive(instanced);
 	// マテリアル設定
-	MeshMaterial = std::make_unique<MeshMaterialManager>();
-	std::vector<std::vector<std::shared_ptr<Material>>> data;
-	data.push_back(materials);
-	MeshMaterial->SetupMaterialsData(data);
+	MeshMaterialData = std::make_unique<MeshMaterialManager>();
+	MeshMaterialData->SetUp(materials);
 }
 
 void Plane::CreatePrimitive(unsigned int instanced)

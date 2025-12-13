@@ -7,6 +7,9 @@
 // Material
 #include "Material.h"
 
+// メッシュに設定するマテリアル
+using MeshMaterials = std::unordered_map<UINT, std::vector<std::shared_ptr<Material>>>;
+
 /**
 * @class MeshMaterialManager
 * @brief メッシュのマテリアルの所有者
@@ -17,32 +20,37 @@ public:
 	struct MeshMaterialInfo
 	{
 		std::shared_ptr<Material> material; // 使用されているマテリアル
-		UINT meshIdx;						// マテリアルが使用されているメッシュのインデックス
+		UINT meshIdx;						// メッシュのインデックス
 	};
 
 public:
-	void SetupMaterialsData(std::vector<std::vector<std::shared_ptr<Material>>> data);
-	void BindRenderingEngine(std::weak_ptr<class GameObject> owner);
+	// セットアップ
+	void SetUp(MeshMaterials materials);
 
-	/**
-	* @brief 指定描画タイミングで描画するマテリアルを取得する
-	* @param[timing] 描画タイミング
-	*/
-	MeshMaterialInfo GetMeshMaterial(UINT timing);
-
-	/**
-	* @brief 直前に使用したマテリアルを再使用する
-	*/
-	void ReuseRendering();
-
-	void RefreshRendering();
+	// レンダリングエンジンに参照を登録
+	void Register2RenderingEngine(std::weak_ptr<class GameObject> owner);
 
 public:
-	std::vector<std::vector<std::shared_ptr<Material>>> GetMeshMaterialsData() { return MeshMaterialsData; }
+	/// <summary>
+	/// 指定タイミングで描画するマテリアルの取得
+	/// </summary>
+	/// <param name="timing"></param>
+	/// <returns></returns>
+	MeshMaterialInfo GetRenderingMaterial(UINT timing);
+
+public:
+	// 直前に使用したマテリアルの使用状況をリセット
+	void Reuse();
+
+	// リフレッシュ
+	void Refresh();
+
+public:
+	std::vector<std::shared_ptr<Material>> GetMaterials(UINT mesh) { Materials.find(mesh); }
 
 private:
-	std::vector<std::vector<std::shared_ptr<Material>>>	MeshMaterialsData;
-	std::vector<std::vector<bool>>						UsedList;
+	std::unordered_map<UINT, std::vector<std::shared_ptr<Material>>>	Materials;	// メッシュごとのマテリアル
+	std::unordered_map<UINT, std::vector<bool>>							Usage;		// メッシュごとのマテリアルの使用状況
 
 };
 

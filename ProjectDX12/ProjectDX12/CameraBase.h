@@ -26,7 +26,7 @@ public:
 	virtual void Update() override {}
 	virtual void Draw() override {}
 
-	// 座標
+public:
 	DirectX::XMFLOAT3 GetPosition() 
 	{ 
 		return m_Pos; 
@@ -40,32 +40,36 @@ public:
 		return DXFL::Cross(DXFL::Normalize(m_Up), GetForward());
 	}
 
+protected:
+	DirectX::XMFLOAT3 m_Pos;
+	DirectX::XMFLOAT3 m_Up;
+	DirectX::XMFLOAT3 m_Target;	
+
+	// 移動速度
 public:
 	float m_MoveSpeed;
 	float m_MouseSpeed;
 
+	// 各種カメラパラメータ
 public:
 	static float GetViewAngle() { return DirectX::XMConvertToRadians(VIEW_ANGLE); }
 	static float GetAspect() { return (float)WINDOW_WIDTH / WINDOW_HEIGHT; }
+
+	// マトリクス
+public:
 	static DirectX::XMFLOAT4X4 GetViewProjectionInvMatrix();
 
+	// メインカメラのパラメータ
+protected:
+	void SetMainParams();
 public:
 	static DirectX::XMFLOAT3 m_MainPos;
 	static DirectX::XMFLOAT3 m_MainUp;
 	static DirectX::XMFLOAT3 m_MainTarget;
 	static DirectX::XMFLOAT4X4 m_MainViewMatrix;
 	static DirectX::XMFLOAT4X4 m_MainProjMatrix;
-
-protected:
-	void SetMainParams();
-
 protected:
 	bool m_IsMain;
-
-protected:
-	DirectX::XMFLOAT3 m_Pos;			// カメラ座標
-	DirectX::XMFLOAT3 m_Up;				// アップベクトル
-	DirectX::XMFLOAT3 m_Target;			// 注視点
 
 };
 

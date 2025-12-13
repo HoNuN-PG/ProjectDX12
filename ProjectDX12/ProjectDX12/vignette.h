@@ -19,11 +19,13 @@ public:
 		float range;
 		DirectX::XMFLOAT2 pad1;
 	};
+
 public:
 	Vignette() {};
 	~Vignette() {}
 	void Init() override;
 	void Draw() override;
+
 private:
 	std::shared_ptr<RenderTarget> RTV;
 	std::unique_ptr<ConstantBuffer> Params;

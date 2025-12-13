@@ -20,12 +20,12 @@ void Vignette::Init()
 
 	// ルートシグネチャ
 	{
-		RootSignature::ParameterTable param[] = 
+		RootSignature::Parameter param[] = 
 		{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::DescriptionTable desc = {};
+		RootSignature::Description desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		RootSignatureData = std::make_unique<RootSignature>(desc);
@@ -38,7 +38,7 @@ void Vignette::Init()
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 		};
 		Pipeline::Description desc = {};
-		desc.cull = D3D12_CULL_MODE_BACK;
+		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"../exe/assets/shader/PS_Vignette.cso";
 		desc.pInputLayout = layout;

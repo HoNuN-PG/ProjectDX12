@@ -7,7 +7,7 @@
 class M_SimpleLit : public Material
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap, Description desc) override;
+	virtual void Initialize(Description desc) override;
 	virtual void Bind() override;
 
 };
@@ -15,7 +15,7 @@ public:
 class M_OpaqueSimpleLit : public Material
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap, Description desc) override;
+	virtual void Initialize(Description desc) override;
 	virtual void Bind() override;
 
 private:

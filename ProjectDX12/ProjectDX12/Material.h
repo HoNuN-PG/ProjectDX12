@@ -17,6 +17,7 @@
 // System/Rendering/Texture
 #include "Texture.h"
 
+// 汎用パラメータ
 struct CommonParam
 {
 	float AlphaCut;
@@ -26,6 +27,9 @@ struct CommonParam
 class Material
 {
 public:
+	/// <summary>
+	/// 描画タイミング
+	/// </summary>
 	enum RenderingTiming
 	{
 		Shadow = 0,					// シャドウ
@@ -46,92 +50,88 @@ public:
 	virtual ~Material() {};
 
 public:
+	// 初期化デスク
 	struct Description
 	{
-		D3D12_CULL_MODE cull = D3D12_CULL_MODE_BACK;
-		BOOL			WriteDepth = TRUE;
+		DescriptorHeap* pHeap = nullptr;
+		D3D12_CULL_MODE CullMode = D3D12_CULL_MODE_BACK;
+		BOOL WriteDepth = TRUE;
+		RenderingTiming Timing = RenderingTiming::Forward;
+		RenderingPass::RenderingPassType PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 	};
 
+	// 初期化
 public:
-	// マテリアル全体初期化
-	static void Initialize(
-		std::shared_ptr<Material> material, // 初期化するマテリアル
-		DescriptorHeap* heap,				// 使用ヒープ
-		Description desc,					// 初期化デスク
-		RenderingTiming timing = RenderingTiming::Forward,
-		RenderingPass::RenderingPassType passType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE
-	);
+	static void Initialize(std::shared_ptr<Material> material, Description desc);
 protected:
-	// マテリアル個別初期化
-	virtual void Initialize(DescriptorHeap* heap, Description desc) = 0;
+	virtual void Initialize(Description desc) = 0;
 
 protected:
 	// セットアップ
 	void SetUp(
 		DescriptorHeap* heap,
-		RootSignature::DescriptionTable rootsignature,
+		RootSignature::Description rootsignature,
 		Pipeline::Description pipeline,
 		UINT rtvNum = 0
 	);
 
+	// 設定
 public:
 	/// <summary>
-	/// マテリアル個別設定
-	/// 設定後MaterialInstanceIdxが更新される
+	/// MaterialInstanceIdx（マテリアルインスタンスのインデックス）が更新される
 	/// </summary>
 	virtual void Bind() = 0;
 protected:
-	// マテリアル全体設定
 	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
 
+	// マテリアルインスタンス
 public:
 	/// <summary>
 	/// マテリアルインスタンスの追加
-	/// <return>マテリアルインスタンスUID</return>
 	/// </summary>
 	void AddMaterialInstance();
-
+protected:
+	unsigned int									MaterialInstanceCount;				// マテリアルインスタンスの総数
+	unsigned int									MaterialInstanceIdx;				// マテリアルインスタンスのインデックス
+																						// 再描画の際はマテリアルインスタンスを使い切ってから描画を行う
+public:
 	/// <summary>
 	/// テクスチャ追加
 	/// </summary>
 	/// <param name="path"></param>
 	void AddTexture(const char* path);
 
+public:
 	/// <summary>
-	/// MaterialInstanceIdxにWVPを書き込み
-	/// WVPの書き込み直後にBindすることでMaterialInstanceIdxに書き込まれたWVPで設定を行う
+	/// WVPの書き込み
+	/// WVPの書き込み直後にBindすることで現在のMaterialInstanceIdxに書き込まれたWVPで設定を行う
 	/// </summary>
 	/// <param name="data"></param>
 	void WriteWVP(void* data);
 	void WriteParam(void* data, UINT idx);
 	void WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDLE startHandle, D3D12_DESCRIPTOR_HEAP_TYPE type);
 
+public:
 	/// <summary>
-	/// 描画終了時に呼び出し
+	/// リフレッシュ
 	/// </summary>
-	void RefreshRendering();
+	void Refresh();
 
 public:
 	RenderingTiming GetRenderTiming() { return Timing; };
 	RenderingPass::RenderingPassType GetPassType() { return PassType; }
 
-protected:
 	// マテリアルパラメータ
+protected:
 	RenderingTiming									Timing;
 	RenderingPass::RenderingPassType				PassType;
-
+protected:
 	DescriptorHeap*									Heap;
 	std::shared_ptr<DescriptorHeap>					RTVHeap;
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;
 
 	std::vector<std::unique_ptr<Texture>>			Textures;
-
-	// マテリアルインスタンス情報
-	unsigned int									MaterialInstanceCount;				// マテリアルインスタンスの総数
-	unsigned int									MaterialInstanceIdx;				// マテリアルインスタンスのインデックス
-																						// １つのマテリアルで複数回オブジェクトを描画する際は
-																						// マテリアルインスタンスを使い切ってから描画する
 
 	std::vector<std::unique_ptr<ConstantBuffer>>	WVP;
 	std::vector<std::unique_ptr<ConstantBuffer>>	Params;

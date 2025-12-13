@@ -19,6 +19,7 @@ public:
 		DirectX::XMFLOAT2 uv;
 		DirectX::XMFLOAT4 color;
 	};
+
 	struct Mesh
 	{
 		std::vector<Vtx> Vertices;
@@ -36,7 +37,9 @@ public:
 
 public:
 	virtual ~Model(){}
-	void Create(std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials, const char* path);
+
+public:
+	void Create(const char* path, MeshMaterials materials);
 
 private:
 	void CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV);

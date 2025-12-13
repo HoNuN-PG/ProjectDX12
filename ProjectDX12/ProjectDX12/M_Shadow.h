@@ -20,7 +20,7 @@ namespace ShadowParam
 class M_ShadowMapsBase : public Material
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap, Description desc) override {};
+	virtual void Initialize(Description desc) override {};
 	virtual void Bind() override {};
 
 public:
@@ -32,7 +32,7 @@ public:
 class M_SimpleShadowMaps : public M_ShadowMapsBase
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap, Description desc) override;
+	virtual void Initialize(Description desc) override;
 	virtual void Bind() override;
 
 };
@@ -40,7 +40,7 @@ public:
 class M_OpaqueSimpleShadowMaps : public M_ShadowMapsBase
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap, Description desc) override;
+	virtual void Initialize(Description desc) override;
 	virtual void Bind() override;
 
 private:
@@ -51,7 +51,7 @@ private:
 class M_ShadowRecieverBase : public Material
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap, Description desc) override;
+	virtual void Initialize(Description desc) override;
 	virtual void Bind() override;
 
 protected:
@@ -62,7 +62,7 @@ protected:
 class M_ShadowVSMRecieverBase : public Material
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap, Description desc) override;
+	virtual void Initialize(Description desc) override;
 	virtual void Bind() override;
 
 protected:

@@ -9,25 +9,25 @@
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
-void M_SimpleLit::Initialize(DescriptorHeap* heap, Description desc)
+void M_SimpleLit::Initialize(Description desc)
 {
 	// 定数バッファ
 	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = heap;
+		ConstantBuffer::Description constant = {};
+		constant.pHeap = desc.pHeap;
 		// Params
-		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
+		constant.size = sizeof(DirectX::XMFLOAT4X4);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // カメラ
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // ライト
 	}
 
-	RootSignature::ParameterTable param[] = 
+	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::DescriptionTable rootsignature;
+	RootSignature::Description rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
@@ -39,7 +39,7 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = desc.cull;
+	pipeline.CullMode = desc.CullMode;
 	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_Object.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_SimpleLit.cso";
@@ -47,9 +47,8 @@ void M_SimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
 
-	Material::SetUp
-	(
-		heap,
+	Material::SetUp(
+		desc.pHeap,
 		rootsignature,
 		pipeline
 	);
@@ -72,21 +71,21 @@ void M_SimpleLit::Bind()
 	Material::BindBase(desc, _countof(desc));
 }
 
-void M_OpaqueSimpleLit::Initialize(DescriptorHeap* heap, Description desc)
+void M_OpaqueSimpleLit::Initialize(Description desc)
 {
 	// 定数バッファ
 	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = heap;
+		ConstantBuffer::Description constant = {};
+		constant.pHeap = desc.pHeap;
 		// Params
-		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
-		desc.size = sizeof(CommonParam);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+		constant.size = sizeof(DirectX::XMFLOAT4X4);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // カメラ
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // ライト
+		constant.size = sizeof(CommonParam);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
 
-	RootSignature::ParameterTable param[] = 
+	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
@@ -94,7 +93,7 @@ void M_OpaqueSimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::DescriptionTable rootsignature;
+	RootSignature::Description rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
@@ -106,7 +105,7 @@ void M_OpaqueSimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = desc.cull;
+	pipeline.CullMode = desc.CullMode;
 	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_Object.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_OpaqueSimpleLit.cso";
@@ -114,14 +113,13 @@ void M_OpaqueSimpleLit::Initialize(DescriptorHeap* heap, Description desc)
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
 
-	Material::SetUp
-	(
-		heap,
+	Material::SetUp(
+		desc.pHeap,
 		rootsignature,
 		pipeline
 	);
 
-	common.AlphaCut = 0.1f;
+	common.AlphaCut = 0.2f;
 }
 
 void M_OpaqueSimpleLit::Bind()

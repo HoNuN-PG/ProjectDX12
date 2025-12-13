@@ -10,12 +10,12 @@
 class PostProcess
 {
 public:
-
 	PostProcess() {};
 	~PostProcess();
 	void Update();
 	void Draw();
 
+public:
 	template <typename T> // テンプレート関数
 	std::shared_ptr<T> AddVolume()
 	{

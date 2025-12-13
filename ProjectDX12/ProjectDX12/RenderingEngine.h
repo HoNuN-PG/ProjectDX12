@@ -39,10 +39,10 @@ class RenderingEngine
 {
 public:
 	// 描画パス群
-	using PASSES = std::unordered_map<UINT,  // パスの種類
-		std::unique_ptr<RenderingPass>>;
+	// キー：パスの種類
+	// 値：パス
+	using PASSES = std::unordered_map<UINT, std::unique_ptr<RenderingPass>>;
 
-	// RenderingInfo
 public:
 	struct RenderingInfo
 	{
@@ -84,6 +84,7 @@ private:
 	std::shared_ptr<DescriptorHeap> RenderingHeap;
 	std::shared_ptr<DescriptorHeap>	RTVHeap;
 	std::shared_ptr<DescriptorHeap>	DSVHeap;
+
 	// 描画リソース
 public:
 	std::shared_ptr<DepthStencil> GetDSV() { return DSV; };
@@ -133,6 +134,7 @@ public:
 		}
 		return nullptr;
 	}
+
 	// パスのテクスチャの取得
 	// timing:描画タイミング
 	// type:描画タイミング内の種類
@@ -173,9 +175,9 @@ public:
 	}
 
 	// 作成した描画コンポーネントの参照を追加
-	void AddRenderingComponent(std::shared_ptr<class RenderingComponent> component);
+	void RegisterRenderingComponent(std::shared_ptr<class RenderingComponent> component);
 	// 作成したマテリアルの参照を追加
-	void AddRenderingMaterial(std::shared_ptr<Material> material);
+	void RegisterMaterial(std::shared_ptr<Material> material);
 
 private:
 	std::vector<RenderingInfo> EnvironmentObjects;							// 環境描画オブジェクト

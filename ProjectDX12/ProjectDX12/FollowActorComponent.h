@@ -13,11 +13,14 @@ public:
 
 	void Init() override;
 	void Update() override;
-
+	
+public:
 	void SetFollowActor(std::shared_ptr<class GameObject> actor) { FollowActor = actor; }
 
 private:
+	// í«è]ëŒè€
 	std::weak_ptr<class GameObject> FollowActor;
+
 };
 
 #endif

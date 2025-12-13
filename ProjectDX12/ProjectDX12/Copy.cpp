@@ -46,11 +46,11 @@ void Copy::Load()
 
 	// ルートシグネチャ
 	{
-		RootSignature::ParameterTable param[] = 
+		RootSignature::Parameter param[] = 
 		{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::DescriptionTable desc = {};
+		RootSignature::Description desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		desc.filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
@@ -64,7 +64,7 @@ void Copy::Load()
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 		};
 		Pipeline::Description desc = {};
-		desc.cull = D3D12_CULL_MODE_BACK;
+		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"../exe/assets/shader/PS_Copy.cso";
 		desc.pInputLayout = layout;

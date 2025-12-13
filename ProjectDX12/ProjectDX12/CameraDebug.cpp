@@ -11,16 +11,19 @@
 
 CameraDebug::CameraDebug()
 {
+	m_Pos = { 0,5,-10 };
+	m_Up = { 0,1,0 };
+	m_Target = { 0,0,0 };
+
 	m_MoveSpeed = 0.5;
 	m_MouseSpeed = 1.0f;
 
+	// メインカメラパラメータの設定
 	m_IsMain = true;
-
-	m_Pos		= { 0,5,-10 };
-	m_Up		= { 0,1,0 };
-	m_Target	= { 0,0,0 };
-
-	SetMainParams();
+	if (m_IsMain)
+	{
+		SetMainParams();
+	}
 }
 
 void CameraDebug::Init()
@@ -39,10 +42,12 @@ void CameraDebug::Init()
 	arg.vCamLook = DirectX::XMLoadFloat3(&m_Target);
 	DirectX::XMVECTOR vCamUp = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&m_Up));
 	DirectX::XMVECTOR vFront = DirectX::XMVectorSubtract(arg.vCamLook, arg.vCamPos);
+
 	// カメラ姿勢
 	arg.vCamFront = DirectX::XMVector3Normalize(vFront);
 	arg.vCamSide = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(vCamUp, arg.vCamFront));
 	arg.vCamUp = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(arg.vCamFront, arg.vCamSide));
+
 	// フォーカス距離
 	DirectX::XMStoreFloat(&arg.focus, DirectX::XMVector3Length(vFront));
 
@@ -76,10 +81,12 @@ void CameraDebug::Update()
 	arg.vCamLook = DirectX::XMLoadFloat3(&m_Target);
 	DirectX::XMVECTOR vCamUp = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&m_Up));
 	DirectX::XMVECTOR vFront = DirectX::XMVectorSubtract(arg.vCamLook, arg.vCamPos);
+
 	// カメラ姿勢
 	arg.vCamFront = DirectX::XMVector3Normalize(vFront);
 	arg.vCamSide = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(vCamUp, arg.vCamFront));
 	arg.vCamUp = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(arg.vCamFront, arg.vCamSide));
+
 	// フォーカス距離
 	DirectX::XMStoreFloat(&arg.focus, DirectX::XMVector3Length(vFront));
 
@@ -139,8 +146,8 @@ void CameraDebug::ProcDCC(Argument& arg)
 	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
 		DirectX::XMLoadFloat3(&m_MainPos),
 		DirectX::XMLoadFloat3(&m_MainTarget),
-		XMLoadFloat3(&m_MainUp));
-
+		XMLoadFloat3(&m_MainUp)
+	);
 	view = DirectX::XMMatrixTranspose(view);
 	DirectX::XMStoreFloat4x4(&m_MainViewMatrix, view);
 
@@ -148,8 +155,8 @@ void CameraDebug::ProcDCC(Argument& arg)
 		GetViewAngle(),
 		(float)WINDOW_WIDTH / WINDOW_HEIGHT,
 		(float)CAM_NEAR,
-		(float)CAM_FAR);
-
+		(float)CAM_FAR
+	);
 	proj = DirectX::XMMatrixTranspose(proj);
 	DirectX::XMStoreFloat4x4(&m_MainProjMatrix, proj);
 }

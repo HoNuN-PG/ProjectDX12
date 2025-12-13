@@ -2,7 +2,7 @@
 // System/Rendering/Pipeline
 #include "RootSignature.h"
 
-RootSignature::RootSignature(DescriptionTable desc)
+RootSignature::RootSignature(Description desc)
 {
 	// ルートシグネチャの生成
 	std::vector<D3D12_DESCRIPTOR_RANGE> range;
@@ -24,7 +24,7 @@ RootSignature::RootSignature(DescriptionTable desc)
 	SetUp(param, desc.sample,desc.filter ,desc.paramNum);
 }
 
-RootSignature::RootSignature(DescriptionTables desc)
+RootSignature::RootSignature(Descriptions desc)
 {
 	// ルートシグネチャの生成
 	std::vector<std::vector<D3D12_DESCRIPTOR_RANGE>> range;
@@ -52,35 +52,35 @@ RootSignature::RootSignature(DescriptionTables desc)
 
 RootSignature::~RootSignature()
 {
-	if(RootSignatureData) RootSignatureData->Release();
+	SAFE_RELEASE(RootSignatureData);
 }
 
 void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, UINT num)
 {
 	// サンプラ
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
-	sampler.Filter = filter;
-	sampler.AddressU = sample;
-	sampler.AddressV = sample;
-	sampler.AddressW = sample;
-	sampler.MaxAnisotropy = 4;
-	sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-	sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
-	sampler.MinLOD = 0.0f;
-	sampler.MaxLOD = D3D12_FLOAT32_MAX;
-	sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	sampler.Filter				= filter;
+	sampler.AddressU			= sample;
+	sampler.AddressV			= sample;
+	sampler.AddressW			= sample;
+	sampler.MaxAnisotropy		= 4;
+	sampler.ComparisonFunc		= D3D12_COMPARISON_FUNC_NEVER;
+	sampler.BorderColor			= D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
+	sampler.MinLOD				= 0.0f;
+	sampler.MaxLOD				= D3D12_FLOAT32_MAX;
+	sampler.ShaderVisibility	= D3D12_SHADER_VISIBILITY_PIXEL;
 
 	// ルートシグネチャの設定
 	D3D12_ROOT_SIGNATURE_DESC signatureDesc = {};
-	signatureDesc.NumParameters = num;
-	signatureDesc.pParameters = param.data();
+	signatureDesc.NumParameters		= num;
+	signatureDesc.pParameters		= param.data();
 	signatureDesc.NumStaticSamplers = 1;
-	signatureDesc.pStaticSamplers = &sampler;
-	signatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	signatureDesc.pStaticSamplers	= &sampler;
+	signatureDesc.Flags				= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	// バイナリコード生成
-	ID3DBlob* signatureBlob = nullptr;
-	ID3DBlob* errorBlob = nullptr;
+	ID3DBlob* signatureBlob		= nullptr;
+	ID3DBlob* errorBlob			= nullptr;
 	HRESULT hr = D3D12SerializeRootSignature(
 		&signatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &signatureBlob, &errorBlob
 	);
@@ -94,6 +94,9 @@ void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE
 
 void RootSignature::Bind(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num)
 {
-	GetCommandList()->SetGraphicsRootSignature(RootSignatureData);
-	for (int i = 0; i < num; ++i) GetCommandList()->SetGraphicsRootDescriptorTable(i, handle[i]);
+	GetCommandList()->SetGraphicsRootSignature(RootSignatureData.Get());
+	for (int i = 0; i < num; ++i)
+	{
+		GetCommandList()->SetGraphicsRootDescriptorTable(i, handle[i]);
+	}
 }

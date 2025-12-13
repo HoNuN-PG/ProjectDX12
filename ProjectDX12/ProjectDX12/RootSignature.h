@@ -9,14 +9,14 @@
 class RootSignature
 {
 public:
-	struct ParameterTable
+	struct Parameter
 	{
 		D3D12_DESCRIPTOR_RANGE_TYPE type;	// ルートパラメータの種類
 		UINT						slot;	// 対応レジストリの番号
 		UINT						num;	// ディスクリプタのレンジ数
 		D3D12_SHADER_VISIBILITY		shader;	// 使用先のシェーダー
 	};
-	struct ParameterTables
+	struct Parameters
 	{
 		std::vector<D3D12_DESCRIPTOR_RANGE_TYPE>	type;	// レンジごとのルートパラメータの種類
 		std::vector<UINT>							slot;	// レンジごとの対応レジストリの開始番号
@@ -24,28 +24,29 @@ public:
 		UINT										range;	// ディスクリプタのレンジ
 		D3D12_SHADER_VISIBILITY						shader;	// 使用先のシェーダー
 	};
-	struct DescriptionTable
-	{
-		ParameterTable*	pParam;
-		UINT			paramNum;
-		D3D12_TEXTURE_ADDRESS_MODE sample;
-		D3D12_FILTER filter;
 
-		DescriptionTable() :
+	struct Description
+	{
+		Parameter*					pParam;
+		UINT						paramNum;
+		D3D12_TEXTURE_ADDRESS_MODE	sample;
+		D3D12_FILTER				filter;
+
+		Description() :
 			pParam(nullptr),
 			paramNum(0),
 			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP),
 			filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
 		{}
 	};
-	struct DescriptionTables
+	struct Descriptions
 	{
-		ParameterTables*	pParam;
-		UINT				paramNum;
-		D3D12_TEXTURE_ADDRESS_MODE sample;
-		D3D12_FILTER filter;
+		Parameters*					pParam;
+		UINT						paramNum;
+		D3D12_TEXTURE_ADDRESS_MODE	sample;
+		D3D12_FILTER				filter;
 
-		DescriptionTables() :
+		Descriptions() :
 			pParam(nullptr),
 			paramNum(0),
 			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP),
@@ -55,14 +56,21 @@ public:
 	};
 
 public:
-	RootSignature(DescriptionTable desc);
-	RootSignature(DescriptionTables desc);
+	RootSignature(Description desc);
+	RootSignature(Descriptions desc);
 	~RootSignature();
+
 private:
-	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample,D3D12_FILTER filter ,UINT num);
+	/// <summary>
+	/// セットアップ
+	/// </summary>
+	/// <param name="param"></param>
+	/// <param name="sample"></param>
+	/// <param name="filter"></param>
+	/// <param name="num"></param>
+	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, UINT num);
 
 public:
-	ID3D12RootSignature* Get() { return RootSignatureData; }
 	/// <summary>
 	/// １つのディスクリプタヒープ内のディスクリプタをディスクリプタテーブルと紐づけ
 	/// </summary>
@@ -70,8 +78,11 @@ public:
 	/// <param name="num"></param>
 	void Bind(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num);
 
+public:
+	ID3D12RootSignature* Get() { return RootSignatureData.Get(); }
+
 private:
-	ID3D12RootSignature* RootSignatureData;
+	ComPtr<ID3D12RootSignature> RootSignatureData;
 
 };
 

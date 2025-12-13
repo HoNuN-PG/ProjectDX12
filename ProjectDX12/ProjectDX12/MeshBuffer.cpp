@@ -50,7 +50,7 @@ MeshBuffer::MeshBuffer(Description desc)
 	// 頂点バッファビューの設定
 	Vbv.BufferLocation	= Vtx->GetGPUVirtualAddress();
 	Vbv.SizeInBytes		= resDesc.Width;
-	Vbv.StrideInBytes		= desc.vtxSize;
+	Vbv.StrideInBytes	= desc.vtxSize;
 
 	// インデックス作成チェック
 	if (desc.pIdx == nullptr) { return; }
@@ -66,27 +66,34 @@ MeshBuffer::MeshBuffer(Description desc)
 	resDesc.Width = idxSize * desc.idxCount;
 
 	// リソース生成
-	hr = GetDevice()->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &resDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,nullptr,IID_PPV_ARGS(&Idx));
+	hr = GetDevice()->CreateCommittedResource(
+		&heapProp, 
+		D3D12_HEAP_FLAG_NONE, 
+		&resDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&Idx)
+	);
 
 	// インデックスデータ書き込み
-	void* pIdxMap = nullptr;
-	hr = Idx->Map(0, nullptr, &pIdxMap);
-	if (SUCCEEDED(hr)) {
+	void* pIdxMap	= nullptr;
+	hr				= Idx->Map(0, nullptr, &pIdxMap);
+	if (SUCCEEDED(hr)) 
+	{
 		memcpy_s(pIdxMap, resDesc.Width, desc.pIdx, resDesc.Width);
 	}
 	Idx->Unmap(0, nullptr);
 
 	// インデックスバッファビュー作成
-	Ibv.BufferLocation = Idx->GetGPUVirtualAddress();
-	Ibv.Format = desc.idxSize;
-	Ibv.SizeInBytes = static_cast<UINT>(resDesc.Width);
+	Ibv.BufferLocation	= Idx->GetGPUVirtualAddress();
+	Ibv.Format			= desc.idxSize;
+	Ibv.SizeInBytes		= static_cast<UINT>(resDesc.Width);
 }
 
 MeshBuffer::~MeshBuffer()
 {
-	if(Idx) Idx->Release();
-	Vtx->Release();
+	SAFE_RELEASE(Idx);
+	SAFE_RELEASE(Vtx);
 }
 
 void MeshBuffer::Draw()
@@ -104,28 +111,29 @@ void MeshBuffer::Draw()
 	}
 }
 
-InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count) :
+InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count) 
+	:
 	MeshBuffer(desc)
 {
 	InsCount = count >= 0 ? count : MAX_INSTANCE;
 
 	D3D12_HEAP_PROPERTIES heapProp = {};
-	heapProp.Type = D3D12_HEAP_TYPE_DEFAULT;
-	heapProp.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-	heapProp.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-	heapProp.CreationNodeMask = 1;
-	heapProp.VisibleNodeMask = 1;
+	heapProp.Type					= D3D12_HEAP_TYPE_DEFAULT;
+	heapProp.CPUPageProperty		= D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+	heapProp.MemoryPoolPreference	= D3D12_MEMORY_POOL_UNKNOWN;
+	heapProp.CreationNodeMask		= 1;
+	heapProp.VisibleNodeMask		= 1;
 
 	D3D12_RESOURCE_DESC resDesc = {};
-	resDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resDesc.Width = sizeof(InstanceData) * InsCount;
-	resDesc.Height = 1;
-	resDesc.DepthOrArraySize = 1;
-	resDesc.MipLevels = 1;
-	resDesc.Format = DXGI_FORMAT_UNKNOWN;
-	resDesc.SampleDesc.Count = 1;
-	resDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	resDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+	resDesc.Dimension			= D3D12_RESOURCE_DIMENSION_BUFFER;
+	resDesc.Width				= sizeof(InstanceData) * InsCount;
+	resDesc.Height				= 1;
+	resDesc.DepthOrArraySize	= 1;
+	resDesc.MipLevels			= 1;
+	resDesc.Format				= DXGI_FORMAT_UNKNOWN;
+	resDesc.SampleDesc.Count	= 1;
+	resDesc.Layout				= D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	resDesc.Flags				= D3D12_RESOURCE_FLAG_NONE;
 
 	auto result = GetDevice()->CreateCommittedResource(
 		&heapProp,
@@ -136,10 +144,7 @@ InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count) :
 		IID_PPV_ARGS(&Ins)
 	);
 
-	if (FAILED(result))
-	{
-		return;
-	}
+	if (FAILED(result)) { return; }
 
 	heapProp.Type = D3D12_HEAP_TYPE_UPLOAD;
 
@@ -155,8 +160,8 @@ InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count) :
 
 InstanceMeshBuffer::~InstanceMeshBuffer()
 {
-	Ins->Release();
-	InsUploader->Release();
+	SAFE_RELEASE(InsUploader);
+	SAFE_RELEASE(Ins);
 }
 
 void InstanceMeshBuffer::MappingUploder()
@@ -165,21 +170,18 @@ void InstanceMeshBuffer::MappingUploder()
 	const size_t dataSize = sizeof(InstanceData);
 
 	auto result = InsUploader->Map(0, nullptr, reinterpret_cast<void**>(&mappedData));
-	if (FAILED(result))
-	{
-		return;
-	}
+	if (FAILED(result)) { return; }
 
 	memcpy(mappedData, InsData.data(), dataSize * InsData.size());
 
 	InsUploader->Unmap(0, nullptr);
 
 	D3D12_SUBRESOURCE_DATA subResourceData = {};
-	subResourceData.pData = mappedData;
-	subResourceData.RowPitch = dataSize;
-	subResourceData.SlicePitch = subResourceData.RowPitch;
+	subResourceData.pData		= mappedData;
+	subResourceData.RowPitch	= dataSize;
+	subResourceData.SlicePitch	= subResourceData.RowPitch;
 
-	UpdateSubresources(GetCommandList(), Ins, InsUploader, 0, 0, 1, &subResourceData);
+	UpdateSubresources(GetCommandList(), Ins.Get(), InsUploader.Get(), 0, 0, 1, &subResourceData);
 }
 
 void InstanceMeshBuffer::Draw()

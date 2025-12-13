@@ -20,7 +20,6 @@ public:
 	void UninitBase();
 	void UpdateBase();
 	void DrawBase(DirectX::XMFLOAT4X4 ParentMatrix);
-	void BindRenderingEngine(UINT timing, UINT passType);
 	void RenderingBase();
 	void ReuseRenderingBase();
 
@@ -30,21 +29,6 @@ public:
 	virtual void Draw() {}
 	virtual void Rendering() {}
 	virtual void ReuseRendering(){}
-
-protected:
-	// トランスフォーム
-	DirectX::XMFLOAT3 Position	= DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	DirectX::XMFLOAT3 Rotation	= DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	DirectX::XMFLOAT3 Scale		= DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	DirectX::XMFLOAT3 WorldPosition;						// ワールド座標
-	DirectX::XMFLOAT4X4 fx4World;							// ワールドマトリクス
-
-	// ゲームオブジェクト構成要素
-	std::list<std::shared_ptr<GameObject>> ChildGameObjects;				// 子オブジェクト
-	std::list<std::shared_ptr<Component>> Components;						// コンポーネント
-
-	// 削除フラグ
-	bool bDestroy = false;
 
 public:
 	// トランスフォーム
@@ -58,6 +42,30 @@ public:
 	DirectX::XMFLOAT4X4 GetWorldMatrix() { return fx4World; }
 	DirectX::XMFLOAT3 GetForwardVector();
 
+protected:
+	// トランスフォーム
+	DirectX::XMFLOAT3 Position	= DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	DirectX::XMFLOAT3 Rotation	= DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	DirectX::XMFLOAT3 Scale		= DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+	DirectX::XMFLOAT3 WorldPosition;						// ワールド座標
+	DirectX::XMFLOAT4X4 fx4World;							// ワールドマトリクス
+
+protected:
+	// ゲームオブジェクト構成要素
+	std::list<std::shared_ptr<GameObject>> ChildGameObjects;				// 子オブジェクト
+	std::list<std::shared_ptr<Component>> Components;						// コンポーネント
+
+public:
+	// 削除関数
+	void SetDestroy() { bDestroy = true; }
+	bool IsDestroy() { return bDestroy; }
+	bool Destroy();
+
+protected:
+	// 削除フラグ
+	bool bDestroy = false;
+
+public:
 	// 子オブジェクトの追加
 	template <typename T>
 	std::shared_ptr<T> AddChild()
@@ -80,7 +88,7 @@ public:
 		if (std::shared_ptr<class RenderingComponent> c = std::dynamic_pointer_cast<RenderingComponent>(component))
 		{
 			RenderingComponents.push_back(c);
-			AddRenderingComponent(c);
+			RegisterComponent2RenderingEngine(c);
 		}
 
 		return component;
@@ -111,13 +119,11 @@ public:
 		return components;
 	}
 
-	// 削除関数
-	void SetDestroy() { bDestroy = true; }
-	bool IsDestroy() { return bDestroy; }
-	bool Destroy();
-
+	// レンダリングエンジンに登録
+public:
+	void Add2RenderingEngine(UINT timing, UINT passType);
 private:
-	void AddRenderingComponent(std::shared_ptr<class RenderingComponent> comp);
+	void RegisterComponent2RenderingEngine(std::shared_ptr<class RenderingComponent> comp);
 
 private:
 	std::vector<std::weak_ptr<class RenderingComponent>> RenderingComponents;

@@ -16,7 +16,11 @@ public:
 public:
 	ConstantBuffer(Description desc);
 	~ConstantBuffer();
+
+public:
 	void Write(const void* data) { memcpy_s(Ptr, Size, data, Size); }
+
+public:
 	DescriptorHeap::Handle GetHandle() { return Handle; }
 
 private:

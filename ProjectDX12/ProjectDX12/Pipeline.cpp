@@ -10,7 +10,7 @@ Pipeline::Pipeline(Description desc)
 	// ラスタライザステート
 	D3D12_RASTERIZER_DESC rasterDesc	= {};
 	rasterDesc.MultisampleEnable		= false;
-	rasterDesc.CullMode					= desc.cull;
+	rasterDesc.CullMode					= desc.CullMode;
 	rasterDesc.FillMode					= D3D12_FILL_MODE_SOLID;
 	rasterDesc.DepthClipEnable			= false;
 
@@ -30,16 +30,16 @@ Pipeline::Pipeline(Description desc)
 
 	// 深度
 	D3D12_DEPTH_STENCIL_DESC dsDesc = {};
-	if (dsDesc.DepthEnable = desc.WriteDepth)
+	if (dsDesc.DepthEnable		= desc.WriteDepth)
 	{
-		dsDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-		dsDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-		dsDesc.StencilEnable = FALSE;
+		dsDesc.DepthWriteMask	= D3D12_DEPTH_WRITE_MASK_ALL;
+		dsDesc.DepthFunc		= D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		dsDesc.StencilEnable	= FALSE;
 	}
 
 	// シェーダー
 	HRESULT hr;
-	ID3DBlob* pVS, * pPS;
+	ID3DBlob *pVS, *pPS;
 	hr = D3DReadFileToBlob(desc.VSFile, &pVS);
 	if (FAILED(hr)) { return; }
 	hr = D3DReadFileToBlob(desc.PSFile, &pPS);
@@ -79,11 +79,13 @@ Pipeline::Pipeline(Description desc)
 	// プリミティブ
 	pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	// レンダーターゲット
-	pipelineDesc.NumRenderTargets		= desc.RenderTargetNum;
-	for(int i = 0;i < desc.RenderTargetNum;++i)
-		pipelineDesc.RTVFormats[i]		= DXGI_FORMAT_R8G8B8A8_UNORM;
+	pipelineDesc.NumRenderTargets = desc.RenderTargetNum;
+	for (int i = 0; i < desc.RenderTargetNum; ++i)
+	{
+		pipelineDesc.RTVFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	}
 	// 深度バッファ
-	pipelineDesc.DepthStencilState	= dsDesc;
+	pipelineDesc.DepthStencilState = dsDesc;
 	if (dsDesc.DepthEnable)
 	{
 		pipelineDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
@@ -100,5 +102,5 @@ Pipeline::Pipeline(Description desc)
 
 Pipeline::~Pipeline()
 {
-	if(PipelineData) PipelineData->Release();
+	SAFE_RELEASE(PipelineData);
 }

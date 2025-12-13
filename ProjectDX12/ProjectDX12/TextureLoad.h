@@ -23,4 +23,4 @@ inline HRESULT LoadTexture(const char* fileName, DirectX::TexMetadata* pInfo, Di
 	return hr;
 }
 
-#endif // __TEXTURE_LOAD_H__
+#endif

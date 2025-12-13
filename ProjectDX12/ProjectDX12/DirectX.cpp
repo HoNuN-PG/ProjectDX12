@@ -169,6 +169,11 @@ void UninitDirectX()
 	SAFE_RELEASE(g_pDevice);
 }
 
+void UpdateDirectX(void(func)(void))
+{
+	func();
+}
+
 void DrawDirectX(void(func)(void), const float clearColor[4])
 {
 	// •`‰æ€”õ

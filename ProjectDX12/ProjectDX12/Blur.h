@@ -28,7 +28,8 @@ namespace BlurParam
 
 	public:
 		ScreenParam(float w, float h,float scale)
-			:pad1(0)
+			:
+			pad1(0)
 		{
 			width = w;
 			height = h;
@@ -67,12 +68,12 @@ public:
 
 		RTV_MAX
 	};
-	enum GaussParamsType
+	enum GaussScreenType
 	{
 		ScreenX = 0,
 		ScreenY,
 
-		Params_MAX
+		Screen_MAX
 	};
 
 public:
@@ -92,10 +93,11 @@ public:
 	Gauss() {};
 	~Gauss() {};
 
+public:
 	/// <summary>
 	/// ガウスの実行
 	/// </summary>
-	/// <param name="gaussIdx">ガウススロット：初期値として-1を与えると対応するスロット番号を取得できる</param>
+	/// <param name="gaussIdx">ガウススロット：-1を与えると対応するスロット番号を取得できる</param>
 	/// <param name="screen">テクスチャサイズ</param>
 	/// <param name="src"></param>
 	/// <param name="dest"></param>
@@ -120,10 +122,13 @@ private:
 	void MakeGaussData(int& gaussIdx, DirectX::XMFLOAT2 screen ,int split);
 
 private:
+	std::unique_ptr<MeshBuffer>									Screen;
 	std::shared_ptr<DescriptorHeap>								Heap;
 	std::shared_ptr<DescriptorHeap>								RTVHeap;
-	std::unique_ptr<MeshBuffer>									Screen;
+	std::vector<std::unique_ptr<RenderTarget>>					GaussRTVs;
+	std::vector<std::unique_ptr<class ConstantBuffer>>			Params;
 
+private:
 	// Gauss2
 	std::unique_ptr<RootSignature>								Gauss2RootSignatureData;
 	std::vector<std::unique_ptr<Pipeline>>						Gauss2PipelineData;
@@ -133,9 +138,6 @@ private:
 	// Gauss4
 	std::unique_ptr<RootSignature>								Gauss8RootSignatureData;
 	std::vector<std::unique_ptr<Pipeline>>						Gauss8PipelineData;
-
-	std::vector<std::unique_ptr<RenderTarget>>					GaussRTVs;
-	std::vector<std::unique_ptr<class ConstantBuffer>>			Params;
 
 	std::unique_ptr<ConstantBuffer>								Gauss2Param;
 	std::unique_ptr<ConstantBuffer>								Gauss4Param;

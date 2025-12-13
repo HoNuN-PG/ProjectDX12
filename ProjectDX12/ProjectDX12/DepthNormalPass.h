@@ -18,20 +18,24 @@ public:
 
 		MAX
 	};
+
 public:
 	OpaqueDepthNormalPass();
 	~OpaqueDepthNormalPass() {};
-public:
 	void Execute() override;
+
 public:
 	virtual void Init(
 		std::shared_ptr<DescriptorHeap> rtvHeap,
 		std::shared_ptr<DescriptorHeap> srvHeap,
 		std::shared_ptr<DescriptorHeap> dsvHeap) override;
 	void AddObj(GameObject& obj) override;
+
+public:
 	virtual std::shared_ptr<RenderTarget> GetTexture(UINT idx) override;
 	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) override;
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) override;
+
 private:
 	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
 

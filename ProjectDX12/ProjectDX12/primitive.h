@@ -28,8 +28,10 @@ public:
 
 public:
 	virtual ~Primitive() {}
-	virtual void Create(std::vector<std::shared_ptr<Material>> materials) = 0;
-	virtual void Create(std::vector<std::shared_ptr<Material>> materials, unsigned int instanced) = 0;
+
+public:
+	virtual void Create(MeshMaterials materials) = 0;
+	virtual void Create(MeshMaterials materials, unsigned int instanced) = 0;
 
 protected:
 	virtual void CreatePrimitive(unsigned int instanced) = 0;

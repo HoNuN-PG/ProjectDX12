@@ -16,12 +16,16 @@ public:
 
 public:
 	DepthStencil(Description desc);
-	~DepthStencil() {}
+	~DepthStencil();
+
+public:
 	void Clear();
+
+public:
 	DescriptorHeap::Handle GetHandleDSV();
 
 private:
-	ID3D12Resource* Resource;
+	ComPtr<ID3D12Resource> Resource;
 	DescriptorHeap::Handle DSV;
 
 };

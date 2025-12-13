@@ -35,6 +35,7 @@ std::unique_ptr<SceneManager> gSceneManager;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 void SetBorderless(HWND hwnd, bool enabled);
+void Update();
 void Draw();
 
 LRESULT WinProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -55,8 +56,7 @@ LRESULT WinProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		switch (wparam)
 		{
 		case VK_ESCAPE:
-			int id = MessageBox(NULL, TEXT("プログラムを終了しますか？"),
-				TEXT("App"), MB_OKCANCEL | MB_ICONQUESTION);
+			int id = MessageBox(NULL, TEXT("プログラムを終了しますか？"),TEXT("App"), MB_OKCANCEL | MB_ICONQUESTION);
 			switch (id)
 			{
 			case IDOK:
@@ -181,32 +181,35 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 
 	// デバッグ用IｍGUI初期化
 	gDebugImGUI = std::make_unique<DebugImGUI>();
-	msg = gDebugImGUI->Create(gWindow);
+	gDebugImGUI->Create(gWindow);
+
+	// 入力初期化
+	Input::Init();
 
 	// シーン初期化
 	gSceneManager = std::make_unique<SceneManager>();
 	gSceneManager->Init();
-
-	// 入力初期化
-	Input::Init();
 	//---------------------------------
 
 	timeBeginPeriod(1);
 
 	//------------------------------
 	// ゲームループ
-	while (msg.message != WM_QUIT) {
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+	while (msg.message != WM_QUIT) 
+	{
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) 
+		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		else if(gTimer->CheckGameFPS()){
+		else if(gTimer->CheckGameFPS())
+		{
 			// 入力更新
 			Input::Update();
 
 			// 更新
 			gUpdateTimer->st = timeGetTime();
-			gSceneManager->Update();
+			UpdateDirectX(Update);
 			gUpdateTimer->et = timeGetTime();
 			float upf = gUpdateTimer->GetObservationDbFPS(1);
 
@@ -216,7 +219,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 			gDrawTimer->et = timeGetTime();
 			float drf = gDrawTimer->GetObservationDbFPS(1);
 
-			gDebugImGUI->CompletedDraw();
+			gDebugImGUI->Completed();
 		}
 	}
 	//------------------------------
@@ -225,8 +228,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 
 	//--------------
 	// Uninit
-	Input::Uninit();
 	gSceneManager->Uninit();
+	Input::Uninit();
 	UninitDirectX();
 	//--------------
 
@@ -234,12 +237,20 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	return 0;
 }
 
+void Update()
+{
+	// シーン更新
+	gSceneManager->Update();
+}
+
 void Draw()
 {
+	// ImGUI開始
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	// シーン描画
 	gSceneManager->Draw();
 
 	// FPS出力
@@ -248,6 +259,7 @@ void Draw()
 	ImGui::Text("fps:%5.3f", fps);
 	ImGui::End();
 
+	// ImGUI終了
 	ImGui::Render();
 	ID3D12DescriptorHeap* heap = gDebugImGUI->GetImGUIDescriptorHeap()->Get();
 	GetCommandList()->SetDescriptorHeaps(1, &heap);

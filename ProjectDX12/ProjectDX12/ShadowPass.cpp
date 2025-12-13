@@ -357,9 +357,9 @@ std::shared_ptr<RenderTarget> ShadowPass::GetTexture(UINT idx)
 	{
 		return ShadowMaps[idx];
 	}
-	else if(idx - (TextureType::MAX + 1) < VSMShadowMaps.size())
+	else if(idx < (ShadowMaps.size() + VSMShadowMaps.size()))
 	{
-		return VSMShadowMaps[idx - (TextureType::MAX + 1)];
+		return VSMShadowMaps[idx - ShadowMaps.size()];
 	}
 	return nullptr;
 }
@@ -370,9 +370,9 @@ DescriptorHeap::Handle ShadowPass::GetTextureRTV(UINT idx)
 	{
 		return ShadowMaps[idx]->GetHandleRTV();
 	}
-	else if (idx - (TextureType::MAX + 1) < VSMShadowMaps.size())
+	else if (idx < (ShadowMaps.size() + VSMShadowMaps.size()))
 	{
-		return VSMShadowMaps[idx - (TextureType::MAX + 1)]->GetHandleRTV();
+		return VSMShadowMaps[idx - ShadowMaps.size()]->GetHandleRTV();
 	}
 	return DescriptorHeap::Handle();
 }
@@ -383,9 +383,9 @@ DescriptorHeap::Handle ShadowPass::GetTextureSRV(UINT idx)
 	{
 		return ShadowMaps[idx]->GetHandleSRV();
 	}
-	else if (idx - (TextureType::MAX + 1) < VSMShadowMaps.size())
+	else if (idx < (ShadowMaps.size() + VSMShadowMaps.size()))
 	{
-		return VSMShadowMaps[idx - (TextureType::MAX + 1)]->GetHandleSRV();
+		return VSMShadowMaps[idx - ShadowMaps.size()]->GetHandleSRV();
 	}
 	return DescriptorHeap::Handle();
 }

@@ -15,28 +15,28 @@
 
 UINT M_ShadowMapsBase::CurrentShadowMapsNo = 0;
 
-void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc)
+void M_SimpleShadowMaps::Initialize(Description desc)
 {
 	// 定数バッファ
 	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = heap;
+		ConstantBuffer::Description constant = {};
+		constant.pHeap = desc.pHeap;
 		// Params
-		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
-		desc.size = sizeof(ShadowParam::ShadowMapsParam);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ1
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ2
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ3
+		constant.size = sizeof(DirectX::XMFLOAT4X4);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // ライト
+		constant.size = sizeof(ShadowParam::ShadowMapsParam);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // シャドウマップ1
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // シャドウマップ2
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // シャドウマップ3
 	}
 
-	RootSignature::ParameterTable param[] = 
+	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 	};
-	RootSignature::DescriptionTable rootsignature;
+	RootSignature::Description rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -49,7 +49,7 @@ void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = desc.cull;
+	pipeline.CullMode = desc.CullMode;
 	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowMap.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_SimpleShadowMap.cso";
@@ -57,9 +57,8 @@ void M_SimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc)
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
 
-	Material::SetUp
-	(
-		heap,
+	Material::SetUp(
+		desc.pHeap,
 		rootsignature,
 		pipeline
 	);
@@ -84,24 +83,24 @@ void M_SimpleShadowMaps::Bind()
 	Material::BindBase(desc, _countof(desc));
 }
 
-void M_OpaqueSimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc)
+void M_OpaqueSimpleShadowMaps::Initialize(Description desc)
 {
 	// 定数バッファ
 	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = heap;
+		ConstantBuffer::Description constant = {};
+		constant.pHeap = desc.pHeap;
 		// Params
-		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
-		desc.size = sizeof(ShadowParam::ShadowMapsParam);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ1
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ2
-		Params.push_back(std::make_unique<ConstantBuffer>(desc)); // シャドウマップ3
-		desc.size = sizeof(CommonParam);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+		constant.size = sizeof(DirectX::XMFLOAT4X4);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // ライト
+		constant.size = sizeof(ShadowParam::ShadowMapsParam);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // シャドウマップ1
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // シャドウマップ2
+		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // シャドウマップ3
+		constant.size = sizeof(CommonParam);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
 
-	RootSignature::ParameterTable param[] = 
+	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_VERTEX},
@@ -109,7 +108,7 @@ void M_OpaqueSimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::DescriptionTable rootsignature;
+	RootSignature::Description rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -122,7 +121,7 @@ void M_OpaqueSimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = desc.cull;
+	pipeline.CullMode = desc.CullMode;
 	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.WriteDepth = FALSE;
 	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowMap.cso";
@@ -131,14 +130,13 @@ void M_OpaqueSimpleShadowMaps::Initialize(DescriptorHeap* heap, Description desc
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
 
-	Material::SetUp
-	(
-		heap,
+	Material::SetUp(
+		desc.pHeap,
 		rootsignature,
 		pipeline
 	);
 
-	common.AlphaCut = 0.1f;
+	common.AlphaCut = 0.2f;
 }
 
 void M_OpaqueSimpleShadowMaps::Bind()
@@ -163,34 +161,33 @@ void M_OpaqueSimpleShadowMaps::Bind()
 	Material::BindBase(desc, _countof(desc));
 }
 
-void M_ShadowRecieverBase::Initialize(DescriptorHeap* heap, Description desc)
+void M_ShadowRecieverBase::Initialize(Description desc)
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 	std::weak_ptr<ShadowPass> pass = engine.lock()->GetShadowMapsPass();
 
 	// 定数バッファ
 	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = heap;
+		ConstantBuffer::Description constant = {};
+		constant.pHeap = desc.pHeap;
 		// Params
-		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
-		desc.size = sizeof(ShadowParam::ShadowReceieverParam);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+		constant.size = sizeof(DirectX::XMFLOAT4X4);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant));
+		Params.push_back(std::make_unique<ConstantBuffer>(constant));
+		constant.size = sizeof(ShadowParam::ShadowReceieverParam);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
 	// RTV
 	{
-		RenderTarget::Description desc = {};
-		desc.format = pass.lock()->ShadowMapsFormat;
-		desc.pRTVHeap = RTVHeap.get();
-		desc.pSRVHeap = heap;
-
+		RenderTarget::Description rtv = {};
+		rtv.format = pass.lock()->ShadowMapsFormat;
+		rtv.pRTVHeap = RTVHeap.get();
+		rtv.pSRVHeap = desc.pHeap;
 		for (int i = 0; i < ShadowPass::TextureType::MAX; ++i)
 		{
-			desc.width = pass.lock()->ShadowMapsSize[i].x;
-			desc.height = pass.lock()->ShadowMapsSize[i].y;
-			ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
+			rtv.width = pass.lock()->ShadowMapsSize[i].x;
+			rtv.height = pass.lock()->ShadowMapsSize[i].y;
+			ShadowMaps.push_back(std::make_shared<RenderTarget>(rtv));
 		}
 	}
 }
@@ -212,34 +209,34 @@ void M_ShadowRecieverBase::Bind()
 	Engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Far].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Far);
 }
 
-void M_ShadowVSMRecieverBase::Initialize(DescriptorHeap* heap, Description desc)
+void M_ShadowVSMRecieverBase::Initialize(Description desc)
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 	std::weak_ptr<ShadowPass> pass = engine.lock()->GetShadowMapsPass();
 
 	// 定数バッファ
 	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = heap;
+		ConstantBuffer::Description constant = {};
+		constant.pHeap = desc.pHeap;
 		// Params
-		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
-		desc.size = sizeof(ShadowParam::ShadowReceieverParam);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+		constant.size = sizeof(DirectX::XMFLOAT4X4);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant));
+		Params.push_back(std::make_unique<ConstantBuffer>(constant));
+		constant.size = sizeof(ShadowParam::ShadowReceieverParam);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
 	// RTV
 	{
-		RenderTarget::Description desc = {};
-		desc.format = pass.lock()->ShadowMapsFormat;
-		desc.pRTVHeap = RTVHeap.get();
-		desc.pSRVHeap = heap;
+		RenderTarget::Description rtv = {};
+		rtv.format = pass.lock()->ShadowMapsFormat;
+		rtv.pRTVHeap = RTVHeap.get();
+		rtv.pSRVHeap = desc.pHeap;
 
 		for (int i = 0; i < ShadowPass::TextureType::MAX; ++i)
 		{
-			desc.width = pass.lock()->VSMShadowMapsSize[i].x / 2;
-			desc.height = pass.lock()->VSMShadowMapsSize[i].y / 2;
-			ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
+			rtv.width = pass.lock()->VSMShadowMapsSize[i].x / 2;
+			rtv.height = pass.lock()->VSMShadowMapsSize[i].y / 2;
+			ShadowMaps.push_back(std::make_shared<RenderTarget>(rtv));
 		}
 	}
 }

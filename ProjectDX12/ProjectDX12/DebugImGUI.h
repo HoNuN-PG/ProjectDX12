@@ -31,11 +31,16 @@ public:
 	};
 
 private:
+	/// <summary>
+	/// 必要ヒープ数
+	/// </summary>
 	static const int HEAP_NUM = 32;
 
 public:
 	DebugImGUI();
 	~DebugImGUI();
+
+public:
 	static MSG Create(HWND _hwnd);
 
 public:
@@ -48,20 +53,23 @@ public:
 	static ImTextureID GetImGUIImage(DescriptorHeap* _heap, RenderTarget* _srv);
 
 public:
-	// 描画終了時に呼び出し
-	static void CompletedDraw();
+	/// <summary>
+	/// 描画終了
+	/// </summary>
+	static void Completed();
 
 private:
 	static std::unique_ptr<MeshBuffer>									Screen;
 	static std::unique_ptr<RootSignature>								RootSignatureData;
 	static std::unique_ptr<Pipeline>									PipelineData;
-	static std::vector<std::pair<bool,std::unique_ptr<RenderTarget>>>	RTVs;
+	static std::vector<std::pair<bool,std::unique_ptr<RenderTarget>>>	ImGUIRTVs;
 
 public:
-	static DescriptorHeap* GetImGUIDescriptorHeap();
+	static DescriptorHeap* GetImGUIDescriptorHeap() { return ImGUIHeap.get(); }
+
 private:
-	static std::unique_ptr<DescriptorHeap> RTVHeap;
 	static std::unique_ptr<DescriptorHeap> ImGUIHeap;
+	static std::unique_ptr<DescriptorHeap> ImGUIRTVHeap;
 
 };
 

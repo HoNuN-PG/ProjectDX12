@@ -10,8 +10,10 @@ public:
 	using Primitive::Primitive;
 
 	virtual ~Plane() {}
-	virtual void Create(std::vector<std::shared_ptr<Material>> materials) override;
-	virtual void Create(std::vector<std::shared_ptr<Material>> materials, unsigned int instanced) override;
+
+public:
+	virtual void Create(MeshMaterials materials) override;
+	virtual void Create(MeshMaterials materials, unsigned int instanced) override;
 
 private:
 	virtual void CreatePrimitive(unsigned int instanced) override;

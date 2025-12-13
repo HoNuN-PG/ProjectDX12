@@ -13,25 +13,32 @@ public:
 		UINT		index;
 		DXGI_FORMAT format;
 	};
+
 	struct Description
 	{
-		D3D12_CULL_MODE			cull;
-		BOOL					WriteDepth = TRUE;
 		ID3D12RootSignature*	pRootSignature;
 		const wchar_t*			VSFile;
 		const wchar_t*			PSFile;
 		InputLayout*			pInputLayout;
 		UINT					InputLayoutNum;
 		UINT					RenderTargetNum;
+
+		D3D12_CULL_MODE			CullMode;
+		BOOL					WriteDepth = TRUE;
 	};
 
 public:
 	Pipeline(Description desc);
 	~Pipeline();
-	void Bind() { GetCommandList()->SetPipelineState(PipelineData); }
+
+public:
+	/// <summary>
+	/// コマンドリストにパイプラインを設定
+	/// </summary>
+	void Bind() { GetCommandList()->SetPipelineState(PipelineData.Get()); }
 
 private:
-	ID3D12PipelineState* PipelineData;
+	ComPtr<ID3D12PipelineState> PipelineData;
 
 };
 

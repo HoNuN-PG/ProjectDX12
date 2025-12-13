@@ -7,13 +7,12 @@
 class DescriptorHeap
 {
 public:
-	// 設定情報
 	struct Description
 	{
 		D3D12_DESCRIPTOR_HEAP_TYPE	heapType;	// ヒープの種類
 		UINT						num;		// ディスクリプタの最大数
 	};
-	// ハンドル情報
+
 	struct Handle
 	{
 		D3D12_CPU_DESCRIPTOR_HANDLE hCPU;
@@ -23,17 +22,28 @@ public:
 public:
 	DescriptorHeap(Description desc);
 	~DescriptorHeap();
-	ID3D12DescriptorHeap* Get() { return Heap; }
-	// ディスクリプタを取得
+
+public:
+	/// <summary>
+	/// 使用可能なディスクリプタの取得
+	/// </summary>
+	/// <returns></returns>
 	Handle Allocate();
-	// ヒープの設定
+
+public:
+	/// <summary>
+	/// コマンドリストにヒープを設定
+	/// </summary>
 	void Bind();
 	static void Bind(ID3D12DescriptorHeap** _heaps, UINT _num);
 
+public:
+	ID3D12DescriptorHeap* Get() { return Heap.Get(); }
+
 private:
-	ID3D12DescriptorHeap*		Heap;		// ヒープのデータ
-	D3D12_DESCRIPTOR_HEAP_TYPE	Type;		// ディスクリプタヒープの種類
-	UINT						AllocCout;	// 確保したディスクリプタ数
+	ComPtr<ID3D12DescriptorHeap>		Heap;		// ヒープのデータ
+	D3D12_DESCRIPTOR_HEAP_TYPE			Type;		// ディスクリプタヒープの種類
+	UINT								AllocCout;	// 確保したディスクリプタ数
 
 };
 

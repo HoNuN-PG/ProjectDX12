@@ -27,7 +27,7 @@ public:
 	virtual void RefreshRendering();
 
 public:
-	std::vector<std::shared_ptr<Material>> GetMeshMaterials(int meshIdx) { return MeshMaterial->GetMeshMaterialsData()[meshIdx]; }
+	std::vector<std::shared_ptr<Material>> GetMeshMaterials(UINT meshIdx) { return MeshMaterialData->GetMaterials(meshIdx); }
 
 protected:
 	// メッシュデータ
@@ -37,8 +37,8 @@ protected:
 	bool									 bInstanced;
 	std::unique_ptr<InstanceMeshBuffer>		 InstanceMeshData;
 
-	// メッシュのマテリアル所有者
-	std::unique_ptr<MeshMaterialManager>	 MeshMaterial;
+	// マテリアルデータ
+	std::unique_ptr<MeshMaterialManager>	 MeshMaterialData;
 
 };
 

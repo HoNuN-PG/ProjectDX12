@@ -27,11 +27,14 @@ public:
 	RenderingPassType GetType() { return PassType; }
 protected:
 	RenderingPassType PassType;
+
 public:
 	RenderingPass();
 	virtual ~RenderingPass() {};
 	virtual void Execute() {};
+
 public:
+	// 初期化
 	virtual void Init(
 		std::shared_ptr<DescriptorHeap> rtvHeap,
 		std::shared_ptr<DescriptorHeap> srvHeap,
@@ -40,6 +43,8 @@ public:
 	* @fn パスにオブジェクトを追加
 	*/
 	virtual void AddObj(GameObject& obj) {};
+
+public:
 	/**
 	* @fn パスのテクスチャを取得
 	*/

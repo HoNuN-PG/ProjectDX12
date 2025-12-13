@@ -27,8 +27,6 @@ struct InstanceData
 class MeshBuffer
 {
 public:
-	static const int MAX_INSTANCE = 100;
-public:
 	struct Description
 	{
 		const void*					pVtx;
@@ -44,14 +42,13 @@ public:
 	MeshBuffer() {};
 	MeshBuffer(Description desc);
 	virtual ~MeshBuffer();
-public:
 	virtual void Draw();
 
 protected:
 	Description					Desc;
-	ID3D12Resource*				Vtx;
+	ComPtr<ID3D12Resource>		Vtx;
 	D3D12_VERTEX_BUFFER_VIEW	Vbv;
-	ID3D12Resource*				Idx;
+	ComPtr<ID3D12Resource>		Idx;
 	D3D12_INDEX_BUFFER_VIEW		Ibv;
 
 };
@@ -59,15 +56,20 @@ protected:
 class InstanceMeshBuffer : MeshBuffer
 {
 public:
+	static const int MAX_INSTANCE = 100;
+
+public:
 	InstanceMeshBuffer() {};
 	InstanceMeshBuffer(Description desc,unsigned int count = 0);
 	virtual ~InstanceMeshBuffer();
+	virtual void Draw() override;
+
 public:
 	void MappingUploder();
-	virtual void Draw() override;
+
 private:
-	ID3D12Resource*				Ins;
-	ID3D12Resource*				InsUploader;
+	ComPtr<ID3D12Resource>		Ins;
+	ComPtr<ID3D12Resource>		InsUploader;
 	unsigned int				InsCount;
 	std::vector<InstanceData>	InsData;
 

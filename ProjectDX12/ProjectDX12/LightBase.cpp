@@ -11,22 +11,22 @@
 DirectX::XMFLOAT4X4 LightBase::m_ViewMatrix;
 DirectX::XMFLOAT4X4 LightBase::m_ProjectionMatrix;
 
-const float LIG_SPEED_X = 3.0f;			// 回転速度
-const float LIG_SPEED_Y = 2.5f;
-const float LIG_LATE_SPEED_X = 1.0f;	// 補間強度
-const float LIG_LATE_SPEED_Y = 1.0f;
-const float MAX_ANGLE_UP = 85.0f;		// 最大上下回り込み角度
-const float MAX_ANGLE_DOWN = 5.0f;
+const float LIG_SPEED_X			= 3.0f;		// 回転速度
+const float LIG_SPEED_Y			= 2.5f;
+const float LIG_LATE_SPEED_X	= 1.0f;		// 補間強度
+const float LIG_LATE_SPEED_Y	= 1.0f;
+const float MAX_ANGLE_UP		= 85.0f;	// 最大上下回り込み角度
+const float MAX_ANGLE_DOWN		= 5.0f;
 
 const float SPEED = 1;
 
 LightBase::LightBase()
 {
 	// パラメータ設定
-	m_Up						= { 0,1,0 };
 	m_Position					= DirectX::XMFLOAT3();
 	m_Target					= DirectX::XMFLOAT3();
 	m_TargetOffset				= DirectX::XMFLOAT3();
+	m_Up						= { 0,1,0 };
 	m_Dist						= 500;
 	m_Rad.radXZ = m_Rad.lateXZ	= DirectX::XMConvertToRadians(0.0f);
 	m_Rad.radY = m_Rad.lateY	= DirectX::XMConvertToRadians((MAX_ANGLE_UP + MAX_ANGLE_DOWN) / 2.0f);

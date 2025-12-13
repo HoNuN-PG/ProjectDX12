@@ -44,120 +44,89 @@ HRESULT SceneSandBoxDX12::Init()
 	GetRenderingEngine()->AddRenderingPass<CustomDepthNormalPass>(
 		Material::RenderingTiming::AfterOpaqueDepthNormal,RenderingPass::RenderingPassType::CustomDepthNormal);
 
-	Material::Description desc;
-
 	// マテリアル作成
+	Material::Description desc;
+	desc.pHeap = Heap.get();
+
 	// ===============================
 	// SkyBox
-	desc.cull = D3D12_CULL_MODE_FRONT;
-	// === cull ===
+	desc.CullMode = D3D12_CULL_MODE_FRONT;
+	desc.WriteDepth = TRUE;
+	desc.Timing = Material::RenderingTiming::Environment;
+	// 通常のスカイボックス
 	std::shared_ptr<M_SkyBox> sky_box = std::make_shared<M_SkyBox>();
-	Material::Initialize(
-		sky_box, 
-		Heap.get(),
-		desc, 
-		Material::RenderingTiming::Environment
-	);
+	Material::Initialize(sky_box, desc);
 	sky_box->AddTexture("../exe/assets/texture/HDRI/skybox2.hdr");
-	// === cull ===
-	desc.cull = D3D12_CULL_MODE_BACK;
 
 	// ===============================
 	// ShadowMap
-	std::shared_ptr<M_SimpleShadowMaps> shadow_map = std::make_shared<M_SimpleShadowMaps>();
-	Material::Initialize(
-		shadow_map, 
-		Heap.get(), 
-		desc, 
-		Material::RenderingTiming::Shadow
-	);
-	// 葉
-	desc.cull = D3D12_CULL_MODE_NONE;
-	desc.WriteDepth = FALSE;
-	// === cull ===
-	std::shared_ptr<M_OpaqueSimpleShadowMaps> leaf_shadow_map = std::make_shared<M_OpaqueSimpleShadowMaps>();
-	Material::Initialize(
-		leaf_shadow_map, 
-		Heap.get(), 
-		desc, 
-		Material::RenderingTiming::Shadow
-	);
-	leaf_shadow_map->AddTexture("../exe/assets/model/tree/T_Leaves_Round_01_C.dds");
-	// === cull ===
+	desc.CullMode = D3D12_CULL_MODE_BACK;
 	desc.WriteDepth = TRUE;
-	desc.cull = D3D12_CULL_MODE_BACK;
+	desc.Timing = Material::RenderingTiming::Shadow;
+	//通常のシャドウマップ
+	std::shared_ptr<M_SimpleShadowMaps> shadow_map = std::make_shared<M_SimpleShadowMaps>();
+	Material::Initialize(shadow_map, desc);
+	// 葉
+	desc.CullMode = D3D12_CULL_MODE_NONE;
+	desc.WriteDepth = FALSE;
+	std::shared_ptr<M_OpaqueSimpleShadowMaps> leaf_shadow_map = std::make_shared<M_OpaqueSimpleShadowMaps>();
+	Material::Initialize(leaf_shadow_map,  desc);
+	leaf_shadow_map->AddTexture("../exe/assets/model/tree/T_Leaves_Round_01_C.dds");
 
 	// ===============================
 	// DepthNormal
+	desc.CullMode = D3D12_CULL_MODE_BACK;
+	desc.WriteDepth = TRUE;
+	desc.Timing = Material::RenderingTiming::OpaqueDepthNormal;
+	// 通常の深度法線マップ
 	std::shared_ptr<M_DepthNormal> opaque_depth_normal = std::make_shared<M_DepthNormal>();
-	Material::Initialize(
-		opaque_depth_normal, 
-		Heap.get(), 
-		desc, 
-		Material::RenderingTiming::OpaqueDepthNormal
-	);
+	Material::Initialize(opaque_depth_normal, desc);
 
 	// ===============================
 	// CustomDepthNormal
+	desc.CullMode = D3D12_CULL_MODE_BACK;
+	desc.WriteDepth = TRUE;
+	desc.Timing = Material::RenderingTiming::AfterOpaqueDepthNormal;
+	desc.PassType = RenderingPass::RenderingPassType::CustomDepthNormal;
+	// カスタム深度法線マップ
 	std::shared_ptr<M_DepthNormal> custom_opaque_depth_normal = std::make_shared<M_DepthNormal>();
-	Material::Initialize(
-		custom_opaque_depth_normal, 
-		Heap.get(), 
-		desc,
-		Material::RenderingTiming::AfterOpaqueDepthNormal,
-		RenderingPass::RenderingPassType::CustomDepthNormal);
+	Material::Initialize(custom_opaque_depth_normal, desc);
 
 	// ===============================
 	// Grid
+	desc.CullMode = D3D12_CULL_MODE_BACK;
+	desc.WriteDepth = TRUE;
+	desc.Timing = Material::RenderingTiming::Forward;
+	desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
+	// 通常Grid
 	std::shared_ptr<M_Grid> grid = std::make_shared<M_Grid>();
-	Material::Initialize(
-		grid, 
-		Heap.get(), 
-		desc);
+	Material::Initialize(grid, desc);
 	grid->SetGridSize(1);
 	grid->SetSubGridSize(5);
 	// 影Grid
 	std::shared_ptr<M_GridShadow> grid_shadow = std::make_shared<M_GridShadow>();
-	Material::Initialize(
-		grid_shadow, 
-		Heap.get(), 
-		desc);
+	Material::Initialize(grid_shadow, desc);
 	grid_shadow->SetGridSize(1);
 	grid_shadow->SetSubGridSize(5);
 	// ソフト影Grid
 	std::shared_ptr<M_GridShadowVSM> grid_shadow_vsm = std::make_shared<M_GridShadowVSM>();
-	Material::Initialize(
-		grid_shadow_vsm, 
-		Heap.get(), 
-		desc);
+	Material::Initialize(grid_shadow_vsm, desc);
 	grid_shadow_vsm->SetGridSize(1);
 	grid_shadow_vsm->SetSubGridSize(5);
 
 	// ===============================
 	// SimpleLit
 	std::shared_ptr<M_SimpleLit> simple_lit = std::make_shared<M_SimpleLit>();
-	Material::Initialize(
-		simple_lit, 
-		Heap.get(), 
-		desc);
+	Material::Initialize(simple_lit, desc);
 	// 木
 	std::shared_ptr<M_OpaqueSimpleLit> tree_simple_lit = std::make_shared<M_OpaqueSimpleLit>();
-	Material::Initialize(
-		tree_simple_lit, 
-		Heap.get(), 
-		desc);
+	Material::Initialize(tree_simple_lit, desc);
 	tree_simple_lit->AddTexture("../exe/assets/model/tree/T_Bark_Autumn_01_C.dds");
 	// 葉
-	desc.cull = D3D12_CULL_MODE_NONE;
-	// === cull ===
+	desc.CullMode = D3D12_CULL_MODE_NONE;
 	std::shared_ptr<M_OpaqueSimpleLit> leaf_simple_lit = std::make_shared<M_OpaqueSimpleLit>();
-	Material::Initialize(
-		leaf_simple_lit, 
-		Heap.get(), 
-		desc);
+	Material::Initialize(leaf_simple_lit, desc);
 	leaf_simple_lit->AddTexture("../exe/assets/model/tree/T_Leaves_Round_02_C.dds");
-	// === cull ===
-	desc.cull = D3D12_CULL_MODE_BACK;
 
 	// モデル作成
 	{// スカイボックス
@@ -210,9 +179,14 @@ HRESULT SceneSandBoxDX12::Init()
 	}
 	{// 牛
 		// Deffered
+		desc.CullMode = D3D12_CULL_MODE_BACK;
+		desc.WriteDepth = TRUE;
+		desc.Timing = Material::RenderingTiming::Deffered;
+		desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
+
 		std::shared_ptr<Material> deffered_albedo_normal;
 		deffered_albedo_normal = std::make_shared<M_Deffered_Albedo_Normal>();
-		Material::Initialize(deffered_albedo_normal,Heap.get(), desc, Material::RenderingTiming::Deffered);
+		Material::Initialize(deffered_albedo_normal, desc);
 		deffered_albedo_normal->AddTexture("../exe/assets/model/spot/spot_texture.png");
 		
 		std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials;

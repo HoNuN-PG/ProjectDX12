@@ -7,7 +7,7 @@
 class M_DepthNormal : public Material
 {
 public:
-	virtual void Initialize(DescriptorHeap* heap, Description desc) override;
+	virtual void Initialize(Description desc) override;
 	virtual void Bind() override;
 
 };

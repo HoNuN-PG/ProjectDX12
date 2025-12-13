@@ -73,12 +73,6 @@ void GameObject::DrawBase(DirectX::XMFLOAT4X4 ParentMatrix)
 	}
 }
 
-void GameObject::BindRenderingEngine(UINT timing, UINT passType)
-{
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒGƒ“ƒWƒ“‚Ö‚Ì“o˜^
-	Engine->AddRenderObject(*this, timing, passType);
-}
-
 void GameObject::RenderingBase()
 {
 	Rendering();
@@ -122,7 +116,12 @@ bool GameObject::Destroy()
 	return false;
 }
 
-void GameObject::AddRenderingComponent(std::shared_ptr<class RenderingComponent> comp)
+void GameObject::Add2RenderingEngine(UINT timing, UINT passType)
 {
-	Engine->AddRenderingComponent(comp);
+	Engine->AddRenderObject(*this, timing, passType);
+}
+
+void GameObject::RegisterComponent2RenderingEngine(std::shared_ptr<class RenderingComponent> comp)
+{
+	Engine->RegisterRenderingComponent(comp);
 }

@@ -19,11 +19,11 @@
 // System
 #include "StartUp.h"
 
-void Model::Create(std::vector<std::vector<std::shared_ptr<Material>>> meshmaterials, const char* path)
+void Model::Create(const char* path, MeshMaterials materials)
 {
 	// マテリアル設定
-	MeshMaterial = std::make_unique<MeshMaterialManager>();
-	MeshMaterial->SetupMaterialsData(meshmaterials);
+	MeshMaterialData = std::make_unique<MeshMaterialManager>();
+	MeshMaterialData->SetUp(materials);
 
 	// モデル読込
 	Assimp::Importer importer;
@@ -68,11 +68,9 @@ void Model::CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV)
 	for (int i = 0; i < src->mNumVertices; ++i) 
 	{
 		// データ吸出し
-		aiVector3D vtxPos = src->mVertices[i];
-		aiVector3D vtxNormal = src->HasNormals() ?
-			src->mNormals[i] : aiVector3D(0.0f, 0.0f, 0.0f);
-		aiVector3D vtxUv = src->HasTextureCoords(0) ?
-			src->mTextureCoords[0][i] : aiVector3D(0.0f, 0.0f, 0.0f);
+		aiVector3D vtxPos		= src->mVertices[i];
+		aiVector3D vtxNormal	= src->HasNormals() ? src->mNormals[i] : aiVector3D(0.0f, 0.0f, 0.0f);
+		aiVector3D vtxUv		= src->HasTextureCoords(0) ? src->mTextureCoords[0][i] : aiVector3D(0.0f, 0.0f, 0.0f);
 		// 読み出したデータを設定
 		dest.Vertices[i] =
 		{
@@ -95,30 +93,31 @@ void Model::CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV)
 	}
 
 	// データ生成
-	desc.pVtx = dest.Vertices.data();
-	desc.vtxCount = dest.Vertices.size();
-	desc.pIdx = dest.Indices.data();
-	desc.idxCount = dest.Indices.size();
+	desc.pVtx		= dest.Vertices.data();
+	desc.vtxCount	= dest.Vertices.size();
+	desc.pIdx		= dest.Indices.data();
+	desc.idxCount	= dest.Indices.size();
 	MeshData.push_back(std::make_unique<MeshBuffer>(desc));
 }
 
 void Model::Draw()
 {
-	MeshMaterial->BindRenderingEngine(Owner);
+	MeshMaterialData->Register2RenderingEngine(Owner);
 }
 
 void Model::Rendering()
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingTiming();
-	MeshMaterialManager::MeshMaterialInfo info = MeshMaterial->GetMeshMaterial(current);
+	MeshMaterialManager::MeshMaterialInfo info = MeshMaterialData->GetRenderingMaterial(current);
 	if (info.material)
 	{
-		// マテリアルのバインド
+		// マテリアル設定
 		info.material->WriteWVP(ConstantWVP::Calc3DMatrix(
 			Owner.lock()->GetPosition(),
 			Owner.lock()->GetRotation(),
-			Owner.lock()->GetScale()));
+			Owner.lock()->GetScale())
+		);
 		info.material->Bind();
 		// 描画
 		MeshData[info.meshIdx]->Draw();

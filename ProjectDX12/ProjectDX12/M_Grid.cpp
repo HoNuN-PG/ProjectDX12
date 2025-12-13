@@ -13,22 +13,22 @@
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
-void M_Grid::Initialize(DescriptorHeap* heap, Description desc)
+void M_Grid::Initialize(Description desc)
 {
 	// 定数バッファ
 	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = heap;
-		desc.size = sizeof(Grid::GridParam);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+		ConstantBuffer::Description constant = {};
+		constant.pHeap = desc.pHeap;
+		constant.size = sizeof(Grid::GridParam);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
 
-	RootSignature::ParameterTable param[] = 
+	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::DescriptionTable rootsignature;
+	RootSignature::Description rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
@@ -40,7 +40,7 @@ void M_Grid::Initialize(DescriptorHeap* heap, Description desc)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = desc.cull;
+	pipeline.CullMode = desc.CullMode;
 	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_WorldObject.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_Grid.cso";
@@ -48,9 +48,8 @@ void M_Grid::Initialize(DescriptorHeap* heap, Description desc)
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
 
-	Material::SetUp
-	(
-		heap,
+	Material::SetUp(
+		desc.pHeap,
 		rootsignature,
 		pipeline
 	);
@@ -71,18 +70,18 @@ void M_Grid::Bind()
 	Material::BindBase(desc, _countof(desc));
 }
 
-void M_GridShadow::Initialize(DescriptorHeap* heap, Description desc)
+void M_GridShadow::Initialize(Description desc)
 {
 	// 定数バッファ
 	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = heap;
+		ConstantBuffer::Description constant = {};
+		constant.pHeap = desc.pHeap;
 		// Params
-		desc.size = sizeof(Grid::GridParam);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+		constant.size = sizeof(Grid::GridParam);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
 
-	RootSignature::ParameterTable param[] = 
+	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_VERTEX},
@@ -95,7 +94,7 @@ void M_GridShadow::Initialize(DescriptorHeap* heap, Description desc)
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 3, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::DescriptionTable rootsignature;
+	RootSignature::Description rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
@@ -107,7 +106,7 @@ void M_GridShadow::Initialize(DescriptorHeap* heap, Description desc)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = desc.cull;
+	pipeline.CullMode = desc.CullMode;
 	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowReciever.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_GridShadow.cso";
@@ -115,14 +114,13 @@ void M_GridShadow::Initialize(DescriptorHeap* heap, Description desc)
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
 
-	Material::SetUp
-	(
-		heap,
+	Material::SetUp(
+		desc.pHeap,
 		rootsignature,
 		pipeline,
 		3
 	);
-	M_ShadowRecieverBase::Initialize(heap, desc);
+	M_ShadowRecieverBase::Initialize(desc);
 
 	GridParam.GridWidth = 0.05f;
 }
@@ -151,18 +149,18 @@ void M_GridShadow::Bind()
 	Material::BindBase(desc, _countof(desc));
 }
 
-void M_GridShadowVSM::Initialize(DescriptorHeap* heap, Description desc)
+void M_GridShadowVSM::Initialize(Description desc)
 {
 	// 定数バッファ
 	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = heap;
+		ConstantBuffer::Description constant = {};
+		constant.pHeap = desc.pHeap;
 		// Params
-		desc.size = sizeof(Grid::GridParam);
-		Params.push_back(std::make_unique<ConstantBuffer>(desc));
+		constant.size = sizeof(Grid::GridParam);
+		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
 
-	RootSignature::ParameterTable param[] = 
+	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_VERTEX},
@@ -175,7 +173,7 @@ void M_GridShadowVSM::Initialize(DescriptorHeap* heap, Description desc)
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 3, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::DescriptionTable rootsignature;
+	RootSignature::Description rootsignature;
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
@@ -187,7 +185,7 @@ void M_GridShadowVSM::Initialize(DescriptorHeap* heap, Description desc)
 			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 	};
 	Pipeline::Description pipeline;
-	pipeline.cull = desc.cull;
+	pipeline.CullMode = desc.CullMode;
 	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowReciever.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_GridShadowVSM.cso";
@@ -195,14 +193,13 @@ void M_GridShadowVSM::Initialize(DescriptorHeap* heap, Description desc)
 	pipeline.InputLayoutNum = _countof(layout);
 	pipeline.RenderTargetNum = 1;
 
-	Material::SetUp
-	(
-		heap,
+	Material::SetUp(
+		desc.pHeap,
 		rootsignature,
 		pipeline,
 		3
 	);
-	M_ShadowVSMRecieverBase::Initialize(heap, desc);
+	M_ShadowVSMRecieverBase::Initialize(desc);
 
 	GridParam.GridWidth = 0.05f;
 }

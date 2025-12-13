@@ -30,19 +30,22 @@ public:
 		Middle,
 		Far,
 
-		MAX,
-
-		NearVSM,
+		MAX
+	};
+	enum VSMTextureType
+	{
+		NearVSM = 3,
 		MiddleVSM,
 		FarVSM,
 
 		MAX_VSM
 	};
+
 public:
 	explicit ShadowPass();
 	~ShadowPass() {};
-public:
 	void Execute() override;
+
 private:
 	DirectX::XMFLOAT4X4 CalcCrop(
 		float depth,
@@ -53,17 +56,22 @@ private:
 		int area,
 		float res,
 		DirectX::XMFLOAT4X4 lv);
+
 public:
 	virtual void Init(
 		std::shared_ptr<DescriptorHeap> rtvHeap,
 		std::shared_ptr<DescriptorHeap> srvHeap,
 		std::shared_ptr<DescriptorHeap> dsvHeap) override;
 	void AddObj(GameObject& obj) override;
-	void SetCascadeAreas(UINT idx,float value)
-	{CascadeAreas[idx] = value;};
+
+	// カスケード設定
+	void SetCascadeAreas(UINT idx,float value) {CascadeAreas[idx] = value;};
+
+public:
 	virtual std::shared_ptr<RenderTarget> GetTexture(UINT idx) override;
 	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) override;
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) override;
+
 private:
 	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
 

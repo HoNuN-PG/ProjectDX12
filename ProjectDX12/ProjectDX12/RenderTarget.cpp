@@ -43,8 +43,7 @@ RenderTarget::RenderTarget(Description desc)
 	rtvDesc.ViewDimension					= D3D12_RTV_DIMENSION_TEXTURE2D;
 	rtvDesc.Format							= rtvResourceDesc.Format;
 	hRTV									= desc.pRTVHeap->Allocate();
-	GetDevice()->CreateRenderTargetView(Resource, &rtvDesc,
-		hRTV.hCPU);
+	GetDevice()->CreateRenderTargetView(Resource.Get(), &rtvDesc, hRTV.hCPU);
 
 	// シェーダーリソースビューの作成
 	D3D12_SHADER_RESOURCE_VIEW_DESC rtvsrvDesc	= {};
@@ -53,7 +52,7 @@ RenderTarget::RenderTarget(Description desc)
 	rtvsrvDesc.Texture2D.MipLevels				= 1;
 	rtvsrvDesc.Shader4ComponentMapping			= D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	hSRV										= desc.pSRVHeap->Allocate();
-	GetDevice()->CreateShaderResourceView(Resource, &rtvsrvDesc, hSRV.hCPU);
+	GetDevice()->CreateShaderResourceView(Resource.Get(), &rtvsrvDesc, hSRV.hCPU);
 
 	Width = desc.width;
 	Height = desc.height;
@@ -61,32 +60,32 @@ RenderTarget::RenderTarget(Description desc)
 
 RenderTarget::~RenderTarget()
 {
-	if(Resource) Resource->Release();
+	SAFE_RELEASE(Resource);
 }
 
 void RenderTarget::RTV2SRV()
 {
 	// レンダーターゲットのリソースバリア
-	D3D12_RESOURCE_BARRIER barrirDesc = {};
-	barrirDesc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barrirDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrirDesc.Transition.pResource = Resource;
-	barrirDesc.Transition.Subresource = 0;
-	barrirDesc.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrirDesc.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	D3D12_RESOURCE_BARRIER barrirDesc	= {};
+	barrirDesc.Type						= D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrirDesc.Flags					= D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrirDesc.Transition.pResource		= Resource.Get();
+	barrirDesc.Transition.Subresource	= 0;
+	barrirDesc.Transition.StateBefore	= D3D12_RESOURCE_STATE_RENDER_TARGET;
+	barrirDesc.Transition.StateAfter	= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	GetCommandList()->ResourceBarrier(1, &barrirDesc);
 }
 
 void RenderTarget::SRV2RTV()
 {
 	// レンダーターゲットのリソースバリア
-	D3D12_RESOURCE_BARRIER barrirDesc = {};
-	barrirDesc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barrirDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrirDesc.Transition.pResource = Resource;
-	barrirDesc.Transition.Subresource = 0;
-	barrirDesc.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	barrirDesc.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	D3D12_RESOURCE_BARRIER barrirDesc	= {};
+	barrirDesc.Type						= D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrirDesc.Flags					= D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrirDesc.Transition.pResource		= Resource.Get();
+	barrirDesc.Transition.Subresource	= 0;
+	barrirDesc.Transition.StateBefore	= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	barrirDesc.Transition.StateAfter	= D3D12_RESOURCE_STATE_RENDER_TARGET;
 	GetCommandList()->ResourceBarrier(1, &barrirDesc);
 }
 
@@ -96,7 +95,7 @@ void RenderTarget::ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_
 	D3D12_RESOURCE_BARRIER barrirDesc	= {};
 	barrirDesc.Type						= D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrirDesc.Flags					= D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrirDesc.Transition.pResource		= Resource;
+	barrirDesc.Transition.pResource		= Resource.Get();
 	barrirDesc.Transition.Subresource	= 0;
 	barrirDesc.Transition.StateBefore	= before;
 	barrirDesc.Transition.StateAfter	= after;

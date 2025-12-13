@@ -14,25 +14,19 @@ Material::Material()
 	MaterialInstanceIdx = 0;
 }
 
-void Material::Initialize(
-	std::shared_ptr<Material> material, 
-	DescriptorHeap* heap, 
-	Description desc,
-	RenderingTiming timing, 
-	RenderingPass::RenderingPassType passType
-)
+void Material::Initialize(std::shared_ptr<Material> material, Description desc)
 {
-	material->Timing = timing;
-	material->PassType = passType;
-	material->Initialize(heap,desc);
+	material->Timing = desc.Timing;
+	material->PassType = desc.PassType;
+	material->Initialize(desc);
 
-	// レンダリングエンジンにマテリアルを登録
-	SceneManager::GetCurrentScene()->GetRenderingEngine()->AddRenderingMaterial(material);
+	// レンダリングエンジンにマテリアルの参照を登録
+	SceneManager::GetCurrentScene()->GetRenderingEngine()->RegisterMaterial(material);
 }
 
 void Material::SetUp(
 	DescriptorHeap* heap, 
-	RootSignature::DescriptionTable rootsignature,
+	RootSignature::Description rootsignature,
 	Pipeline::Description pipeline,
 	UINT rtvNum
 )
@@ -46,14 +40,14 @@ void Material::SetUp(
 	// パイプライン
 	{
 		Pipeline::Description desc = {};
-		desc.cull = pipeline.cull;
-		desc.WriteDepth = pipeline.WriteDepth;
-		desc.pInputLayout = pipeline.pInputLayout;
-		desc.InputLayoutNum = pipeline.InputLayoutNum;
+		desc.pRootSignature = RootSignatureData->Get();
 		desc.VSFile = pipeline.VSFile;
 		desc.PSFile = pipeline.PSFile;
-		desc.pRootSignature = RootSignatureData->Get();
+		desc.pInputLayout = pipeline.pInputLayout;
+		desc.InputLayoutNum = pipeline.InputLayoutNum;
 		desc.RenderTargetNum = pipeline.RenderTargetNum;
+		desc.CullMode = pipeline.CullMode;
+		desc.WriteDepth = pipeline.WriteDepth;
 		PipelineData = std::make_unique<Pipeline>(desc);
 	}
 	// マテリアルディスクリプターヒープ(レンダーターゲット)
@@ -68,23 +62,24 @@ void Material::SetUp(
 
 void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 {
-	PipelineData->Bind();
 	ID3D12DescriptorHeap* heaps[] =
 	{
 		Heap->Get(),
 	};
 	DescriptorHeap::Bind(heaps,1);
 	RootSignatureData->Bind(handle, handleNum);
+	PipelineData->Bind();
 
 	// マテリアルインデックス更新
-	MaterialInstanceIdx = (MaterialInstanceIdx + 1) % MaterialInstanceCount;
+	MaterialInstanceIdx = max(++MaterialInstanceIdx, MaterialInstanceCount);
 }
 
 void Material::AddMaterialInstance()
 {
 	// マテリアルインデックス追加
-	MaterialInstanceCount++;
+	++MaterialInstanceCount;
 
+	// WVP確保
 	ConstantBuffer::Description desc = {};
 	desc.pHeap = Heap;
 	desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
@@ -117,10 +112,11 @@ void Material::WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDL
 		range,
 		Params[startIdx]->GetHandle().hCPU,
 		startHandle,
-		type);
+		type
+	);
 }
 
-void Material::RefreshRendering()
+void Material::Refresh()
 {
 	MaterialInstanceIdx = 0;
 }
