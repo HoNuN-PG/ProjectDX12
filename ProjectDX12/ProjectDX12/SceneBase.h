@@ -95,8 +95,7 @@ private:
 
 	// シーンヒープ
 public:
-	std::shared_ptr<DescriptorHeap> GetHeap()
-	{ return Heap; }
+	std::shared_ptr<DescriptorHeap> GetHeap() { return Heap; }
 protected:
 	std::shared_ptr<DescriptorHeap>	Heap;
 

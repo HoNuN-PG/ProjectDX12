@@ -251,13 +251,13 @@ void RenderingEngine::SetupDefferedShader()
 			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
 		};
 		Pipeline::Description desc = {};
-		desc.CullMode = D3D12_CULL_MODE_BACK;
+		desc.pRootSignature = DefferedLightingShader.RootSignatureData->Get();
 		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"../exe/assets/shader/PS_DefferedLighting.cso";
 		desc.pInputLayout = layout;
 		desc.InputLayoutNum = _countof(layout);
-		desc.pRootSignature = DefferedLightingShader.RootSignatureData->Get();
 		desc.RenderTargetNum = 1;
+		desc.CullMode = D3D12_CULL_MODE_BACK;
 		DefferedLightingShader.PipelineData = std::make_unique<Pipeline>(desc);
 	}
 	// パラメーター定数バッファ
@@ -278,7 +278,8 @@ void RenderingEngine::CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_
 		1,
 		dest,
 		src,
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+	);
 }
 
 DescriptorHeap::Handle RenderingEngine::GetGlobalConstantBufferResource(UINT key)
@@ -315,7 +316,8 @@ void RenderingEngine::CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UIN
 		1,
 		dest,
 		GetGlobalTextureSRV(key).hCPU,
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+	);
 }
 
 void RenderingEngine::GlobalTextureRTV2SRV(UINT key)
@@ -384,7 +386,8 @@ void RenderingEngine::CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT 
 		1,
 		dest,
 		src->GetHandleSRV().hCPU,
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+	);
 }
 
 void RenderingEngine::AddRenderObject(
@@ -461,12 +464,12 @@ void RenderingEngine::EnvironmentRendering()
 	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
 
 	// ターゲット化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->SRV2RTV();
 
 	// RTVの設定
 	GlobalTexture[GlobalTextureResourceKey::MainTexture]->Clear(clearColor);
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
+	{
 		GlobalTexture[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs);
@@ -478,8 +481,7 @@ void RenderingEngine::EnvironmentRendering()
 	}
 
 	// リソース化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->RTV2SRV();
 }
 
 void RenderingEngine::DefferedRendering()
@@ -489,8 +491,7 @@ void RenderingEngine::DefferedRendering()
 	// ターゲット化
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->ResourceBarrier(
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->SRV2RTV();
 	}
 
 	// RTVの設定
@@ -512,16 +513,14 @@ void RenderingEngine::DefferedRendering()
 	// リソース化
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->ResourceBarrier(
-			D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->RTV2SRV();
 	}
 }
 
 void RenderingEngine::DefferedLighting()
 {
 	// ターゲット化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->SRV2RTV();
 
 	// RTVの設定
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
@@ -535,17 +534,18 @@ void RenderingEngine::DefferedLighting()
 		(UINT)2,
 		DefferedLightingShader.Params[0]->GetHandle().hCPU,
 		GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU,
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+	);
 	DirectX::XMFLOAT4X4 vpInv = CameraBase::GetViewProjectionInvMatrix();
 	DefferedLightingShader.Params[2]->Write(&vpInv);
 
 	// 各種オブジェクトをバインド
-	DefferedLightingShader.PipelineData->Bind();
 	ID3D12DescriptorHeap* heaps[] =
 	{
 		RenderingHeap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
+	DefferedLightingShader.PipelineData->Bind();
 
 	// MainTextureを取得
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = 
@@ -563,15 +563,13 @@ void RenderingEngine::DefferedLighting()
 	Copy::ExecuteScreenDraw();
 
 	// リソース化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->RTV2SRV();
 }
 
 void RenderingEngine::ForwardRendering()
 {
 	// ターゲット化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->SRV2RTV();
 
 	// RTVの設定
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
@@ -587,8 +585,7 @@ void RenderingEngine::ForwardRendering()
 	}
 
 	// リソース化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	GlobalTexture[GlobalTextureResourceKey::MainTexture]->RTV2SRV();
 }
 
 void RenderingEngine::TranslucentDepthNormalRendering()
@@ -688,7 +685,8 @@ void RenderingEngine::RefreshRendering()
 		[](std::weak_ptr<RenderingComponent> object)
 		{
 			return object.expired();
-		});
+		}
+	);
 	for (auto component : RenderingComponents)
 	{
 		component.lock()->RefreshRendering();
@@ -699,7 +697,8 @@ void RenderingEngine::RefreshRendering()
 		[](std::weak_ptr<Material> object)
 		{
 			return object.expired();
-		});
+		}
+	);
 	for (auto material : RenderingMaterials)
 	{
 		material.lock()->Refresh();

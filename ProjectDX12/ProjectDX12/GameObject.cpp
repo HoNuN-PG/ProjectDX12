@@ -54,8 +54,7 @@ void GameObject::DrawBase(DirectX::XMFLOAT4X4 ParentMatrix)
 	scale	= DirectX::XMMatrixScaling(Scale.x, Scale.y, Scale.z);
 	rot		= DirectX::XMMatrixRotationRollPitchYaw(Rotation.x,Rotation.y, Rotation.z);
 	trans	= DirectX::XMMatrixTranslation(Position.x, Position.y,Position.z);
-	DirectX::XMStoreFloat4x4
-	(
+	DirectX::XMStoreFloat4x4(
 		&fx4World,
 		scale * rot * trans * DirectX::XMLoadFloat4x4(&ParentMatrix)
 	);

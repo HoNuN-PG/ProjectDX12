@@ -5,6 +5,22 @@
 // System/Rendering/Pipeline
 #include "Pipeline.h"
 
+Pipeline::InputLayout Pipeline::IED_POS_TEX[] =
+{
+	{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
+	{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
+};
+UINT Pipeline::IED_POS_TEX_COUNT = 2;
+
+Pipeline::InputLayout Pipeline::IED_POS_NOR_TEX_COLOR[] =
+{
+	{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
+	{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
+	{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
+	{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
+};
+UINT Pipeline::IED_POS_NOR_TEX_COLOR_COUNT = 4;
+
 Pipeline::Pipeline(Description desc)
 {
 	// ラスタライザステート

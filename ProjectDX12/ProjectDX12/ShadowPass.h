@@ -46,26 +46,13 @@ public:
 	~ShadowPass() {};
 	void Execute() override;
 
-private:
-	DirectX::XMFLOAT4X4 CalcCrop(
-		float depth,
-		int area,
-		DirectX::XMFLOAT4X4 lvp);
-	DirectX::XMFLOAT4X4 CalcTexelSnappedCrop(
-		float depth,
-		int area,
-		float res,
-		DirectX::XMFLOAT4X4 lv);
-
 public:
 	virtual void Init(
 		std::shared_ptr<DescriptorHeap> rtvHeap,
 		std::shared_ptr<DescriptorHeap> srvHeap,
-		std::shared_ptr<DescriptorHeap> dsvHeap) override;
+		std::shared_ptr<DescriptorHeap> dsvHeap
+	) override;
 	void AddObj(GameObject& obj) override;
-
-	// カスケード設定
-	void SetCascadeAreas(UINT idx,float value) {CascadeAreas[idx] = value;};
 
 public:
 	virtual std::shared_ptr<RenderTarget> GetTexture(UINT idx) override;
@@ -73,26 +60,42 @@ public:
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) override;
 
 private:
-	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
+	DirectX::XMFLOAT4X4 CalcCrop(
+		float depth,
+		int area,
+		DirectX::XMFLOAT4X4 lvp
+	);
+	DirectX::XMFLOAT4X4 CalcTexelSnappedCrop(
+		float depth,
+		int area,
+		float res,
+		DirectX::XMFLOAT4X4 lv
+	);
 
+	// ガウスパラメータ
+private:
+	int GaussIdx[TextureType::MAX];
+
+	// シャドウパラメータ
+public:
+	void SetCascadeAreas(UINT idx, float value) { CascadeAreas[idx] = value; };
+public:
+	DirectX::XMFLOAT2 ShadowMapsSize[TextureType::MAX];
+	DirectX::XMFLOAT2 VSMShadowMapsSize[TextureType::MAX];
+	DXGI_FORMAT ShadowMapsFormat;
 private:
 	std::vector<float> CascadeAreas;
-	std::shared_ptr<CameraBase> pCamera;
+	ShadowParam::ShadowMapsParam ShadowMapsParam;
+	ShadowParam::ShadowReceieverParam ShadowReceiveParam;
+
+private:
 	std::vector<std::unique_ptr<DepthStencil>> DSVs;
 	std::vector<std::shared_ptr<RenderTarget>> ShadowMaps;
 	std::vector<std::shared_ptr<RenderTarget>> VSMShadowMaps;
 
 private:
-	ShadowParam::ShadowMapsParam ShadowMapsParam;
-	ShadowParam::ShadowReceieverParam ShadowReceiveParam;
-
-private:
-	int GaussIdx[TextureType::MAX];
-
-public:
-	DirectX::XMFLOAT2 ShadowMapsSize[TextureType::MAX];
-	DirectX::XMFLOAT2 VSMShadowMapsSize[TextureType::MAX];
-	DXGI_FORMAT ShadowMapsFormat;
+	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
+	std::shared_ptr<CameraBase> pCamera;
 
 };
 

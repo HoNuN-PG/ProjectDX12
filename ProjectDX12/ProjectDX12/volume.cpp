@@ -73,6 +73,11 @@ void Volume::BindHeap()
 	DescriptorHeap::Bind(heaps, 1);
 }
 
+void Volume::BindRootSignature(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num)
+{
+	RootSignatureData->Bind(handle, num);
+}
+
 void Volume::BindPipeline(UINT idx)
 {
 	PipelineData[idx]->Bind();

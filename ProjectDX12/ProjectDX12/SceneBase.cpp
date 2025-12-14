@@ -19,7 +19,6 @@ HRESULT SceneBase::InitBase()
 	}
 
 	Init();
-
 	return E_NOTIMPL;
 }
 
@@ -59,7 +58,8 @@ void SceneBase::UpdateBase()
 					return true;
 				}
 				return false;
-			});
+			}
+		);
 	}
 	Update();
 	Engine->Update();

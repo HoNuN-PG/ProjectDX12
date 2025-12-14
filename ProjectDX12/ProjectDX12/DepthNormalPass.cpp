@@ -17,10 +17,8 @@ void OpaqueDepthNormalPass::Execute()
 	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
 
 	// ターゲット化
-	Depth->ResourceBarrier(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	Normal->ResourceBarrier(
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	Depth->SRV2RTV();
+	Normal->SRV2RTV();
 
 	// RTVの設定
 	Depth->Clear(clearColor);
@@ -40,30 +38,28 @@ void OpaqueDepthNormalPass::Execute()
 	RenderObjects.clear();
 
 	// リソース化
-	Depth->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	Normal->ResourceBarrier(
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	Depth->RTV2SRV();
+	Normal->RTV2SRV();
 }
 
 void OpaqueDepthNormalPass::Init(
 	std::shared_ptr<DescriptorHeap> rtvHeap, 
 	std::shared_ptr<DescriptorHeap> srvHeap, 
-	std::shared_ptr<DescriptorHeap> dsvHeap)
+	std::shared_ptr<DescriptorHeap> dsvHeap
+)
 {
 	// RTV
 	{
 		RenderTarget::Description desc = {};
-		desc.format = DXGI_FORMAT_R16G16_FLOAT;
-		desc.pRTVHeap = rtvHeap.get();
-		desc.pSRVHeap = srvHeap.get();
-
-		desc.width = WINDOW_WIDTH;
-		desc.height = WINDOW_HEIGHT;
-		desc.format = DXGI_FORMAT_R32G32_FLOAT;
-		Depth = std::make_shared<RenderTarget>(desc);
-		desc.format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		Normal = std::make_shared<RenderTarget>(desc);
+		desc.format		= DXGI_FORMAT_R16G16_FLOAT;
+		desc.pRTVHeap	= rtvHeap.get();
+		desc.pSRVHeap	= srvHeap.get();
+		desc.width		= WINDOW_WIDTH;
+		desc.height		= WINDOW_HEIGHT;
+		desc.format		= DXGI_FORMAT_R32G32_FLOAT;
+		Depth			= std::make_shared<RenderTarget>(desc);
+		desc.format		= DXGI_FORMAT_R8G8B8A8_UNORM;
+		Normal			= std::make_shared<RenderTarget>(desc);
 	}
 }
 

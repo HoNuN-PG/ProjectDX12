@@ -21,21 +21,14 @@ void M_Deffered_Albedo_Normal::Initialize(Description desc)
 	rootsignature.paramNum = _countof(param);
 
 	// パイプライン
-	Pipeline::InputLayout layout[] = 
-	{
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-	};
 	Pipeline::Description pipeline;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_Object.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_Deffered.cso";
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
+	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
+	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 2;
+		pipeline.CullMode = desc.CullMode;
+	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
 		desc.pHeap,

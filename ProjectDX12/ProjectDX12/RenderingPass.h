@@ -38,16 +38,12 @@ public:
 	virtual void Init(
 		std::shared_ptr<DescriptorHeap> rtvHeap,
 		std::shared_ptr<DescriptorHeap> srvHeap,
-		std::shared_ptr<DescriptorHeap> dsvHeap) = 0;
-	/**
-	* @fn パスにオブジェクトを追加
-	*/
+		std::shared_ptr<DescriptorHeap> dsvHeap
+	) = 0;
+	// パスにオブジェクトを追加
 	virtual void AddObj(GameObject& obj) {};
 
 public:
-	/**
-	* @fn パスのテクスチャを取得
-	*/
 	virtual std::shared_ptr<RenderTarget> GetTexture(UINT idx) = 0;
 	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) = 0;
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) = 0;

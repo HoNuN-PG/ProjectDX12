@@ -23,6 +23,7 @@ void M_Grid::Initialize(Description desc)
 		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
 
+	// ルートシグネチャ
 	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
@@ -32,21 +33,15 @@ void M_Grid::Initialize(Description desc)
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
-	Pipeline::InputLayout layout[] = 
-	{
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-	};
+	// パイプライン
 	Pipeline::Description pipeline;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_WorldObject.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_Grid.cso";
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
+	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
+	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 1;
+	pipeline.CullMode = desc.CullMode;
+	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
 		desc.pHeap,
@@ -81,6 +76,7 @@ void M_GridShadow::Initialize(Description desc)
 		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
 
+	// ルートシグネチャ
 	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
@@ -98,21 +94,15 @@ void M_GridShadow::Initialize(Description desc)
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
-	Pipeline::InputLayout layout[] = 
-	{
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-	};
+	// パイプライン
 	Pipeline::Description pipeline;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowReciever.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_GridShadow.cso";
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
+	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
+	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 1;
+	pipeline.CullMode = desc.CullMode;
+	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
 		desc.pHeap,
@@ -160,6 +150,7 @@ void M_GridShadowVSM::Initialize(Description desc)
 		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
 
+	// ルートシグネチャ
 	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
@@ -177,21 +168,15 @@ void M_GridShadowVSM::Initialize(Description desc)
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
-	Pipeline::InputLayout layout[] = 
-	{
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-	};
+	// パイプライン
 	Pipeline::Description pipeline;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowReciever.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_GridShadowVSM.cso";
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
+	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
+	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 1;
+	pipeline.CullMode = desc.CullMode;
+	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
 		desc.pHeap,

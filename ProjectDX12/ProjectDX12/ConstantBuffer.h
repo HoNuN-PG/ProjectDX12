@@ -26,7 +26,7 @@ public:
 private:
 	DescriptorHeap::Handle			Handle;		// 該当ディスクリプタのハンドル
 	UINT							Size;		// 定数バッファのサイズ
-	ID3D12Resource*					Resource;	// 定数バッファリソース
+	ComPtr<ID3D12Resource>			Resource;	// 定数バッファリソース
 	D3D12_CONSTANT_BUFFER_VIEW_DESC	CBV;		// 定数バッファビュー
 	void*							Ptr;		// 書き込み先アドレス
 

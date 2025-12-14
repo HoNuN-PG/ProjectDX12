@@ -27,9 +27,11 @@ public:
 	void Draw() override;
 
 private:
-	std::shared_ptr<RenderTarget> RTV;
+	std::shared_ptr<RenderTarget>	RTV;
+
+private:
 	std::unique_ptr<ConstantBuffer> Params;
-	VignetteParams VignetteParam;
+	VignetteParams					VignetteParam;
 
 };
 

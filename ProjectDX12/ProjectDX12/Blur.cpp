@@ -70,15 +70,10 @@ void Gauss::Create()
 		{
 			Instance->Gauss2PipelineData.resize(GaussPipelineType::Pipeline_MAX);
 
-			Pipeline::InputLayout layout[] = 
-			{
-				{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-				{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-			};
 			Pipeline::Description desc = {};
 			desc.pRootSignature = Instance->Gauss2RootSignatureData->Get();
-			desc.pInputLayout = layout;
-			desc.InputLayoutNum = _countof(layout);
+			desc.pInputLayout = Pipeline::IED_POS_TEX;
+			desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
 			desc.RenderTargetNum = 1;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
 
@@ -126,15 +121,10 @@ void Gauss::Create()
 		{
 			Instance->Gauss4PipelineData.resize(GaussPipelineType::Pipeline_MAX);
 
-			Pipeline::InputLayout layout[] = 
-			{
-				{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-				{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-			};
 			Pipeline::Description desc = {};
 			desc.pRootSignature = Instance->Gauss4RootSignatureData->Get();
-			desc.pInputLayout = layout;
-			desc.InputLayoutNum = _countof(layout);
+			desc.pInputLayout = Pipeline::IED_POS_TEX;
+			desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
 			desc.RenderTargetNum = 1;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
 
@@ -182,15 +172,10 @@ void Gauss::Create()
 		{
 			Instance->Gauss8PipelineData.resize(GaussPipelineType::Pipeline_MAX);
 
-			Pipeline::InputLayout layout[] = 
-			{
-				{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-				{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-			};
 			Pipeline::Description desc = {};
 			desc.pRootSignature = Instance->Gauss8RootSignatureData->Get();
-			desc.pInputLayout = layout;
-			desc.InputLayoutNum = _countof(layout);
+			desc.pInputLayout = Pipeline::IED_POS_TEX;
+			desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
 			desc.RenderTargetNum = 1;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
 

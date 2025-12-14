@@ -48,24 +48,26 @@ public:
 		}
 		return false;
 	}
+private:
+	bool bDestroy = false;
 
 protected:
-	void BindHeap();
-	void BindPipeline(UINT idx);
 	void BindPostProcessRTV();
+	void BindHeap();
+	void BindRootSignature(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num);
+	void BindPipeline(UINT idx);
 	void Rendering();
+
+protected:
+	std::shared_ptr<DescriptorHeap>										Heap;
+	std::shared_ptr<DescriptorHeap>										RTVHeap;
 
 private:
 	static std::unique_ptr<MeshBuffer>									Screen;
 protected:
-	std::shared_ptr<DescriptorHeap>										Heap;
-	std::shared_ptr<DescriptorHeap>										RTVHeap;
-protected:
 	std::unique_ptr<RootSignature>										RootSignatureData;
 	std::vector<std::unique_ptr<Pipeline>>								PipelineData;
 	std::unique_ptr<RenderTarget>										PostProcessRTV;
-private:
-	bool																bDestroy = false;
 
 };
 

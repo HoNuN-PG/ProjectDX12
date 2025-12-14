@@ -98,16 +98,12 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	}
 	// パイプライン
 	{
-		Pipeline::InputLayout layout[] = {
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-		};
 		Pipeline::Description desc = {};
 		desc.pRootSignature = RootSignatureData->Get();
 		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"../exe/assets/shader/PS_Copy.cso";
-		desc.pInputLayout = layout;
-		desc.InputLayoutNum = _countof(layout);
+		desc.pInputLayout = Pipeline::IED_POS_TEX;
+		desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
 		desc.RenderTargetNum = 1;
 		desc.CullMode = D3D12_CULL_MODE_BACK;
 		PipelineData = std::make_unique<Pipeline>(desc);

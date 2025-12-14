@@ -18,13 +18,13 @@ void PostProcess::Update()
 				return true;
 			}
 			return false; 
-		});
+		}
+	);
 }
 
 void PostProcess::Draw()
 {
-	for (std::list<std::shared_ptr<Volume>>::iterator it = Volumes.begin();
-		it != Volumes.end(); ++it)
+	for (auto&& it = Volumes.begin(); it != Volumes.end(); ++it)
 	{
 		(*it)->Draw();
 	}

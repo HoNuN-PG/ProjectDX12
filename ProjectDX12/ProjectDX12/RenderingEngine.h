@@ -145,8 +145,7 @@ public:
 private:
 	std::shared_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
 	std::unique_ptr<RenderingPass> ODepthNormalPass;		// 不透明深度法線パス
-	std::unordered_map<UINT,								// 描画タイミング
-		PASSES> RenderingPasses;							// 描画パス群
+	std::unordered_map<UINT, PASSES> RenderingPasses;		// key:描画タイミング value:描画パス群
 
 	// レンダリングオブジェクト
 public:
@@ -186,6 +185,7 @@ private:
 	std::unique_ptr<PostProcess> ObjectPostProcess;							// オブジェクト描画後のポストプロセス
 	std::unique_ptr<PostProcess> CanvasPostProcess;							// キャンバス描画後のポストプロセス
 
+private:
 	std::list<std::weak_ptr<class RenderingComponent>> RenderingComponents;	// 作成された描画コンポーネントの参照
 	std::list<std::weak_ptr<Material>> RenderingMaterials;					// 作成されたマテリアルの参照
 

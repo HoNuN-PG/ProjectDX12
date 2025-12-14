@@ -37,8 +37,13 @@ ConstantBuffer::ConstantBuffer(Description desc)
 
 	// リソース生成
 	hr = pDevice->CreateCommittedResource(
-		&prop, D3D12_HEAP_FLAG_NONE, &res, D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr, IID_PPV_ARGS(&Resource));
+		&prop, 
+		D3D12_HEAP_FLAG_NONE, 
+		&res, 
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr, 
+		IID_PPV_ARGS(&Resource)
+	);
 	if (FAILED(hr)) { return; }
 
 	// 定数バッファビュー生成
@@ -56,5 +61,4 @@ ConstantBuffer::ConstantBuffer(Description desc)
 
 ConstantBuffer::~ConstantBuffer()
 {
-	if(Resource) Resource->Release();
 }

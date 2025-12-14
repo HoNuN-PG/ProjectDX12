@@ -27,15 +27,22 @@ void * ConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, D
 	DirectX::XMFLOAT3 pos = { CameraDebug::m_MainPos.x,CameraDebug::m_MainPos.y,CameraDebug::m_MainPos.z };
 	DirectX::XMFLOAT3 target = { CameraDebug::m_MainTarget.x,CameraDebug::m_MainTarget.y,CameraDebug::m_MainTarget.z };
 	DirectX::XMFLOAT3 up = { CameraDebug::m_MainUp.x,CameraDebug::m_MainUp.y,CameraDebug::m_MainUp.z };
-	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&pos),
-		DirectX::XMLoadFloat3(&target), XMLoadFloat3(&up));
+	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
+		DirectX::XMLoadFloat3(&pos),
+		DirectX::XMLoadFloat3(&target), 
+		XMLoadFloat3(&up)
+	);
 	view = DirectX::XMMatrixTranspose(view);
 
 	DirectX::XMStoreFloat4x4(&(wvp.view), view);
 
 	// プロジェクションマトリクス設定
-	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(60),
-		(float)WINDOW_WIDTH / WINDOW_HEIGHT, (float)CAM_NEAR, (float)CAM_FAR);
+	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(
+		DirectX::XMConvertToRadians(60),
+		(float)WINDOW_WIDTH / WINDOW_HEIGHT, 
+		(float)CAM_NEAR, 
+		(float)CAM_FAR
+	);
 	proj = DirectX::XMMatrixTranspose(proj);
 
 	DirectX::XMStoreFloat4x4(&(wvp.proj), proj);
@@ -61,7 +68,14 @@ void * ConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, D
 
 	DirectX::XMStoreFloat4x4(&(wvp.view), view);
 
-	DirectX::XMMATRIX proj = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, WINDOW_WIDTH, -WINDOW_HEIGHT, 0.0f, -1.0f, 1.0f);
+	DirectX::XMMATRIX proj = DirectX::XMMatrixOrthographicOffCenterLH(
+		0.0f, 
+		WINDOW_WIDTH, 
+		-WINDOW_HEIGHT, 
+		0.0f, 
+		-1.0f, 
+		1.0f
+	);
 	proj = DirectX::XMMatrixTranspose(proj);
 
 	DirectX::XMStoreFloat4x4(&(wvp.proj), proj);
@@ -75,13 +89,20 @@ DirectX::XMFLOAT4X4 ConstantWVP::CalcInversVPMatrix()
 	DirectX::XMFLOAT3 pos = { CameraDebug::m_MainPos.x,CameraDebug::m_MainPos.y,CameraDebug::m_MainPos.z };
 	DirectX::XMFLOAT3 target = { CameraDebug::m_MainTarget.x,CameraDebug::m_MainTarget.y,CameraDebug::m_MainTarget.z };
 	DirectX::XMFLOAT3 up = { CameraDebug::m_MainUp.x,CameraDebug::m_MainUp.y,CameraDebug::m_MainUp.z };
-	DirectX::XMMATRIX viewM = DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&pos),
-		DirectX::XMLoadFloat3(&target), XMLoadFloat3(&up));
+	DirectX::XMMATRIX viewM = DirectX::XMMatrixLookAtLH(
+		DirectX::XMLoadFloat3(&pos),
+		DirectX::XMLoadFloat3(&target), 
+		XMLoadFloat3(&up)
+	);
 	viewM = DirectX::XMMatrixTranspose(viewM);
 
 	// プロジェクションマトリクス
-	DirectX::XMMATRIX projM = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(60),
-		(float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.01f, 1000.0f);
+	DirectX::XMMATRIX projM = DirectX::XMMatrixPerspectiveFovLH(
+		DirectX::XMConvertToRadians(60),
+		(float)WINDOW_WIDTH / WINDOW_HEIGHT, 
+		0.01f, 
+		1000.0f
+	);
 	projM = DirectX::XMMatrixTranspose(projM);
 
 	DirectX::XMFLOAT4X4 view;

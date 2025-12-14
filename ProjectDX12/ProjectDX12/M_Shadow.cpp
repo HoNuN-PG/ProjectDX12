@@ -30,6 +30,7 @@ void M_SimpleShadowMaps::Initialize(Description desc)
 		Params.push_back(std::make_unique<ConstantBuffer>(constant)); // シャドウマップ3
 	}
 
+	// ルートシグネチャ
 	RootSignature::Parameter param[] = 
 	{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
@@ -41,21 +42,15 @@ void M_SimpleShadowMaps::Initialize(Description desc)
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
-	Pipeline::InputLayout layout[] = 
-	{
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-	};
+	// パイプライン
 	Pipeline::Description pipeline;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.WriteDepth = desc.WriteDepth;
 	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowMap.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_SimpleShadowMap.cso";
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
+	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
+	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 1;
+	pipeline.CullMode = desc.CullMode;
+	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
 		desc.pHeap,
@@ -76,7 +71,7 @@ void M_SimpleShadowMaps::Bind()
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU, //
+		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
 		Params[0]->GetHandle().hGPU,
 		Params[1 + CurrentShadowMapsNo]->GetHandle().hGPU,
 	};
@@ -113,22 +108,14 @@ void M_OpaqueSimpleShadowMaps::Initialize(Description desc)
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
-	Pipeline::InputLayout layout[] = 
-	{
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-			{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-	};
 	Pipeline::Description pipeline;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.WriteDepth = desc.WriteDepth;
-	pipeline.WriteDepth = FALSE;
 	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowMap.cso";
 	pipeline.PSFile = L"../exe/assets/shader/PS_OpaqueSimpleShadowMap.cso";
-	pipeline.pInputLayout = layout;
-	pipeline.InputLayoutNum = _countof(layout);
+	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
+	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 1;
+	pipeline.CullMode = desc.CullMode;
+	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
 		desc.pHeap,

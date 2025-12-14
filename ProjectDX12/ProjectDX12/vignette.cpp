@@ -32,19 +32,14 @@ void Vignette::Init()
 	}
 	// パイプライン
 	{
-		Pipeline::InputLayout layout[] = 
-		{
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-		};
 		Pipeline::Description desc = {};
-		desc.CullMode = D3D12_CULL_MODE_BACK;
+		desc.pRootSignature = RootSignatureData->Get();
 		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"../exe/assets/shader/PS_Vignette.cso";
-		desc.pInputLayout = layout;
-		desc.InputLayoutNum = _countof(layout);
-		desc.pRootSignature = RootSignatureData->Get();
+		desc.pInputLayout = Pipeline::IED_POS_TEX;
+		desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
 		desc.RenderTargetNum = 1;
+		desc.CullMode = D3D12_CULL_MODE_BACK;
 		PipelineData.push_back(std::make_unique<Pipeline>(desc));
 	}
 	// RTV
@@ -92,15 +87,15 @@ void Vignette::Draw()
 	// ポストプロセス用RTVをバインド
 	BindPostProcessRTV();
 	// 各種オブジェクトをバインド
-	BindPipeline(0);
 	BindHeap();
-	// MainTextureを取得
 	engine.lock()->CopyGlobalTextureSRV(RTV.get()->GetHandleSRV().hCPU, GlobalTextureResourceKey::MainTexture);
-	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = {
+	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = 
+	{
 		RTV.get()->GetHandleSRV().hGPU,
 		Params.get()->GetHandle().hGPU,
 	};
-	RootSignatureData->Bind(desc, _countof(desc));
+	BindRootSignature(desc, _countof(desc));
+	BindPipeline(0);
 	// 描画
 	Rendering();
 

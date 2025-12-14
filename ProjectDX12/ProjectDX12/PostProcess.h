@@ -16,7 +16,7 @@ public:
 	void Draw();
 
 public:
-	template <typename T> // テンプレート関数
+	template <typename T> 
 	std::shared_ptr<T> AddVolume()
 	{
 		std::shared_ptr<T> volume = std::make_shared<T>();
@@ -24,7 +24,6 @@ public:
 		Volumes.back()->Init();
 		return volume;
 	}
-
 	template <typename T>
 	std::shared_ptr<T> GetVolume()
 	{

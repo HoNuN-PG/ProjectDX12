@@ -58,19 +58,14 @@ void Copy::Load()
 	}
 	// パイプライン
 	{
-		Pipeline::InputLayout layout[] = 
-		{
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-		};
 		Pipeline::Description desc = {};
-		desc.CullMode = D3D12_CULL_MODE_BACK;
+		desc.pRootSignature = Instance->RootSignatureData->Get();
 		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"../exe/assets/shader/PS_Copy.cso";
-		desc.pInputLayout = layout;
-		desc.InputLayoutNum = _countof(layout);
-		desc.pRootSignature = Instance->RootSignatureData->Get();
+		desc.pInputLayout = Pipeline::IED_POS_TEX;
+		desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
 		desc.RenderTargetNum = 1;
+		desc.CullMode = D3D12_CULL_MODE_BACK;
 		Instance->PipelineData = std::make_unique<Pipeline>(desc);
 	}
 }
@@ -92,7 +87,6 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3
 	};
 	SetRenderTarget(1, rtvs);
 
-	Instance->PipelineData->Bind();
 	ID3D12DescriptorHeap* heaps[] =
 	{
 		heap->Get(),
@@ -103,6 +97,7 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3
 		src,
 	};
 	Instance->RootSignatureData->Bind(hScreen, _countof(hScreen));
+	Instance->PipelineData->Bind();
 	Instance->Screen->Draw();
 }
 
@@ -118,7 +113,6 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, st
 	};
 	SetRenderTarget(1, rtvs);
 
-	Instance->PipelineData->Bind();
 	ID3D12DescriptorHeap* heaps[] =
 	{
 		heap->Get(),
@@ -129,6 +123,7 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, st
 		src,
 	};
 	Instance->RootSignatureData->Bind(hScreen, _countof(hScreen));
+	Instance->PipelineData->Bind();
 	Instance->Screen->Draw();
 
 	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);

@@ -159,166 +159,6 @@ void ShadowPass::Execute()
 	RenderObjects.clear();
 }
 
-DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(
-	float depth,
-	int area,
-	DirectX::XMFLOAT4X4 lvp)
-{
-	// 手前の距離
-	float nearY = tanf(CameraBase::GetViewAngle() * 0.5f) * depth;
-	float nearX = nearY * CameraBase::GetAspect();
-
-	// 奥の距離
-	float farY = tanf(CameraBase::GetViewAngle() * 0.5f) * CascadeAreas[area];
-	float farX = farY * CameraBase::GetAspect();
-
-	// 手前の面の中心位置
-	DirectX::XMFLOAT3 nearPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), depth));
-	// 奥の面の中心位置
-	DirectX::XMFLOAT3 farPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), CascadeAreas[area]));
-
-	// ８頂点の計算
-	DirectX::XMFLOAT3 vertex[8];
-
-	DirectX::XMFLOAT3 up = CameraBase::m_MainUp;
-	DirectX::XMFLOAT3 nearUp = DXFL::Scale(up, nearY);
-	DirectX::XMFLOAT3 farUp = DXFL::Scale(up, farY);
-
-	DirectX::XMFLOAT3 right = pCamera->GetRight();
-	DirectX::XMFLOAT3 nearRight = DXFL::Scale(right, nearX);
-	DirectX::XMFLOAT3 farRight = DXFL::Scale(right, farX);
-
-	vertex[0] = DXFL::Add(nearPos,DXFL::Add(nearUp,nearRight));
-	vertex[1] = DXFL::Add(nearPos, DXFL::Add(nearUp, DXFL::Scale(nearRight,-1)));
-	vertex[2] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp,-1), nearRight));
-	vertex[3] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), DXFL::Scale(nearRight, -1)));
-	vertex[4] = DXFL::Add(farPos, DXFL::Add(farUp, farRight));
-	vertex[5] = DXFL::Add(farPos, DXFL::Add(farUp, DXFL::Scale(farRight, -1)));
-	vertex[6] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), farRight));
-	vertex[7] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), DXFL::Scale(farRight, -1)));
-
-	// ライトビュープロジェクション変換
-	for (int i = 0; i < 8; ++i)
-	{
-		DirectX::XMVECTOR vec;
-		vec = DirectX::XMLoadFloat3(&vertex[i]);
-		vec = DirectX::XMVector3Transform(vec, DirectX::XMLoadFloat4x4(&lvp));
-		DirectX::XMFLOAT3 v;
-		DirectX::XMStoreFloat3(&v, vec);
-		vertex[i] = v;
-	}
-
-	// 最大値と最小値の計算
-	float maxX, minX, maxY, minY;
-	maxX = -1000; minX = 1000; maxY = -1000; minY = 1000;
-	for (int i = 0; i < 8; ++i)
-	{
-		maxX = (std::max)(maxX, vertex[i].x);
-		minX = (std::min)(minX, vertex[i].x);
-		maxY = (std::max)(maxY, vertex[i].y);
-		minY = (std::min)(minY, vertex[i].y);
-	}
-
-	DirectX::XMFLOAT4X4 crop;
-	DirectX::XMStoreFloat4x4(&crop, DirectX::XMMatrixIdentity());
-	float xScale = 2.0f / (maxX - minX);
-	float yScale = 2.0f / (maxY - minY);
-	float xOffset = (maxX + minX) * (-0.5f) * xScale;
-	float yOffset = (maxY + minY) * (-0.5f) * yScale;
-	crop.m[0][0] = xScale;
-	crop.m[1][1] = yScale;
-	crop.m[3][0] = xOffset;
-	crop.m[3][1] = yOffset;
-	return crop;
-}
-
-DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(
-	float depth, 
-	int area, 
-	float res, 
-	DirectX::XMFLOAT4X4 lv)
-{
-	// 手前の距離
-	float nearY = tanf(CameraBase::GetViewAngle() * 0.5f) * depth;
-	float nearX = nearY * CameraBase::GetAspect();
-
-	// 奥の距離
-	float farY = tanf(CameraBase::GetViewAngle() * 0.5f) * CascadeAreas[area];
-	float farX = farY * CameraBase::GetAspect();
-
-	// 手前の面の中心位置
-	DirectX::XMFLOAT3 nearPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), depth));
-	// 奥の面の中心位置
-	DirectX::XMFLOAT3 farPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), CascadeAreas[area]));
-
-	// ８頂点の計算
-	DirectX::XMFLOAT3 vertex[8];
-
-	DirectX::XMFLOAT3 up = CameraBase::m_MainUp;
-	DirectX::XMFLOAT3 nearUp = DXFL::Scale(up, nearY);
-	DirectX::XMFLOAT3 farUp = DXFL::Scale(up, farY);
-
-	DirectX::XMFLOAT3 right = pCamera->GetRight();
-	DirectX::XMFLOAT3 nearRight = DXFL::Scale(right, nearX);
-	DirectX::XMFLOAT3 farRight = DXFL::Scale(right, farX);
-
-	vertex[0] = DXFL::Add(nearPos, DXFL::Add(nearUp, nearRight));
-	vertex[1] = DXFL::Add(nearPos, DXFL::Add(nearUp, DXFL::Scale(nearRight, -1)));
-	vertex[2] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), nearRight));
-	vertex[3] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), DXFL::Scale(nearRight, -1)));
-	vertex[4] = DXFL::Add(farPos, DXFL::Add(farUp, farRight));
-	vertex[5] = DXFL::Add(farPos, DXFL::Add(farUp, DXFL::Scale(farRight, -1)));
-	vertex[6] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), farRight));
-	vertex[7] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), DXFL::Scale(farRight, -1)));
-
-	// 視錐台の中心と半径を求める
-	DirectX::XMFLOAT3 center = DXFL::Scale(DXFL::Add(nearPos,farPos),0.5f);
-	float radius = 0.0f;
-	for (int i = 0; i < 8; ++i)
-	{
-		float temp = DXFL::Magnitude(DXFL::Subtraction(vertex[i],center));
-		radius = radius < temp ? temp : radius;
-	}
-
-	// 半径の調整
-	radius *= 1.01f;
-
-	// スナップ単位
-	float unitsPerTexel = (radius * 2.0f) / res;
-
-	radius = roundf(radius / unitsPerTexel) * unitsPerTexel;
-
-	// ライトビュー変換
-	{
-		DirectX::XMVECTOR vec;
-		vec = DirectX::XMLoadFloat3(&center);
-		vec = DirectX::XMVector3Transform(vec, DirectX::XMLoadFloat4x4(&lv));
-		DirectX::XMFLOAT3 v;
-		DirectX::XMStoreFloat3(&v, vec);
-		center = v;
-	}
-
-	// テクセルスナップ
-	center.x = roundf(center.x / unitsPerTexel) * unitsPerTexel;
-	center.y = roundf(center.y / unitsPerTexel) * unitsPerTexel;
-
-	// 最大最小計算
-	float minX, maxX, minY, maxY,minZ,maxZ;
-	minX = center.x - radius;
-	maxX = center.x + radius;
-	minY = center.y - radius;
-	maxY = center.y + radius;
-	minZ = DXFL::Magnitude(DXFL::Subtraction(nearPos,pCamera->GetPosition()));
-	maxZ = DXFL::Magnitude(DXFL::Subtraction(farPos, pCamera->GetPosition()));
-
-	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicOffCenterLH(minX, maxX, minY, maxY, 
-		-radius, radius);
-
-	DirectX::XMFLOAT4X4 crop;
-	DirectX::XMStoreFloat4x4(&crop, lightProj);
-	return crop;
-}
-
 void ShadowPass::Init(
 	std::shared_ptr<DescriptorHeap> rtvHeap, 
 	std::shared_ptr<DescriptorHeap> srvHeap, 
@@ -333,11 +173,11 @@ void ShadowPass::Init(
 
 		for (int i = 0; i <= TextureType::Far; ++i)
 		{
-			desc.width = ShadowMapsSize[i].x;
-			desc.height = ShadowMapsSize[i].y;
+			desc.width		= ShadowMapsSize[i].x;
+			desc.height		= ShadowMapsSize[i].y;
 			ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
-			desc.width = VSMShadowMapsSize[i].x;
-			desc.height = VSMShadowMapsSize[i].y;
+			desc.width		= VSMShadowMapsSize[i].x;
+			desc.height		= VSMShadowMapsSize[i].y;
 			VSMShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
 		}
 	}
@@ -398,4 +238,172 @@ DescriptorHeap::Handle ShadowPass::GetTextureSRV(UINT idx)
 		return VSMShadowMaps[idx - ShadowMaps.size()]->GetHandleSRV();
 	}
 	return DescriptorHeap::Handle();
+}
+
+DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(
+	float depth,
+	int area,
+	DirectX::XMFLOAT4X4 lvp
+)
+{
+	// 手前の距離
+	float nearY = tanf(CameraBase::GetViewAngle() * 0.5f) * depth;
+	float nearX = nearY * CameraBase::GetAspect();
+
+	// 奥の距離
+	float farY = tanf(CameraBase::GetViewAngle() * 0.5f) * CascadeAreas[area];
+	float farX = farY * CameraBase::GetAspect();
+
+	// 手前の面の中心位置
+	DirectX::XMFLOAT3 nearPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), depth));
+	// 奥の面の中心位置
+	DirectX::XMFLOAT3 farPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), CascadeAreas[area]));
+
+	// ８頂点の計算
+	DirectX::XMFLOAT3 vertex[8];
+
+	DirectX::XMFLOAT3 up = CameraBase::m_MainUp;
+	DirectX::XMFLOAT3 nearUp = DXFL::Scale(up, nearY);
+	DirectX::XMFLOAT3 farUp = DXFL::Scale(up, farY);
+
+	DirectX::XMFLOAT3 right = pCamera->GetRight();
+	DirectX::XMFLOAT3 nearRight = DXFL::Scale(right, nearX);
+	DirectX::XMFLOAT3 farRight = DXFL::Scale(right, farX);
+
+	vertex[0] = DXFL::Add(nearPos, DXFL::Add(nearUp, nearRight));
+	vertex[1] = DXFL::Add(nearPos, DXFL::Add(nearUp, DXFL::Scale(nearRight, -1)));
+	vertex[2] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), nearRight));
+	vertex[3] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), DXFL::Scale(nearRight, -1)));
+	vertex[4] = DXFL::Add(farPos, DXFL::Add(farUp, farRight));
+	vertex[5] = DXFL::Add(farPos, DXFL::Add(farUp, DXFL::Scale(farRight, -1)));
+	vertex[6] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), farRight));
+	vertex[7] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), DXFL::Scale(farRight, -1)));
+
+	// ライトビュープロジェクション変換
+	for (int i = 0; i < 8; ++i)
+	{
+		DirectX::XMVECTOR vec;
+		vec = DirectX::XMLoadFloat3(&vertex[i]);
+		vec = DirectX::XMVector3Transform(vec, DirectX::XMLoadFloat4x4(&lvp));
+		DirectX::XMFLOAT3 v;
+		DirectX::XMStoreFloat3(&v, vec);
+		vertex[i] = v;
+	}
+
+	// 最大値と最小値の計算
+	float maxX, minX, maxY, minY;
+	maxX = -1000; minX = 1000; maxY = -1000; minY = 1000;
+	for (int i = 0; i < 8; ++i)
+	{
+		maxX = (std::max)(maxX, vertex[i].x);
+		minX = (std::min)(minX, vertex[i].x);
+		maxY = (std::max)(maxY, vertex[i].y);
+		minY = (std::min)(minY, vertex[i].y);
+	}
+
+	DirectX::XMFLOAT4X4 crop;
+	DirectX::XMStoreFloat4x4(&crop, DirectX::XMMatrixIdentity());
+	float xScale = 2.0f / (maxX - minX);
+	float yScale = 2.0f / (maxY - minY);
+	float xOffset = (maxX + minX) * (-0.5f) * xScale;
+	float yOffset = (maxY + minY) * (-0.5f) * yScale;
+	crop.m[0][0] = xScale;
+	crop.m[1][1] = yScale;
+	crop.m[3][0] = xOffset;
+	crop.m[3][1] = yOffset;
+	return crop;
+}
+
+DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(
+	float depth,
+	int area,
+	float res,
+	DirectX::XMFLOAT4X4 lv
+)
+{
+	// 手前の距離
+	float nearY = tanf(CameraBase::GetViewAngle() * 0.5f) * depth;
+	float nearX = nearY * CameraBase::GetAspect();
+
+	// 奥の距離
+	float farY = tanf(CameraBase::GetViewAngle() * 0.5f) * CascadeAreas[area];
+	float farX = farY * CameraBase::GetAspect();
+
+	// 手前の面の中心位置
+	DirectX::XMFLOAT3 nearPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), depth));
+	// 奥の面の中心位置
+	DirectX::XMFLOAT3 farPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), CascadeAreas[area]));
+
+	// ８頂点の計算
+	DirectX::XMFLOAT3 vertex[8];
+
+	DirectX::XMFLOAT3 up = CameraBase::m_MainUp;
+	DirectX::XMFLOAT3 nearUp = DXFL::Scale(up, nearY);
+	DirectX::XMFLOAT3 farUp = DXFL::Scale(up, farY);
+
+	DirectX::XMFLOAT3 right = pCamera->GetRight();
+	DirectX::XMFLOAT3 nearRight = DXFL::Scale(right, nearX);
+	DirectX::XMFLOAT3 farRight = DXFL::Scale(right, farX);
+
+	vertex[0] = DXFL::Add(nearPos, DXFL::Add(nearUp, nearRight));
+	vertex[1] = DXFL::Add(nearPos, DXFL::Add(nearUp, DXFL::Scale(nearRight, -1)));
+	vertex[2] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), nearRight));
+	vertex[3] = DXFL::Add(nearPos, DXFL::Add(DXFL::Scale(nearUp, -1), DXFL::Scale(nearRight, -1)));
+	vertex[4] = DXFL::Add(farPos, DXFL::Add(farUp, farRight));
+	vertex[5] = DXFL::Add(farPos, DXFL::Add(farUp, DXFL::Scale(farRight, -1)));
+	vertex[6] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), farRight));
+	vertex[7] = DXFL::Add(farPos, DXFL::Add(DXFL::Scale(farUp, -1), DXFL::Scale(farRight, -1)));
+
+	// 視錐台の中心と半径を求める
+	DirectX::XMFLOAT3 center = DXFL::Scale(DXFL::Add(nearPos, farPos), 0.5f);
+	float radius = 0.0f;
+	for (int i = 0; i < 8; ++i)
+	{
+		float temp = DXFL::Magnitude(DXFL::Subtraction(vertex[i], center));
+		radius = radius < temp ? temp : radius;
+	}
+
+	// 半径の調整
+	radius *= 1.01f;
+
+	// スナップ単位
+	float unitsPerTexel = (radius * 2.0f) / res;
+
+	radius = roundf(radius / unitsPerTexel) * unitsPerTexel;
+
+	// ライトビュー変換
+	{
+		DirectX::XMVECTOR vec;
+		vec = DirectX::XMLoadFloat3(&center);
+		vec = DirectX::XMVector3Transform(vec, DirectX::XMLoadFloat4x4(&lv));
+		DirectX::XMFLOAT3 v;
+		DirectX::XMStoreFloat3(&v, vec);
+		center = v;
+	}
+
+	// テクセルスナップ
+	center.x = roundf(center.x / unitsPerTexel) * unitsPerTexel;
+	center.y = roundf(center.y / unitsPerTexel) * unitsPerTexel;
+
+	// 最大最小計算
+	float minX, maxX, minY, maxY, minZ, maxZ;
+	minX = center.x - radius;
+	maxX = center.x + radius;
+	minY = center.y - radius;
+	maxY = center.y + radius;
+	minZ = DXFL::Magnitude(DXFL::Subtraction(nearPos, pCamera->GetPosition()));
+	maxZ = DXFL::Magnitude(DXFL::Subtraction(farPos, pCamera->GetPosition()));
+
+	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicOffCenterLH(
+		minX,
+		maxX,
+		minY,
+		maxY,
+		-radius,
+		radius
+	);
+
+	DirectX::XMFLOAT4X4 crop;
+	DirectX::XMStoreFloat4x4(&crop, lightProj);
+	return crop;
 }

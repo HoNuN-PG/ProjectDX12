@@ -34,7 +34,8 @@ public:
 	virtual void Init(
 		std::shared_ptr<DescriptorHeap> rtvHeap,
 		std::shared_ptr<DescriptorHeap> srvHeap,
-		std::shared_ptr<DescriptorHeap> dsvHeap) override;
+		std::shared_ptr<DescriptorHeap> dsvHeap
+	) override;
 	void AddObj(GameObject& obj) override;
 
 public:
@@ -43,12 +44,12 @@ public:
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) override;
 
 private:
-	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
-
-private:
 	std::unique_ptr<DepthStencil> DSV;
 	std::shared_ptr<RenderTarget> Depth;
 	std::shared_ptr<RenderTarget> Normal;
+
+private:
+	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
 
 };
 

@@ -13,6 +13,10 @@ public:
 		UINT		index;
 		DXGI_FORMAT format;
 	};
+	static InputLayout IED_POS_TEX[];
+	static UINT IED_POS_TEX_COUNT;
+	static InputLayout IED_POS_NOR_TEX_COLOR[];
+	static UINT IED_POS_NOR_TEX_COLOR_COUNT;
 
 	struct Description
 	{
