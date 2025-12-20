@@ -56,7 +56,7 @@ HRESULT SceneSandBoxDX12::Init()
 	// 通常のスカイボックス
 	std::shared_ptr<M_SkyBox> sky_box = std::make_shared<M_SkyBox>();
 	Material::Initialize(sky_box, desc);
-	sky_box->AddTexture("../exe/assets/texture/HDRI/skybox2.hdr");
+	sky_box->AddTexture("../game/assets/texture/HDRI/skybox2.hdr");
 
 	// ===============================
 	// ShadowMap
@@ -71,7 +71,7 @@ HRESULT SceneSandBoxDX12::Init()
 	desc.WriteDepth = FALSE;
 	std::shared_ptr<M_OpaqueSimpleShadowMaps> leaf_shadow_map = std::make_shared<M_OpaqueSimpleShadowMaps>();
 	Material::Initialize(leaf_shadow_map,  desc);
-	leaf_shadow_map->AddTexture("../exe/assets/model/tree/T_Leaves_Round_01_C.dds");
+	leaf_shadow_map->AddTexture("../game/assets/model/tree/T_Leaves_Round_01_C.dds");
 
 	// ===============================
 	// DepthNormal
@@ -121,12 +121,12 @@ HRESULT SceneSandBoxDX12::Init()
 	// 木
 	std::shared_ptr<M_OpaqueSimpleLit> tree_simple_lit = std::make_shared<M_OpaqueSimpleLit>();
 	Material::Initialize(tree_simple_lit, desc);
-	tree_simple_lit->AddTexture("../exe/assets/model/tree/T_Bark_Autumn_01_C.dds");
+	tree_simple_lit->AddTexture("../game/assets/model/tree/T_Bark_Autumn_01_C.dds");
 	// 葉
 	desc.CullMode = D3D12_CULL_MODE_NONE;
 	std::shared_ptr<M_OpaqueSimpleLit> leaf_simple_lit = std::make_shared<M_OpaqueSimpleLit>();
 	Material::Initialize(leaf_simple_lit, desc);
-	leaf_simple_lit->AddTexture("../exe/assets/model/tree/T_Leaves_Round_02_C.dds");
+	leaf_simple_lit->AddTexture("../game/assets/model/tree/T_Leaves_Round_02_C.dds");
 
 	// モデル作成
 	{// スカイボックス
@@ -171,7 +171,7 @@ HRESULT SceneSandBoxDX12::Init()
 		obj->SetPosition({ 0,-2.5f,0 });
 		obj->SetScale({2.5f,2.5f,2.5f});
 		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
-		model->Create("../exe/assets/model/tree/height_tree.fbx", materials);
+		model->Create("../game/assets/model/tree/height_tree.fbx", materials);
 	}
 	{// 牛
 		// Deffered
@@ -183,7 +183,7 @@ HRESULT SceneSandBoxDX12::Init()
 		std::shared_ptr<Material> deffered_albedo_normal;
 		deffered_albedo_normal = std::make_shared<M_Deffered_Albedo_Normal>();
 		Material::Initialize(deffered_albedo_normal, desc);
-		deffered_albedo_normal->AddTexture("../exe/assets/model/spot/spot_texture.png");
+		deffered_albedo_normal->AddTexture("../game/assets/model/spot/spot_texture.png");
 		
 		MeshMaterials materials;
 
@@ -193,7 +193,7 @@ HRESULT SceneSandBoxDX12::Init()
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,10 });
 		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
-		model->Create("../exe/assets/model/spot/spot.fbx", materials);
+		model->Create("../game/assets/model/spot/spot.fbx", materials);
 	}
 
     return E_NOTIMPL;

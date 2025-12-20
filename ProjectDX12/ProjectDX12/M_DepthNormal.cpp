@@ -21,8 +21,8 @@ void M_DepthNormal::Initialize(Description desc)
 
 	// パイプライン
 	Pipeline::Description pipeline;
-	pipeline.VSFile = L"../exe/assets/shader/VS_DepthNormal.cso";
-	pipeline.PSFile = L"../exe/assets/shader/PS_DepthNormal.cso";
+	pipeline.VSFile = L"../game/assets/shader/VS_DepthNormal.cso";
+	pipeline.PSFile = L"../game/assets/shader/PS_DepthNormal.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 2;

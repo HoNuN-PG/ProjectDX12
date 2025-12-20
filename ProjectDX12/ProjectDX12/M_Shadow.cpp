@@ -44,8 +44,8 @@ void M_SimpleShadowMaps::Initialize(Description desc)
 
 	// パイプライン
 	Pipeline::Description pipeline;
-	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowMap.cso";
-	pipeline.PSFile = L"../exe/assets/shader/PS_SimpleShadowMap.cso";
+	pipeline.VSFile = L"../game/assets/shader/VS_ShadowMap.cso";
+	pipeline.PSFile = L"../game/assets/shader/PS_SimpleShadowMap.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 1;
@@ -109,8 +109,8 @@ void M_OpaqueSimpleShadowMaps::Initialize(Description desc)
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
 	Pipeline::Description pipeline;
-	pipeline.VSFile = L"../exe/assets/shader/VS_ShadowMap.cso";
-	pipeline.PSFile = L"../exe/assets/shader/PS_OpaqueSimpleShadowMap.cso";
+	pipeline.VSFile = L"../game/assets/shader/VS_ShadowMap.cso";
+	pipeline.PSFile = L"../game/assets/shader/PS_OpaqueSimpleShadowMap.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 1;

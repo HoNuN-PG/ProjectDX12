@@ -252,8 +252,8 @@ void RenderingEngine::SetupDefferedShader()
 		};
 		Pipeline::Description desc = {};
 		desc.pRootSignature = DefferedLightingShader.RootSignatureData->Get();
-		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"../exe/assets/shader/PS_DefferedLighting.cso";
+		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
+		desc.PSFile = L"../game/assets/shader/PS_DefferedLighting.cso";
 		desc.pInputLayout = layout;
 		desc.InputLayoutNum = _countof(layout);
 		desc.RenderTargetNum = 1;

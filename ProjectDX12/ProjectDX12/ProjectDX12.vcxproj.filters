@@ -508,40 +508,22 @@
     <FxCompile Include="CommonFunction.hlsl">
       <Filter>リソース ファイル\Common</Filter>
     </FxCompile>
-    <FxCompile Include="PS_SimpleLit.hlsl">
-      <Filter>リソース ファイル\PS\Lit</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Object.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Deffered.hlsl">
-      <Filter>リソース ファイル\PS\Deffered</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Copy.hlsl">
-      <Filter>リソース ファイル\PS\Common</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Sprite.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
-    </FxCompile>
     <FxCompile Include="CommonDefine.hlsl">
       <Filter>リソース ファイル\Common</Filter>
     </FxCompile>
-    <FxCompile Include="VS_DepthNormal.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
+    <FxCompile Include="CommonShadow.hlsl">
+      <Filter>リソース ファイル\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="CommonShadowParam.hlsl">
+      <Filter>リソース ファイル\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="CommonShadowVSM.hlsl">
+      <Filter>リソース ファイル\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="CommonParam.hlsl">
+      <Filter>リソース ファイル\Common</Filter>
     </FxCompile>
     <FxCompile Include="VS_WorldObject.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_UnLit.hlsl">
-      <Filter>リソース ファイル\PS\Lit</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_DepthNormal.hlsl">
-      <Filter>リソース ファイル\PS\Depth</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_SimpleShadowMap.hlsl">
-      <Filter>リソース ファイル\PS\ShadowMap</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_ShadowMap.hlsl">
       <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
     <FxCompile Include="PS_Grid.hlsl">
@@ -550,23 +532,50 @@
     <FxCompile Include="PS_GridShadow.hlsl">
       <Filter>リソース ファイル\PS\Common\Grid</Filter>
     </FxCompile>
-    <FxCompile Include="VS_ShadowReciever.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
-    </FxCompile>
-    <FxCompile Include="CommonShadow.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Vignette.hlsl">
-      <Filter>リソース ファイル\Volume</Filter>
-    </FxCompile>
     <FxCompile Include="PS_GridShadowVSM.hlsl">
       <Filter>リソース ファイル\PS\Common\Grid</Filter>
     </FxCompile>
-    <FxCompile Include="CommonShadowParam.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
+    <FxCompile Include="PS_Copy.hlsl">
+      <Filter>リソース ファイル\PS\Common</Filter>
     </FxCompile>
-    <FxCompile Include="CommonShadowVSM.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
+    <FxCompile Include="PS_DefferedLighting.hlsl">
+      <Filter>リソース ファイル\PS\Deffered\DefferedLighting</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Deffered.hlsl">
+      <Filter>リソース ファイル\PS\Deffered</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_DepthNormal.hlsl">
+      <Filter>リソース ファイル\PS\Depth</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_OpaqueSimpleLit.hlsl">
+      <Filter>リソース ファイル\PS\Lit</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_SimpleLit.hlsl">
+      <Filter>リソース ファイル\PS\Lit</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_OpaqueSimpleShadowMap.hlsl">
+      <Filter>リソース ファイル\PS\ShadowMap</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_SimpleShadowMap.hlsl">
+      <Filter>リソース ファイル\PS\ShadowMap</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Blur2.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Blur2X.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Blur2Y.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Blur4.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Blur4X.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Blur4Y.hlsl">
+      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
     </FxCompile>
     <FxCompile Include="PS_Blur8.hlsl">
       <Filter>リソース ファイル\Volume\Blur\Blur8</Filter>
@@ -577,35 +586,26 @@
     <FxCompile Include="VS_Blur8Y.hlsl">
       <Filter>リソース ファイル\Volume\Blur\Blur8</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Blur4X.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
+    <FxCompile Include="PS_Vignette.hlsl">
+      <Filter>リソース ファイル\Volume</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Blur4Y.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
+    <FxCompile Include="VS_DepthNormal.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Blur4.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
+    <FxCompile Include="VS_Object.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Blur2X.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    <FxCompile Include="VS_ShadowMap.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Blur2Y.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    <FxCompile Include="VS_ShadowReciever.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Blur2.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    <FxCompile Include="VS_Sprite.hlsl">
+      <Filter>リソース ファイル\VS</Filter>
     </FxCompile>
-    <FxCompile Include="PS_DefferedLighting.hlsl">
-      <Filter>リソース ファイル\PS\Deffered\DefferedLighting</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_OpaqueSimpleLit.hlsl">
+    <FxCompile Include="PS_UnLit.hlsl">
       <Filter>リソース ファイル\PS\Lit</Filter>
-    </FxCompile>
-    <FxCompile Include="CommonParam.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_OpaqueSimpleShadowMap.hlsl">
-      <Filter>リソース ファイル\PS\ShadowMap</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

@@ -34,59 +34,86 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	hr = CreateDXGIFactory1(IID_PPV_ARGS(&g_pFactory));
 #endif
 	if (FAILED(hr)) { return hr; }
-
+	
 #if 1
-	Microsoft::WRL::ComPtr<IDXGIAdapter1> dxgiAdapter = nullptr;	//デバイス取得用
-	int adapterIndex = 0;											//列挙するデバイスのインデックス
-	bool adapterFound = false;										//目的のデバイスを見つけたか
+	Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter;
+
+	hr = g_pFactory->EnumAdapterByGpuPreference(
+		0,
+		DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
+		IID_PPV_ARGS(&adapter)
+	);
+
+	if (SUCCEEDED(hr))
+	{
+		D3D_FEATURE_LEVEL featureLevels[] =
+		{
+			D3D_FEATURE_LEVEL_12_2,
+			D3D_FEATURE_LEVEL_12_1,
+			D3D_FEATURE_LEVEL_12_0,
+		};
+		for (auto lv : featureLevels)
+		{
+			hr = D3D12CreateDevice(
+				adapter.Get(),
+				lv,
+				IID_PPV_ARGS(&g_pDevice)
+			);
+			if (SUCCEEDED(hr))
+			{
+				break;
+			}
+		}
+	}
+#else
+	ComPtr<IDXGIAdapter1> dxgiAdapter = nullptr;					// デバイス取得用
+	int adapterIndex = 0;											// 列挙するデバイスのインデックス
+	bool adapterFound = false;										// 目的のデバイスを見つけたか
 
 	// 目的のデバイスを探索
-	while (g_pFactory->EnumAdapters1(adapterIndex, &dxgiAdapter) != DXGI_ERROR_NOT_FOUND) 
+	while (g_pFactory->EnumAdapters1(adapterIndex, &dxgiAdapter) != DXGI_ERROR_NOT_FOUND)
 	{
 		DXGI_ADAPTER_DESC1 desc;
 		dxgiAdapter->GetDesc1(&desc);  // デバイスの情報を取得
 
 		// ハードウェアのみ選ぶ
-		if (!(desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)) 
+		if (!(desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE))
 		{
-			D3D_FEATURE_LEVEL featureLevels[] = 
+			D3D_FEATURE_LEVEL featureLevels[] =
 			{
 				D3D_FEATURE_LEVEL_12_1,
 				D3D_FEATURE_LEVEL_12_0,
 			};
-			for (auto lv : featureLevels) 
+			for (auto lv : featureLevels)
 			{
-				hr = D3D12CreateDevice(dxgiAdapter.Get(),lv, IID_PPV_ARGS(&g_pDevice));
-				if (SUCCEEDED(hr)) 
+				hr = D3D12CreateDevice(dxgiAdapter.Get(), lv, IID_PPV_ARGS(&g_pDevice));
+				if (SUCCEEDED(hr))
 				{
-					break; 
+					break;
 				}
 			}
 		}
 		++adapterIndex;
 	}
-#else
-	D3D_FEATURE_LEVEL featureLevels[] = {
-		D3D_FEATURE_LEVEL_12_1,
-		D3D_FEATURE_LEVEL_12_0,
-	};
-	// ハードウェアの機能レベルを指定してデバイス初期化
-	for (auto lv : featureLevels) {
-		hr = D3D12CreateDevice(nullptr,lv,IID_PPV_ARGS(&g_pDevice));
-		if (SUCCEEDED(hr)) { break; }
-	}
-	if (FAILED(hr)) { return hr; }
 #endif
 
 	// コマンドアロケーター/コマンドリスト/コマンドキュー
 	// コマンドの種類
 	D3D12_COMMAND_LIST_TYPE cmdListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	
-	hr = g_pDevice->CreateCommandAllocator(cmdListType, IID_PPV_ARGS(&g_pCmdAllocator));
+	hr = g_pDevice->CreateCommandAllocator(
+		cmdListType, 
+		IID_PPV_ARGS(&g_pCmdAllocator)
+	);
 	if (FAILED(hr)) { return hr; }
 
-	hr = g_pDevice->CreateCommandList(0,cmdListType,g_pCmdAllocator,nullptr,
-		IID_PPV_ARGS(&g_pCmdList));
+	hr = g_pDevice->CreateCommandList(
+		0,
+		cmdListType,
+		g_pCmdAllocator,
+		nullptr,
+		IID_PPV_ARGS(&g_pCmdList)
+	);
 	if (FAILED(hr)) { return hr; }
 
 	D3D12_COMMAND_QUEUE_DESC cmdQueueDesc = {};
@@ -94,7 +121,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	cmdQueueDesc.Priority	= D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;	// コマンドキュ―の優先順位
 	cmdQueueDesc.Flags		= D3D12_COMMAND_QUEUE_FLAG_NONE;		// GPUのタイムアウト有効
 	cmdQueueDesc.NodeMask	= 0;									// 複数のGPUの場合に、適用するGPUを識別するビット
-	hr = g_pDevice->CreateCommandQueue(&cmdQueueDesc,IID_PPV_ARGS(&g_pCmdQueue));
+	hr = g_pDevice->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&g_pCmdQueue));
 	if (FAILED(hr)) { return hr; }
 
 	// スワップチェーン
@@ -116,7 +143,11 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	scDesc.AlphaMode			= DXGI_ALPHA_MODE_UNSPECIFIED;
 	scDesc.Flags				= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	hr = g_pFactory->CreateSwapChainForHwnd(
-		g_pCmdQueue,hWnd,&scDesc,nullptr,nullptr,
+		g_pCmdQueue,
+		hWnd,
+		&scDesc,
+		nullptr,
+		nullptr,
 		reinterpret_cast<IDXGISwapChain1**>(&g_pSwapChain)
 	);
 	if (FAILED(hr)) { return hr; }
@@ -128,7 +159,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	rtvDHDesc.NumDescriptors	= 2;
 	rtvDHDesc.Flags				= D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	rtvDHDesc.NodeMask			= 0;
-	hr = g_pDevice->CreateDescriptorHeap(&rtvDHDesc,IID_PPV_ARGS(&g_RTVHeap));
+	hr = g_pDevice->CreateDescriptorHeap(&rtvDHDesc, IID_PPV_ARGS(&g_RTVHeap));
 	if (FAILED(hr)) { return hr; }
 
 	// レンダーターゲットビューのディスクリプタを作成
@@ -146,7 +177,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 
 	// フェンス
 	g_fenceLevel = 0;
-	hr = g_pDevice->CreateFence(g_fenceLevel,D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&g_pFence));
+	hr = g_pDevice->CreateFence(g_fenceLevel, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&g_pFence));
 	if (FAILED(hr)) { return hr; }
 
 	return hr;

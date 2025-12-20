@@ -77,12 +77,12 @@ void Gauss::Create()
 			desc.RenderTargetNum = 1;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
 
-			desc.VSFile = L"../exe/assets/shader/VS_Blur2X.cso";
-			desc.PSFile = L"../exe/assets/shader/PS_Blur2.cso";
+			desc.VSFile = L"../game/assets/shader/VS_Blur2X.cso";
+			desc.PSFile = L"../game/assets/shader/PS_Blur2.cso";
 			Instance->Gauss2PipelineData[GaussPipelineType::XBlurPipeline] = std::make_unique<Pipeline>(desc);
 
-			desc.VSFile = L"../exe/assets/shader/VS_Blur2Y.cso";
-			desc.PSFile = L"../exe/assets/shader/PS_Blur2.cso";
+			desc.VSFile = L"../game/assets/shader/VS_Blur2Y.cso";
+			desc.PSFile = L"../game/assets/shader/PS_Blur2.cso";
 			Instance->Gauss2PipelineData[GaussPipelineType::YBlurPipeline] = std::make_unique<Pipeline>(desc);
 		}
 		// パラメーター定数バッファ
@@ -128,12 +128,12 @@ void Gauss::Create()
 			desc.RenderTargetNum = 1;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
 
-			desc.VSFile = L"../exe/assets/shader/VS_Blur4X.cso";
-			desc.PSFile = L"../exe/assets/shader/PS_Blur4.cso";
+			desc.VSFile = L"../game/assets/shader/VS_Blur4X.cso";
+			desc.PSFile = L"../game/assets/shader/PS_Blur4.cso";
 			Instance->Gauss4PipelineData[GaussPipelineType::XBlurPipeline] = std::make_unique<Pipeline>(desc);
 
-			desc.VSFile = L"../exe/assets/shader/VS_Blur4Y.cso";
-			desc.PSFile = L"../exe/assets/shader/PS_Blur4.cso";
+			desc.VSFile = L"../game/assets/shader/VS_Blur4Y.cso";
+			desc.PSFile = L"../game/assets/shader/PS_Blur4.cso";
 			Instance->Gauss4PipelineData[GaussPipelineType::YBlurPipeline] = std::make_unique<Pipeline>(desc);
 		}
 		// パラメーター定数バッファ
@@ -179,12 +179,12 @@ void Gauss::Create()
 			desc.RenderTargetNum = 1;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
 
-			desc.VSFile = L"../exe/assets/shader/VS_Blur8X.cso";
-			desc.PSFile = L"../exe/assets/shader/PS_Blur8.cso";
+			desc.VSFile = L"../game/assets/shader/VS_Blur8X.cso";
+			desc.PSFile = L"../game/assets/shader/PS_Blur8.cso";
 			Instance->Gauss8PipelineData[GaussPipelineType::XBlurPipeline] = std::make_unique<Pipeline>(desc);
 
-			desc.VSFile = L"../exe/assets/shader/VS_Blur8Y.cso";
-			desc.PSFile = L"../exe/assets/shader/PS_Blur8.cso";
+			desc.VSFile = L"../game/assets/shader/VS_Blur8Y.cso";
+			desc.PSFile = L"../game/assets/shader/PS_Blur8.cso";
 			Instance->Gauss8PipelineData[GaussPipelineType::YBlurPipeline] = std::make_unique<Pipeline>(desc);
 		}
 		// パラメーター定数バッファ

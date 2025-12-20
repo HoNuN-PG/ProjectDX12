@@ -2,7 +2,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#pragma comment(lib, "assimp-vc141-mtd.lib")
 
 // Model
 #include "Model.h"
@@ -24,7 +23,7 @@ void Model::Create(const char* path, MeshMaterials materials)
 	// マテリアル設定
 	MeshMaterialData = std::make_unique<MeshMaterialManager>();
 	MeshMaterialData->SetUp(materials);
-
+	
 	// モデル読込
 	Assimp::Importer importer;
 	int flag = 0;

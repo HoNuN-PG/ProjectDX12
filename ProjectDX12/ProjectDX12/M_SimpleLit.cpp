@@ -32,8 +32,8 @@ void M_SimpleLit::Initialize(Description desc)
 	rootsignature.paramNum = _countof(param);
 
 	Pipeline::Description pipeline;
-	pipeline.VSFile = L"../exe/assets/shader/VS_Object.cso";
-	pipeline.PSFile = L"../exe/assets/shader/PS_SimpleLit.cso";
+	pipeline.VSFile = L"../game/assets/shader/VS_Object.cso";
+	pipeline.PSFile = L"../game/assets/shader/PS_SimpleLit.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 1;
@@ -91,8 +91,8 @@ void M_OpaqueSimpleLit::Initialize(Description desc)
 	rootsignature.paramNum = _countof(param);
 
 	Pipeline::Description pipeline;
-	pipeline.VSFile = L"../exe/assets/shader/VS_Object.cso";
-	pipeline.PSFile = L"../exe/assets/shader/PS_OpaqueSimpleLit.cso";
+	pipeline.VSFile = L"../game/assets/shader/VS_Object.cso";
+	pipeline.PSFile = L"../game/assets/shader/PS_OpaqueSimpleLit.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 1;

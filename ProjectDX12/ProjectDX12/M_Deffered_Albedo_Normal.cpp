@@ -22,8 +22,8 @@ void M_Deffered_Albedo_Normal::Initialize(Description desc)
 
 	// パイプライン
 	Pipeline::Description pipeline;
-	pipeline.VSFile = L"../exe/assets/shader/VS_Object.cso";
-	pipeline.PSFile = L"../exe/assets/shader/PS_Deffered.cso";
+	pipeline.VSFile = L"../game/assets/shader/VS_Object.cso";
+	pipeline.PSFile = L"../game/assets/shader/PS_Deffered.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 2;

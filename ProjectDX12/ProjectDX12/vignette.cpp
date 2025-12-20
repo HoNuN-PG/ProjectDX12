@@ -34,8 +34,8 @@ void Vignette::Init()
 	{
 		Pipeline::Description desc = {};
 		desc.pRootSignature = RootSignatureData->Get();
-		desc.VSFile = L"../exe/assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"../exe/assets/shader/PS_Vignette.cso";
+		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
+		desc.PSFile = L"../game/assets/shader/PS_Vignette.cso";
 		desc.pInputLayout = Pipeline::IED_POS_TEX;
 		desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
 		desc.RenderTargetNum = 1;
