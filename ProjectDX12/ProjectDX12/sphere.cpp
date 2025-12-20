@@ -4,7 +4,7 @@
 // Model
 #include "sphere.h"
 
-void Sphere::Create(MeshMaterials materials)
+void Sphere::Create(MeshMaterialSetupData materials)
 {
 	CreatePrimitive(0);
 	// マテリアル設定
@@ -12,7 +12,7 @@ void Sphere::Create(MeshMaterials materials)
 	MeshMaterialData->SetUp(materials);
 }
 
-void Sphere::Create(MeshMaterials materials, unsigned int instanced)
+void Sphere::Create(MeshMaterialSetupData materials, unsigned int instanced)
 {
 	CreatePrimitive(instanced);
 	// マテリアル設定

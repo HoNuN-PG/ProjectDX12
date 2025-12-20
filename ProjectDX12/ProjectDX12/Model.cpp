@@ -18,7 +18,7 @@
 // System
 #include "StartUp.h"
 
-void Model::Create(const char* path, MeshMaterials materials)
+void Model::Create(const char* path, MeshMaterialSetupData materials)
 {
 	// マテリアル設定
 	MeshMaterialData = std::make_unique<MeshMaterialManager>();
@@ -101,24 +101,30 @@ void Model::CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV)
 
 void Model::Draw()
 {
-	MeshMaterialData->Register2RenderingEngine(Owner);
+	MeshMaterialData->Add2RenderingEngine(Owner);
 }
 
 void Model::Rendering()
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingTiming();
-	MeshMaterialManager::MeshMaterialInfo info = MeshMaterialData->GetRenderingMaterial(current);
-	if (info.material)
+	std::vector<MeshMaterialManager::MeshMaterialInfo> infos = MeshMaterialData->GetRenderingMaterial(current);
+
+	for(auto&& info : infos)
 	{
 		// マテリアル設定
 		info.material->WriteWVP(ConstantWVP::Calc3DMatrix(
 			Owner.lock()->GetPosition(),
 			Owner.lock()->GetRotation(),
-			Owner.lock()->GetScale())
+			Owner.lock()->GetScale()),
+			info.materialInstanceIdx
 		);
-		info.material->Bind();
+		info.material->Bind(info.materialInstanceIdx);
 		// 描画
 		MeshData[info.meshIdx]->Draw();
+		if (info.meshIdx == 1)
+		{
+			int a = 0;
+		}
 	}
 }

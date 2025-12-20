@@ -8,7 +8,7 @@ class M_DepthNormal : public Material
 {
 public:
 	virtual void Initialize(Description desc) override;
-	virtual void Bind() override;
+	virtual void Bind(UINT materialinstance) override;
 
 };
 

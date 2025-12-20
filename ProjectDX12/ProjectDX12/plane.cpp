@@ -2,7 +2,7 @@
 // Model
 #include "plane.h"
 
-void Plane::Create(MeshMaterials materials)
+void Plane::Create(MeshMaterialSetupData materials)
 {
 	CreatePrimitive(0);
 	// マテリアル設定
@@ -10,7 +10,7 @@ void Plane::Create(MeshMaterials materials)
 	MeshMaterialData->SetUp(materials);
 }
 
-void Plane::Create(MeshMaterials materials, unsigned int instanced)
+void Plane::Create(MeshMaterialSetupData materials, unsigned int instanced)
 {
 	CreatePrimitive(instanced);
 	// マテリアル設定

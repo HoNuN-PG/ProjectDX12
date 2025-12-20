@@ -7,8 +7,8 @@
 // Material
 #include "Material.h"
 
-// メッシュに設定するマテリアル
-using MeshMaterials = std::unordered_map<UINT, std::vector<std::shared_ptr<Material>>>;
+// メッシュに設定するマテリアルのセットアップデータ
+using MeshMaterialSetupData = std::unordered_map<UINT, std::vector<std::shared_ptr<Material>>>; // メッシュインデックスと使用するマテリアル
 
 /**
 * @class MeshMaterialManager
@@ -17,18 +17,24 @@ using MeshMaterials = std::unordered_map<UINT, std::vector<std::shared_ptr<Mater
 class MeshMaterialManager
 {
 public:
+	using MaterialInstance = std::pair<std::shared_ptr<Material>, UINT>; // 使用するマテリアルと使用するマテリアルインスタンスインデックス
+	using MeshMaterial = std::unordered_map<UINT, std::vector<MaterialInstance>>; // メッシュインデックスと使用するマテリアルインスタンス
+
+public:
 	struct MeshMaterialInfo
 	{
-		std::shared_ptr<Material> material; // 使用されているマテリアル
-		UINT meshIdx;						// メッシュのインデックス
+		UINT meshIdx;						// メッシュインデックス
+		std::shared_ptr<Material> material; // マテリアル
+		UINT materialInstanceIdx;			// マテリアルインスタンスインデックス
 	};
 
 public:
-	// セットアップ
-	void SetUp(MeshMaterials materials);
-
-	// レンダリングエンジンに参照を登録
-	void Register2RenderingEngine(std::weak_ptr<class GameObject> owner);
+	/// <summary>
+	/// セットアップ
+	/// １つのメッシュに対して同じ描画タイミングのマテリアルを複数設定することはできない（今は複数のメッシュに対しても設定できない）
+	/// </summary>
+	/// <param name="materials"></param>
+	void SetUp(MeshMaterialSetupData materials);
 
 public:
 	/// <summary>
@@ -36,20 +42,25 @@ public:
 	/// </summary>
 	/// <param name="timing"></param>
 	/// <returns></returns>
-	MeshMaterialInfo GetRenderingMaterial(UINT timing);
+	std::vector<MeshMaterialInfo> GetRenderingMaterial(UINT timing);
 
-public:
-	// 直前に使用したマテリアルの使用状況をリセット
-	void Reuse();
-	// リフレッシュ
-	void Refresh();
-
-public:
-	std::vector<std::shared_ptr<Material>> GetMaterials(UINT mesh) { Materials.find(mesh); }
+	// レンダリングエンジンにオブジェクトを描画登録
+	void Add2RenderingEngine(std::weak_ptr<class GameObject> owner);
 
 private:
-	MeshMaterials								Materials;	// メッシュごとのマテリアル
-	std::unordered_map<UINT, std::vector<bool>>	Usage;		// メッシュごとのマテリアルの使用状況
+	/// <summary>
+	/// すでに登録した描画タイミングかチェック
+	/// </summary>
+	/// <param name="timing">登録したタイミング</param>
+	/// <param name="check">チェックするタイミング</param>
+	/// <returns></returns>
+	bool CheckAddedTiming(std::vector<Material::RenderingTiming> timing, UINT check);
+
+public:
+	std::vector<MaterialInstance> GetMaterialInstances(UINT mesh) { return Materials.contains(mesh) ? Materials[mesh] : std::vector<MaterialInstance>(); }
+
+private:
+	MeshMaterial Materials; // メッシュのマテリアル
 
 };
 

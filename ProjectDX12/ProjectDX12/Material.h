@@ -77,10 +77,7 @@ protected:
 
 	// 設定
 public:
-	/// <summary>
-	/// MaterialInstanceIdx（マテリアルインスタンスのインデックス）が更新される
-	/// </summary>
-	virtual void Bind() = 0;
+	virtual void Bind(UINT materialinstance) = 0;
 protected:
 	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
 
@@ -89,11 +86,11 @@ public:
 	/// <summary>
 	/// マテリアルインスタンスの追加
 	/// </summary>
-	void AddMaterialInstance();
+	UINT AddMaterialInstance();
 protected:
-	unsigned int									MaterialInstanceCount;				// マテリアルインスタンスの総数
-	unsigned int									MaterialInstanceIdx;				// マテリアルインスタンスのインデックス
-																						// 再描画の際はマテリアルインスタンスを使い切ってから描画を行う
+	unsigned int									MaterialInstanceCount;	// マテリアルインスタンスの総数
+	std::vector<bool>								MaterialInstanceList;	// マテリアルインスタンスの使用状況
+
 public:
 	/// <summary>
 	/// テクスチャ追加
@@ -104,15 +101,12 @@ public:
 public:
 	/// <summary>
 	/// WVPの書き込み
-	/// WVPの書き込み直後にBindすることで現在のMaterialInstanceIdxに書き込まれたWVPで設定を行う
+	/// マテリアルインスタンスに書き込まれる
 	/// </summary>
 	/// <param name="data"></param>
-	void WriteWVP(void* data);
+	void WriteWVP(void* data, UINT instance);
 	void WriteParam(void* data, UINT idx);
 	void WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDLE startHandle, D3D12_DESCRIPTOR_HEAP_TYPE type);
-
-public:
-	void Refresh();
 
 public:
 	RenderingTiming GetRenderTiming() { return Timing; };

@@ -21,14 +21,12 @@ public:
 	void UpdateBase();
 	void DrawBase(DirectX::XMFLOAT4X4 ParentMatrix);
 	void RenderingBase();
-	void ReuseRenderingBase();
 
 	virtual void Init() {}
 	virtual void Uninit() {}
 	virtual void Update() {}
 	virtual void Draw() {}
 	virtual void Rendering() {}
-	virtual void ReuseRendering(){}
 
 	// トランスフォーム
 public:
@@ -116,6 +114,7 @@ public:
 
 	// レンダリングエンジン
 public:
+	// レンダリングエンジンにオブジェクトを描画登録
 	void Add2RenderingEngine(UINT timing, UINT passType);
 private:
 	// レンダリングコンポーネントの参照をレンダリングエンジンに登録

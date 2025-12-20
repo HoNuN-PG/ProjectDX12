@@ -130,7 +130,7 @@ HRESULT SceneSandBoxDX12::Init()
 
 	// モデル作成
 	{// スカイボックス
-		MeshMaterials materials;
+		MeshMaterialSetupData materials;
 
 		materials[0].push_back(sky_box);
 	
@@ -144,7 +144,7 @@ HRESULT SceneSandBoxDX12::Init()
 		model->Create(materials);
 	}
 	{// グリッド
-		MeshMaterials materials;
+		MeshMaterialSetupData materials;
 
 		materials[0].push_back(opaque_depth_normal);
 		materials[0].push_back(grid_shadow_vsm);
@@ -156,8 +156,8 @@ HRESULT SceneSandBoxDX12::Init()
 		std::shared_ptr<Plane> model = obj->AddComponent<Plane>(obj);
 		model->Create(materials);
 	}
-	{// 木1
-		MeshMaterials materials;
+	{// 木
+		MeshMaterialSetupData materials;
 
 		materials[0].push_back(shadow_map);
 		materials[0].push_back(opaque_depth_normal);
@@ -185,7 +185,7 @@ HRESULT SceneSandBoxDX12::Init()
 		Material::Initialize(deffered_albedo_normal, desc);
 		deffered_albedo_normal->AddTexture("../game/assets/model/spot/spot_texture.png");
 		
-		MeshMaterials materials;
+		MeshMaterialSetupData materials;
 
 		materials[0].push_back(opaque_depth_normal);
 		materials[0].push_back(deffered_albedo_normal);

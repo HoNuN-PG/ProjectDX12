@@ -11,7 +11,7 @@
 Material::Material()
 {
 	MaterialInstanceCount = 0;
-	MaterialInstanceIdx = 0;
+	MaterialInstanceList.clear();
 }
 
 void Material::Initialize(std::shared_ptr<Material> material, Description desc)
@@ -69,21 +69,37 @@ void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 	DescriptorHeap::Bind(heaps,1);
 	RootSignatureData->Bind(handle, handleNum);
 	PipelineData->Bind();
-
-	// マテリアルインデックス更新
-	MaterialInstanceIdx = ++MaterialInstanceIdx >= MaterialInstanceCount ? 0 : MaterialInstanceIdx;
 }
 
-void Material::AddMaterialInstance()
+UINT Material::AddMaterialInstance()
 {
-	// マテリアルインデックス追加
-	++MaterialInstanceCount;
+	// マテリアルインデックス計算
+	UINT idx = (UINT)-1;
+	for(int i = 0; i < MaterialInstanceCount; ++i)
+	{ 
+		// 未使用のマテリアルインスタンスがあれば使用
+		if(MaterialInstanceList[i] == false)
+		{
+			MaterialInstanceList[i] = true;
+			idx = i;
+		}
+	}
+	if(idx == (UINT)-1)
+	{ 
+		// 空きが無ければ新たに確保
+		++MaterialInstanceCount;
 
-	// WVP確保
-	ConstantBuffer::Description desc = {};
-	desc.pHeap = Heap;
-	desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
-	WVP.push_back(std::make_unique<ConstantBuffer>(desc));
+		MaterialInstanceList.push_back(true);
+		idx = (UINT)MaterialInstanceList.size() - 1;
+
+		// WVP確保
+		ConstantBuffer::Description desc = {};
+		desc.pHeap = Heap;
+		desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
+		WVP.push_back(std::make_unique<ConstantBuffer>(desc));
+	}
+
+	return idx;
 }
 
 void Material::AddTexture(const char* path)
@@ -94,11 +110,10 @@ void Material::AddTexture(const char* path)
 	Textures.push_back(std::make_unique<Texture>(desc));
 }
 
-void Material::WriteWVP(void* data)
+void Material::WriteWVP(void* data, UINT instance)
 {
 	// WVP書き込み
-	if (MaterialInstanceIdx >= MaterialInstanceCount) return;
-	WVP[MaterialInstanceIdx]->Write(data);
+	WVP[instance]->Write(data);
 }
 
 void Material::WriteParam(void* data, UINT idx)
@@ -114,9 +129,4 @@ void Material::WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDL
 		startHandle,
 		type
 	);
-}
-
-void Material::Refresh()
-{
-	MaterialInstanceIdx = 0;
 }

@@ -39,7 +39,7 @@ public:
 	virtual ~Model(){}
 
 public:
-	void Create(const char* path, MeshMaterials materials);
+	void Create(const char* path, MeshMaterialSetupData materials);
 
 private:
 	void CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV);

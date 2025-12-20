@@ -12,8 +12,8 @@ public:
 	virtual ~Sphere(){}
 
 public:
-	virtual void Create(MeshMaterials materials) override;
-	virtual void Create(MeshMaterials materials, unsigned int instanced) override;
+	virtual void Create(MeshMaterialSetupData materials) override;
+	virtual void Create(MeshMaterialSetupData materials, unsigned int instanced) override;
 
 private:
 	virtual void CreatePrimitive(unsigned int instanced) override;

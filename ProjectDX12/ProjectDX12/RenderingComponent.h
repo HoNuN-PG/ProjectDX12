@@ -23,11 +23,9 @@ public:
 	virtual void Update() override {}
 	virtual void Draw() override {}
 	virtual void Rendering() = 0;
-	virtual void ReuseRendering();
-	virtual void RefreshRendering();
 
 public:
-	std::vector<std::shared_ptr<Material>> GetMeshMaterials(UINT meshIdx) { return MeshMaterialData->GetMaterials(meshIdx); }
+	std::vector<MeshMaterialManager::MaterialInstance> GetMeshMaterialInstances(UINT meshIdx) { return MeshMaterialData->GetMaterialInstances(meshIdx); }
 
 protected:
 	// メッシュデータ

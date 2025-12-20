@@ -35,11 +35,11 @@ void M_SkyBox::Initialize(Description desc)
 	);
 }
 
-void M_SkyBox::Bind()
+void M_SkyBox::Bind(UINT materialinstance)
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		WVP[materialinstance]->GetHandle().hGPU,
 		Textures[0]->GetHandle().hGPU,
 	};
 	Material::BindBase(desc, _countof(desc));

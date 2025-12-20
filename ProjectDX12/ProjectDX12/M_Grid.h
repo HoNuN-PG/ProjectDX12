@@ -19,7 +19,7 @@ class M_Grid : public Material
 {
 public:
 	virtual void Initialize(Description desc) override;
-	virtual void Bind() override;
+	virtual void Bind(UINT materialinstance) override;
 
 public:
 	void SetGridSize(float size) { GridParam.GridSize = size; }
@@ -34,7 +34,7 @@ class M_GridShadow : public M_ShadowRecieverBase
 {
 public:
 	virtual void Initialize(Description desc) override;
-	virtual void Bind() override;
+	virtual void Bind(UINT materialinstance) override;
 
 public:
 	void SetGridSize(float size) { GridParam.GridSize = size; }
@@ -48,7 +48,7 @@ class M_GridShadowVSM : public M_ShadowVSMRecieverBase
 {
 public:
 	virtual void Initialize(Description desc) override;
-	virtual void Bind() override;
+	virtual void Bind(UINT materialinstance) override;
 
 public:
 	void SetGridSize(float size) { GridParam.GridSize = size; }

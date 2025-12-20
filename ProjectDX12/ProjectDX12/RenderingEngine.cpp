@@ -212,8 +212,6 @@ void RenderingEngine::Draw()
 	ViewDepthNormal();
 	ViewGBuffers();
 	ViewPasses();
-	// 描画リフレッシュ
-	RefreshRendering();
 
 	// 最終的にバックバッファに描画
 	auto hRTV = GetRTV();
@@ -393,7 +391,8 @@ void RenderingEngine::CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT 
 void RenderingEngine::AddRenderObject(
 	GameObject& obj, 
 	UINT timing, 
-	UINT passType)
+	UINT passType
+)
 {
 	RenderingInfo info = { obj };
 	switch (timing)
@@ -676,31 +675,4 @@ void RenderingEngine::ViewPasses()
 			GetTexture(CustomDepthNormalPass::DepthTexture).get()), {240,135});
 	}
 	ImGui::End();
-}
-
-void RenderingEngine::RefreshRendering()
-{
-	// メッシュのマテリアル使用状況リセット
-	RenderingComponents.remove_if(
-		[](std::weak_ptr<RenderingComponent> object)
-		{
-			return object.expired();
-		}
-	);
-	for (auto component : RenderingComponents)
-	{
-		component.lock()->RefreshRendering();
-	}
-
-	// マテリアルインスタンスのリセット
-	RenderingMaterials.remove_if(
-		[](std::weak_ptr<Material> object)
-		{
-			return object.expired();
-		}
-	);
-	for (auto material : RenderingMaterials)
-	{
-		material.lock()->Refresh();
-	}
 }

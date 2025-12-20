@@ -30,8 +30,8 @@ public:
 	virtual ~Primitive() {}
 
 public:
-	virtual void Create(MeshMaterials materials) = 0;
-	virtual void Create(MeshMaterials materials, unsigned int instanced) = 0;
+	virtual void Create(MeshMaterialSetupData materials) = 0;
+	virtual void Create(MeshMaterialSetupData materials, unsigned int instanced) = 0;
 
 protected:
 	virtual void CreatePrimitive(unsigned int instanced) = 0;

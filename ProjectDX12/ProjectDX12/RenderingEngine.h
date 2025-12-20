@@ -149,7 +149,7 @@ private:
 
 	// レンダリングオブジェクト
 public:
-	// 描画オブジェクトの追加
+	// オブジェクトの描画登録
 	void AddRenderObject(GameObject& obj, UINT timing, UINT passType);
 	// ポストプロセスの追加や取得
 	template <typename T>
@@ -209,7 +209,6 @@ private:
 	void ViewDepthNormal();
 	void ViewGBuffers();
 	void ViewPasses();
-	void RefreshRendering();
 
 };
 

@@ -8,7 +8,7 @@ class M_SimpleLit : public Material
 {
 public:
 	virtual void Initialize(Description desc) override;
-	virtual void Bind() override;
+	virtual void Bind(UINT materialinstance) override;
 
 };
 
@@ -16,7 +16,7 @@ class M_OpaqueSimpleLit : public Material
 {
 public:
 	virtual void Initialize(Description desc) override;
-	virtual void Bind() override;
+	virtual void Bind(UINT materialinstance) override;
 
 private:
 	CommonParam common;

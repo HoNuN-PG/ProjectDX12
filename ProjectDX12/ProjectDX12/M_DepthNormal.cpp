@@ -36,11 +36,11 @@ void M_DepthNormal::Initialize(Description desc)
 	);
 }
 
-void M_DepthNormal::Bind()
+void M_DepthNormal::Bind(UINT materialinstance)
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		WVP[materialinstance]->GetHandle().hGPU,
 	};
 	Material::BindBase(desc, _countof(desc));
 }

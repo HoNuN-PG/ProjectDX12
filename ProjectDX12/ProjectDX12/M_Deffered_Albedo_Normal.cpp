@@ -37,11 +37,11 @@ void M_Deffered_Albedo_Normal::Initialize(Description desc)
 	);
 }
 
-void M_Deffered_Albedo_Normal::Bind()
+void M_Deffered_Albedo_Normal::Bind(UINT materialinstance)
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		WVP[materialinstance]->GetHandle().hGPU,
 		Textures[0]->GetHandle().hGPU,
 	};
 	Material::BindBase(desc, _countof(desc));

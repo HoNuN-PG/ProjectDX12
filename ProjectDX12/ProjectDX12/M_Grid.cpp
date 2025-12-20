@@ -52,14 +52,14 @@ void M_Grid::Initialize(Description desc)
 	GridParam.GridWidth = 0.05f;
 }
 
-void M_Grid::Bind()
+void M_Grid::Bind(UINT materialinstance)
 {
 	// 定数バッファの設定
 	WriteParam(&GridParam,0);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		WVP[materialinstance]->GetHandle().hGPU,
 		Params[0]->GetHandle().hGPU,
 	};
 	Material::BindBase(desc, _countof(desc));
@@ -115,9 +115,9 @@ void M_GridShadow::Initialize(Description desc)
 	GridParam.GridWidth = 0.05f;
 }
 
-void M_GridShadow::Bind()
+void M_GridShadow::Bind(UINT materialinstance)
 {
-	M_ShadowRecieverBase::Bind();
+	M_ShadowRecieverBase::Bind(materialinstance);
 
 	// 定数バッファの設定
 	WriteParam(&GridParam, 3);
@@ -125,7 +125,7 @@ void M_GridShadow::Bind()
 	std::weak_ptr<RenderingEngine> Engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		WVP[materialinstance]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 		Params[2]->GetHandle().hGPU,
 		ShadowMaps[ShadowPass::Near]->GetHandleSRV().hGPU,
@@ -189,9 +189,9 @@ void M_GridShadowVSM::Initialize(Description desc)
 	GridParam.GridWidth = 0.05f;
 }
 
-void M_GridShadowVSM::Bind()
+void M_GridShadowVSM::Bind(UINT materialinstance)
 {
-	M_ShadowVSMRecieverBase::Bind();
+	M_ShadowVSMRecieverBase::Bind(materialinstance);
 
 	// 定数バッファの設定
 	WriteParam(&GridParam, 3);
@@ -199,7 +199,7 @@ void M_GridShadowVSM::Bind()
 	std::weak_ptr<RenderingEngine> Engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		WVP[materialinstance]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 		Params[2]->GetHandle().hGPU,
 		ShadowMaps[ShadowPass::Near]->GetHandleSRV().hGPU,

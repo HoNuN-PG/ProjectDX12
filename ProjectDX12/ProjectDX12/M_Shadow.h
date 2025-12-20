@@ -21,7 +21,7 @@ class M_ShadowMapsBase : public Material
 {
 public:
 	virtual void Initialize(Description desc) override {};
-	virtual void Bind() override {};
+	virtual void Bind(UINT materialinstance) override {};
 
 public:
 	// 現在設定されているシャドウマップの番号
@@ -33,7 +33,7 @@ class M_SimpleShadowMaps : public M_ShadowMapsBase
 {
 public:
 	virtual void Initialize(Description desc) override;
-	virtual void Bind() override;
+	virtual void Bind(UINT materialinstance) override;
 
 };
 
@@ -41,7 +41,7 @@ class M_OpaqueSimpleShadowMaps : public M_ShadowMapsBase
 {
 public:
 	virtual void Initialize(Description desc) override;
-	virtual void Bind() override;
+	virtual void Bind(UINT materialinstance) override;
 
 private:
 	CommonParam common;
@@ -52,7 +52,7 @@ class M_ShadowRecieverBase : public Material
 {
 public:
 	virtual void Initialize(Description desc) override;
-	virtual void Bind() override;
+	virtual void Bind(UINT materialinstance) override;
 
 protected:
 	std::vector<std::shared_ptr<RenderTarget>> ShadowMaps;
@@ -63,7 +63,7 @@ class M_ShadowVSMRecieverBase : public Material
 {
 public:
 	virtual void Initialize(Description desc) override;
-	virtual void Bind() override;
+	virtual void Bind(UINT materialinstance) override;
 
 protected:
 	std::vector<std::shared_ptr<RenderTarget>> ShadowMaps;

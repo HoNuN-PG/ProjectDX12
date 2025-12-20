@@ -59,7 +59,7 @@ void M_SimpleShadowMaps::Initialize(Description desc)
 	);
 }
 
-void M_SimpleShadowMaps::Bind()
+void M_SimpleShadowMaps::Bind(UINT materialinstance)
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 
@@ -71,7 +71,7 @@ void M_SimpleShadowMaps::Bind()
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		WVP[materialinstance]->GetHandle().hGPU,
 		Params[0]->GetHandle().hGPU,
 		Params[1 + CurrentShadowMapsNo]->GetHandle().hGPU,
 	};
@@ -126,7 +126,7 @@ void M_OpaqueSimpleShadowMaps::Initialize(Description desc)
 	common.AlphaCut = 0.2f;
 }
 
-void M_OpaqueSimpleShadowMaps::Bind()
+void M_OpaqueSimpleShadowMaps::Bind(UINT materialinstance)
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 
@@ -139,7 +139,7 @@ void M_OpaqueSimpleShadowMaps::Bind()
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		WVP[materialinstance]->GetHandle().hGPU,
 		Params[0]->GetHandle().hGPU,
 		Params[1 + CurrentShadowMapsNo]->GetHandle().hGPU,
 		Textures[0]->GetHandle().hGPU,
@@ -179,7 +179,7 @@ void M_ShadowRecieverBase::Initialize(Description desc)
 	}
 }
 
-void M_ShadowRecieverBase::Bind()
+void M_ShadowRecieverBase::Bind(UINT materialinstance)
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 
@@ -228,7 +228,7 @@ void M_ShadowVSMRecieverBase::Initialize(Description desc)
 	}
 }
 
-void M_ShadowVSMRecieverBase::Bind()
+void M_ShadowVSMRecieverBase::Bind(UINT materialinstance)
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 

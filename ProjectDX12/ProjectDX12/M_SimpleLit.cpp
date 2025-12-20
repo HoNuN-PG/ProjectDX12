@@ -47,7 +47,7 @@ void M_SimpleLit::Initialize(Description desc)
 	);
 }
 
-void M_SimpleLit::Bind()
+void M_SimpleLit::Bind(UINT materialinstance)
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 
@@ -57,7 +57,7 @@ void M_SimpleLit::Bind()
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		WVP[materialinstance]->GetHandle().hGPU,
 		Params[0]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 	};
@@ -108,7 +108,7 @@ void M_OpaqueSimpleLit::Initialize(Description desc)
 	common.AlphaCut = 0.2f;
 }
 
-void M_OpaqueSimpleLit::Bind()
+void M_OpaqueSimpleLit::Bind(UINT materialinstance)
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 
@@ -119,7 +119,7 @@ void M_OpaqueSimpleLit::Bind()
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
-		WVP[MaterialInstanceIdx]->GetHandle().hGPU,
+		WVP[materialinstance]->GetHandle().hGPU,
 		Textures[0]->GetHandle().hGPU,
 		Params[0]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,

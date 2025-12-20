@@ -81,15 +81,6 @@ void GameObject::RenderingBase()
 	}
 }
 
-void GameObject::ReuseRenderingBase()
-{
-	ReuseRendering();
-	for (std::weak_ptr<RenderingComponent> comp : RenderingComponents)
-	{
-		comp.lock()->ReuseRendering();
-	}
-}
-
 DirectX::XMFLOAT3 GameObject::GetForwardVector()
 {
 	DirectX::XMFLOAT4X4 rot;

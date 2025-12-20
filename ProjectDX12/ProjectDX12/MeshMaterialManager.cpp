@@ -5,83 +5,75 @@
 // System/GameObject
 #include "GameObject.h"
 
-void MeshMaterialManager::SetUp(MeshMaterials materials)
+void MeshMaterialManager::SetUp(MeshMaterialSetupData materials)
 {
-	Materials = materials;
-	for(auto&& item = Materials.begin();item != Materials.end(); ++item)
+	for (auto&& item = materials.begin(); item != materials.end(); ++item)
 	{
-		for (int i = 0; i < item->second.size(); ++i)
-		{
-			// マテリアルインスタンス追加
-			item->second[i]->AddMaterialInstance();
-
-			// 使用状況初期化
-			Usage[item->first].push_back(false);
+		for(int i = 0; i < item->second.size(); ++i)
+		{ // メッシュごとにマテリアルインスタンスを作成
+			MaterialInstance instance;
+			instance.first = item->second[i]; // マテリアル
+			instance.second = item->second[i]->AddMaterialInstance(); // マテリアルインスタンスインデックス
+			Materials[item->first].push_back(instance); // メッシュごとのマテリアルインスタンスを追加
 		}
 	}
 }
 
-void MeshMaterialManager::Register2RenderingEngine(std::weak_ptr<class GameObject> owner)
+void MeshMaterialManager::Add2RenderingEngine(std::weak_ptr<class GameObject> owner)
 {
+	std::vector<Material::RenderingTiming> timing; // 登録済みタイミング
+
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
-		for (int i = 0; i < item->second.size(); ++i)
+		std::vector<MaterialInstance> instances = item->second;
+		for (int i = 0; i < instances.size(); ++i)
 		{
-			owner.lock()->Add2RenderingEngine(item->second[i]->GetRenderTiming(), item->second[i]->GetPassType());
+			if(CheckAddedTiming(timing, instances[i].first->GetRenderTiming()))
+			{ // すでに登録済みのタイミングならスキップ
+				continue;
+			}
+			timing.push_back(instances[i].first->GetRenderTiming());
+			// 登録
+			owner.lock()->Add2RenderingEngine(timing.back(), instances[i].first->GetPassType());
 		}
 	}
 }
 
-MeshMaterialManager::MeshMaterialInfo MeshMaterialManager::GetRenderingMaterial(UINT timing)
+bool MeshMaterialManager::CheckAddedTiming(std::vector<Material::RenderingTiming> timing, UINT check)
 {
+	for(int i = 0; i < timing.size(); ++i)
+	{
+		if (timing[i] == check)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+std::vector<MeshMaterialManager::MeshMaterialInfo> MeshMaterialManager::GetRenderingMaterial(UINT timing)
+{
+	std::vector<MeshMaterialInfo> infos;
+
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
-		for (int i = 0; i < item->second.size(); ++i)
+		std::vector<MaterialInstance> instances = item->second;
+		for (int i = 0; i < instances.size(); ++i)
 		{
 			// 描画タイミングが異なれば無効
-			if (item->second[i]->GetRenderTiming() != timing)
+			if (instances[i].first->GetRenderTiming() != timing)
 			{
 				continue;
 			}
-			// 既に使用済なら無効
-			if (Usage[item->first][i])
-			{
-				continue;
-			}
-			// 使用状況を設定して描画するマテリアルを返す
-			Usage[item->first][i] = true;
+
+			// 構造体に詰める
 			MeshMaterialInfo info;
-			info.material = item->second[i];
 			info.meshIdx = item->first;
-
-			return info;
+			info.material = instances[i].first;
+			info.materialInstanceIdx = instances[i].second;
+			infos.push_back(info);
 		}
 	}
-	return MeshMaterialInfo();
-}
 
-void MeshMaterialManager::Reuse()
-{
-	for (auto&& item = Usage.begin(); item != Usage.end(); ++item)
-	{
-		for (int i = item->second.size() - 1; i >= 0; --i)
-		{
-			if (item->second[i])
-			{
-				item->second[i] = false;
-				break;
-			}
-		}
-	}
-}
-
-void MeshMaterialManager::Refresh()
-{
-	for (auto&& item = Usage.begin(); item != Usage.end(); ++item)
-	{
-		for (int i = item->second.size() - 1; i >= 0; --i)
-		{
-			item->second[i] = false;
-		}
-	}
+	return infos;
 }
