@@ -7,23 +7,6 @@
 // System
 #include "DirectX.h"
 
-struct InstanceData
-{
-	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT3 rotation;
-	DirectX::XMFLOAT3 scale;
-
-	InstanceData(
-		const DirectX::XMFLOAT3& position, 
-		const DirectX::XMFLOAT3& rotation, 
-		const DirectX::XMFLOAT3& scale)
-	{
-		this->position = position;
-		this->rotation = rotation;
-		this->scale = scale;
-	}
-};
-
 class MeshBuffer
 {
 public:
@@ -53,6 +36,23 @@ protected:
 
 };
 
+struct InstanceData
+{
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT3 rotation;
+	DirectX::XMFLOAT3 scale;
+
+	InstanceData(
+		const DirectX::XMFLOAT3& position,
+		const DirectX::XMFLOAT3& rotation,
+		const DirectX::XMFLOAT3& scale)
+	{
+		this->position = position;
+		this->rotation = rotation;
+		this->scale = scale;
+	}
+};
+
 class InstanceMeshBuffer : MeshBuffer
 {
 public:
@@ -60,7 +60,7 @@ public:
 
 public:
 	InstanceMeshBuffer() {};
-	InstanceMeshBuffer(Description desc,unsigned int count = 0);
+	InstanceMeshBuffer(Description desc, unsigned int count = 1);
 	virtual ~InstanceMeshBuffer();
 	virtual void Draw() override;
 
@@ -68,9 +68,10 @@ public:
 	void MappingUploder();
 
 private:
+	bool 						bInstanced;	
+	UINT						InsCount;			
 	ComPtr<ID3D12Resource>		Ins;
 	ComPtr<ID3D12Resource>		InsUploader;
-	unsigned int				InsCount;
 	std::vector<InstanceData>	InsData;
 
 };

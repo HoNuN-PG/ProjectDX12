@@ -102,6 +102,14 @@ UINT Material::AddMaterialInstance()
 	return idx;
 }
 
+void Material::RemoveMaterialInstance(UINT instance)
+{
+	if(MaterialInstanceList.size() < instance)
+	{
+		MaterialInstanceList[instance] = false;
+	}
+}
+
 void Material::AddTexture(const char* path)
 {
 	Texture::Description desc = {};

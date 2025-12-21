@@ -38,7 +38,7 @@ void Plane::CreatePrimitive(unsigned int instanced)
 	if (instanced)
 	{
 		bInstanced = true;
-		InstanceMeshData = std::make_unique<InstanceMeshBuffer>(desc);
+		InstanceMeshData.push_back(std::make_unique<InstanceMeshBuffer>(desc));
 	}
 	else
 	{

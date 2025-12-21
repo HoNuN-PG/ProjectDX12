@@ -26,10 +26,8 @@ struct CommonParam
 
 class Material
 {
+	// 描画タイミング
 public:
-	/// <summary>
-	/// 描画タイミング
-	/// </summary>
 	enum RenderingTiming
 	{
 		Shadow = 0,					// シャドウ
@@ -45,12 +43,8 @@ public:
 		MAX_RENDERING_PASS_TYPE
 	};
 
-public:
-	Material();
-	virtual ~Material() {};
-
-public:
 	// 初期化デスク
+public:
 	struct Description
 	{
 		DescriptorHeap* pHeap = nullptr;
@@ -60,14 +54,18 @@ public:
 		RenderingPass::RenderingPassType PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 	};
 
+public:
+	Material();
+	virtual ~Material() {};
+
 	// 初期化
 public:
 	static void Initialize(std::shared_ptr<Material> material, Description desc);
 protected:
 	virtual void Initialize(Description desc) = 0;
 
-protected:
 	// セットアップ
+protected:
 	void SetUp(
 		DescriptorHeap* heap,
 		RootSignature::Description rootsignature,
@@ -87,9 +85,16 @@ public:
 	/// マテリアルインスタンスの追加
 	/// </summary>
 	UINT AddMaterialInstance();
+
+	/// <summary>
+	/// マテリアルインスタンスの削除
+	/// </summary>
+	/// <param name="instance"></param>
+	void RemoveMaterialInstance(UINT instance);
+
 protected:
-	unsigned int									MaterialInstanceCount;	// マテリアルインスタンスの総数
-	std::vector<bool>								MaterialInstanceList;	// マテリアルインスタンスの使用状況
+	unsigned int		MaterialInstanceCount;	// マテリアルインスタンスの総数
+	std::vector<bool>	MaterialInstanceList;	// マテリアルインスタンスの使用状況
 
 public:
 	/// <summary>
@@ -116,16 +121,17 @@ public:
 protected:
 	RenderingTiming									Timing;
 	RenderingPass::RenderingPassType				PassType;
+
+	std::vector<std::unique_ptr<ConstantBuffer>>	WVP;
+	std::vector<std::unique_ptr<ConstantBuffer>>	Params;
+
+	std::vector<std::unique_ptr<Texture>>			Textures;
+
 protected:
 	DescriptorHeap*									Heap;
 	std::shared_ptr<DescriptorHeap>					RTVHeap;
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;
-
-	std::vector<std::unique_ptr<Texture>>			Textures;
-
-	std::vector<std::unique_ptr<ConstantBuffer>>	WVP;
-	std::vector<std::unique_ptr<ConstantBuffer>>	Params;
 
 };
 

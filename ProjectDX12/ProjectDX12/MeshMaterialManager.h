@@ -29,6 +29,10 @@ public:
 	};
 
 public:
+	MeshMaterialManager() {}
+	~MeshMaterialManager();
+
+public:
 	/// <summary>
 	/// セットアップ
 	/// １つのメッシュに対して同じ描画タイミングのマテリアルを複数設定することはできない（今は複数のメッシュに対しても設定できない）

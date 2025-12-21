@@ -113,7 +113,15 @@ InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count)
 	:
 	MeshBuffer(desc)
 {
-	InsCount = count >= 0 ? count : MAX_INSTANCE;
+	if(count == 1)
+	{
+		InsCount = 1;
+		bInstanced = false;
+		return;
+	}
+
+	InsCount = count;
+	bInstanced = true;
 
 	D3D12_HEAP_PROPERTIES heapProp = {};
 	heapProp.Type					= D3D12_HEAP_TYPE_DEFAULT;
@@ -124,7 +132,7 @@ InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count)
 
 	D3D12_RESOURCE_DESC resDesc = {};
 	resDesc.Dimension			= D3D12_RESOURCE_DIMENSION_BUFFER;
-	resDesc.Width				= sizeof(InstanceData) * InsCount;
+	resDesc.Width				= sizeof(InstanceData) * max(InsCount, MAX_INSTANCE);
 	resDesc.Height				= 1;
 	resDesc.DepthOrArraySize	= 1;
 	resDesc.MipLevels			= 1;
@@ -141,7 +149,6 @@ InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count)
 		nullptr,
 		IID_PPV_ARGS(&Ins)
 	);
-
 	if (FAILED(result)) { return; }
 
 	heapProp.Type = D3D12_HEAP_TYPE_UPLOAD;
@@ -154,6 +161,7 @@ InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count)
 		nullptr,
 		IID_PPV_ARGS(&InsUploader)
 	);
+	if (FAILED(result)) { return; }
 }
 
 InstanceMeshBuffer::~InstanceMeshBuffer()
@@ -177,7 +185,15 @@ void InstanceMeshBuffer::MappingUploder()
 	subResourceData.RowPitch	= dataSize;
 	subResourceData.SlicePitch	= subResourceData.RowPitch;
 
-	UpdateSubresources(GetCommandList(), Ins.Get(), InsUploader.Get(), 0, 0, 1, &subResourceData);
+	UpdateSubresources(
+		GetCommandList(), 
+		Ins.Get(), 
+		InsUploader.Get(), 
+		0, 
+		0, 
+		1, 
+		&subResourceData
+	);
 }
 
 void InstanceMeshBuffer::Draw()

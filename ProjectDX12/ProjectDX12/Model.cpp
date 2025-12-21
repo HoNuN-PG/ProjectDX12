@@ -122,9 +122,5 @@ void Model::Rendering()
 		info.material->Bind(info.materialInstanceIdx);
 		// •`‰æ
 		MeshData[info.meshIdx]->Draw();
-		if (info.meshIdx == 1)
-		{
-			int a = 0;
-		}
 	}
 }

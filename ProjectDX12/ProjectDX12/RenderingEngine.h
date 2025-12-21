@@ -28,6 +28,9 @@ class LightBase;
 
 class GameObject;
 
+/// <summary>
+/// ディファードデータ
+/// </summary>
 struct DefferedData
 {
 	std::unique_ptr<RootSignature>					RootSignatureData;
@@ -38,17 +41,17 @@ struct DefferedData
 class RenderingEngine
 {
 public:
-	// 描画パス群
-	// キー：パスの種類
-	// 値：パス
-	using PASSES = std::unordered_map<UINT, std::unique_ptr<RenderingPass>>;
+	using PASSES = std::unordered_map<UINT, std::unique_ptr<RenderingPass>>; // 描画パス群:key=パスの種類/value=パス
 
+	// ====================
+	// 描画情報
 public:
 	struct RenderingInfo
 	{
 		GameObject& obj;
 	};
 
+	// ====================
 	// GBuffer
 private:
 	enum GBuffer
@@ -66,16 +69,19 @@ public:
 	void Update();
 	void Draw();
 
+	// ====================
 	// Deffered
 private:
 	void SetupDefferedShader();
 private:
 	DefferedData DefferedLightingShader;
 
+	// ====================
 	// Utillity
 public:
 	static void CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest);
 
+	// ====================
 	// 描画ヒープ
 public:
 	DescriptorHeap* GetRenderingHeap() { return RenderingHeap.get(); }
@@ -85,12 +91,14 @@ private:
 	std::shared_ptr<DescriptorHeap>	RTVHeap;
 	std::shared_ptr<DescriptorHeap>	DSVHeap;
 
+	// ====================
 	// 描画リソース
 public:
 	std::shared_ptr<DepthStencil> GetDSV() { return DSV; };
 private:
 	std::shared_ptr<DepthStencil> DSV;
 
+	// ====================
 	// グローバルリソース
 public:
 	// グローバル定数バッファ
@@ -107,6 +115,7 @@ private:
 	std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
 	std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
 
+	// ====================
 	// 環境
 public:
 	std::shared_ptr<CameraBase> GetCamera() { return Camera; }
@@ -114,6 +123,7 @@ private:
 	std::shared_ptr<CameraBase> Camera;
 	std::shared_ptr<LightBase> Light;
 
+	// ====================
 	// レンダリングパス
 public:
 	template<typename T>
@@ -135,18 +145,22 @@ public:
 		return nullptr;
 	}
 
-	// パスのテクスチャの取得
-	// timing:描画タイミング
-	// type:描画タイミング内の種類
-	// idx:パス内のテクスチャインデックス
+	/// <summary>
+	/// パスのテクスチャの取得
+	/// </summary>
+	/// <param name="timing">描画タイミング</param>
+	/// <param name="type">パスの種類</param>
+	/// <param name="idx">パス内のテクスチャインデックス</param>
+	/// <returns></returns>
 	std::shared_ptr<RenderTarget> GetPassTexture(UINT timing, UINT type, UINT idx);
 	void CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx);
 
 private:
 	std::shared_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
 	std::unique_ptr<RenderingPass> ODepthNormalPass;		// 不透明深度法線パス
-	std::unordered_map<UINT, PASSES> RenderingPasses;		// key:描画タイミング value:描画パス群
+	std::unordered_map<UINT, PASSES> RenderingPasses;		// key=描画タイミング/value=描画パス群
 
+	// ====================
 	// レンダリングオブジェクト
 public:
 	// オブジェクトの描画登録
@@ -173,11 +187,6 @@ public:
 		return CanvasPostProcess->GetVolume<T>();
 	}
 
-	// 作成した描画コンポーネントの参照を追加
-	void RegisterRenderingComponent(std::shared_ptr<class RenderingComponent> component);
-	// 作成したマテリアルの参照を追加
-	void RegisterMaterial(std::shared_ptr<Material> material);
-
 private:
 	std::vector<RenderingInfo> EnvironmentObjects;							// 環境描画オブジェクト
 	std::vector<RenderingInfo> DefferedObjects;								// ディファードライティングオブジェクト
@@ -185,10 +194,18 @@ private:
 	std::unique_ptr<PostProcess> ObjectPostProcess;							// オブジェクト描画後のポストプロセス
 	std::unique_ptr<PostProcess> CanvasPostProcess;							// キャンバス描画後のポストプロセス
 
+	// ====================
+	// コンポーネントやマテリアルの参照
+public:
+	// 作成した描画コンポーネントの参照を追加
+	void RegisterRenderingComponent(std::shared_ptr<class RenderingComponent> component);
+	// 作成したマテリアルの参照を追加
+	void RegisterMaterial(std::shared_ptr<Material> material);
 private:
 	std::list<std::weak_ptr<class RenderingComponent>> RenderingComponents;	// 作成された描画コンポーネントの参照
 	std::list<std::weak_ptr<Material>> RenderingMaterials;					// 作成されたマテリアルの参照
 
+	// ====================
 	// レンダリング関数
 public:
 	Material::RenderingTiming GetCurrentRenderingTiming() { return CurrentRenderingTiming; }

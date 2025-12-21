@@ -32,9 +32,10 @@ protected:
 	std::vector<std::unique_ptr<MeshBuffer>> MeshData;
 
 	// インスタンスメッシュデータ
-	bool									 bInstanced;
-	std::unique_ptr<InstanceMeshBuffer>		 InstanceMeshData;
+	bool												bInstanced;
+	std::vector<std::unique_ptr<InstanceMeshBuffer>>	InstanceMeshData;
 
+protected:
 	// マテリアルデータ
 	std::unique_ptr<MeshMaterialManager>	 MeshMaterialData;
 

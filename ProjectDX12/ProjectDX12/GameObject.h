@@ -43,8 +43,8 @@ protected:
 	DirectX::XMFLOAT3 Position	= DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	DirectX::XMFLOAT3 Rotation	= DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	DirectX::XMFLOAT3 Scale		= DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	DirectX::XMFLOAT3 WorldPosition;						// ワールド座標
-	DirectX::XMFLOAT4X4 fx4World;							// ワールドマトリクス
+	DirectX::XMFLOAT3 WorldPosition; // ワールド座標
+	DirectX::XMFLOAT4X4 fx4World;	 // ワールドマトリクス
 
 	// 削除
 public:

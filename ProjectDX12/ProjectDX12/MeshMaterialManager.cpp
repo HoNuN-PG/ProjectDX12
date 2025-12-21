@@ -5,6 +5,19 @@
 // System/GameObject
 #include "GameObject.h"
 
+MeshMaterialManager::~MeshMaterialManager()
+{
+	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
+	{
+		std::vector<MaterialInstance> instances = item->second;
+		for (int i = 0; i < instances.size(); ++i)
+		{
+			// マテリアルインスタンスの削除
+			instances[i].first->RemoveMaterialInstance(instances[i].second);
+		}
+	}
+}
+
 void MeshMaterialManager::SetUp(MeshMaterialSetupData materials)
 {
 	for (auto&& item = materials.begin(); item != materials.end(); ++item)
