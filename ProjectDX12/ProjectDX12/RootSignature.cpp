@@ -9,59 +9,44 @@ RootSignature::RootSignature(Description desc)
 	std::vector<D3D12_ROOT_PARAMETER> param;
 	range.resize(desc.paramNum);
 	param.resize(desc.paramNum);
+	BOOL bMeshShader = FALSE;
 	for (UINT i = 0; i < desc.paramNum; ++i)
 	{
-		range[i].RangeType								= desc.pParam[i].type;
-		range[i].BaseShaderRegister						= desc.pParam[i].slot;							// シェーダー側のバインド開始インデックス(b0~など)
-		range[i].NumDescriptors							= desc.pParam[i].num;
-		range[i].OffsetInDescriptorsFromTableStart		= D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-		param[i].ParameterType							= D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		param[i].DescriptorTable.NumDescriptorRanges	= 1;											// レンジ数
-		param[i].DescriptorTable.pDescriptorRanges		= &range[i];									// ディスクリプタがもつレンジの先頭アドレス
-		param[i].ShaderVisibility						= desc.pParam[i].shader;
-	}
-
-	SetUp(param, desc.sample,desc.filter ,desc.paramNum);
-}
-
-RootSignature::RootSignature(Descriptions desc)
-{
-	// ルートシグネチャの生成
-	std::vector<std::vector<D3D12_DESCRIPTOR_RANGE>> range;
-	std::vector<D3D12_ROOT_PARAMETER> param;
-	range.resize(desc.paramNum);
-	param.resize(desc.paramNum);
-	for (UINT i = 0; i < desc.paramNum; ++i)
-	{
-		range[i].resize(desc.pParam[i].range);
-		for (UINT j = 0; j < desc.pParam[i].range; ++j)
+		if(desc.pParam[i].type == D3D12_DESCRIPTOR_RANGE_TYPE_SRV && desc.pParam[i].shader == D3D12_SHADER_VISIBILITY_MESH)
 		{
-			range[i][j].RangeType								= desc.pParam[i].type[j];
-			range[i][j].BaseShaderRegister						= desc.pParam[i].slot[j];
-			range[i][j].NumDescriptors							= desc.pParam[i].num[j];
-			range[i][j].OffsetInDescriptorsFromTableStart		= D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+			param[i].ParameterType						= D3D12_ROOT_PARAMETER_TYPE_SRV;
+			param[i].Descriptor.ShaderRegister			= desc.pParam[i].slot;
+			param[i].Descriptor.RegisterSpace			= 0;
+			param[i].ShaderVisibility					= desc.pParam[i].shader;
 		}
-		param[i].ParameterType							= D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		param[i].DescriptorTable.NumDescriptorRanges	= desc.pParam[i].range;
-		param[i].DescriptorTable.pDescriptorRanges		= range[i].data();
-		param[i].ShaderVisibility						= desc.pParam[i].shader;
+		else
+		{
+			range[i].RangeType								= desc.pParam[i].type;
+			range[i].BaseShaderRegister						= desc.pParam[i].slot;						// シェーダー側のバインド開始インデックス(b0~など)
+			range[i].NumDescriptors							= desc.pParam[i].num;
+			range[i].OffsetInDescriptorsFromTableStart		= D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+			param[i].ParameterType							= D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+			param[i].DescriptorTable.NumDescriptorRanges	= 1;										// レンジ数
+			param[i].DescriptorTable.pDescriptorRanges		= &range[i];								// ディスクリプタがもつレンジの先頭アドレス
+			param[i].ShaderVisibility						= desc.pParam[i].shader;
+		}
 	}
 
-	SetUp(param, desc.sample, desc.filter, desc.paramNum);
+	SetUp(param, desc.sample, desc.filter, desc.paramNum, desc.bMeshShader);
 }
 
 RootSignature::~RootSignature()
 {
 }
 
-void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, UINT num)
+void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, UINT num, BOOL bMeshShader)
 {
 	// サンプラ
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
-	sampler.Filter				= filter;
 	sampler.AddressU			= sample;
 	sampler.AddressV			= sample;
 	sampler.AddressW			= sample;
+	sampler.Filter				= filter;
 	sampler.MaxAnisotropy		= 4;
 	sampler.ComparisonFunc		= D3D12_COMPARISON_FUNC_NEVER;
 	sampler.BorderColor			= D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
@@ -75,19 +60,32 @@ void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE
 	signatureDesc.pParameters		= param.data();
 	signatureDesc.NumStaticSamplers = 1;
 	signatureDesc.pStaticSamplers	= &sampler;
-	signatureDesc.Flags				= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	if(bMeshShader)
+	{
+		signatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
+	}
+	else
+	{
+		signatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	}
 
 	// バイナリコード生成
 	ID3DBlob* signatureBlob		= nullptr;
 	ID3DBlob* errorBlob			= nullptr;
 	HRESULT hr = D3D12SerializeRootSignature(
-		&signatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &signatureBlob, &errorBlob
+		&signatureDesc, 
+		D3D_ROOT_SIGNATURE_VERSION_1_0, 
+		&signatureBlob, 
+		&errorBlob
 	);
 	if (FAILED(hr)) { return; }
 
 	// ルートシグネチャ生成
 	hr = GetDevice()->CreateRootSignature(
-		0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&RootSignatureData)
+		0, 
+		signatureBlob->GetBufferPointer(), 
+		signatureBlob->GetBufferSize(), 
+		IID_PPV_ARGS(&RootSignatureData)
 	);
 }
 

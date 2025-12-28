@@ -13,7 +13,6 @@ public:
 
 public:
 	virtual void Create(MeshMaterialSetupData materials) override;
-	virtual void Create(MeshMaterialSetupData materials, unsigned int instanced) override;
 
 private:
 	virtual void CreatePrimitive(unsigned int instanced) override;

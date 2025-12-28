@@ -9,6 +9,7 @@
 #include "M_Deffered_Albedo_Normal.h"
 #include "M_DepthNormal.h"
 #include "M_Grid.h"
+#include "M_MS.h"
 #include "M_Shadow.h"
 #include "M_SimpleLit.h"
 #include "M_SkyBox.h"
@@ -128,6 +129,15 @@ HRESULT SceneSandBoxDX12::Init()
 	Material::Initialize(leaf_simple_lit, desc);
 	leaf_simple_lit->AddTexture("../game/assets/model/tree/T_Leaves_Round_02_C.dds");
 
+	// ===============================
+	// Meshlet
+	desc.CullMode = D3D12_CULL_MODE_BACK;
+	desc.WriteDepth = TRUE;
+	desc.Timing = Material::RenderingTiming::Forward;
+	desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
+	std::shared_ptr<M_MS> ms = std::make_shared<M_MS>();
+	Material::Initialize(ms, desc);
+
 	// モデル作成
 	{// スカイボックス
 		MeshMaterialSetupData materials;
@@ -195,6 +205,18 @@ HRESULT SceneSandBoxDX12::Init()
 		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
 		model->Create("../game/assets/model/spot/spot.fbx", materials);
 	}
+#if 1
+	{// 銅像
+		MeshMaterialSetupData materials;
+
+		materials[0].push_back(ms);
+
+		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
+		obj->SetPosition({ 0,0,-10 });
+		std::shared_ptr<MeshletModel> model = obj->AddComponent<MeshletModel>(obj);
+		model->Create("../game/assets/model/castles/staue/Staue01a.fbx", materials, Heap.get());
+	}
+#endif
 
     return E_NOTIMPL;
 }

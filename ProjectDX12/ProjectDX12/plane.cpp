@@ -10,14 +10,6 @@ void Plane::Create(MeshMaterialSetupData materials)
 	MeshMaterialData->SetUp(materials);
 }
 
-void Plane::Create(MeshMaterialSetupData materials, unsigned int instanced)
-{
-	CreatePrimitive(instanced);
-	// マテリアル設定
-	MeshMaterialData = std::make_unique<MeshMaterialManager>();
-	MeshMaterialData->SetUp(materials);
-}
-
 void Plane::CreatePrimitive(unsigned int instanced)
 {
 	// スクリーン頂点
@@ -35,14 +27,5 @@ void Plane::CreatePrimitive(unsigned int instanced)
 	desc.vtxSize = sizeof(Vertex);
 	desc.vtxCount = _countof(screenVtx);
 	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-	if (instanced)
-	{
-		bInstanced = true;
-		InstanceMeshData.push_back(std::make_unique<InstanceMeshBuffer>(desc));
-	}
-	else
-	{
-		bInstanced = false;
-		MeshData.push_back(std::make_unique<MeshBuffer>(desc));
-	}
+	MeshData.push_back(std::make_unique<MeshBuffer>(desc));
 }

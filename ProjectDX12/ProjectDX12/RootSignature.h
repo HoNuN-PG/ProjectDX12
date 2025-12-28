@@ -16,14 +16,6 @@ public:
 		UINT						num;	// ディスクリプタのレンジ数
 		D3D12_SHADER_VISIBILITY		shader;	// 使用先のシェーダー
 	};
-	struct Parameters
-	{
-		std::vector<D3D12_DESCRIPTOR_RANGE_TYPE>	type;	// レンジごとのルートパラメータの種類
-		std::vector<UINT>							slot;	// レンジごとの対応レジストリの開始番号
-		std::vector<UINT>							num;	// レンジごとのディスクリプタ数
-		UINT										range;	// ディスクリプタのレンジ
-		D3D12_SHADER_VISIBILITY						shader;	// 使用先のシェーダー
-	};
 
 	struct Description
 	{
@@ -31,33 +23,19 @@ public:
 		UINT						paramNum;
 		D3D12_TEXTURE_ADDRESS_MODE	sample;
 		D3D12_FILTER				filter;
+		BOOL						bMeshShader;
 
 		Description() :
 			pParam(nullptr),
 			paramNum(0),
 			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP),
-			filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
+			filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR),
+			bMeshShader(FALSE)
 		{}
-	};
-	struct Descriptions
-	{
-		Parameters*					pParam;
-		UINT						paramNum;
-		D3D12_TEXTURE_ADDRESS_MODE	sample;
-		D3D12_FILTER				filter;
-
-		Descriptions() :
-			pParam(nullptr),
-			paramNum(0),
-			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP),
-			filter(D3D12_FILTER_MIN_MAG_MIP_POINT)
-		{
-		}
 	};
 
 public:
 	RootSignature(Description desc);
-	RootSignature(Descriptions desc);
 	~RootSignature();
 
 private:
@@ -68,7 +46,7 @@ private:
 	/// <param name="sample"></param>
 	/// <param name="filter"></param>
 	/// <param name="num"></param>
-	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, UINT num);
+	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, UINT num, BOOL bMeshShader);
 
 public:
 	/// <summary>

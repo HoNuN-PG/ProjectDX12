@@ -33,7 +33,11 @@ MeshBuffer::MeshBuffer(Description desc)
 
 	// 頂点バッファリソースの生成
 	hr = GetDevice()->CreateCommittedResource(
-		&heapProp, D3D12_HEAP_FLAG_NONE, &resDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		&heapProp, 
+		D3D12_HEAP_FLAG_NONE, 
+		&resDesc, 
+		D3D12_RESOURCE_STATE_GENERIC_READ, 
+		nullptr,
 		IID_PPV_ARGS(&Vtx)
 	);
 	if (FAILED(hr)) { return; }
@@ -113,15 +117,7 @@ InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count)
 	:
 	MeshBuffer(desc)
 {
-	if(count == 1)
-	{
-		InsCount = 1;
-		bInstanced = false;
-		return;
-	}
-
 	InsCount = count;
-	bInstanced = true;
 
 	D3D12_HEAP_PROPERTIES heapProp = {};
 	heapProp.Type					= D3D12_HEAP_TYPE_DEFAULT;
@@ -170,19 +166,17 @@ InstanceMeshBuffer::~InstanceMeshBuffer()
 
 void InstanceMeshBuffer::MappingUploder()
 {
-	InstanceData* mappedData;
-	const size_t dataSize = sizeof(InstanceData);
-
-	auto result = InsUploader->Map(0, nullptr, reinterpret_cast<void**>(&mappedData));
-	if (FAILED(result)) { return; }
-
-	memcpy(mappedData, InsData.data(), dataSize * InsData.size());
-
+	void* mappedData;
+	auto hr = InsUploader->Map(0, nullptr, reinterpret_cast<void**>(&mappedData));
+	if (SUCCEEDED(hr))
+	{
+		memcpy(mappedData, InsData.data(), sizeof(InstanceData) * InsData.size());
+	}
 	InsUploader->Unmap(0, nullptr);
 
 	D3D12_SUBRESOURCE_DATA subResourceData = {};
 	subResourceData.pData		= mappedData;
-	subResourceData.RowPitch	= dataSize;
+	subResourceData.RowPitch	= sizeof(InstanceData);
 	subResourceData.SlicePitch	= subResourceData.RowPitch;
 
 	UpdateSubresources(
@@ -209,4 +203,179 @@ void InstanceMeshBuffer::Draw()
 	{
 		GetCommandList()->DrawInstanced(Desc.vtxCount, 1, 0, 0);
 	}
+}
+
+MeshletBuffer::MeshletBuffer(Description desc)
+	:
+	Vtx(nullptr),
+	pMeshlets(nullptr),
+	pUniqueVertexIndices(nullptr),
+	pPrimitiveIndices(nullptr)
+{
+	HRESULT hr;
+	// ヒープの設定
+	D3D12_HEAP_PROPERTIES heapProp = {};
+	heapProp.Type					= D3D12_HEAP_TYPE_UPLOAD;
+	heapProp.CPUPageProperty		= D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+	heapProp.MemoryPoolPreference	= D3D12_MEMORY_POOL_UNKNOWN;
+	heapProp.CreationNodeMask		= 1;
+	heapProp.VisibleNodeMask		= 1;
+
+	// リソースの設定
+	D3D12_RESOURCE_DESC resDesc = {};
+	resDesc.Dimension			= D3D12_RESOURCE_DIMENSION_BUFFER;
+	resDesc.Width				= desc.vtxSize * desc.vtxCount;
+	resDesc.Height				= 1;
+	resDesc.DepthOrArraySize	= 1;
+	resDesc.MipLevels			= 1;
+	resDesc.Format				= DXGI_FORMAT_UNKNOWN;
+	resDesc.SampleDesc.Count	= 1;
+	resDesc.Layout				= D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	resDesc.Flags				= D3D12_RESOURCE_FLAG_NONE;
+
+	//========================================================
+	// 頂点バッファの生成
+	hr = GetDevice()->CreateCommittedResource(
+		&heapProp, 
+		D3D12_HEAP_FLAG_NONE, 
+		&resDesc, 
+		D3D12_RESOURCE_STATE_GENERIC_READ, 
+		nullptr,
+		IID_PPV_ARGS(Vtx.GetAddressOf())
+	);
+	if (FAILED(hr)) { return; }
+
+	// 頂点バッファの初期値設定
+	void* pVtxMap;
+	hr = Vtx->Map(0, nullptr, (void**)&pVtxMap);
+	if (SUCCEEDED(hr))
+	{
+		memcpy_s(pVtxMap, resDesc.Width, desc.pVtx, resDesc.Width);
+	}
+	Vtx->Unmap(0, nullptr);
+
+	// シェーダーリソースビューの作成
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.ViewDimension		= D3D12_SRV_DIMENSION_BUFFER;
+	srvDesc.Format				= DXGI_FORMAT_UNKNOWN;
+	srvDesc.Buffer.FirstElement = 0;
+	srvDesc.Buffer.NumElements	= desc.vtxCount;
+	srvDesc.Buffer.StructureByteStride = desc.vtxSize;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	hVtx = desc.pHeap->Allocate();
+	GetDevice()->CreateShaderResourceView(Vtx.Get(), &srvDesc, hVtx.hCPU);
+
+	//========================================================
+	// Meshletの生成
+	hr = DirectX::ComputeMeshlets(
+		desc.indices.data(),
+		desc.indices.size() / 3,
+		desc.positions.data(),
+		desc.positions.size(),
+		nullptr,
+		meshlets,
+		uniqueVertexIndices,
+		primitiveIndices
+	);
+	if (FAILED(hr)){ return; }
+
+	//========================================================
+	// meshlets
+	// バッファの生成
+	resDesc.Width = sizeof(DirectX::Meshlet) * meshlets.size();
+	hr = GetDevice()->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&resDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(pMeshlets.GetAddressOf())
+	);
+	if (FAILED(hr)) { return; }
+
+	// バッファの初期値設定
+	void* pMeshletMap;
+	hr = pMeshlets->Map(0, nullptr, (void**)&pMeshletMap);
+	if (SUCCEEDED(hr))
+	{
+		memcpy_s(pMeshletMap, resDesc.Width, meshlets.data(), resDesc.Width);
+	}
+	pMeshlets->Unmap(0, nullptr);
+
+	// シェーダーリソースビューの作成
+	srvDesc.Buffer.NumElements = meshlets.size();
+	srvDesc.Buffer.StructureByteStride = sizeof(DirectX::Meshlet);
+	hMeshlets = desc.pHeap->Allocate();
+	GetDevice()->CreateShaderResourceView(pMeshlets.Get(), &srvDesc, hMeshlets.hCPU);
+
+	//========================================================
+	// uniqueVertexIndices
+	// バッファの生成
+	resDesc.Width = sizeof(uint8_t) * uniqueVertexIndices.size();
+	hr = GetDevice()->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&resDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(pUniqueVertexIndices.GetAddressOf())
+	);
+	if (FAILED(hr)) { return; }
+
+	// バッファの初期値設定
+	void* pUniqueVIBMap;
+	hr = pUniqueVertexIndices->Map(0, nullptr, (void**)&pUniqueVIBMap);
+	if (SUCCEEDED(hr))
+	{
+		memcpy_s(pUniqueVIBMap, resDesc.Width, uniqueVertexIndices.data(), resDesc.Width);
+	}
+	pUniqueVertexIndices->Unmap(0, nullptr);
+
+	// シェーダーリソースビューの作成
+	srvDesc.Buffer.NumElements = uniqueVertexIndices.size();
+	srvDesc.Buffer.StructureByteStride = sizeof(uint8_t);
+	hUniqueVertexIndices = desc.pHeap->Allocate();
+	GetDevice()->CreateShaderResourceView(pUniqueVertexIndices.Get(), &srvDesc, hUniqueVertexIndices.hCPU);
+
+	//========================================================
+	// primitiveIndices
+	// バッファの生成
+	resDesc.Width = sizeof(DirectX::MeshletTriangle) * primitiveIndices.size();
+	hr = GetDevice()->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&resDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(pPrimitiveIndices.GetAddressOf())
+	);
+	if (FAILED(hr)) { return; }
+
+	// バッファの初期値設定
+	void* pPrimitiveIndicesMap;
+	hr = pPrimitiveIndices->Map(0, nullptr, (void**)&pPrimitiveIndicesMap);
+	if (SUCCEEDED(hr))
+	{
+		memcpy_s(pPrimitiveIndicesMap, resDesc.Width, primitiveIndices.data(), resDesc.Width);
+	}
+	pPrimitiveIndices->Unmap(0, nullptr);
+
+	// シェーダーリソースビューの作成
+	srvDesc.Buffer.NumElements = primitiveIndices.size();
+	srvDesc.Buffer.StructureByteStride = sizeof(DirectX::MeshletTriangle);
+	hPrimitiveIndices = desc.pHeap->Allocate();
+	GetDevice()->CreateShaderResourceView(pPrimitiveIndices.Get(), &srvDesc, hPrimitiveIndices.hCPU);
+}
+
+MeshletBuffer::~MeshletBuffer()
+{
+}
+
+void MeshletBuffer::Draw()
+{
+	GetCommandList()->SetGraphicsRootShaderResourceView(1, Vtx->GetGPUVirtualAddress());
+	GetCommandList()->SetGraphicsRootShaderResourceView(2, pMeshlets->GetGPUVirtualAddress());
+	GetCommandList()->SetGraphicsRootShaderResourceView(3, pUniqueVertexIndices->GetGPUVirtualAddress());
+	GetCommandList()->SetGraphicsRootShaderResourceView(4, pPrimitiveIndices->GetGPUVirtualAddress());
+	GetCommandList()->DispatchMesh(meshlets.size(), 1, 1);
 }

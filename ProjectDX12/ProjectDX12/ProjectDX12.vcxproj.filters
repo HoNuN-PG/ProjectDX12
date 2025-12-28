@@ -172,6 +172,9 @@
     <Filter Include="ソース ファイル\System\Rendering\Pipeline">
       <UniqueIdentifier>{b67ee4c7-76ab-4b37-ab48-d54d5bae8c58}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\MS">
+      <UniqueIdentifier>{f2b810e8-05bc-4ab1-9822-4da285c2d181}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectX.cpp">
@@ -326,6 +329,9 @@
     </ClCompile>
     <ClCompile Include="DebugImGUI.cpp">
       <Filter>ソース ファイル\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="M_MS.cpp">
+      <Filter>ソース ファイル\Material\Materials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -500,6 +506,9 @@
     <ClInclude Include="TextureLoad.h">
       <Filter>ヘッダー ファイル\System\Rendering\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="M_MS.h">
+      <Filter>ヘッダー ファイル\Material\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="CommonLighting.hlsl">
@@ -534,9 +543,6 @@
     </FxCompile>
     <FxCompile Include="PS_GridShadowVSM.hlsl">
       <Filter>リソース ファイル\PS\Common\Grid</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Copy.hlsl">
-      <Filter>リソース ファイル\PS\Common</Filter>
     </FxCompile>
     <FxCompile Include="PS_DefferedLighting.hlsl">
       <Filter>リソース ファイル\PS\Deffered\DefferedLighting</Filter>
@@ -606,6 +612,15 @@
     </FxCompile>
     <FxCompile Include="PS_UnLit.hlsl">
       <Filter>リソース ファイル\PS\Lit</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Copy.hlsl">
+      <Filter>リソース ファイル\Volume</Filter>
+    </FxCompile>
+    <FxCompile Include="MS_Object.hlsl">
+      <Filter>リソース ファイル\MS</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_MS.hlsl">
+      <Filter>リソース ファイル\PS\Common</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

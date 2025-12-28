@@ -20,7 +20,12 @@ public:
 
 	struct Description
 	{
+		BOOL					AmplificationShader = FALSE;
+		BOOL					MeshShader			= FALSE;
+
 		ID3D12RootSignature*	pRootSignature;
+		const wchar_t*			ASFile;
+		const wchar_t*			MSFile;
 		const wchar_t*			VSFile;
 		const wchar_t*			PSFile;
 		InputLayout*			pInputLayout;

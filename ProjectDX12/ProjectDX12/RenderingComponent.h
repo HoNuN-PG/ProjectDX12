@@ -25,19 +25,40 @@ public:
 	virtual void Rendering() = 0;
 
 public:
-	std::vector<MeshMaterialManager::MaterialInstance> GetMeshMaterialInstances(UINT meshIdx) { return MeshMaterialData->GetMaterialInstances(meshIdx); }
+	virtual std::vector<MeshMaterialManager::MaterialInstance> GetMeshMaterialInstances(UINT meshIdx) { return MeshMaterialData->GetMaterialInstances(meshIdx); }
+
+protected:
+	// マテリアルデータ
+	std::unique_ptr<MeshMaterialManager> MeshMaterialData;
+
+};
+
+class VSRenderingComponent : public RenderingComponent
+{
+public:
+	using RenderingComponent::RenderingComponent;
+
+	virtual ~VSRenderingComponent() {};
 
 protected:
 	// メッシュデータ
 	std::vector<std::unique_ptr<MeshBuffer>> MeshData;
 
-	// インスタンスメッシュデータ
-	bool												bInstanced;
-	std::vector<std::unique_ptr<InstanceMeshBuffer>>	InstanceMeshData;
+};
+
+class MSRenderingComponent : public RenderingComponent
+{
+public:
+	using RenderingComponent::RenderingComponent;
+
+	virtual ~MSRenderingComponent() {};
+
+public:
+	std::vector<MeshMaterialManager::MaterialInstance> GetMeshMaterialInstances(UINT meshIdx) { return MeshMaterialData->GetMaterialInstances(meshIdx); }
 
 protected:
-	// マテリアルデータ
-	std::unique_ptr<MeshMaterialManager>	 MeshMaterialData;
+	// メッシュデータ
+	std::vector<std::unique_ptr<MeshletBuffer>> MeshData;
 
 };
 

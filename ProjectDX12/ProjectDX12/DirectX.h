@@ -6,8 +6,11 @@
 #include <dxgi1_6.h>
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
+#pragma comment(lib,"DirectXMesh.lib")
 
 #include <directx/d3dx12.h>
+
+#include <cassert>
 
 #define WINDOW_WIDTH (1920)
 #define WINDOW_HEIGHT (1080)
@@ -21,8 +24,8 @@ void UninitDirectX();
 void UpdateDirectX(void(func)(void));
 void DrawDirectX(void(func)(void),const float clearColor[4]);
 
-ID3D12Device* GetDevice();
-ID3D12GraphicsCommandList* GetCommandList();
+ID3D12Device8* GetDevice();
+ID3D12GraphicsCommandList6* GetCommandList();
 ID3D12CommandQueue* GetCommandQueue();
 D3D12_CPU_DESCRIPTOR_HANDLE GetRTV();
 

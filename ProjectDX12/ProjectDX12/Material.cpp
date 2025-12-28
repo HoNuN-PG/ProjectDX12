@@ -40,7 +40,10 @@ void Material::SetUp(
 	// パイプライン
 	{
 		Pipeline::Description desc = {};
+		desc.MeshShader = pipeline.MeshShader;
 		desc.pRootSignature = RootSignatureData->Get();
+		desc.ASFile = pipeline.ASFile;
+		desc.MSFile = pipeline.MSFile;
 		desc.VSFile = pipeline.VSFile;
 		desc.PSFile = pipeline.PSFile;
 		desc.pInputLayout = pipeline.pInputLayout;

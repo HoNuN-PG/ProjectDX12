@@ -77,6 +77,8 @@ MSG DebugImGUI::Create(HWND _hwnd)
 				auto handle = ImGUIHeap->Allocate();
 				ImGui_ImplDX12_Init(GetDevice(), 3,
 					DXGI_FORMAT_R8G8B8A8_UNORM, ImGUIHeap->Get(), handle.hCPU, handle.hGPU);
+				ImGuiIO& io = ImGui::GetIO();
+				assert(io.Fonts != nullptr);
 			}
 		}
 	}

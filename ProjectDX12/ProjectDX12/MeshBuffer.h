@@ -2,8 +2,11 @@
 #define ___MESH_BUFFER_H___
 
 #include <DirectXMath.h>
+#include <DirectXMesh/DirectXMesh.h>
 #include <vector>
 
+// System/Rendering/Pipeline
+#include "DescriptorHeap.h"
 // System
 #include "DirectX.h"
 
@@ -36,26 +39,25 @@ protected:
 
 };
 
-struct InstanceData
-{
-	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT3 rotation;
-	DirectX::XMFLOAT3 scale;
-
-	InstanceData(
-		const DirectX::XMFLOAT3& position,
-		const DirectX::XMFLOAT3& rotation,
-		const DirectX::XMFLOAT3& scale)
-	{
-		this->position = position;
-		this->rotation = rotation;
-		this->scale = scale;
-	}
-};
-
 class InstanceMeshBuffer : MeshBuffer
 {
 public:
+	struct InstanceData
+	{
+		DirectX::XMFLOAT3 position;
+		DirectX::XMFLOAT3 rotation;
+		DirectX::XMFLOAT3 scale;
+
+		InstanceData(
+			const DirectX::XMFLOAT3& position,
+			const DirectX::XMFLOAT3& rotation,
+			const DirectX::XMFLOAT3& scale)
+		{
+			this->position = position;
+			this->rotation = rotation;
+			this->scale = scale;
+		}
+	};
 	static const int MAX_INSTANCE = 100;
 
 public:
@@ -68,11 +70,51 @@ public:
 	void MappingUploder();
 
 private:
-	bool 						bInstanced;	
-	UINT						InsCount;			
+	UINT						InsCount;
+	std::vector<InstanceData>	InsData;
 	ComPtr<ID3D12Resource>		Ins;
 	ComPtr<ID3D12Resource>		InsUploader;
-	std::vector<InstanceData>	InsData;
+
+};
+
+class MeshletBuffer
+{
+public:
+	struct Description
+	{
+		DescriptorHeap*						pHeap;
+		std::vector<DirectX::XMFLOAT3>		positions;
+		const void*							pVtx;
+		UINT								vtxSize;
+		UINT								vtxCount;
+		std::vector<uint32_t>				indices;
+		const void*							pIdx;
+		DXGI_FORMAT							idxSize;
+		UINT								idxCount;
+		D3D12_PRIMITIVE_TOPOLOGY			topology;
+	};
+
+public:
+	MeshletBuffer() {};
+	MeshletBuffer(Description desc);
+	virtual ~MeshletBuffer();
+	virtual void Draw();
+
+protected:
+	ComPtr<ID3D12Resource>		Vtx;
+	DescriptorHeap::Handle      hVtx;
+
+	std::vector<DirectX::Meshlet>          meshlets;
+	ComPtr<ID3D12Resource>				   pMeshlets;
+	DescriptorHeap::Handle				   hMeshlets;
+
+	std::vector<uint8_t>                   uniqueVertexIndices;
+	ComPtr<ID3D12Resource>				   pUniqueVertexIndices;
+	DescriptorHeap::Handle				   hUniqueVertexIndices;
+
+	std::vector<DirectX::MeshletTriangle>  primitiveIndices;
+	ComPtr<ID3D12Resource>				   pPrimitiveIndices;
+	DescriptorHeap::Handle				   hPrimitiveIndices;
 
 };
 

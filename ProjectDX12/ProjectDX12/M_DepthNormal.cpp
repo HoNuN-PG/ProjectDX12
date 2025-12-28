@@ -4,16 +4,10 @@
 
 void M_DepthNormal::Initialize(Description desc)
 {
-	// 定数バッファ
-	{
-		ConstantBuffer::Description constant = {};
-		constant.pHeap = desc.pHeap;
-	}
-
 	// ルートシグネチャ
 	RootSignature::Parameter param[] = 
 	{
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
+		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 	};
 	RootSignature::Description rootsignature;
 	rootsignature.pParam = param;

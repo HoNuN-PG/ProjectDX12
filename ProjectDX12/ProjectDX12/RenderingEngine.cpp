@@ -280,13 +280,6 @@ void RenderingEngine::CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_
 	);
 }
 
-DescriptorHeap::Handle RenderingEngine::GetGlobalConstantBufferResource(UINT key)
-{
-	if (!GlobalConstantBuffer.contains(key))
-		return DescriptorHeap::Handle();
-	return GlobalConstantBuffer[key]->GetHandle();
-}
-
 std::shared_ptr<RenderTarget> RenderingEngine::GetGlobalRenderTarget(UINT key)
 {
 	if (!GlobalTexture.contains(key))
@@ -330,6 +323,13 @@ void RenderingEngine::GlobalTextureSRV2RTV(UINT key)
 	if (!GlobalTexture.contains(key))
 		return;
 	GlobalTexture[key]->SRV2RTV();
+}
+
+DescriptorHeap::Handle RenderingEngine::GetGlobalConstantBufferResource(UINT key)
+{
+	if (!GlobalConstantBuffer.contains(key))
+		return DescriptorHeap::Handle();
+	return GlobalConstantBuffer[key]->GetHandle();
 }
 
 void RenderingEngine::WriteGlobalConstantBufferResource(UINT key, void* data)
