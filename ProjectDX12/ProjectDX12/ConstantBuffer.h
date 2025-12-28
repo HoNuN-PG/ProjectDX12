@@ -9,7 +9,7 @@ class ConstantBuffer
 public:
 	struct Description
 	{
-		DescriptorHeap*	pHeap;	// 定数バッファと紐づけるディスクリプタヒープ
+		DescriptorHeap*	pHeap;	// ディスクリプタヒープ
 		UINT			size;	// 作成する定数バッファのサイズ
 	};
 
@@ -24,7 +24,7 @@ public:
 	DescriptorHeap::Handle GetHandle() { return Handle; }
 
 private:
-	DescriptorHeap::Handle			Handle;		// 該当ディスクリプタのハンドル
+	DescriptorHeap::Handle			Handle;		// ディスクリプタのハンドル
 	UINT							Size;		// 定数バッファのサイズ
 	ComPtr<ID3D12Resource>			Resource;	// 定数バッファリソース
 	D3D12_CONSTANT_BUFFER_VIEW_DESC	CBV;		// 定数バッファビュー

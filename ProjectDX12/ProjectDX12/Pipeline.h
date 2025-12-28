@@ -18,22 +18,34 @@ public:
 	static InputLayout IED_POS_NOR_TEX_COLOR[];
 	static UINT IED_POS_NOR_TEX_COLOR_COUNT;
 
+public:
 	struct Description
 	{
+		// MeshShader
 		BOOL					AmplificationShader = FALSE;
 		BOOL					MeshShader			= FALSE;
 
-		ID3D12RootSignature*	pRootSignature;
+		// シェーダーファイル
 		const wchar_t*			ASFile;
 		const wchar_t*			MSFile;
 		const wchar_t*			VSFile;
 		const wchar_t*			PSFile;
+
+		// ルートシグネチャ
+		ID3D12RootSignature*	pRootSignature;
+
+		// インプットレイアウト
 		InputLayout*			pInputLayout;
 		UINT					InputLayoutNum;
+
+		// ラスタライザ
+		D3D12_CULL_MODE			CullMode	= D3D12_CULL_MODE_BACK;
+
+		// レンダーターゲット
 		UINT					RenderTargetNum;
 
-		D3D12_CULL_MODE			CullMode;
-		BOOL					WriteDepth = TRUE;
+		// 深度バッファ
+		BOOL					WriteDepth	= TRUE;
 	};
 
 public:

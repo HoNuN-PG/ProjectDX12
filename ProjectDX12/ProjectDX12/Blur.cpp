@@ -48,7 +48,7 @@ void Gauss::Create()
 			DescriptorHeap::Description desc = {};
 			desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 			desc.num = 
-				BlurParam::GAUSS_MAX * GaussRTVType::RTV_MAX;	// RTV”•ªŠm•Û
+				BlurParam::GAUSS_MAX * GaussRTVType::RTV_MAX;			// RTV”•ªŠm•Û
 			Instance->RTVHeap = std::make_shared<DescriptorHeap>(desc);
 		}
 
@@ -74,8 +74,8 @@ void Gauss::Create()
 			desc.pRootSignature = Instance->Gauss2RootSignatureData->Get();
 			desc.pInputLayout = Pipeline::IED_POS_TEX;
 			desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
-			desc.RenderTargetNum = 1;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
+			desc.RenderTargetNum = 1;
 
 			desc.VSFile = L"../game/assets/shader/VS_Blur2X.cso";
 			desc.PSFile = L"../game/assets/shader/PS_Blur2.cso";
@@ -125,8 +125,8 @@ void Gauss::Create()
 			desc.pRootSignature = Instance->Gauss4RootSignatureData->Get();
 			desc.pInputLayout = Pipeline::IED_POS_TEX;
 			desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
-			desc.RenderTargetNum = 1;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
+			desc.RenderTargetNum = 1;
 
 			desc.VSFile = L"../game/assets/shader/VS_Blur4X.cso";
 			desc.PSFile = L"../game/assets/shader/PS_Blur4.cso";
@@ -176,8 +176,8 @@ void Gauss::Create()
 			desc.pRootSignature = Instance->Gauss8RootSignatureData->Get();
 			desc.pInputLayout = Pipeline::IED_POS_TEX;
 			desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
-			desc.RenderTargetNum = 1;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
+			desc.RenderTargetNum = 1;
 
 			desc.VSFile = L"../game/assets/shader/VS_Blur8X.cso";
 			desc.PSFile = L"../game/assets/shader/PS_Blur8.cso";

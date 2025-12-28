@@ -12,11 +12,14 @@ DescriptorHeap::DescriptorHeap(Description desc)
 	Type = heap.Type = desc.heapType;
 
 	// シェーダーから参照するか
-	if (desc.heapType == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) heap.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	if (desc.heapType == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+	{
+		heap.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	}
 	heap.NumDescriptors	= desc.num;
 	heap.NodeMask = 0;
 
-	HRESULT hr = GetDevice()->CreateDescriptorHeap(&heap, IID_PPV_ARGS(&Heap));
+	HRESULT hr = GetDevice()->CreateDescriptorHeap(&heap, IID_PPV_ARGS(Heap.GetAddressOf()));
 }
 
 DescriptorHeap::~DescriptorHeap()

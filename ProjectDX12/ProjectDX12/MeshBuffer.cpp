@@ -19,7 +19,7 @@ MeshBuffer::MeshBuffer(Description desc)
 	heapProp.CreationNodeMask			= 1;
 	heapProp.VisibleNodeMask			= 1;
 
-	// 頂点バッファリソースの設定
+	// リソースの設定
 	D3D12_RESOURCE_DESC resDesc	= {};
 	resDesc.Dimension				= D3D12_RESOURCE_DIMENSION_BUFFER;
 	resDesc.Width					= desc.vtxSize * desc.vtxCount;
@@ -38,7 +38,7 @@ MeshBuffer::MeshBuffer(Description desc)
 		&resDesc, 
 		D3D12_RESOURCE_STATE_GENERIC_READ, 
 		nullptr,
-		IID_PPV_ARGS(&Vtx)
+		IID_PPV_ARGS(Vtx.GetAddressOf())
 	);
 	if (FAILED(hr)) { return; }
 
@@ -56,10 +56,9 @@ MeshBuffer::MeshBuffer(Description desc)
 	Vbv.SizeInBytes		= resDesc.Width;
 	Vbv.StrideInBytes	= desc.vtxSize;
 
-	// インデックス作成チェック
 	if (desc.pIdx == nullptr) { return; }
 
-	// リソース設定
+	// リソースの設定
 	UINT idxSize = 0;
 	switch (desc.idxSize)
 	{
@@ -69,17 +68,17 @@ MeshBuffer::MeshBuffer(Description desc)
 	}
 	resDesc.Width = idxSize * desc.idxCount;
 
-	// リソース生成
+	// インデックスバッファのリソース生成
 	hr = GetDevice()->CreateCommittedResource(
 		&heapProp, 
 		D3D12_HEAP_FLAG_NONE, 
 		&resDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(&Idx)
+		IID_PPV_ARGS(Idx.GetAddressOf())
 	);
 
-	// インデックスデータ書き込み
+	// インデックスバッファの初期値設定
 	void* pIdxMap	= nullptr;
 	hr				= Idx->Map(0, nullptr, &pIdxMap);
 	if (SUCCEEDED(hr)) 
@@ -88,7 +87,7 @@ MeshBuffer::MeshBuffer(Description desc)
 	}
 	Idx->Unmap(0, nullptr);
 
-	// インデックスバッファビュー作成
+	// インデックスバッファビューの設定
 	Ibv.BufferLocation	= Idx->GetGPUVirtualAddress();
 	Ibv.Format			= desc.idxSize;
 	Ibv.SizeInBytes		= static_cast<UINT>(resDesc.Width);
@@ -137,25 +136,26 @@ InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count)
 	resDesc.Layout				= D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	resDesc.Flags				= D3D12_RESOURCE_FLAG_NONE;
 
+	// リソースの生成
 	auto result = GetDevice()->CreateCommittedResource(
 		&heapProp,
 		D3D12_HEAP_FLAG_NONE,
 		&resDesc,
 		D3D12_RESOURCE_STATE_COPY_DEST,
 		nullptr,
-		IID_PPV_ARGS(&Ins)
+		IID_PPV_ARGS(InsResource.GetAddressOf())
 	);
 	if (FAILED(result)) { return; }
 
+	// アップローダーの生成
 	heapProp.Type = D3D12_HEAP_TYPE_UPLOAD;
-
 	result = GetDevice()->CreateCommittedResource(
 		&heapProp,
 		D3D12_HEAP_FLAG_NONE,
 		&resDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(&InsUploader)
+		IID_PPV_ARGS(InsUploader.GetAddressOf())
 	);
 	if (FAILED(result)) { return; }
 }
@@ -181,7 +181,7 @@ void InstanceMeshBuffer::MappingUploder()
 
 	UpdateSubresources(
 		GetCommandList(), 
-		Ins.Get(), 
+		InsResource.Get(), 
 		InsUploader.Get(), 
 		0, 
 		0, 
@@ -256,12 +256,12 @@ MeshletBuffer::MeshletBuffer(Description desc)
 
 	// シェーダーリソースビューの作成
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.ViewDimension		= D3D12_SRV_DIMENSION_BUFFER;
-	srvDesc.Format				= DXGI_FORMAT_UNKNOWN;
-	srvDesc.Buffer.FirstElement = 0;
-	srvDesc.Buffer.NumElements	= desc.vtxCount;
-	srvDesc.Buffer.StructureByteStride = desc.vtxSize;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format						= DXGI_FORMAT_UNKNOWN;
+	srvDesc.ViewDimension				= D3D12_SRV_DIMENSION_BUFFER;
+	srvDesc.Shader4ComponentMapping		= D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Buffer.FirstElement			= 0;
+	srvDesc.Buffer.NumElements			= desc.vtxCount;
+	srvDesc.Buffer.StructureByteStride	= desc.vtxSize;
 	hVtx = desc.pHeap->Allocate();
 	GetDevice()->CreateShaderResourceView(Vtx.Get(), &srvDesc, hVtx.hCPU);
 
@@ -371,11 +371,11 @@ MeshletBuffer::~MeshletBuffer()
 {
 }
 
-void MeshletBuffer::Draw()
+void MeshletBuffer::Draw(UINT MeshShaderSRVStartSlot)
 {
-	GetCommandList()->SetGraphicsRootShaderResourceView(1, Vtx->GetGPUVirtualAddress());
-	GetCommandList()->SetGraphicsRootShaderResourceView(2, pMeshlets->GetGPUVirtualAddress());
-	GetCommandList()->SetGraphicsRootShaderResourceView(3, pUniqueVertexIndices->GetGPUVirtualAddress());
-	GetCommandList()->SetGraphicsRootShaderResourceView(4, pPrimitiveIndices->GetGPUVirtualAddress());
+	GetCommandList()->SetGraphicsRootShaderResourceView(MeshShaderSRVStartSlot, Vtx->GetGPUVirtualAddress());
+	GetCommandList()->SetGraphicsRootShaderResourceView(MeshShaderSRVStartSlot + 1, pMeshlets->GetGPUVirtualAddress());
+	GetCommandList()->SetGraphicsRootShaderResourceView(MeshShaderSRVStartSlot + 2, pUniqueVertexIndices->GetGPUVirtualAddress());
+	GetCommandList()->SetGraphicsRootShaderResourceView(MeshShaderSRVStartSlot + 3, pPrimitiveIndices->GetGPUVirtualAddress());
 	GetCommandList()->DispatchMesh(meshlets.size(), 1, 1);
 }

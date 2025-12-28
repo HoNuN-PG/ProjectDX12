@@ -18,8 +18,8 @@ void M_SkyBox::Initialize(Description desc)
 	pipeline.PSFile = L"../game/assets/shader/PS_UnLit.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.RenderTargetNum = 1;
 	pipeline.CullMode = desc.CullMode;
+	pipeline.RenderTargetNum = 1;
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(

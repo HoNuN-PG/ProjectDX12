@@ -36,8 +36,8 @@ void M_SimpleLit::Initialize(Description desc)
 	pipeline.PSFile = L"../game/assets/shader/PS_SimpleLit.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.RenderTargetNum = 1;
 	pipeline.CullMode = desc.CullMode;
+	pipeline.RenderTargetNum = 1;
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
@@ -52,8 +52,12 @@ void M_SimpleLit::Bind(UINT materialinstance)
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 
 	// 定数バッファの設定
-	WriteParams((UINT)2, 0,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	WriteParams(
+		(UINT)2, 
+		0,
+		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, 
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+	);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
@@ -113,8 +117,12 @@ void M_OpaqueSimpleLit::Bind(UINT materialinstance)
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 
 	// 定数バッファの設定
-	WriteParams((UINT)2, 0,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	WriteParams(
+		(UINT)2, 
+		0,
+		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, 
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+	);
 	Params[2]->Write(&common);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =

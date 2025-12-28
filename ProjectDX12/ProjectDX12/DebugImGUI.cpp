@@ -15,7 +15,7 @@
 std::unique_ptr<MeshBuffer>									DebugImGUI::Screen;
 std::unique_ptr<RootSignature>								DebugImGUI::RootSignatureData;
 std::unique_ptr<Pipeline>									DebugImGUI::PipelineData;
-std::vector<std::pair<bool, std::unique_ptr<RenderTarget>>>	DebugImGUI::ImGUIRTVs;
+std::vector<std::pair<bool, std::unique_ptr<RenderTarget>>>	DebugImGUI::Images;
 std::unique_ptr<DescriptorHeap>								DebugImGUI::ImGUIHeap;
 std::unique_ptr<DescriptorHeap>								DebugImGUI::ImGUIRTVHeap;
 
@@ -106,8 +106,8 @@ MSG DebugImGUI::Create(HWND _hwnd)
 		desc.PSFile = L"../game/assets/shader/PS_Copy.cso";
 		desc.pInputLayout = Pipeline::IED_POS_TEX;
 		desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
-		desc.RenderTargetNum = 1;
 		desc.CullMode = D3D12_CULL_MODE_BACK;
+		desc.RenderTargetNum = 1;
 		PipelineData = std::make_unique<Pipeline>(desc);
 	}
 	// ディスクリプタヒープ
@@ -128,7 +128,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 			desc.format = DXGI_FORMAT_B8G8R8A8_UNORM;
 			desc.pRTVHeap = ImGUIRTVHeap.get();
 			desc.pSRVHeap = ImGUIHeap.get();
-			ImGUIRTVs.push_back(std::make_pair<bool, std::unique_ptr<RenderTarget>>(false, std::make_unique<RenderTarget>(desc)));
+			Images.push_back(std::make_pair<bool, std::unique_ptr<RenderTarget>>(false, std::make_unique<RenderTarget>(desc)));
 		}
 	}
 
@@ -147,12 +147,12 @@ ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* heap, RenderTarget* srv)
 
 	// 使用するRTVを決定
 	RenderTarget* target = nullptr;
-	for (int i = 0; i < ImGUIRTVs.size(); i++)
+	for (int i = 0; i < Images.size(); i++)
 	{
-		if (ImGUIRTVs[i].first) continue;
+		if (Images[i].first) continue;
 
-		ImGUIRTVs[i].first = true;
-		target = ImGUIRTVs[i].second.get();
+		Images[i].first = true;
+		target = Images[i].second.get();
 		break;
 	}
 	if (!target) return (ImTextureID)0;
@@ -187,8 +187,8 @@ ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* heap, RenderTarget* srv)
 
 void DebugImGUI::Completed()
 {
-	for (int i = 0; i < ImGUIRTVs.size(); i++)
+	for (int i = 0; i < Images.size(); i++)
 	{
-		ImGUIRTVs[i].first = false;
+		Images[i].first = false;
 	}
 }

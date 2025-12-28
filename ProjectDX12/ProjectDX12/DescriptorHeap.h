@@ -41,7 +41,7 @@ public:
 	ID3D12DescriptorHeap* Get() { return Heap.Get(); }
 
 private:
-	ComPtr<ID3D12DescriptorHeap>		Heap;		// ヒープのデータ
+	ComPtr<ID3D12DescriptorHeap>		Heap;		// ヒープ
 	D3D12_DESCRIPTOR_HEAP_TYPE			Type;		// ディスクリプタヒープの種類
 	UINT								AllocCout;	// 確保したディスクリプタ数
 

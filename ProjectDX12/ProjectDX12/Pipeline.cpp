@@ -23,7 +23,30 @@ UINT Pipeline::IED_POS_NOR_TEX_COLOR_COUNT = 4;
 
 Pipeline::Pipeline(Description desc)
 {
-	// ラスタライザステート
+	// シェーダー
+	HRESULT hr;
+	ID3DBlob* pAS = nullptr, * pMS = nullptr, * pVS = nullptr, * pPS = nullptr;
+	if (desc.AmplificationShader)
+	{
+		hr = D3DReadFileToBlob(desc.ASFile, &pAS);
+		if (FAILED(hr)) { return; }
+	}
+	if (desc.MeshShader)
+	{
+		hr = D3DReadFileToBlob(desc.MSFile, &pMS);
+		if (FAILED(hr)) { return; }
+	}
+	else
+	{
+		hr = D3DReadFileToBlob(desc.VSFile, &pVS);
+		if (FAILED(hr)) { return; }
+	}
+	{
+		hr = D3DReadFileToBlob(desc.PSFile, &pPS);
+		if (FAILED(hr)) { return; }
+	}
+
+	// ラスタライザ
 	D3D12_RASTERIZER_DESC rasterDesc	= CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	rasterDesc.CullMode					= desc.CullMode;
 	rasterDesc.DepthClipEnable			= FALSE;
@@ -53,30 +76,6 @@ Pipeline::Pipeline(Description desc)
 		dsDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 		dsDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	}
-
-	// シェーダー
-	HRESULT hr;
-	ID3DBlob *pAS = nullptr, *pMS = nullptr, *pVS = nullptr, *pPS = nullptr;
-	if (desc.AmplificationShader)
-	{
-		hr = D3DReadFileToBlob(desc.ASFile, &pAS);
-		if (FAILED(hr)) { return; }
-	}
-	if (desc.MeshShader)
-	{
-		hr = D3DReadFileToBlob(desc.MSFile, &pMS);
-		if (FAILED(hr)) { return; }
-	}
-	else
-	{
-		hr = D3DReadFileToBlob(desc.VSFile, &pVS);
-		if (FAILED(hr)) { return; }
-	}
-	{
-		hr = D3DReadFileToBlob(desc.PSFile, &pPS);
-		if (FAILED(hr)) { return; }
-	}
-
 
 	if (desc.AmplificationShader)
 	{
@@ -123,7 +122,7 @@ Pipeline::Pipeline(Description desc)
 		streamDesc.pPipelineStateSubobjectStream = &psoStream;
 
 		// パイプラインの生成
-		hr = GetDevice()->CreatePipelineState(&streamDesc, IID_PPV_ARGS(&PipelineData));
+		hr = GetDevice()->CreatePipelineState(&streamDesc, IID_PPV_ARGS(PipelineData.GetAddressOf()));
 		if (FAILED(hr)) { return; }
 	}
 	else if (desc.MeshShader)
@@ -169,7 +168,7 @@ Pipeline::Pipeline(Description desc)
 		streamDesc.pPipelineStateSubobjectStream = &psoStream;
 
 		// パイプラインの生成
-		hr = GetDevice()->CreatePipelineState(&streamDesc, IID_PPV_ARGS(&PipelineData));
+		hr = GetDevice()->CreatePipelineState(&streamDesc, IID_PPV_ARGS(PipelineData.GetAddressOf()));
 		if (FAILED(hr)) { return; }
 	}
 	else
@@ -181,12 +180,12 @@ Pipeline::Pipeline(Description desc)
 		element.resize(desc.InputLayoutNum);
 		for (int i = 0; i < desc.InputLayoutNum; ++i)
 		{
-			element[i].SemanticName = desc.pInputLayout[i].name;
-			element[i].SemanticIndex = desc.pInputLayout[i].index;
-			element[i].Format = desc.pInputLayout[i].format;
-			element[i].InputSlot = 0;
-			element[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-			element[i].InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+			element[i].SemanticName			= desc.pInputLayout[i].name;
+			element[i].SemanticIndex		= desc.pInputLayout[i].index;
+			element[i].Format				= desc.pInputLayout[i].format;
+			element[i].InputSlot			= 0;
+			element[i].AlignedByteOffset	= D3D12_APPEND_ALIGNED_ELEMENT;
+			element[i].InputSlotClass		= D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 			element[i].InstanceDataStepRate = 0;
 		}
 
@@ -200,8 +199,8 @@ Pipeline::Pipeline(Description desc)
 		// 頂点レイアウト
 		pipelineDesc.InputLayout = { element.data(), desc.InputLayoutNum };
 		// サンプリング
-		pipelineDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-		pipelineDesc.SampleDesc.Count = 1;
+		pipelineDesc.SampleMask			= D3D12_DEFAULT_SAMPLE_MASK;
+		pipelineDesc.SampleDesc.Count	= 1;
 		pipelineDesc.SampleDesc.Quality = 0;
 		// ラスタライザ
 		pipelineDesc.RasterizerState = rasterDesc;
@@ -227,7 +226,7 @@ Pipeline::Pipeline(Description desc)
 		}
 
 		// パイプラインの生成
-		hr = GetDevice()->CreateGraphicsPipelineState(&pipelineDesc, IID_PPV_ARGS(&PipelineData));
+		hr = GetDevice()->CreateGraphicsPipelineState(&pipelineDesc, IID_PPV_ARGS(PipelineData.GetAddressOf()));
 		if (FAILED(hr)) { return; }
 	}
 }

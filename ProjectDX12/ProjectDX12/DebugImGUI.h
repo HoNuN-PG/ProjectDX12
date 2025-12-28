@@ -62,7 +62,7 @@ private:
 	static std::unique_ptr<MeshBuffer>									Screen;
 	static std::unique_ptr<RootSignature>								RootSignatureData;
 	static std::unique_ptr<Pipeline>									PipelineData;
-	static std::vector<std::pair<bool,std::unique_ptr<RenderTarget>>>	ImGUIRTVs;
+	static std::vector<std::pair<bool,std::unique_ptr<RenderTarget>>>	Images;
 
 public:
 	static DescriptorHeap* GetImGUIDescriptorHeap() { return ImGUIHeap.get(); }

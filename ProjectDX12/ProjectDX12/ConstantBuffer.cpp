@@ -42,21 +42,22 @@ ConstantBuffer::ConstantBuffer(Description desc)
 		&res, 
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr, 
-		IID_PPV_ARGS(&Resource)
+		IID_PPV_ARGS(Resource.GetAddressOf())
 	);
 	if (FAILED(hr)) { return; }
 
 	// 定数バッファビュー生成
 	CBV.BufferLocation	= Resource->GetGPUVirtualAddress();
-	CBV.SizeInBytes		= static_cast<UINT>(res.Width);		// 256アライメントでないとGPUアクセスエラー
+	CBV.SizeInBytes		= static_cast<UINT>(res.Width);	// 256アライメントでないとGPUアクセスエラー
 	Handle				= desc.pHeap->Allocate();
-	pDevice->CreateConstantBufferView(&CBV, Handle.hCPU);	// ディスクリプターヒープとの紐づけ
+	pDevice->CreateConstantBufferView(&CBV, Handle.hCPU);
 
 	// データ初期化
 	hr = Resource->Map(0, nullptr, &Ptr);
 	if (FAILED(hr)) { return; }
 	ZeroMemory(Ptr, desc.size);
 	Size = desc.size;
+	Resource->Unmap(0, nullptr);
 }
 
 ConstantBuffer::~ConstantBuffer()

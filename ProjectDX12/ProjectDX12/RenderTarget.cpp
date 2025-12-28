@@ -34,7 +34,7 @@ RenderTarget::RenderTarget(Description desc)
 		&rtvResourceDesc,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		&clearValue,
-		IID_PPV_ARGS(&Resource)
+		IID_PPV_ARGS(Resource.GetAddressOf())
 	);
 	if (FAILED(hr)) { return; }
 
@@ -47,11 +47,11 @@ RenderTarget::RenderTarget(Description desc)
 
 	// シェーダーリソースビューの作成
 	D3D12_SHADER_RESOURCE_VIEW_DESC rtvsrvDesc	= {};
-	rtvsrvDesc.ViewDimension					= D3D12_SRV_DIMENSION_TEXTURE2D;
-	rtvsrvDesc.Format							= rtvDesc.Format;
-	rtvsrvDesc.Texture2D.MipLevels				= 1;
-	rtvsrvDesc.Shader4ComponentMapping			= D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	hSRV										= desc.pSRVHeap->Allocate();
+	rtvsrvDesc.Format					= rtvDesc.Format;
+	rtvsrvDesc.ViewDimension			= D3D12_SRV_DIMENSION_TEXTURE2D;
+	rtvsrvDesc.Shader4ComponentMapping	= D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	rtvsrvDesc.Texture2D.MipLevels		= 1;
+	hSRV								= desc.pSRVHeap->Allocate();
 	GetDevice()->CreateShaderResourceView(Resource.Get(), &rtvsrvDesc, hSRV.hCPU);
 
 	Width = desc.width;

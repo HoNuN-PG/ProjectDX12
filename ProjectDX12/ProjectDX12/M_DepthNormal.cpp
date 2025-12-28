@@ -19,8 +19,8 @@ void M_DepthNormal::Initialize(Description desc)
 	pipeline.PSFile = L"../game/assets/shader/PS_DepthNormal.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.RenderTargetNum = 2;
 	pipeline.CullMode = desc.CullMode;
+	pipeline.RenderTargetNum = 2;
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(

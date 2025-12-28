@@ -157,10 +157,10 @@ HRESULT SceneSandBoxDX12::Init()
 		MeshMaterialSetupData materials;
 
 		materials[0].push_back(opaque_depth_normal);
-		materials[0].push_back(grid_shadow_vsm);
+		materials[0].push_back(grid_shadow);
 	
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
-		obj->SetPosition({ 0,-1,0 });
+		obj->SetPosition({ 0,0,0 });
 		obj->SetRotation({ DirectX::XMConvertToRadians(90),0,0 });
 		obj->SetScale({100,100,1});
 		std::shared_ptr<Plane> model = obj->AddComponent<Plane>(obj);

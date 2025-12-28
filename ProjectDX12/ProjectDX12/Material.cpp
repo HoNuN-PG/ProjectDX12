@@ -74,6 +74,17 @@ void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 	PipelineData->Bind();
 }
 
+void Material::BindBase(RootSignature::CustomBindSetting* setting, UINT handleNum)
+{
+	ID3D12DescriptorHeap* heaps[] =
+	{
+		Heap->Get(),
+	};
+	DescriptorHeap::Bind(heaps, 1);
+	RootSignatureData->Bind(setting, handleNum);
+	PipelineData->Bind();
+}
+
 UINT Material::AddMaterialInstance()
 {
 	// マテリアルインデックス計算

@@ -20,8 +20,8 @@ void M_Deffered_Albedo_Normal::Initialize(Description desc)
 	pipeline.PSFile = L"../game/assets/shader/PS_Deffered.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
+	pipeline.CullMode = desc.CullMode;
 	pipeline.RenderTargetNum = 2;
-		pipeline.CullMode = desc.CullMode;
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(

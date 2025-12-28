@@ -41,7 +41,7 @@ Texture::Texture(Description desc)
 			&texDesc, 
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, 
 			nullptr, 
-			IID_PPV_ARGS(&Resource)
+			IID_PPV_ARGS(Resource.GetAddressOf())
 		);
 		if (FAILED(hr)) { return; }
 
@@ -54,9 +54,9 @@ Texture::Texture(Description desc)
 		// シェーダーリソースビューの作成
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format					= info.format;
-		srvDesc.Texture2D.MipLevels		= info.mipLevels;
 		srvDesc.ViewDimension			= D3D12_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Texture2D.MipLevels		= info.mipLevels;
 
 		// ディスクリプター
 		Handle = desc.pHeap->Allocate();
@@ -72,7 +72,10 @@ Texture::Texture(Description desc)
 		DirectX::ResourceUploadBatch upload(GetDevice());
 		upload.Begin();
 		DirectX::CreateDDSTextureFromFile(
-			GetDevice(), upload, wPath, &Resource
+			GetDevice(), 
+			upload, 
+			wPath, 
+			Resource.GetAddressOf()
 		);
 		auto finish = upload.End(GetCommandQueue());
 		finish.wait();
@@ -80,9 +83,9 @@ Texture::Texture(Description desc)
 		// シェーダーリソースビューの作成
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format					= Resource->GetDesc().Format;
-		srvDesc.Texture2D.MipLevels		= Resource->GetDesc().MipLevels;
 		srvDesc.ViewDimension			= D3D12_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Shader4ComponentMapping	= D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Texture2D.MipLevels		= Resource->GetDesc().MipLevels;
 
 		// ディスクリプター
 		Handle = desc.pHeap->Allocate();

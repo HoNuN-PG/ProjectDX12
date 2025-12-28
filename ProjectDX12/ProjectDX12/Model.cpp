@@ -54,12 +54,11 @@ void Model::Create(const char* path, MeshMaterialSetupData materials)
 
 void Model::CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV)
 {
-	MeshBuffer::Description desc = {};
-
 	// 読み込んだデータから頂点バッファ生成
-	desc.vtxSize = sizeof(Vtx);
-	desc.idxSize = DXGI_FORMAT_R16_UINT;
-	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	MeshBuffer::Description desc = {};
+	desc.vtxSize	= sizeof(Vtx);
+	desc.idxSize	= DXGI_FORMAT_R16_UINT;
+	desc.topology	= D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	dest.Vertices.resize(src->mNumVertices);
 
@@ -161,15 +160,13 @@ void MeshletModel::Create(const char* path, MeshMaterialSetupData materials, Des
 
 void MeshletModel::CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV, DescriptorHeap* heap)
 {
-	MeshletBuffer::Description desc = {};
-	desc.pHeap = heap;
+	dest.Vertices.resize(src->mNumVertices);
 
 	// 読み込んだデータから頂点バッファ生成
-	desc.vtxSize = sizeof(Vtx);
-	desc.idxSize = DXGI_FORMAT_R16_UINT;
-	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-
-	dest.Vertices.resize(src->mNumVertices);
+	MeshletBuffer::Description desc = {};
+	desc.pHeap		= heap;
+	desc.vtxSize	= sizeof(Vtx);
+	desc.idxSize	= DXGI_FORMAT_R16_UINT;
 
 	// 頂点データ作成
 	for (int i = 0; i < src->mNumVertices; ++i)
@@ -200,16 +197,10 @@ void MeshletModel::CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool inv
 	}
 
 	// データ生成
-	for(int i = 0; i < dest.Vertices.size(); ++i)
-	{
-		desc.positions.push_back(dest.Vertices[i].pos);
-	}
+	for(int i = 0; i < dest.Vertices.size(); ++i) desc.positions.push_back(dest.Vertices[i].pos);
 	desc.pVtx = dest.Vertices.data();
 	desc.vtxCount = dest.Vertices.size();
-	for(int i = 0; i < dest.Indices.size(); ++i)
-	{
-		desc.indices.push_back(dest.Indices[i]);
-	}
+	for(int i = 0; i < dest.Indices.size(); ++i) desc.indices.push_back(dest.Indices[i]);
 	desc.pIdx = dest.Indices.data();
 	desc.idxCount = dest.Indices.size();
 	MeshData.push_back(std::make_unique<MeshletBuffer>(desc));
@@ -237,6 +228,6 @@ void MeshletModel::Rendering()
 		);
 		info.material->Bind(info.materialInstanceIdx);
 		// 描画
-		MeshData[info.meshIdx]->Draw();
+		MeshData[info.meshIdx]->Draw(info.material->GetMeshShaderSRVStartSlot());
 	}
 }

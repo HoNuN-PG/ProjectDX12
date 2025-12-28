@@ -41,11 +41,15 @@ struct DefferedData
 class RenderingEngine
 {
 public:
-	using PASSES = std::unordered_map<UINT, std::unique_ptr<RenderingPass>>; // 描画パス群:key=パスの種類/value=パス
+	// 描画パス群:key=パスの種類/value=パス
+	using PASSES = std::unordered_map<UINT, std::unique_ptr<RenderingPass>>;
 
 	// ====================
 	// 描画情報
 public:
+	/// <summary>
+	/// 描画するゲームオブジェクト
+	/// </summary>
 	struct RenderingInfo
 	{
 		GameObject& obj;
@@ -68,13 +72,6 @@ public:
 	void Uninit();
 	void Update();
 	void Draw();
-
-	// ====================
-	// Deffered
-private:
-	void SetupDefferedShader();
-private:
-	DefferedData DefferedLightingShader;
 
 	// ====================
 	// Utillity
@@ -102,13 +99,13 @@ private:
 	// グローバルリソース
 public:
 	// グローバル定数バッファ
-	DescriptorHeap::Handle GetGlobalConstantBufferResource(UINT key);
 	void WriteGlobalConstantBufferResource(UINT key, void* data);
+	DescriptorHeap::Handle GetGlobalConstantBufferResource(UINT key);
 	// グローバルテクスチャ
+	void CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key);
 	std::shared_ptr<RenderTarget> GetGlobalRenderTarget(UINT key);
 	DescriptorHeap::Handle GetGlobalTextureRTV(UINT key);
 	DescriptorHeap::Handle GetGlobalTextureSRV(UINT key);
-	void CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key);
 	void GlobalTextureRTV2SRV(UINT key);
 	void GlobalTextureSRV2RTV(UINT key);
 private:
@@ -145,6 +142,7 @@ public:
 		return nullptr;
 	}
 
+	void CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx);
 	/// <summary>
 	/// パスのテクスチャの取得
 	/// </summary>
@@ -153,7 +151,6 @@ public:
 	/// <param name="idx">パス内のテクスチャインデックス</param>
 	/// <returns></returns>
 	std::shared_ptr<RenderTarget> GetPassTexture(UINT timing, UINT type, UINT idx);
-	void CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx);
 
 private:
 	std::shared_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
@@ -226,6 +223,13 @@ private:
 	void ViewDepthNormal();
 	void ViewGBuffers();
 	void ViewPasses();
+
+	// ====================
+	// Deffered
+private:
+	void SetupDefferedShader();
+private:
+	DefferedData DefferedLightingShader;
 
 };
 

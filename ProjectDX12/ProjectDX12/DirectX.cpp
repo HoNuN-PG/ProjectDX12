@@ -17,10 +17,11 @@ D3D12_RECT							g_scissor;			// シザー
 
 HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 {
-	// デバッグ設定
 #ifdef _DEBUG
+	// デバッグ設定
 	ID3D12Debug* pDebug;
-	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&pDebug)))) {
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&pDebug)))) 
+	{
 		pDebug->EnableDebugLayer();
 	}
 #endif
@@ -36,9 +37,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	if (FAILED(hr)) { return hr; }
 	
 	// デバイス作成
-#if 1
 	Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter;
-
 	hr = g_pFactory->EnumAdapterByGpuPreference(
 		0,
 		DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
@@ -66,37 +65,6 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 			}
 		}
 	}
-#else
-	ComPtr<IDXGIAdapter1> dxgiAdapter = nullptr;					// デバイス取得用
-	int adapterIndex = 0;											// 列挙するデバイスのインデックス
-	bool adapterFound = false;										// 目的のデバイスを見つけたか
-
-	// 目的のデバイスを探索
-	while (g_pFactory->EnumAdapters1(adapterIndex, &dxgiAdapter) != DXGI_ERROR_NOT_FOUND)
-	{
-		DXGI_ADAPTER_DESC1 desc;
-		dxgiAdapter->GetDesc1(&desc);  // デバイスの情報を取得
-
-		// ハードウェアのみ選ぶ
-		if (!(desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE))
-		{
-			D3D_FEATURE_LEVEL featureLevels[] =
-			{
-				D3D_FEATURE_LEVEL_12_1,
-				D3D_FEATURE_LEVEL_12_0,
-			};
-			for (auto lv : featureLevels)
-			{
-				hr = D3D12CreateDevice(dxgiAdapter.Get(), lv, IID_PPV_ARGS(&g_pDevice));
-				if (SUCCEEDED(hr))
-				{
-					break;
-				}
-			}
-		}
-		++adapterIndex;
-	}
-#endif
 
 	// MeshShaderのサポートを確認
 	D3D12_FEATURE_DATA_D3D12_OPTIONS7 options7 = {};

@@ -7,6 +7,6 @@
 
 #define LIGHT_LENGTH (1000)
 
-#define DEPTH_THRESHOLD (0.0005f)
+#define DEPTH_THRESHOLD (0.0025f)
 
 #endif

@@ -13,33 +13,33 @@ RootSignature::RootSignature(Description desc)
 	for (UINT i = 0; i < desc.paramNum; ++i)
 	{
 		if(desc.pParam[i].type == D3D12_DESCRIPTOR_RANGE_TYPE_SRV && desc.pParam[i].shader == D3D12_SHADER_VISIBILITY_MESH)
-		{
+		{ // SRVを使用
 			param[i].ParameterType						= D3D12_ROOT_PARAMETER_TYPE_SRV;
 			param[i].Descriptor.ShaderRegister			= desc.pParam[i].slot;
 			param[i].Descriptor.RegisterSpace			= 0;
 			param[i].ShaderVisibility					= desc.pParam[i].shader;
 		}
 		else
-		{
+		{ // ディスクリプタテーブルを使用
 			range[i].RangeType								= desc.pParam[i].type;
-			range[i].BaseShaderRegister						= desc.pParam[i].slot;						// シェーダー側のバインド開始インデックス(b0~など)
 			range[i].NumDescriptors							= desc.pParam[i].num;
+			range[i].BaseShaderRegister						= desc.pParam[i].slot;
 			range[i].OffsetInDescriptorsFromTableStart		= D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 			param[i].ParameterType							= D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-			param[i].DescriptorTable.NumDescriptorRanges	= 1;										// レンジ数
-			param[i].DescriptorTable.pDescriptorRanges		= &range[i];								// ディスクリプタがもつレンジの先頭アドレス
+			param[i].DescriptorTable.NumDescriptorRanges	= 1;
+			param[i].DescriptorTable.pDescriptorRanges		= &range[i];
 			param[i].ShaderVisibility						= desc.pParam[i].shader;
 		}
 	}
 
-	SetUp(param, desc.sample, desc.filter, desc.paramNum, desc.bMeshShader);
+	SetUp(param, desc.paramNum, desc.sample, desc.filter,  desc.bMeshShader);
 }
 
 RootSignature::~RootSignature()
 {
 }
 
-void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, UINT num, BOOL bMeshShader)
+void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, UINT num, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, BOOL bMeshShader)
 {
 	// サンプラ
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
@@ -85,7 +85,7 @@ void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, D3D12_TEXTURE
 		0, 
 		signatureBlob->GetBufferPointer(), 
 		signatureBlob->GetBufferSize(), 
-		IID_PPV_ARGS(&RootSignatureData)
+		IID_PPV_ARGS(RootSignatureData.GetAddressOf())
 	);
 }
 
@@ -95,5 +95,17 @@ void RootSignature::Bind(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num)
 	for (int i = 0; i < num; ++i)
 	{
 		GetCommandList()->SetGraphicsRootDescriptorTable(i, handle[i]);
+	}
+}
+
+void RootSignature::Bind(CustomBindSetting* setting, UINT num)
+{
+	GetCommandList()->SetGraphicsRootSignature(RootSignatureData.Get());
+	for (int i = 0; i < num; ++i)
+	{
+		if (setting[i].bUseDescriptorTable)
+		{
+			GetCommandList()->SetGraphicsRootDescriptorTable(i, setting[i].handle);
+		}
 	}
 }

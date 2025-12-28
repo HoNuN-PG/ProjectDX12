@@ -39,8 +39,8 @@ void M_Grid::Initialize(Description desc)
 	pipeline.PSFile = L"../game/assets/shader/PS_Grid.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.RenderTargetNum = 1;
 	pipeline.CullMode = desc.CullMode;
+	pipeline.RenderTargetNum = 1;
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
@@ -100,8 +100,8 @@ void M_GridShadow::Initialize(Description desc)
 	pipeline.PSFile = L"../game/assets/shader/PS_GridShadow.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.RenderTargetNum = 1;
 	pipeline.CullMode = desc.CullMode;
+	pipeline.RenderTargetNum = 1;
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
@@ -174,8 +174,8 @@ void M_GridShadowVSM::Initialize(Description desc)
 	pipeline.PSFile = L"../game/assets/shader/PS_GridShadowVSM.cso";
 	pipeline.pInputLayout = Pipeline::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = Pipeline::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.RenderTargetNum = 1;
 	pipeline.CullMode = desc.CullMode;
+	pipeline.RenderTargetNum = 1;
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(

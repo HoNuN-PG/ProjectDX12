@@ -78,6 +78,7 @@ public:
 	virtual void Bind(UINT materialinstance) = 0;
 protected:
 	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
+	void BindBase(RootSignature::CustomBindSetting* setting, UINT handleNum);
 
 	// マテリアルインスタンス
 public:
@@ -112,6 +113,9 @@ public:
 	void WriteWVP(void* data, UINT instance);
 	void WriteParam(void* data, UINT idx);
 	void WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDLE startHandle, D3D12_DESCRIPTOR_HEAP_TYPE type);
+
+public:
+	virtual UINT GetMeshShaderSRVStartSlot() const { return 0; }
 
 public:
 	RenderingTiming GetRenderTiming() { return Timing; };

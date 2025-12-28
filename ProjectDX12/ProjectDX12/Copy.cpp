@@ -64,8 +64,8 @@ void Copy::Load()
 		desc.PSFile = L"../game/assets/shader/PS_Copy.cso";
 		desc.pInputLayout = Pipeline::IED_POS_TEX;
 		desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
-		desc.RenderTargetNum = 1;
 		desc.CullMode = D3D12_CULL_MODE_BACK;
+		desc.RenderTargetNum = 1;
 		Instance->PipelineData = std::make_unique<Pipeline>(desc);
 	}
 }

@@ -39,7 +39,7 @@ DepthStencil::DepthStencil(Description desc)
 		&resDesc,
 		D3D12_RESOURCE_STATE_DEPTH_WRITE, 
 		&clearValue, 
-		IID_PPV_ARGS(&Resource)
+		IID_PPV_ARGS(Resource.GetAddressOf())
 	);
 	if (FAILED(hr)) 
 	{

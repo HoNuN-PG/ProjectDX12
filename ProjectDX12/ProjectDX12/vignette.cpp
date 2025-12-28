@@ -38,8 +38,8 @@ void Vignette::Init()
 		desc.PSFile = L"../game/assets/shader/PS_Vignette.cso";
 		desc.pInputLayout = Pipeline::IED_POS_TEX;
 		desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
-		desc.RenderTargetNum = 1;
 		desc.CullMode = D3D12_CULL_MODE_BACK;
+		desc.RenderTargetNum = 1;
 		PipelineData.push_back(std::make_unique<Pipeline>(desc));
 	}
 	// RTV

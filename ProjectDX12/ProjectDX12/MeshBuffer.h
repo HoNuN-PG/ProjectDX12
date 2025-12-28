@@ -70,9 +70,9 @@ public:
 	void MappingUploder();
 
 private:
-	UINT						InsCount;
 	std::vector<InstanceData>	InsData;
-	ComPtr<ID3D12Resource>		Ins;
+	UINT						InsCount;
+	ComPtr<ID3D12Resource>		InsResource;
 	ComPtr<ID3D12Resource>		InsUploader;
 
 };
@@ -91,14 +91,13 @@ public:
 		const void*							pIdx;
 		DXGI_FORMAT							idxSize;
 		UINT								idxCount;
-		D3D12_PRIMITIVE_TOPOLOGY			topology;
 	};
 
 public:
 	MeshletBuffer() {};
 	MeshletBuffer(Description desc);
 	virtual ~MeshletBuffer();
-	virtual void Draw();
+	virtual void Draw(UINT MeshShaderSRVStartSlot);
 
 protected:
 	ComPtr<ID3D12Resource>		Vtx;

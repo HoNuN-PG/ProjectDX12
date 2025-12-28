@@ -25,9 +25,6 @@
     <Filter Include="ソース ファイル\System">
       <UniqueIdentifier>{76379fc3-1641-4d6d-8e58-698c0ea3b77c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\System\Constant">
-      <UniqueIdentifier>{a8ebc9bb-5377-41c2-9d7b-70d0ec4f7ba7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\Game">
       <UniqueIdentifier>{159d47c0-1c94-4825-96bb-6c344cd41b13}</UniqueIdentifier>
     </Filter>
@@ -60,9 +57,6 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\Scene">
       <UniqueIdentifier>{f68aed56-6f7f-432b-b947-59feec0c4d91}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\System\ConstantBuffer">
-      <UniqueIdentifier>{833d7d4f-e9bf-470e-a525-a1f0fa8c36b5}</UniqueIdentifier>
     </Filter>
     <Filter Include="リソース ファイル\PS\Lit">
       <UniqueIdentifier>{15aabc8b-5dc5-41b7-9cb4-4751e0f7940f}</UniqueIdentifier>
@@ -175,16 +169,22 @@
     <Filter Include="リソース ファイル\MS">
       <UniqueIdentifier>{f2b810e8-05bc-4ab1-9822-4da285c2d181}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\System\Rendering\Constant">
+      <UniqueIdentifier>{a8ebc9bb-5377-41c2-9d7b-70d0ec4f7ba7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\System\Rendering\ConstantBuffer">
+      <UniqueIdentifier>{833d7d4f-e9bf-470e-a525-a1f0fa8c36b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectX.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
     <ClCompile Include="ConstantBuffer.cpp">
-      <Filter>ソース ファイル\System\ConstantBuffer</Filter>
+      <Filter>ソース ファイル\System\Rendering\ConstantBuffer</Filter>
     </ClCompile>
     <ClCompile Include="ConstantWVP.cpp">
-      <Filter>ソース ファイル\System\ConstantBuffer</Filter>
+      <Filter>ソース ファイル\System\Rendering\ConstantBuffer</Filter>
     </ClCompile>
     <ClCompile Include="CameraDebug.cpp">
       <Filter>ソース ファイル\Game\Camera</Filter>
@@ -339,10 +339,10 @@
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
     <ClInclude Include="ConstantWVP.h">
-      <Filter>ヘッダー ファイル\System\Constant</Filter>
+      <Filter>ヘッダー ファイル\System\Rendering\Constant</Filter>
     </ClInclude>
     <ClInclude Include="ConstantBuffer.h">
-      <Filter>ヘッダー ファイル\System\Constant</Filter>
+      <Filter>ヘッダー ファイル\System\Rendering\Constant</Filter>
     </ClInclude>
     <ClInclude Include="CameraBase.h">
       <Filter>ヘッダー ファイル\Game\Camera</Filter>
@@ -351,7 +351,7 @@
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
     <ClInclude Include="ConstantLighting.h">
-      <Filter>ヘッダー ファイル\System\Constant</Filter>
+      <Filter>ヘッダー ファイル\System\Rendering\Constant</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
       <Filter>ヘッダー ファイル\ImGUI</Filter>
