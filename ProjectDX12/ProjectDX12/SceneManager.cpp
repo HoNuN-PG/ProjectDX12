@@ -5,6 +5,8 @@
 #include "SceneManager.h"
 #include "SceneSandBoxDX12.h"
 
+// System/Rndering
+#include "RenderingEngine.h"
 // System
 #include "Input.h"
 
@@ -66,4 +68,10 @@ void SceneManager::Update()
 void SceneManager::Draw()
 {
 	if (Scenes[CurrentScene]) Scenes[CurrentScene]->DrawBase();
+}
+
+std::shared_ptr<CameraBase> SceneManager::GetCamera()
+{
+	RenderingEngine* engine = GetRenderingEngine().get();
+	return engine->GetCamera();
 }

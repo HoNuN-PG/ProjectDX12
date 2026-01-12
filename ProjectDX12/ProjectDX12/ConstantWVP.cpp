@@ -4,6 +4,9 @@
 // Game/Camera
 #include "CameraBase.h"
 
+// Scene
+#include "SceneManager.h"
+
 // System/Constant
 #include "ConstantWVP.h"
 // System
@@ -24,9 +27,10 @@ void * ConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, D
 	DirectX::XMStoreFloat4x4(&(wvp.world), world);
 
 	// ビューマトリクス設定
-	DirectX::XMFLOAT3 pos = { CameraDebug::m_MainPos.x,CameraDebug::m_MainPos.y,CameraDebug::m_MainPos.z };
-	DirectX::XMFLOAT3 target = { CameraDebug::m_MainTarget.x,CameraDebug::m_MainTarget.y,CameraDebug::m_MainTarget.z };
-	DirectX::XMFLOAT3 up = { CameraDebug::m_MainUp.x,CameraDebug::m_MainUp.y,CameraDebug::m_MainUp.z };
+	CameraBase* camera = SceneManager::GetCamera().get();
+	DirectX::XMFLOAT3 pos = camera->GetPosition();
+	DirectX::XMFLOAT3 target = camera->GetTarget();
+	DirectX::XMFLOAT3 up = camera->GetUp();
 	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
 		DirectX::XMLoadFloat3(&pos),
 		DirectX::XMLoadFloat3(&target), 
@@ -86,9 +90,10 @@ void * ConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, D
 DirectX::XMFLOAT4X4 ConstantWVP::CalcInversVPMatrix()
 {
 	// ビューマトリクス
-	DirectX::XMFLOAT3 pos = { CameraDebug::m_MainPos.x,CameraDebug::m_MainPos.y,CameraDebug::m_MainPos.z };
-	DirectX::XMFLOAT3 target = { CameraDebug::m_MainTarget.x,CameraDebug::m_MainTarget.y,CameraDebug::m_MainTarget.z };
-	DirectX::XMFLOAT3 up = { CameraDebug::m_MainUp.x,CameraDebug::m_MainUp.y,CameraDebug::m_MainUp.z };
+	CameraBase* camera = SceneManager::GetCamera().get();
+	DirectX::XMFLOAT3 pos = camera->GetPosition();
+	DirectX::XMFLOAT3 target = camera->GetTarget();
+	DirectX::XMFLOAT3 up = camera->GetUp();
 	DirectX::XMMATRIX viewM = DirectX::XMMatrixLookAtLH(
 		DirectX::XMLoadFloat3(&pos),
 		DirectX::XMLoadFloat3(&target), 

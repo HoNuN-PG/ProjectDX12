@@ -54,7 +54,6 @@ HRESULT SceneSandBoxDX12::Init()
 	desc.CullMode = D3D12_CULL_MODE_FRONT;
 	desc.WriteDepth = TRUE;
 	desc.Timing = Material::RenderingTiming::Environment;
-	// 通常のスカイボックス
 	std::shared_ptr<M_SkyBox> sky_box = std::make_shared<M_SkyBox>();
 	Material::Initialize(sky_box, desc);
 	sky_box->AddTexture("../game/assets/texture/HDRI/skybox2.hdr");
@@ -64,10 +63,9 @@ HRESULT SceneSandBoxDX12::Init()
 	desc.CullMode = D3D12_CULL_MODE_BACK;
 	desc.WriteDepth = TRUE;
 	desc.Timing = Material::RenderingTiming::Shadow;
-	//通常のシャドウマップ
 	std::shared_ptr<M_SimpleShadowMaps> shadow_map = std::make_shared<M_SimpleShadowMaps>();
 	Material::Initialize(shadow_map, desc);
-	// 葉
+	// 葉シャドウマップ
 	desc.CullMode = D3D12_CULL_MODE_NONE;
 	desc.WriteDepth = FALSE;
 	std::shared_ptr<M_OpaqueSimpleShadowMaps> leaf_shadow_map = std::make_shared<M_OpaqueSimpleShadowMaps>();
@@ -79,7 +77,6 @@ HRESULT SceneSandBoxDX12::Init()
 	desc.CullMode = D3D12_CULL_MODE_BACK;
 	desc.WriteDepth = TRUE;
 	desc.Timing = Material::RenderingTiming::OpaqueDepthNormal;
-	// 通常の深度法線マップ
 	std::shared_ptr<M_DepthNormal> opaque_depth_normal = std::make_shared<M_DepthNormal>();
 	Material::Initialize(opaque_depth_normal, desc);
 
@@ -89,7 +86,6 @@ HRESULT SceneSandBoxDX12::Init()
 	desc.WriteDepth = TRUE;
 	desc.Timing = Material::RenderingTiming::AfterOpaqueDepthNormal;
 	desc.PassType = RenderingPass::RenderingPassType::CustomDepthNormal;
-	// カスタム深度法線マップ
 	std::shared_ptr<M_DepthNormal> custom_opaque_depth_normal = std::make_shared<M_DepthNormal>();
 	Material::Initialize(custom_opaque_depth_normal, desc);
 
@@ -99,7 +95,6 @@ HRESULT SceneSandBoxDX12::Init()
 	desc.WriteDepth = TRUE;
 	desc.Timing = Material::RenderingTiming::Forward;
 	desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
-	// 通常Grid
 	std::shared_ptr<M_Grid> grid = std::make_shared<M_Grid>();
 	Material::Initialize(grid, desc);
 	grid->SetGridSize(1);
@@ -138,9 +133,18 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_MS> ms = std::make_shared<M_MS>();
 	Material::Initialize(ms, desc);
 
+	// ===============================
+	// MeshletCulling
+	desc.CullMode = D3D12_CULL_MODE_BACK;
+	desc.WriteDepth = TRUE;
+	desc.Timing = Material::RenderingTiming::Forward;
+	desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
+	std::shared_ptr<M_MSCulling> ms_culling = std::make_shared<M_MSCulling>();
+	Material::Initialize(ms_culling, desc);
+
 	// モデル作成
 	{// スカイボックス
-		MeshMaterialSetupData materials;
+		MeshMaterialManager::MeshMaterialSetupData materials;
 
 		materials[0].push_back(sky_box);
 	
@@ -154,7 +158,7 @@ HRESULT SceneSandBoxDX12::Init()
 		model->Create(materials);
 	}
 	{// グリッド
-		MeshMaterialSetupData materials;
+		MeshMaterialManager::MeshMaterialSetupData materials;
 
 		materials[0].push_back(opaque_depth_normal);
 		materials[0].push_back(grid_shadow);
@@ -167,7 +171,7 @@ HRESULT SceneSandBoxDX12::Init()
 		model->Create(materials);
 	}
 	{// 木
-		MeshMaterialSetupData materials;
+		MeshMaterialManager::MeshMaterialSetupData materials;
 
 		materials[0].push_back(shadow_map);
 		materials[0].push_back(opaque_depth_normal);
@@ -195,7 +199,7 @@ HRESULT SceneSandBoxDX12::Init()
 		Material::Initialize(deffered_albedo_normal, desc);
 		deffered_albedo_normal->AddTexture("../game/assets/model/spot/spot_texture.png");
 		
-		MeshMaterialSetupData materials;
+		MeshMaterialManager::MeshMaterialSetupData materials;
 
 		materials[0].push_back(opaque_depth_normal);
 		materials[0].push_back(deffered_albedo_normal);
@@ -207,12 +211,22 @@ HRESULT SceneSandBoxDX12::Init()
 	}
 #if 1
 	{// 銅像
-		MeshMaterialSetupData materials;
+		MeshMaterialManager::MeshMaterialSetupData materials;
 
 		materials[0].push_back(ms);
 
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,-10 });
+		std::shared_ptr<MeshletModel> model = obj->AddComponent<MeshletModel>(obj);
+		model->Create("../game/assets/model/castles/staue/Staue01a.fbx", materials, Heap.get());
+	}
+	{// 銅像カリング
+		MeshMaterialManager::MeshMaterialSetupData materials;
+		
+		materials[0].push_back(ms_culling);
+		
+		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
+		obj->SetPosition({ 0,0,-20 });
 		std::shared_ptr<MeshletModel> model = obj->AddComponent<MeshletModel>(obj);
 		model->Create("../game/assets/model/castles/staue/Staue01a.fbx", materials, Heap.get());
 	}

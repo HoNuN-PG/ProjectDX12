@@ -12,7 +12,7 @@ public:
 	virtual ~Plane() {}
 
 public:
-	virtual void Create(MeshMaterialSetupData materials) override;
+	virtual void Create(MeshMaterialManager::MeshMaterialSetupData materials) override;
 
 private:
 	virtual void CreatePrimitive(unsigned int instanced) override;

@@ -26,14 +26,43 @@ public:
 	virtual void Update() override {}
 	virtual void Draw() override {}
 
+	// メインカメラのパラメータ
+public:
+	void SetIsMain(bool main) { m_IsMain = main; }
+protected:
+	void SetMainParams();
+protected:
+	bool m_IsMain;
+
+public:
+	static DirectX::XMFLOAT4X4 GetMainViewProjectionInvMatrix();
+	static std::vector<DirectX::XMFLOAT4> GetMainFrustumPlanes();
+	static float GetViewAngle() { return DirectX::XMConvertToRadians(VIEW_ANGLE); }
+	static float GetAspect() { return (float)WINDOW_WIDTH / WINDOW_HEIGHT; }
+
+public:
+	static DirectX::XMFLOAT3 m_MainPosition;
+	static DirectX::XMFLOAT3 m_MainTarget;
+	static DirectX::XMFLOAT3 m_MainUp;
+	static DirectX::XMFLOAT4X4 m_MainViewMatrix;
+	static DirectX::XMFLOAT4X4 m_MainProjMatrix;
+
 public:
 	DirectX::XMFLOAT3 GetPosition() 
 	{ 
-		return m_Pos; 
+		return m_Position; 
+	}
+	DirectX::XMFLOAT3 GetUp()
+	{
+		return m_Up;
+	}
+	DirectX::XMFLOAT3 GetTarget()
+	{
+		return m_Target;
 	}
 	DirectX::XMFLOAT3 GetForward()
 	{
-		return DXFL::Normalize(DXFL::Subtraction(m_Target,m_Pos));
+		return DXFL::Normalize(DXFL::Subtraction(m_Target,m_Position));
 	}
 	DirectX::XMFLOAT3 GetRight()
 	{
@@ -41,35 +70,16 @@ public:
 	}
 
 protected:
-	DirectX::XMFLOAT3 m_Pos;
+	DirectX::XMFLOAT3 m_Position;
 	DirectX::XMFLOAT3 m_Up;
-	DirectX::XMFLOAT3 m_Target;	
+	DirectX::XMFLOAT3 m_Target;
+	DirectX::XMFLOAT4X4 m_ViewMatrix;
+	DirectX::XMFLOAT4X4 m_ProjMatrix;
 
 	// 移動速度
 public:
 	float m_MoveSpeed;
 	float m_MouseSpeed;
-
-	// 各種カメラパラメータ
-public:
-	static float GetViewAngle() { return DirectX::XMConvertToRadians(VIEW_ANGLE); }
-	static float GetAspect() { return (float)WINDOW_WIDTH / WINDOW_HEIGHT; }
-
-	// マトリクス
-public:
-	static DirectX::XMFLOAT4X4 GetViewProjectionInvMatrix();
-
-	// メインカメラのパラメータ
-protected:
-	void SetMainParams();
-public:
-	static DirectX::XMFLOAT3 m_MainPos;
-	static DirectX::XMFLOAT3 m_MainUp;
-	static DirectX::XMFLOAT3 m_MainTarget;
-	static DirectX::XMFLOAT4X4 m_MainViewMatrix;
-	static DirectX::XMFLOAT4X4 m_MainProjMatrix;
-protected:
-	bool m_IsMain;
 
 };
 

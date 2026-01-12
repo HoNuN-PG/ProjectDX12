@@ -41,15 +41,12 @@ struct DefferedData
 class RenderingEngine
 {
 public:
-	// 描画パス群:key=パスの種類/value=パス
-	using PASSES = std::unordered_map<UINT, std::unique_ptr<RenderingPass>>;
+
 
 	// ====================
 	// 描画情報
 public:
-	/// <summary>
-	/// 描画するゲームオブジェクト
-	/// </summary>
+	// 描画するゲームオブジェクト
 	struct RenderingInfo
 	{
 		GameObject& obj;
@@ -81,12 +78,12 @@ public:
 	// ====================
 	// 描画ヒープ
 public:
-	DescriptorHeap* GetRenderingHeap() { return RenderingHeap.get(); }
-	DescriptorHeap* GetRTVHeap() { return RTVHeap.get(); }
+	DescriptorHeap* GetHeap() { return pHeap.get(); }
+	DescriptorHeap* GetRTVHeap() { return pRTVHeap.get(); }
 private:
-	std::shared_ptr<DescriptorHeap> RenderingHeap;
-	std::shared_ptr<DescriptorHeap>	RTVHeap;
-	std::shared_ptr<DescriptorHeap>	DSVHeap;
+	std::shared_ptr<DescriptorHeap> pHeap;
+	std::shared_ptr<DescriptorHeap>	pRTVHeap;
+	std::shared_ptr<DescriptorHeap>	pDSVHeap;
 
 	// ====================
 	// 描画リソース
@@ -113,7 +110,7 @@ private:
 	std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
 
 	// ====================
-	// 環境
+	// 環境オブジェクト
 public:
 	std::shared_ptr<CameraBase> GetCamera() { return Camera; }
 private:
@@ -123,13 +120,16 @@ private:
 	// ====================
 	// レンダリングパス
 public:
+	// 描画パス群:key=パスの種類,value=パス
+	using PASSES = std::unordered_map<UINT, std::unique_ptr<RenderingPass>>;
+public:
 	template<typename T>
 	void AddRenderingPass(UINT timing,UINT passType)
 	{
 		if (RenderingPasses[timing].contains(passType)) 
 			return;
 		RenderingPasses[timing][passType] = std::make_unique<T>();
-		RenderingPasses[timing][passType]->Init(RTVHeap,RenderingHeap,DSVHeap);
+		RenderingPasses[timing][passType]->Init(pRTVHeap,pHeap,pDSVHeap);
 	}
 	std::shared_ptr<class ShadowPass> GetShadowMapsPass();
 	template<typename T>
@@ -142,7 +142,15 @@ public:
 		return nullptr;
 	}
 
+	/// <summary>
+	/// パスのテクスチャのコピー
+	/// </summary>
+	/// <param name="dest">コピー先</param>
+	/// <param name="timing">描画タイミング</param>
+	/// <param name="type">パスの種類</param>
+	/// <param name="idx">パス内のテクスチャインデックス</param>
 	void CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx);
+
 	/// <summary>
 	/// パスのテクスチャの取得
 	/// </summary>
@@ -155,7 +163,7 @@ public:
 private:
 	std::shared_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
 	std::unique_ptr<RenderingPass> ODepthNormalPass;		// 不透明深度法線パス
-	std::unordered_map<UINT, PASSES> RenderingPasses;		// key=描画タイミング/value=描画パス群
+	std::unordered_map<UINT, PASSES> RenderingPasses;		// key=描画タイミング,value=描画パス群
 
 	// ====================
 	// レンダリングオブジェクト
@@ -183,21 +191,27 @@ public:
 	{
 		return CanvasPostProcess->GetVolume<T>();
 	}
-
 private:
-	std::vector<RenderingInfo> EnvironmentObjects;							// 環境描画オブジェクト
-	std::vector<RenderingInfo> DefferedObjects;								// ディファードライティングオブジェクト
-	std::vector<RenderingInfo> ForwardObjects;								// フォワードライティングオブジェクト
-	std::unique_ptr<PostProcess> ObjectPostProcess;							// オブジェクト描画後のポストプロセス
-	std::unique_ptr<PostProcess> CanvasPostProcess;							// キャンバス描画後のポストプロセス
+	std::vector<RenderingInfo> EnvironmentObjects;	// 環境描画オブジェクト
+	std::vector<RenderingInfo> DefferedObjects;		// ディファードライティングオブジェクト
+	std::vector<RenderingInfo> ForwardObjects;		// フォワードライティングオブジェクト
+	std::unique_ptr<PostProcess> ObjectPostProcess;	// オブジェクト描画後のポストプロセス
+	std::unique_ptr<PostProcess> CanvasPostProcess;	// キャンバス描画後のポストプロセス
+
+	// ====================
+	// DefferedShader
+private:
+	void SetupDefferedShader();
+private:
+	DefferedData DefferedLightingShader;
 
 	// ====================
 	// コンポーネントやマテリアルの参照
 public:
 	// 作成した描画コンポーネントの参照を追加
-	void RegisterRenderingComponent(std::shared_ptr<class RenderingComponent> component);
+	void RegisterRenderingComponentRef(std::shared_ptr<class RenderingComponent> component);
 	// 作成したマテリアルの参照を追加
-	void RegisterMaterial(std::shared_ptr<Material> material);
+	void RegisterMaterialRef(std::shared_ptr<Material> material);
 private:
 	std::list<std::weak_ptr<class RenderingComponent>> RenderingComponents;	// 作成された描画コンポーネントの参照
 	std::list<std::weak_ptr<Material>> RenderingMaterials;					// 作成されたマテリアルの参照
@@ -223,13 +237,6 @@ private:
 	void ViewDepthNormal();
 	void ViewGBuffers();
 	void ViewPasses();
-
-	// ====================
-	// Deffered
-private:
-	void SetupDefferedShader();
-private:
-	DefferedData DefferedLightingShader;
 
 };
 

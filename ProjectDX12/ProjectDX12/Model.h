@@ -9,7 +9,7 @@
 
 struct aiMesh;
 
-class Model : public VSRenderingComponent
+class Model : public MRenderingComponent
 {
 public:
 	struct Vtx
@@ -27,7 +27,7 @@ public:
 	};
 
 public:
-	using VSRenderingComponent::VSRenderingComponent;
+	using MRenderingComponent::MRenderingComponent;
 
 	virtual void Init() override {};
 	virtual void Uninit() override {}
@@ -39,14 +39,14 @@ public:
 	virtual ~Model(){}
 
 public:
-	void Create(const char* path, MeshMaterialSetupData materials);
+	void Create(const char* path, MeshMaterialManager::MeshMaterialSetupData materials);
 
 private:
 	void CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV);
 
 };
 
-class MeshletModel : public MSRenderingComponent
+class MeshletModel : public MLRenderingComponent
 {
 public:
 	struct Vtx
@@ -64,7 +64,7 @@ public:
 	};
 
 public:
-	using MSRenderingComponent::MSRenderingComponent;
+	using MLRenderingComponent::MLRenderingComponent;
 
 	virtual void Init() override {};
 	virtual void Uninit() override {}
@@ -76,7 +76,7 @@ public:
 	virtual ~MeshletModel() {}
 
 public:
-	void Create(const char* path, MeshMaterialSetupData materials, DescriptorHeap* heap);
+	void Create(const char* path, MeshMaterialManager::MeshMaterialSetupData materials, DescriptorHeap* heap);
 
 private:
 	void CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV, DescriptorHeap* heap);

@@ -2,7 +2,7 @@
 // Model
 #include "plane.h"
 
-void Plane::Create(MeshMaterialSetupData materials)
+void Plane::Create(MeshMaterialManager::MeshMaterialSetupData materials)
 {
 	CreatePrimitive(0);
 	// ƒ}ƒeƒŠƒAƒ‹İ’è

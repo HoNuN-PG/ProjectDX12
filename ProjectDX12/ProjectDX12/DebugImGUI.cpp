@@ -1,12 +1,10 @@
 
 #include <tchar.h>
 
-// Debug
-#include "DebugImGUI.h"
-
 // ImGUI
-#include "imgui/imgui_impl_dx12.h"
-#include "imgui/imgui_impl_win32.h"
+#include "DebugImGUI.h"
+#include <imgui/imgui_impl_dx12.h>
+#include <imgui/imgui_impl_win32.h>
 
 //System/ConstantBuffer
 #include "ConstantBuffer.h"
@@ -16,8 +14,8 @@ std::unique_ptr<MeshBuffer>									DebugImGUI::Screen;
 std::unique_ptr<RootSignature>								DebugImGUI::RootSignatureData;
 std::unique_ptr<Pipeline>									DebugImGUI::PipelineData;
 std::vector<std::pair<bool, std::unique_ptr<RenderTarget>>>	DebugImGUI::Images;
-std::unique_ptr<DescriptorHeap>								DebugImGUI::ImGUIHeap;
-std::unique_ptr<DescriptorHeap>								DebugImGUI::ImGUIRTVHeap;
+std::unique_ptr<DescriptorHeap>								DebugImGUI::pHeap;
+std::unique_ptr<DescriptorHeap>								DebugImGUI::pRTVHeap;
 
 DebugImGUI::DebugImGUI()
 {
@@ -47,15 +45,14 @@ MSG DebugImGUI::Create(HWND _hwnd)
 {
 	MSG msg = {};
 
-	// ImGUI用のディスクリプタヒープ
+	// ImGUI用のディスクリプタヒープを確保
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		desc.num = HEAP_NUM + 1;
-		ImGUIHeap = std::make_unique<DescriptorHeap>(desc);
+		desc.num = HEAP_NUM + 1; // ImGUI用のヒープを追加
+		pHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// ImGUIの初期化
-	// 実行ファイルの設定から高DPI項目の編集をする事でマウスポインタのズレ等を修正できる
 	{
 		if (ImGui::CreateContext() == nullptr) 
 		{
@@ -74,9 +71,15 @@ MSG DebugImGUI::Create(HWND _hwnd)
 			}
 			else 
 			{
-				auto handle = ImGUIHeap->Allocate();
-				ImGui_ImplDX12_Init(GetDevice(), 3,
-					DXGI_FORMAT_R8G8B8A8_UNORM, ImGUIHeap->Get(), handle.hCPU, handle.hGPU);
+				auto handle = pHeap->Allocate();
+				ImGui_ImplDX12_Init(
+					GetDevice(), 
+					3,
+					DXGI_FORMAT_R8G8B8A8_UNORM, 
+					pHeap->Get(), 
+					handle.hCPU, 
+					handle.hGPU
+				);
 				ImGuiIO& io = ImGui::GetIO();
 				assert(io.Fonts != nullptr);
 			}
@@ -101,22 +104,21 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	// パイプライン
 	{
 		Pipeline::Description desc = {};
-		desc.pRootSignature = RootSignatureData->Get();
 		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"../game/assets/shader/PS_Copy.cso";
+		desc.pRootSignature = RootSignatureData->Get();
 		desc.pInputLayout = Pipeline::IED_POS_TEX;
 		desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
 		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.RenderTargetNum = 1;
 		PipelineData = std::make_unique<Pipeline>(desc);
 	}
-	// ディスクリプタヒープ
+	// RTV用のディスクリプタヒープを確保
 	{
 		DescriptorHeap::Description desc = {};
-		// RTV用のヒープ設定
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		desc.num = HEAP_NUM;
-		ImGUIRTVHeap = std::make_unique<DescriptorHeap>(desc);
+		pRTVHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// レンダーターゲット
 	{
@@ -126,8 +128,8 @@ MSG DebugImGUI::Create(HWND _hwnd)
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
 			desc.format = DXGI_FORMAT_B8G8R8A8_UNORM;
-			desc.pRTVHeap = ImGUIRTVHeap.get();
-			desc.pSRVHeap = ImGUIHeap.get();
+			desc.pRTVHeap = pRTVHeap.get();
+			desc.pSRVHeap = pHeap.get();
 			Images.push_back(std::make_pair<bool, std::unique_ptr<RenderTarget>>(false, std::make_unique<RenderTarget>(desc)));
 		}
 	}

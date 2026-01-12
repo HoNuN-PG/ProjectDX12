@@ -7,7 +7,7 @@
 #include <Windows.h>
 
 // ImGUI
-#include "imgui/imgui.h"
+#include <imgui/imgui.h>
 
 // Model
 #include "MeshBuffer.h"
@@ -65,11 +65,11 @@ private:
 	static std::vector<std::pair<bool,std::unique_ptr<RenderTarget>>>	Images;
 
 public:
-	static DescriptorHeap* GetImGUIDescriptorHeap() { return ImGUIHeap.get(); }
+	static DescriptorHeap* GetImGUIDescriptorHeap() { return pHeap.get(); }
 
 private:
-	static std::unique_ptr<DescriptorHeap> ImGUIHeap;
-	static std::unique_ptr<DescriptorHeap> ImGUIRTVHeap;
+	static std::unique_ptr<DescriptorHeap> pHeap;
+	static std::unique_ptr<DescriptorHeap> pRTVHeap;
 
 };
 

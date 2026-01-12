@@ -1,4 +1,7 @@
 
+// Material/Materials
+#include "M_MS.h"
+
 // Model
 #include "MeshBuffer.h"
 
@@ -55,7 +58,6 @@ MeshBuffer::MeshBuffer(Description desc)
 	Vbv.BufferLocation	= Vtx->GetGPUVirtualAddress();
 	Vbv.SizeInBytes		= resDesc.Width;
 	Vbv.StrideInBytes	= desc.vtxSize;
-
 	if (desc.pIdx == nullptr) { return; }
 
 	// リソースの設定
@@ -214,7 +216,8 @@ MeshletBuffer::MeshletBuffer(Description desc)
 {
 	HRESULT hr;
 	// ヒープの設定
-	D3D12_HEAP_PROPERTIES heapProp = {};
+	D3D12_HEAP_PROPERTIES 
+		heapProp = {};
 	heapProp.Type					= D3D12_HEAP_TYPE_UPLOAD;
 	heapProp.CPUPageProperty		= D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
 	heapProp.MemoryPoolPreference	= D3D12_MEMORY_POOL_UNKNOWN;
@@ -365,17 +368,61 @@ MeshletBuffer::MeshletBuffer(Description desc)
 	srvDesc.Buffer.StructureByteStride = sizeof(DirectX::MeshletTriangle);
 	hPrimitiveIndices = desc.pHeap->Allocate();
 	GetDevice()->CreateShaderResourceView(pPrimitiveIndices.Get(), &srvDesc, hPrimitiveIndices.hCPU);
+
+	//========================================================
+	// CullDataの生成
+	cullDatas.resize(meshlets.size());
+	DirectX::ComputeCullData(
+		desc.positions.data(), desc.positions.size(),
+		meshlets.data(), meshlets.size(),
+		reinterpret_cast<uint32_t*>(uniqueVertexIndices.data()), uniqueVertexIndices.size(),
+		primitiveIndices.data(), primitiveIndices.size(),
+		cullDatas.data()
+	);
+
+	// バッファの生成
+	resDesc.Width = sizeof(DirectX::CullData) * cullDatas.size();
+	hr = GetDevice()->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&resDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(pCullDatas.GetAddressOf())
+	);
+	if (FAILED(hr)) { return; }
+
+	// バッファの初期値設定
+	void* pCullDatasMap;
+	hr = pCullDatas->Map(0, nullptr, (void**)&pCullDatasMap);
+	if (SUCCEEDED(hr))
+	{
+		memcpy_s(pCullDatasMap, resDesc.Width, cullDatas.data(), resDesc.Width);
+	}
+	pCullDatas->Unmap(0, nullptr);
+
+	// シェーダーリソースビューの作成
+	srvDesc.Buffer.NumElements = cullDatas.size();
+	srvDesc.Buffer.StructureByteStride = sizeof(DirectX::CullData);
+	hCullDatas = desc.pHeap->Allocate();
+	GetDevice()->CreateShaderResourceView(pCullDatas.Get(), &srvDesc, hCullDatas.hCPU);
 }
 
 MeshletBuffer::~MeshletBuffer()
 {
 }
 
-void MeshletBuffer::Draw(UINT MeshShaderSRVStartSlot)
+void MeshletBuffer::Draw(int AmpShaderResourceStartSlot, int MeshShaderResourceStartSlot)
 {
-	GetCommandList()->SetGraphicsRootShaderResourceView(MeshShaderSRVStartSlot, Vtx->GetGPUVirtualAddress());
-	GetCommandList()->SetGraphicsRootShaderResourceView(MeshShaderSRVStartSlot + 1, pMeshlets->GetGPUVirtualAddress());
-	GetCommandList()->SetGraphicsRootShaderResourceView(MeshShaderSRVStartSlot + 2, pUniqueVertexIndices->GetGPUVirtualAddress());
-	GetCommandList()->SetGraphicsRootShaderResourceView(MeshShaderSRVStartSlot + 3, pPrimitiveIndices->GetGPUVirtualAddress());
-	GetCommandList()->DispatchMesh(meshlets.size(), 1, 1);
+	UINT num = meshlets.size();
+	if (AmpShaderResourceStartSlot != -1)
+	{
+		GetCommandList()->SetGraphicsRootShaderResourceView((UINT)AmpShaderResourceStartSlot, pCullDatas->GetGPUVirtualAddress());
+		num = (num + LANE_COUNT - 1) / LANE_COUNT;
+	}
+	GetCommandList()->SetGraphicsRootShaderResourceView((UINT)MeshShaderResourceStartSlot, Vtx->GetGPUVirtualAddress());
+	GetCommandList()->SetGraphicsRootShaderResourceView((UINT)MeshShaderResourceStartSlot + 1, pMeshlets->GetGPUVirtualAddress());
+	GetCommandList()->SetGraphicsRootShaderResourceView((UINT)MeshShaderResourceStartSlot + 2, pUniqueVertexIndices->GetGPUVirtualAddress());
+	GetCommandList()->SetGraphicsRootShaderResourceView((UINT)MeshShaderResourceStartSlot + 3, pPrimitiveIndices->GetGPUVirtualAddress());
+	GetCommandList()->DispatchMesh(num, 1, 1);
 }

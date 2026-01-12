@@ -8,6 +8,8 @@
 // Scene
 #include "SceneBase.h"
 
+class CameraBase;
+
 class SceneManager
 {
 private:
@@ -31,6 +33,9 @@ public:
 public:
 	static SceneBase* GetCurrentScene(){ return Scenes[CurrentScene].get(); }
 	static std::shared_ptr<class RenderingEngine> GetRenderingEngine(){ return Scenes[CurrentScene].get()->GetRenderingEngine(); }
+
+public:
+	static std::shared_ptr<CameraBase> GetCamera();
 
 };
 

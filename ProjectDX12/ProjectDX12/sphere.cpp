@@ -4,7 +4,7 @@
 // Model
 #include "sphere.h"
 
-void Sphere::Create(MeshMaterialSetupData materials)
+void Sphere::Create(MeshMaterialManager::MeshMaterialSetupData materials)
 {
 	CreatePrimitive(0);
 	// ƒ}ƒeƒŠƒAƒ‹İ’è

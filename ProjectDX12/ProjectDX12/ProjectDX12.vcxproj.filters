@@ -154,12 +154,6 @@
     <Filter Include="ソース ファイル\Material\Materials">
       <UniqueIdentifier>{d78f6a5e-abc0-47b4-96a1-dec250921816}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\Debug">
-      <UniqueIdentifier>{bfa45a77-78b7-4254-bad8-0f85a9583fb5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Debug">
-      <UniqueIdentifier>{d11d7630-a19d-4f4c-ab23-5503f491e1cf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\System\Rendering\Pipeline">
       <UniqueIdentifier>{1f3f5fcd-7de8-46c3-b698-cff1b74b5fc1}</UniqueIdentifier>
     </Filter>
@@ -174,6 +168,9 @@
     </Filter>
     <Filter Include="ソース ファイル\System\Rendering\ConstantBuffer">
       <UniqueIdentifier>{833d7d4f-e9bf-470e-a525-a1f0fa8c36b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="リソース ファイル\AS">
+      <UniqueIdentifier>{0546c993-cf4d-46ba-9435-5e7e21190339}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -194,24 +191,6 @@
     </ClCompile>
     <ClCompile Include="CameraBase.cpp">
       <Filter>ソース ファイル\Game\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui.cpp">
-      <Filter>ソース ファイル\ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_draw.cpp">
-      <Filter>ソース ファイル\ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_dx12.cpp">
-      <Filter>ソース ファイル\ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_win32.cpp">
-      <Filter>ソース ファイル\ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_tables.cpp">
-      <Filter>ソース ファイル\ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_widgets.cpp">
-      <Filter>ソース ファイル\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="LightBase.cpp">
       <Filter>ソース ファイル\Game\Light</Filter>
@@ -327,11 +306,29 @@
     <ClCompile Include="ShadowPass.cpp">
       <Filter>ソース ファイル\System\Rendering\Pass</Filter>
     </ClCompile>
-    <ClCompile Include="DebugImGUI.cpp">
-      <Filter>ソース ファイル\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="M_MS.cpp">
       <Filter>ソース ファイル\Material\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugImGUI.cpp">
+      <Filter>ソース ファイル\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui.cpp">
+      <Filter>ソース ファイル\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <Filter>ソース ファイル\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_dx12.cpp">
+      <Filter>ソース ファイル\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_win32.cpp">
+      <Filter>ソース ファイル\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_tables.cpp">
+      <Filter>ソース ファイル\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <Filter>ソース ファイル\ImGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -352,30 +349,6 @@
     </ClInclude>
     <ClInclude Include="ConstantLighting.h">
       <Filter>ヘッダー ファイル\System\Rendering\Constant</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imconfig.h">
-      <Filter>ヘッダー ファイル\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui.h">
-      <Filter>ヘッダー ファイル\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_dx12.h">
-      <Filter>ヘッダー ファイル\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_win32.h">
-      <Filter>ヘッダー ファイル\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_internal.h">
-      <Filter>ヘッダー ファイル\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_rectpack.h">
-      <Filter>ヘッダー ファイル\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_textedit.h">
-      <Filter>ヘッダー ファイル\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_truetype.h">
-      <Filter>ヘッダー ファイル\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="LightBase.h">
       <Filter>ヘッダー ファイル\Game\Light</Filter>
@@ -500,14 +473,14 @@
     <ClInclude Include="MeshMaterialManager.h">
       <Filter>ヘッダー ファイル\Model</Filter>
     </ClInclude>
-    <ClInclude Include="DebugImGUI.h">
-      <Filter>ヘッダー ファイル\Debug</Filter>
-    </ClInclude>
     <ClInclude Include="TextureLoad.h">
       <Filter>ヘッダー ファイル\System\Rendering\Texture</Filter>
     </ClInclude>
     <ClInclude Include="M_MS.h">
       <Filter>ヘッダー ファイル\Material\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugImGUI.h">
+      <Filter>ヘッダー ファイル\ImGUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -621,6 +594,15 @@
     </FxCompile>
     <FxCompile Include="PS_MS.hlsl">
       <Filter>リソース ファイル\PS\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="AS_CullingObject.hlsl">
+      <Filter>リソース ファイル\AS</Filter>
+    </FxCompile>
+    <FxCompile Include="MS_CullingObject.hlsl">
+      <Filter>リソース ファイル\MS</Filter>
+    </FxCompile>
+    <FxCompile Include="CommonMeshlet.hlsl">
+      <Filter>リソース ファイル\Common</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

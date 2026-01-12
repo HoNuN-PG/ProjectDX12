@@ -12,9 +12,7 @@
 class LightBase : public GameObject
 {
 private:
-	/// <summary>
-	/// ライト回転パラメータ
-	/// </summary>
+	// ライト回転パラメータ
 	struct tLigRad
 	{
 		float radY, radXZ;		// 角度

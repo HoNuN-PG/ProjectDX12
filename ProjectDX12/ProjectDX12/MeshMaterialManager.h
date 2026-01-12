@@ -7,18 +7,19 @@
 // Material
 #include "Material.h"
 
-// メッシュに設定するマテリアルのセットアップデータ
-using MeshMaterialSetupData = std::unordered_map<UINT, std::vector<std::shared_ptr<Material>>>; // メッシュインデックスと使用するマテリアル
-
 /**
 * @class MeshMaterialManager
-* @brief メッシュのマテリアルの所有者
+* @brief メッシュが使用するマテリアルを管理
 */
 class MeshMaterialManager
 {
 public:
-	using MaterialInstance = std::pair<std::shared_ptr<Material>, UINT>; // 使用するマテリアルと使用するマテリアルインスタンスインデックス
-	using MeshMaterial = std::unordered_map<UINT, std::vector<MaterialInstance>>; // メッシュインデックスと使用するマテリアルインスタンス
+	// メッシュインデックスとインデックスのメッシュが使用するマテリアル（主にセットアップ用）
+	using MeshMaterialSetupData = std::unordered_map<UINT, std::vector<std::shared_ptr<Material>>>;
+	// 使用するマテリアルとマテリアルインスタンスインデックス（マテリアルインスタンス）
+	using MaterialInstance = std::pair<std::shared_ptr<Material>, UINT>;
+	// メッシュインデックスとインデックスのメッシュが使用するマテリアルインスタンス
+	using MeshMaterial = std::unordered_map<UINT, std::vector<MaterialInstance>>;
 
 public:
 	struct MeshMaterialInfo
@@ -35,19 +36,23 @@ public:
 public:
 	/// <summary>
 	/// セットアップ
-	/// １つのメッシュに対して同じ描画タイミングのマテリアルを複数設定することはできない（今は複数のメッシュに対しても設定できない）
+	/// １つのメッシュに対して同じ描画タイミングのマテリアルを複数設定することはできない
 	/// </summary>
 	/// <param name="materials"></param>
 	void SetUp(MeshMaterialSetupData materials);
 
 public:
 	/// <summary>
-	/// 指定タイミングで描画するマテリアルの取得
+	/// 指定したタイミングで描画するマテリアルを取得
 	/// </summary>
 	/// <param name="timing"></param>
 	/// <returns></returns>
 	std::vector<MeshMaterialInfo> GetRenderingMaterial(UINT timing);
 
+	// メッシュが使用しているマテリアルを取得
+	std::vector<MaterialInstance> GetMaterialInstances(UINT mesh) { return Materials.contains(mesh) ? Materials[mesh] : std::vector<MaterialInstance>(); }
+
+public:
 	// レンダリングエンジンにオブジェクトを描画登録
 	void Add2RenderingEngine(std::weak_ptr<class GameObject> owner);
 
@@ -60,11 +65,9 @@ private:
 	/// <returns></returns>
 	bool CheckAddedTiming(std::vector<Material::RenderingTiming> timing, UINT check);
 
-public:
-	std::vector<MaterialInstance> GetMaterialInstances(UINT mesh) { return Materials.contains(mesh) ? Materials[mesh] : std::vector<MaterialInstance>(); }
-
 private:
-	MeshMaterial Materials; // メッシュのマテリアル
+	// 各メッシュが使用しているマテリアル
+	MeshMaterial Materials;
 
 };
 

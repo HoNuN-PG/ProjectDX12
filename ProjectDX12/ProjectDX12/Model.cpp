@@ -18,7 +18,7 @@
 // System
 #include "StartUp.h"
 
-void Model::Create(const char* path, MeshMaterialSetupData materials)
+void Model::Create(const char* path, MeshMaterialManager::MeshMaterialSetupData materials)
 {
 	// マテリアル設定
 	MeshMaterialData = std::make_unique<MeshMaterialManager>();
@@ -124,7 +124,7 @@ void Model::Rendering()
 	}
 }
 
-void MeshletModel::Create(const char* path, MeshMaterialSetupData materials, DescriptorHeap* heap)
+void MeshletModel::Create(const char* path, MeshMaterialManager::MeshMaterialSetupData materials, DescriptorHeap* heap)
 {
 	// マテリアル設定
 	MeshMaterialData = std::make_unique<MeshMaterialManager>();
@@ -226,8 +226,9 @@ void MeshletModel::Rendering()
 			Owner.lock()->GetScale()),
 			info.materialInstanceIdx
 		);
+		info.material->WriteMeshletCount(MeshData[info.meshIdx]->GetMeshletCount());
 		info.material->Bind(info.materialInstanceIdx);
 		// 描画
-		MeshData[info.meshIdx]->Draw(info.material->GetMeshShaderSRVStartSlot());
+		MeshData[info.meshIdx]->Draw(info.material->GetAmpShaderSRVStartSlot(), info.material->GetMeshShaderSRVStartSlot());
 	}
 }

@@ -113,5 +113,5 @@ void GameObject::Add2RenderingEngine(UINT timing, UINT passType)
 
 void GameObject::RegisterComponent2RenderingEngine(std::shared_ptr<class RenderingComponent> comp)
 {
-	Engine->RegisterRenderingComponent(comp);
+	Engine->RegisterRenderingComponentRef(comp);
 }

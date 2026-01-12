@@ -21,7 +21,7 @@ void Material::Initialize(std::shared_ptr<Material> material, Description desc)
 	material->Initialize(desc);
 
 	// レンダリングエンジンにマテリアル本体の参照を登録
-	SceneManager::GetCurrentScene()->GetRenderingEngine()->RegisterMaterial(material);
+	SceneManager::GetCurrentScene()->GetRenderingEngine()->RegisterMaterialRef(material);
 }
 
 void Material::SetUp(
@@ -31,7 +31,7 @@ void Material::SetUp(
 	UINT rtvNum
 )
 {
-	Heap = heap;
+	pHeap = heap;
 
 	// ルートシグネチャ
 	{
@@ -40,12 +40,13 @@ void Material::SetUp(
 	// パイプライン
 	{
 		Pipeline::Description desc = {};
+		desc.AmpShader = pipeline.AmpShader;
 		desc.MeshShader = pipeline.MeshShader;
-		desc.pRootSignature = RootSignatureData->Get();
 		desc.ASFile = pipeline.ASFile;
 		desc.MSFile = pipeline.MSFile;
 		desc.VSFile = pipeline.VSFile;
 		desc.PSFile = pipeline.PSFile;
+		desc.pRootSignature = RootSignatureData->Get();
 		desc.pInputLayout = pipeline.pInputLayout;
 		desc.InputLayoutNum = pipeline.InputLayoutNum;
 		desc.RenderTargetNum = pipeline.RenderTargetNum;
@@ -59,7 +60,7 @@ void Material::SetUp(
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		desc.num = rtvNum;
-		RTVHeap = std::make_shared<DescriptorHeap>(desc);
+		pRTVHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 }
 
@@ -67,7 +68,7 @@ void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 {
 	ID3D12DescriptorHeap* heaps[] =
 	{
-		Heap->Get(),
+		pHeap->Get(),
 	};
 	DescriptorHeap::Bind(heaps,1);
 	RootSignatureData->Bind(handle, handleNum);
@@ -78,7 +79,7 @@ void Material::BindBase(RootSignature::CustomBindSetting* setting, UINT handleNu
 {
 	ID3D12DescriptorHeap* heaps[] =
 	{
-		Heap->Get(),
+		pHeap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
 	RootSignatureData->Bind(setting, handleNum);
@@ -108,7 +109,7 @@ UINT Material::AddMaterialInstance()
 
 		// WVP確保
 		ConstantBuffer::Description desc = {};
-		desc.pHeap = Heap;
+		desc.pHeap = pHeap;
 		desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
 		WVP.push_back(std::make_unique<ConstantBuffer>(desc));
 	}
@@ -128,7 +129,7 @@ void Material::AddTexture(const char* path)
 {
 	Texture::Description desc = {};
 	desc.fileName = path;
-	desc.pHeap = Heap;
+	desc.pHeap = pHeap;
 	Textures.push_back(std::make_unique<Texture>(desc));
 }
 

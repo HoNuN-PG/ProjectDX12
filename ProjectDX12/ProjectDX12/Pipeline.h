@@ -21,11 +21,9 @@ public:
 public:
 	struct Description
 	{
-		// MeshShader
-		BOOL					AmplificationShader = FALSE;
-		BOOL					MeshShader			= FALSE;
-
-		// シェーダーファイル
+		// シェーダー
+		BOOL					AmpShader = FALSE;
+		BOOL					MeshShader = FALSE;
 		const wchar_t*			ASFile;
 		const wchar_t*			MSFile;
 		const wchar_t*			VSFile;
@@ -38,14 +36,10 @@ public:
 		InputLayout*			pInputLayout;
 		UINT					InputLayoutNum;
 
-		// ラスタライザ
-		D3D12_CULL_MODE			CullMode	= D3D12_CULL_MODE_BACK;
-
-		// レンダーターゲット
+		// パイプライン設定
+		D3D12_CULL_MODE			CullMode = D3D12_CULL_MODE_BACK;
 		UINT					RenderTargetNum;
-
-		// 深度バッファ
-		BOOL					WriteDepth	= TRUE;
+		BOOL					WriteDepth = TRUE;
 	};
 
 public:

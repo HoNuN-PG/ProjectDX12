@@ -33,12 +33,12 @@ protected:
 
 };
 
-class VSRenderingComponent : public RenderingComponent
+class MRenderingComponent : public RenderingComponent
 {
 public:
 	using RenderingComponent::RenderingComponent;
 
-	virtual ~VSRenderingComponent() {};
+	virtual ~MRenderingComponent() {};
 
 protected:
 	// メッシュデータ
@@ -46,12 +46,12 @@ protected:
 
 };
 
-class MSRenderingComponent : public RenderingComponent
+class MLRenderingComponent : public RenderingComponent
 {
 public:
 	using RenderingComponent::RenderingComponent;
 
-	virtual ~MSRenderingComponent() {};
+	virtual ~MLRenderingComponent() {};
 
 public:
 	std::vector<MeshMaterialManager::MaterialInstance> GetMeshMaterialInstances(UINT meshIdx) { return MeshMaterialData->GetMaterialInstances(meshIdx); }

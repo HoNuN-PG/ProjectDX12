@@ -184,7 +184,7 @@ void M_ShadowRecieverBase::Initialize(Description desc)
 	{
 		RenderTarget::Description rtv = {};
 		rtv.format = pass.lock()->ShadowMapsFormat;
-		rtv.pRTVHeap = RTVHeap.get();
+		rtv.pRTVHeap = pRTVHeap.get();
 		rtv.pSRVHeap = desc.pHeap;
 		for (int i = 0; i < ShadowPass::TextureType::MAX; ++i)
 		{
@@ -240,7 +240,7 @@ void M_ShadowVSMRecieverBase::Initialize(Description desc)
 	{
 		RenderTarget::Description rtv = {};
 		rtv.format = pass.lock()->ShadowMapsFormat;
-		rtv.pRTVHeap = RTVHeap.get();
+		rtv.pRTVHeap = pRTVHeap.get();
 		rtv.pSRVHeap = desc.pHeap;
 		for (int i = 0; i < ShadowPass::TextureType::MAX; ++i)
 		{

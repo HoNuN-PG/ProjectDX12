@@ -43,8 +43,8 @@ public:
 		MAX_RENDERING_PASS_TYPE
 	};
 
-	// 初期化デスク
 public:
+	// 初期化デスク
 	struct Description
 	{
 		DescriptorHeap* pHeap = nullptr;
@@ -115,7 +115,9 @@ public:
 	void WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDLE startHandle, D3D12_DESCRIPTOR_HEAP_TYPE type);
 
 public:
-	virtual UINT GetMeshShaderSRVStartSlot() const { return 0; }
+	virtual int GetMeshShaderSRVStartSlot() const { return -1; }
+	virtual int GetAmpShaderSRVStartSlot() const { return -1; }
+	virtual void WriteMeshletCount(int count) {}
 
 public:
 	RenderingTiming GetRenderTiming() { return Timing; };
@@ -132,8 +134,8 @@ protected:
 	std::vector<std::unique_ptr<Texture>>			Textures;
 
 protected:
-	DescriptorHeap*									Heap;
-	std::shared_ptr<DescriptorHeap>					RTVHeap;
+	DescriptorHeap*									pHeap;
+	std::shared_ptr<DescriptorHeap>					pRTVHeap;
 	std::unique_ptr<RootSignature>					RootSignatureData;
 	std::unique_ptr<Pipeline>						PipelineData;
 

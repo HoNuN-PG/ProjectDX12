@@ -4,7 +4,7 @@
 // Game/Light
 #include "LightBase.h"
 
-// Debug
+// ImGUI
 #include "DebugImGUI.h"
 
 // Model
@@ -39,26 +39,26 @@ void RenderingEngine::Init()
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = 256;
-		RenderingHeap = std::make_shared<DescriptorHeap>(desc);
+		pHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ディスクリプターヒープ(レンダーターゲット)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		desc.num = 64;
-		RTVHeap = std::make_shared<DescriptorHeap>(desc);
+		pRTVHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ディスクリプタヒープ（深度バッファ)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 		desc.num = 32;
-		DSVHeap = std::make_shared<DescriptorHeap>(desc);
+		pDSVHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// グローバルリソース
 	{
 		ConstantBuffer::Description desc = {};
-		desc.pHeap = RenderingHeap.get();
+		desc.pHeap = pHeap.get();
 		desc.size = sizeof(DirectX::XMFLOAT4X4);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera] = std::make_shared<ConstantBuffer>(desc);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light] = std::make_shared<ConstantBuffer>(desc);
@@ -77,8 +77,8 @@ void RenderingEngine::Init()
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
 			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-			desc.pRTVHeap = RTVHeap.get();
-			desc.pSRVHeap = RenderingHeap.get();
+			desc.pRTVHeap = pRTVHeap.get();
+			desc.pSRVHeap = pHeap.get();
 			GlobalTexture[GlobalTextureResourceKey::MainTexture] = std::make_shared<RenderTarget>(desc);
 		}
 		// GBuffer
@@ -87,8 +87,8 @@ void RenderingEngine::Init()
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
 			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-			desc.pRTVHeap = RTVHeap.get();
-			desc.pSRVHeap = RenderingHeap.get();
+			desc.pRTVHeap = pRTVHeap.get();
+			desc.pSRVHeap = pHeap.get();
 			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_shared<RenderTarget>(desc);
 		}
 	}
@@ -97,7 +97,7 @@ void RenderingEngine::Init()
 		DepthStencil::Description desc = {};
 		desc.width = WINDOW_WIDTH;
 		desc.height = WINDOW_HEIGHT;
-		desc.pDSVHeap = DSVHeap.get();
+		desc.pDSVHeap = pDSVHeap.get();
 		DSV = std::make_shared<DepthStencil>(desc);
 	}
 
@@ -108,13 +108,14 @@ void RenderingEngine::Init()
 
 	// リソースオブジェクト
 	Camera = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
+	Camera->SetIsMain(true);
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
 
 	// レンダリングパス
 	ShadowMapsPass = std::make_shared<ShadowPass>();
-	ShadowMapsPass->Init(RTVHeap, RenderingHeap, DSVHeap);
+	ShadowMapsPass->Init(pRTVHeap, pHeap, pDSVHeap);
 	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>();
-	ODepthNormalPass->Init(RTVHeap, RenderingHeap, DSVHeap);
+	ODepthNormalPass->Init(pRTVHeap, pHeap, pDSVHeap);
 
 	// ポストプロセス
 	ObjectPostProcess = std::make_unique<PostProcess>();
@@ -149,9 +150,9 @@ void RenderingEngine::Draw()
 	{
 		// カメラ
 		DirectX::XMFLOAT4X4 camera;
-		camera._11 = CameraBase::m_MainPos.x;
-		camera._12 = CameraBase::m_MainPos.y;
-		camera._13 = CameraBase::m_MainPos.z;
+		camera._11 = CameraBase::m_MainPosition.x;
+		camera._12 = CameraBase::m_MainPosition.y;
+		camera._13 = CameraBase::m_MainPosition.z;
 		camera._14 = 0.0f;
 		DirectX::XMFLOAT3 cameraForward = Camera->GetForward();
 		camera._21 = cameraForward.x;
@@ -206,7 +207,7 @@ void RenderingEngine::Draw()
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
 	// メインテクスチャへのコピー
-	Copy::ExecuteCopy(RenderingHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU, GetRTV());
+	Copy::ExecuteCopy(pHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU, GetRTV());
 	// バッファ描画
 	ViewShadowMaps();
 	ViewDepthNormal();
@@ -380,12 +381,59 @@ void RenderingEngine::AddRenderObject(
 	}
 }
 
-void RenderingEngine::RegisterRenderingComponent(std::shared_ptr<RenderingComponent> component)
+void RenderingEngine::SetupDefferedShader()
+{
+	// ルートシグネチャ
+	{
+		RootSignature::Parameter param[] =
+		{
+			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+		};
+		RootSignature::Description desc = {};
+		desc.pParam = param;
+		desc.paramNum = _countof(param);
+		DefferedLightingShader.RootSignatureData = std::make_unique<RootSignature>(desc);
+	}
+	// パイプライン
+	{
+		Pipeline::InputLayout layout[] =
+		{
+			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
+			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
+		};
+		Pipeline::Description desc = {};
+		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
+		desc.PSFile = L"../game/assets/shader/PS_DefferedLighting.cso";
+		desc.pRootSignature = DefferedLightingShader.RootSignatureData->Get();
+		desc.pInputLayout = layout;
+		desc.InputLayoutNum = _countof(layout);
+		desc.CullMode = D3D12_CULL_MODE_BACK;
+		desc.RenderTargetNum = 1;
+		DefferedLightingShader.PipelineData = std::make_unique<Pipeline>(desc);
+	}
+	// パラメーター定数バッファ
+	{
+		ConstantBuffer::Description desc = {};
+		desc.pHeap = pHeap.get();
+		// Params
+		desc.size = sizeof(DirectX::XMFLOAT4X4);
+		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
+		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
+		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // VPINV
+	}
+}
+
+void RenderingEngine::RegisterRenderingComponentRef(std::shared_ptr<RenderingComponent> component)
 {
 	RenderingComponents.push_back(component);
 }
 
-void RenderingEngine::RegisterMaterial(std::shared_ptr<Material> material)
+void RenderingEngine::RegisterMaterialRef(std::shared_ptr<Material> material)
 {
 	RenderingMaterials.push_back(material);
 }
@@ -451,7 +499,8 @@ void RenderingEngine::DefferedRendering()
 	{
 		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->Clear(clearColor);
 	}
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
+	{
 		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
@@ -488,13 +537,13 @@ void RenderingEngine::DefferedLighting()
 		GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU,
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
-	DirectX::XMFLOAT4X4 vpInv = CameraBase::GetViewProjectionInvMatrix();
+	DirectX::XMFLOAT4X4 vpInv = CameraBase::GetMainViewProjectionInvMatrix();
 	DefferedLightingShader.Params[2]->Write(&vpInv);
 
 	// 各種オブジェクトをバインド
 	ID3D12DescriptorHeap* heaps[] =
 	{
-		RenderingHeap->Get(),
+		pHeap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
 	DefferedLightingShader.PipelineData->Bind();
@@ -563,27 +612,27 @@ void RenderingEngine::ViewShadowMaps()
 	{
 		ImGui::Text("ShadowMap1");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			RenderingHeap.get(),
+			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::Near).get()), size);
 		ImGui::Text("ShadowMap2");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			RenderingHeap.get(),
+			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::Middle).get()), size);
 		ImGui::Text("ShadowMap3");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			RenderingHeap.get(),
+			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::Far).get()), size);
 		ImGui::Text("VSMShadowMap1");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			RenderingHeap.get(),
+			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::NearVSM).get()), size);
 		ImGui::Text("VSMShadowMap2");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			RenderingHeap.get(),
+			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::MiddleVSM).get()), size);
 		ImGui::Text("VSMShadowMap3");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			RenderingHeap.get(),
+			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::FarVSM).get()), size);
 	}
 	ImGui::End();
@@ -595,11 +644,11 @@ void RenderingEngine::ViewDepthNormal()
 	{
 		ImGui::Text("Depth");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			RenderingHeap.get(),
+			pHeap.get(),
 			ODepthNormalPass->GetTexture(OpaqueDepthNormalPass::DepthTexture).get()), { 240,135 });
 		ImGui::Text("Normal");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			RenderingHeap.get(),
+			pHeap.get(),
 			ODepthNormalPass->GetTexture(OpaqueDepthNormalPass::NormalTexture).get()), { 240,135 });
 	}
 	ImGui::End();
@@ -611,7 +660,7 @@ void RenderingEngine::ViewGBuffers()
 	{
 		ImGui::Text("DefferedAlbedo");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			RenderingHeap.get(), 
+			pHeap.get(), 
 			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture].get()), { 240,135 });
 	}
 	ImGui::End();
@@ -623,56 +672,9 @@ void RenderingEngine::ViewPasses()
 	{
 		ImGui::Text("CustomDepth");
 		ImGui::Image(DebugImGUI::GetImGUIImage(
-			RenderingHeap.get(),
+			pHeap.get(),
 			RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal][RenderingPass::CustomDepthNormal]->
 			GetTexture(CustomDepthNormalPass::DepthTexture).get()), {240,135});
 	}
 	ImGui::End();
-}
-
-void RenderingEngine::SetupDefferedShader()
-{
-	// ルートシグネチャ
-	{
-		RootSignature::Parameter param[] =
-		{
-			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-		};
-		RootSignature::Description desc = {};
-		desc.pParam = param;
-		desc.paramNum = _countof(param);
-		DefferedLightingShader.RootSignatureData = std::make_unique<RootSignature>(desc);
-	}
-	// パイプライン
-	{
-		Pipeline::InputLayout layout[] =
-		{
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-		};
-		Pipeline::Description desc = {};
-		desc.pRootSignature = DefferedLightingShader.RootSignatureData->Get();
-		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"../game/assets/shader/PS_DefferedLighting.cso";
-		desc.pInputLayout = layout;
-		desc.InputLayoutNum = _countof(layout);
-		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.RenderTargetNum = 1;
-		DefferedLightingShader.PipelineData = std::make_unique<Pipeline>(desc);
-	}
-	// パラメーター定数バッファ
-	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = RenderingHeap.get();
-		// Params
-		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
-		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
-		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // VPINV
-	}
 }

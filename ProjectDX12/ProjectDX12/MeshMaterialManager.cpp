@@ -23,45 +23,14 @@ void MeshMaterialManager::SetUp(MeshMaterialSetupData materials)
 	for (auto&& item = materials.begin(); item != materials.end(); ++item)
 	{
 		for(int i = 0; i < item->second.size(); ++i)
-		{ // メッシュごとにマテリアルインスタンスを作成
+		{ 
+			// メッシュごとにマテリアルインスタンスを作成
 			MaterialInstance instance;
 			instance.first = item->second[i]; // マテリアル
 			instance.second = item->second[i]->AddMaterialInstance(); // マテリアルインスタンスインデックス
-			Materials[item->first].push_back(instance); // メッシュごとのマテリアルインスタンスを追加
+			Materials[item->first].push_back(instance); // メッシュごとに使用するマテリアルインスタンスを追加
 		}
 	}
-}
-
-void MeshMaterialManager::Add2RenderingEngine(std::weak_ptr<class GameObject> owner)
-{
-	std::vector<Material::RenderingTiming> timing; // 登録済みタイミング
-
-	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
-	{
-		std::vector<MaterialInstance> instances = item->second;
-		for (int i = 0; i < instances.size(); ++i)
-		{
-			if(CheckAddedTiming(timing, instances[i].first->GetRenderTiming()))
-			{ // すでに登録済みのタイミングならスキップ
-				continue;
-			}
-			timing.push_back(instances[i].first->GetRenderTiming());
-			// 登録
-			owner.lock()->Add2RenderingEngine(timing.back(), instances[i].first->GetPassType());
-		}
-	}
-}
-
-bool MeshMaterialManager::CheckAddedTiming(std::vector<Material::RenderingTiming> timing, UINT check)
-{
-	for(int i = 0; i < timing.size(); ++i)
-	{
-		if (timing[i] == check)
-		{
-			return true;
-		}
-	}
-	return false;
 }
 
 std::vector<MeshMaterialManager::MeshMaterialInfo> MeshMaterialManager::GetRenderingMaterial(UINT timing)
@@ -89,4 +58,38 @@ std::vector<MeshMaterialManager::MeshMaterialInfo> MeshMaterialManager::GetRende
 	}
 
 	return infos;
+}
+
+void MeshMaterialManager::Add2RenderingEngine(std::weak_ptr<class GameObject> owner)
+{
+	// 登録済み描画タイミング
+	std::vector<Material::RenderingTiming> timing;
+
+	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
+	{
+		std::vector<MaterialInstance> instances = item->second;
+		for (int i = 0; i < instances.size(); ++i)
+		{
+			if(CheckAddedTiming(timing, instances[i].first->GetRenderTiming()))
+			{ 
+				// すでに登録済みの描画タイミングなら無効
+				continue;
+			}
+			// 登録
+			timing.push_back(instances[i].first->GetRenderTiming());
+			owner.lock()->Add2RenderingEngine(timing.back(), instances[i].first->GetPassType());
+		}
+	}
+}
+
+bool MeshMaterialManager::CheckAddedTiming(std::vector<Material::RenderingTiming> timing, UINT check)
+{
+	for(int i = 0; i < timing.size(); ++i)
+	{
+		if (timing[i] == check)
+		{
+			return true;
+		}
+	}
+	return false;
 }

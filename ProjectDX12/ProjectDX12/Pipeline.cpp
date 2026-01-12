@@ -26,9 +26,11 @@ Pipeline::Pipeline(Description desc)
 	// シェーダー
 	HRESULT hr;
 	ID3DBlob* pAS = nullptr, * pMS = nullptr, * pVS = nullptr, * pPS = nullptr;
-	if (desc.AmplificationShader)
+
+	if (desc.AmpShader)
 	{
 		hr = D3DReadFileToBlob(desc.ASFile, &pAS);
+		hr = D3DReadFileToBlob(desc.MSFile, &pMS);
 		if (FAILED(hr)) { return; }
 	}
 	if (desc.MeshShader)
@@ -77,7 +79,7 @@ Pipeline::Pipeline(Description desc)
 		dsDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	}
 
-	if (desc.AmplificationShader)
+	if (desc.AmpShader)
 	{
 		assert(pAS != nullptr);
 		assert(pMS != nullptr);

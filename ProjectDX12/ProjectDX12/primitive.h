@@ -6,7 +6,7 @@
 // Model
 #include "RenderingComponent.h"
 
-class Primitive : public VSRenderingComponent
+class Primitive : public MRenderingComponent
 {
 public:
 	struct Vertex 
@@ -18,7 +18,7 @@ public:
 	};
 
 public:
-	using VSRenderingComponent::VSRenderingComponent;
+	using MRenderingComponent::MRenderingComponent;
 
 	virtual void Init() override {};
 	virtual void Uninit() override {}
@@ -30,7 +30,7 @@ public:
 	virtual ~Primitive() {}
 
 public:
-	virtual void Create(MeshMaterialSetupData materials) = 0;
+	virtual void Create(MeshMaterialManager::MeshMaterialSetupData materials) = 0;
 
 protected:
 	virtual void CreatePrimitive(unsigned int instanced) = 0;

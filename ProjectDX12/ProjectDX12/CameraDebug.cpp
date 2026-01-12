@@ -11,19 +11,12 @@
 
 CameraDebug::CameraDebug()
 {
-	m_Pos = { 0,5,-10 };
+	m_Position = { 0,5,-10 };
 	m_Up = { 0,1,0 };
 	m_Target = { 0,0,0 };
 
 	m_MoveSpeed = 0.5;
 	m_MouseSpeed = 1.0f;
-
-	// メインカメラパラメータの設定
-	m_IsMain = true;
-	if (m_IsMain)
-	{
-		SetMainParams();
-	}
 }
 
 void CameraDebug::Init()
@@ -38,7 +31,7 @@ void CameraDebug::Init()
 	m_oldPos = cursorPos;
 
 	// カメラ情報
-	arg.vCamPos = DirectX::XMLoadFloat3(&m_Pos);
+	arg.vCamPos = DirectX::XMLoadFloat3(&m_Position);
 	arg.vCamLook = DirectX::XMLoadFloat3(&m_Target);
 	DirectX::XMVECTOR vCamUp = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&m_Up));
 	DirectX::XMVECTOR vFront = DirectX::XMVectorSubtract(arg.vCamLook, arg.vCamPos);
@@ -54,10 +47,7 @@ void CameraDebug::Init()
 	ProcDCC(arg);
 
 	// メインカメラパラメータの設定
-	if (m_IsMain)
-	{
-		SetMainParams();
-	}
+	SetMainParams();
 }
 
 void CameraDebug::Update()
@@ -77,7 +67,7 @@ void CameraDebug::Update()
 	m_oldPos = cursorPos;
 
 	// カメラ情報
-	arg.vCamPos = DirectX::XMLoadFloat3(&m_Pos);
+	arg.vCamPos = DirectX::XMLoadFloat3(&m_Position);
 	arg.vCamLook = DirectX::XMLoadFloat3(&m_Target);
 	DirectX::XMVECTOR vCamUp = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&m_Up));
 	DirectX::XMVECTOR vFront = DirectX::XMVectorSubtract(arg.vCamLook, arg.vCamPos);
@@ -93,10 +83,7 @@ void CameraDebug::Update()
 	ProcDCC(arg);
 
 	// メインカメラパラメータの設定
-	if (m_IsMain) 
-	{
-		SetMainParams();
-	}
+	SetMainParams();
 }
 
 void CameraDebug::Draw()
@@ -135,21 +122,22 @@ void CameraDebug::ProcDCC(Argument& arg)
 
 	// 更新
 	DirectX::XMVECTOR vCamPos = DirectX::XMVectorAdd(arg.vCamPos, vCamMove);
-	DirectX::XMStoreFloat3(&m_Pos, vCamPos);
+	DirectX::XMStoreFloat3(&m_Position, vCamPos);
 	DirectX::XMStoreFloat3(&m_Target, DirectX::XMVectorAdd(vCamPos, DirectX::XMVectorScale(vFrontAxis, arg.focus)));
 	DirectX::XMStoreFloat3(&m_Up, DirectX::XMVector3Normalize(DirectX::XMVector3Cross(vFrontAxis, vSideAxis)));
 
-	// Transform更新
-	SetPosition(m_Pos);
+	SetPosition(m_Position);
+	SetRotation({ 0,0,0 });
+	SetScale({ 1,1,1 });
 
 	// マトリクス計算
 	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
-		DirectX::XMLoadFloat3(&m_MainPos),
-		DirectX::XMLoadFloat3(&m_MainTarget),
-		XMLoadFloat3(&m_MainUp)
+		DirectX::XMLoadFloat3(&m_Position),
+		DirectX::XMLoadFloat3(&m_Target),
+		XMLoadFloat3(&m_Up)
 	);
 	view = DirectX::XMMatrixTranspose(view);
-	DirectX::XMStoreFloat4x4(&m_MainViewMatrix, view);
+	DirectX::XMStoreFloat4x4(&m_ViewMatrix, view);
 
 	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(
 		GetViewAngle(),
@@ -158,5 +146,5 @@ void CameraDebug::ProcDCC(Argument& arg)
 		(float)CAM_FAR
 	);
 	proj = DirectX::XMMatrixTranspose(proj);
-	DirectX::XMStoreFloat4x4(&m_MainProjMatrix, proj);
+	DirectX::XMStoreFloat4x4(&m_ProjMatrix, proj);
 }

@@ -12,7 +12,8 @@ RootSignature::RootSignature(Description desc)
 	BOOL bMeshShader = FALSE;
 	for (UINT i = 0; i < desc.paramNum; ++i)
 	{
-		if(desc.pParam[i].type == D3D12_DESCRIPTOR_RANGE_TYPE_SRV && desc.pParam[i].shader == D3D12_SHADER_VISIBILITY_MESH)
+		if(desc.pParam[i].type == D3D12_DESCRIPTOR_RANGE_TYPE_SRV && 
+			(desc.pParam[i].shader == D3D12_SHADER_VISIBILITY_AMPLIFICATION || desc.pParam[i].shader == D3D12_SHADER_VISIBILITY_MESH))
 		{ // SRV‚ðŽg—p
 			param[i].ParameterType						= D3D12_ROOT_PARAMETER_TYPE_SRV;
 			param[i].Descriptor.ShaderRegister			= desc.pParam[i].slot;

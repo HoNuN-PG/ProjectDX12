@@ -97,23 +97,31 @@ public:
 	MeshletBuffer() {};
 	MeshletBuffer(Description desc);
 	virtual ~MeshletBuffer();
-	virtual void Draw(UINT MeshShaderSRVStartSlot);
+	virtual void Draw(int AmpShaderResourceStartSlot, int MeshShaderResourceStartSlot);
+
+public:
+	int GetMeshletCount() { return (int)meshlets.size(); }
 
 protected:
-	ComPtr<ID3D12Resource>		Vtx;
-	DescriptorHeap::Handle      hVtx;
 
-	std::vector<DirectX::Meshlet>          meshlets;
-	ComPtr<ID3D12Resource>				   pMeshlets;
-	DescriptorHeap::Handle				   hMeshlets;
+	ComPtr<ID3D12Resource>					Vtx;
+	DescriptorHeap::Handle					hVtx;
 
-	std::vector<uint8_t>                   uniqueVertexIndices;
-	ComPtr<ID3D12Resource>				   pUniqueVertexIndices;
-	DescriptorHeap::Handle				   hUniqueVertexIndices;
+	std::vector<DirectX::Meshlet>			meshlets;
+	ComPtr<ID3D12Resource>					pMeshlets;
+	DescriptorHeap::Handle					hMeshlets;
 
-	std::vector<DirectX::MeshletTriangle>  primitiveIndices;
-	ComPtr<ID3D12Resource>				   pPrimitiveIndices;
-	DescriptorHeap::Handle				   hPrimitiveIndices;
+	std::vector<uint8_t>					uniqueVertexIndices;
+	ComPtr<ID3D12Resource>					pUniqueVertexIndices;
+	DescriptorHeap::Handle					hUniqueVertexIndices;
+
+	std::vector<DirectX::MeshletTriangle>	primitiveIndices;
+	ComPtr<ID3D12Resource>					pPrimitiveIndices;
+	DescriptorHeap::Handle					hPrimitiveIndices;
+
+	std::vector<DirectX::CullData>			cullDatas;
+	ComPtr<ID3D12Resource>					pCullDatas;
+	DescriptorHeap::Handle					hCullDatas;
 
 };
 

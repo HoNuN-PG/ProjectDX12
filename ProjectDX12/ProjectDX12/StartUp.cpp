@@ -11,13 +11,11 @@
 // Scene
 #include "SceneManager.h"
 
-// Debug
-#include "DebugImGUI.h"
-
 // ImGUI
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_dx12.h"
-#include "imgui/imgui_impl_win32.h"
+#include "DebugImGUI.h"
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_dx12.h>
+#include <imgui/imgui_impl_win32.h>
 
 // System
 #include "DirectX.h"
