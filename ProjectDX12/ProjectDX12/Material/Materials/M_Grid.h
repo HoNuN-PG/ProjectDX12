@@ -1,0 +1,61 @@
+#ifndef ___M_GRID_H___
+#define ___M_GRID_H___
+
+#include "Material/Materials/M_Shadow.h"
+#include "Material/Material.h"
+
+namespace Grid 
+{
+	struct GridParam
+	{
+		float GridSize;
+		float SubGridSize;
+		float GridWidth;
+		float pad1;
+	};
+}
+
+class M_Grid : public Material
+{
+public:
+	virtual void Initialize(Description desc) override;
+	virtual void Bind(UINT materialinstance) override;
+
+public:
+	void SetGridSize(float size) { GridParam.GridSize = size; }
+	void SetSubGridSize(float size) { GridParam.SubGridSize = size; }
+	void SetGridWidth(float width) { GridParam.GridWidth = width; }
+private:
+	Grid::GridParam GridParam;
+
+};
+
+class M_GridShadow : public M_ShadowRecieverBase
+{
+public:
+	virtual void Initialize(Description desc) override;
+	virtual void Bind(UINT materialinstance) override;
+
+public:
+	void SetGridSize(float size) { GridParam.GridSize = size; }
+	void SetSubGridSize(float size) { GridParam.SubGridSize = size; }
+	void SetGridWidth(float width) { GridParam.GridWidth = width; }
+private:
+	Grid::GridParam GridParam;
+};
+
+class M_GridShadowVSM : public M_ShadowVSMRecieverBase
+{
+public:
+	virtual void Initialize(Description desc) override;
+	virtual void Bind(UINT materialinstance) override;
+
+public:
+	void SetGridSize(float size) { GridParam.GridSize = size; }
+	void SetSubGridSize(float size) { GridParam.SubGridSize = size; }
+	void SetGridWidth(float width) { GridParam.GridWidth = width; }
+private:
+	Grid::GridParam GridParam;
+};
+
+#endif

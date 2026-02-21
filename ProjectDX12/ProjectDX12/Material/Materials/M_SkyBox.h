@@ -1,0 +1,14 @@
+#ifndef ___M_SKY_BOX_H___
+#define ___M_SKY_BOX_H___
+
+#include "Material/Material.h"
+
+class M_SkyBox : public Material
+{
+public:
+	virtual void Initialize(Description desc) override;
+	virtual void Bind(UINT materialinstance) override;
+
+};
+
+#endif

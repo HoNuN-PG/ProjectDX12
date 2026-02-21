@@ -1,3 +1,0 @@
-
-// Model
-#include "RenderingComponent.h"
