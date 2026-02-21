@@ -7,6 +7,7 @@
 class RenderTarget
 {
 public:
+
 	struct Description
 	{
 		UINT width;
@@ -17,30 +18,36 @@ public:
 	};
 
 public:
+
 	RenderTarget() = delete;
 	RenderTarget(Description desc);
 	~RenderTarget();
 
 public:
+
 	void RTV2SRV();
 	void SRV2RTV();
 	void ResourceBarrier(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 	static void ResourceBarrier(ID3D12Resource* res, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 
 public:
+
 	void Clear();
 	void Clear(const float clearColor[]);
 
 public:
+
 	ID3D12Resource* GetResource() { return Resource.Get(); }
 	DescriptorHeap::Handle GetHandleRTV() { return hRTV; }
 	DescriptorHeap::Handle GetHandleSRV() { return hSRV; }
 
 public:
+
 	float Width;
 	float Height;
 
 private:
+
 	ComPtr<ID3D12Resource>	Resource;
 	DescriptorHeap::Handle	hRTV;
 	DescriptorHeap::Handle	hSRV;

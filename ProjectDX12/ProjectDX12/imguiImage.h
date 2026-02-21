@@ -21,9 +21,10 @@
 
 class ConstantBuffer;
 
-class DebugImGUI
+class ImGUIImage
 {
 public:
+
 	struct Vertex
 	{
 		float pos[3];
@@ -31,43 +32,51 @@ public:
 	};
 
 private:
+
 	/// <summary>
 	/// 必要ヒープ数
 	/// </summary>
 	static const int HEAP_NUM = 32;
 
 public:
-	DebugImGUI();
-	~DebugImGUI();
+
+	ImGUIImage();
+	~ImGUIImage();
 
 public:
+
 	static MSG Create(HWND _hwnd);
 
 public:
+
 	/// <summary>
 	/// ImGUI::Imageで表示するリソースの取得
 	/// </summary>
 	/// <param name="_heap">_srvに使用されているヒープ</param>
 	/// <param name="_srv"></param>
 	/// <returns></returns>
-	static ImTextureID GetImGUIImage(DescriptorHeap* _heap, RenderTarget* _srv);
+	static ImTextureID GetImage(DescriptorHeap* _heap, RenderTarget* _srv);
 
 public:
+
 	/// <summary>
 	/// 描画終了
 	/// </summary>
 	static void Completed();
 
 private:
-	static std::unique_ptr<MeshBuffer>									Screen;
-	static std::unique_ptr<RootSignature>								RootSignatureData;
-	static std::unique_ptr<Pipeline>									PipelineData;
-	static std::vector<std::pair<bool,std::unique_ptr<RenderTarget>>>	Images;
+
+	static std::unique_ptr<MeshBuffer> pScreen;
+	static std::unique_ptr<RootSignature> pRootSignatureData;
+	static std::unique_ptr<Pipeline> pPipelineData;
+	static std::vector<std::pair<bool,std::unique_ptr<RenderTarget>>> Images;
 
 public:
+
 	static DescriptorHeap* GetImGUIDescriptorHeap() { return pHeap.get(); }
 
 private:
+
 	static std::unique_ptr<DescriptorHeap> pHeap;
 	static std::unique_ptr<DescriptorHeap> pRTVHeap;
 

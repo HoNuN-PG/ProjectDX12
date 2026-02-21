@@ -4,11 +4,11 @@
 
 ComPtr<ID3D12Device8>				g_pDevice;			// DirectX12デバイスオブジェクト
 ComPtr<IDXGIFactory6>				g_pFactory;			// ディスプレイへの出力機能の制御
-ComPtr<ID3D12CommandAllocator>		g_pCmdAllocator;	// 描画命令を蓄積
-ComPtr<ID3D12GraphicsCommandList6>	g_pCmdList;			// 描画命令発行インターフェース
-ComPtr<ID3D12CommandQueue>			g_pCmdQueue;		// 描画命令の実行
-ComPtr<IDXGISwapChain3>				g_pSwapChain;		// ダブルバッファリングを行う
-ComPtr<ID3D12DescriptorHeap>		g_RTVHeap;			// 描画先として紐づけるヒープ
+ComPtr<ID3D12CommandAllocator>		g_pCmdAllocator;	// コマンドアロケータ
+ComPtr<ID3D12GraphicsCommandList6>	g_pCmdList;			// コマンドリスト
+ComPtr<ID3D12CommandQueue>			g_pCmdQueue;		// コマンドキュー
+ComPtr<IDXGISwapChain3>				g_pSwapChain;
+ComPtr<ID3D12DescriptorHeap>		g_BBufferHeap;		// バックバッファヒープ
 ID3D12Resource**					g_ppBackBuf;		// バックバッファ
 UINT64								g_fenceLevel;
 ComPtr<ID3D12Fence>					g_pFence;			// フェンス
@@ -43,7 +43,6 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 		DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
 		IID_PPV_ARGS(&adapter)
 	);
-
 	if (SUCCEEDED(hr))
 	{
 		D3D_FEATURE_LEVEL featureLevels[] =
@@ -78,16 +77,17 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 		return hr;
 	}
 
-	// コマンドアロケーター/コマンドリスト/コマンドキュー
 	// コマンドの種類
 	D3D12_COMMAND_LIST_TYPE cmdListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	
+	// コマンドアロケーター
 	hr = g_pDevice->CreateCommandAllocator(
 		cmdListType, 
 		IID_PPV_ARGS(g_pCmdAllocator.GetAddressOf())
 	);
 	if (FAILED(hr)) { return hr; }
 
+	// コマンドリスト
 	hr = g_pDevice->CreateCommandList(
 		0,
 		cmdListType,
@@ -97,6 +97,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	);
 	if (FAILED(hr)) { return hr; }
 
+	// コマンドキュー
 	D3D12_COMMAND_QUEUE_DESC cmdQueueDesc = {};
 	cmdQueueDesc.Type		= cmdListType;
 	cmdQueueDesc.Priority	= D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;	// コマンドキュ―の優先順位
@@ -135,17 +136,16 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 
 	// ディスクリプタヒープ
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDHDesc = {};
-	// ディスクリプタヒープの種類
 	rtvDHDesc.Type				= D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvDHDesc.NumDescriptors	= 2;
 	rtvDHDesc.Flags				= D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	rtvDHDesc.NodeMask			= 0;
-	hr = g_pDevice->CreateDescriptorHeap(&rtvDHDesc, IID_PPV_ARGS(g_RTVHeap.GetAddressOf()));
+	hr = g_pDevice->CreateDescriptorHeap(&rtvDHDesc, IID_PPV_ARGS(g_BBufferHeap.GetAddressOf()));
 	if (FAILED(hr)) { return hr; }
 
 	// レンダーターゲットビューのディスクリプタを作成
 	g_ppBackBuf = new ID3D12Resource*[scDesc.BufferCount];
-	D3D12_CPU_DESCRIPTOR_HANDLE handle = g_RTVHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = g_BBufferHeap->GetCPUDescriptorHandleForHeapStart();
 	for (UINT i = 0; i < scDesc.BufferCount; ++i)
 	{
 		// ディスプレイに紐づいたリソースから、ディスクリプタを作成
@@ -200,11 +200,9 @@ void DrawDirectX(void(func)(void), const float clearColor[4])
 
 	// レンダーターゲット設定
 	D3D12_CPU_DESCRIPTOR_HANDLE hRTV;
-	hRTV = g_RTVHeap->GetCPUDescriptorHandleForHeapStart();
+	hRTV = g_BBufferHeap->GetCPUDescriptorHandleForHeapStart();
 	hRTV.ptr += bbIdx * g_pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	SetRenderTarget(1,&hRTV);
-
-	// レンダーターゲットのクリア
+	SetRenderTarget(1, &hRTV);
 	g_pCmdList->ClearRenderTargetView(hRTV, clearColor, 0, nullptr);
 
 	// 描画
@@ -250,11 +248,11 @@ ID3D12CommandQueue* GetCommandQueue()
 	return g_pCmdQueue.Get();
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE GetRTV()
+D3D12_CPU_DESCRIPTOR_HANDLE GetBBuffer()
 {
 	UINT bbIdx = g_pSwapChain->GetCurrentBackBufferIndex();
 	D3D12_CPU_DESCRIPTOR_HANDLE hRTV;
-	hRTV = g_RTVHeap->GetCPUDescriptorHandleForHeapStart();
+	hRTV = g_BBufferHeap->GetCPUDescriptorHandleForHeapStart();
 	hRTV.ptr += bbIdx * g_pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	return hRTV;
 }

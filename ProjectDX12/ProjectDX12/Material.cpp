@@ -35,7 +35,7 @@ void Material::SetUp(
 
 	// ルートシグネチャ
 	{
-		RootSignatureData = std::make_unique<RootSignature>(rootsignature);
+		pRootSignatureData = std::make_unique<RootSignature>(rootsignature);
 	}
 	// パイプライン
 	{
@@ -46,13 +46,13 @@ void Material::SetUp(
 		desc.MSFile = pipeline.MSFile;
 		desc.VSFile = pipeline.VSFile;
 		desc.PSFile = pipeline.PSFile;
-		desc.pRootSignature = RootSignatureData->Get();
+		desc.pRootSignature = pRootSignatureData->Get();
 		desc.pInputLayout = pipeline.pInputLayout;
 		desc.InputLayoutNum = pipeline.InputLayoutNum;
 		desc.RenderTargetNum = pipeline.RenderTargetNum;
 		desc.CullMode = pipeline.CullMode;
 		desc.WriteDepth = pipeline.WriteDepth;
-		PipelineData = std::make_unique<Pipeline>(desc);
+		pPipelineData = std::make_unique<Pipeline>(desc);
 	}
 	// マテリアルディスクリプターヒープ(レンダーターゲット)
 	if(rtvNum > 0)
@@ -71,19 +71,19 @@ void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 		pHeap->Get(),
 	};
 	DescriptorHeap::Bind(heaps,1);
-	RootSignatureData->Bind(handle, handleNum);
-	PipelineData->Bind();
+	pRootSignatureData->Bind(handle, handleNum);
+	pPipelineData->Bind();
 }
 
-void Material::BindBase(RootSignature::CustomBindSetting* setting, UINT handleNum)
+void Material::BindBase(RootSignature::BindSetting* setting, UINT handleNum)
 {
 	ID3D12DescriptorHeap* heaps[] =
 	{
 		pHeap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
-	RootSignatureData->Bind(setting, handleNum);
-	PipelineData->Bind();
+	pRootSignatureData->Bind(setting, handleNum);
+	pPipelineData->Bind();
 }
 
 UINT Material::AddMaterialInstance()

@@ -4,12 +4,12 @@
 // Model
 #include "sphere.h"
 
-void Sphere::Create(MeshMaterialManager::MeshMaterialSetupData materials)
+void Sphere::Create(MaterialRegistry::SetupTable materials)
 {
 	CreatePrimitive(0);
 	// ƒ}ƒeƒŠƒAƒ‹İ’è
-	MeshMaterialData = std::make_unique<MeshMaterialManager>();
-	MeshMaterialData->SetUp(materials);
+	pMaterialRegistry = std::make_unique<MaterialRegistry>();
+	pMaterialRegistry->SetUp(materials);
 }
 
 void Sphere::CreatePrimitive(unsigned int instanced)
@@ -67,5 +67,5 @@ void Sphere::CreatePrimitive(unsigned int instanced)
 	desc.idxSize		= DXGI_FORMAT_R16_UINT;
 	desc.idxCount		= SphereIdxNum;
 	desc.topology		= D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	MeshData.push_back(std::make_unique<MeshBuffer>(desc));
+	pMesh.push_back(std::make_unique<MeshBuffer>(desc));
 }

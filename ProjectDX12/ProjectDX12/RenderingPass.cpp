@@ -7,9 +7,9 @@
 // System/Rendering
 #include "RenderingEngine.h"
 
-std::shared_ptr<RenderingEngine> RenderingPass::Engine;
+std::shared_ptr<RenderingEngine> RenderingPass::pEngine;
 
 RenderingPass::RenderingPass()
 {
-	Engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
+	pEngine = SceneManager::GetCurrentScene()->GetRenderingEngine();
 }

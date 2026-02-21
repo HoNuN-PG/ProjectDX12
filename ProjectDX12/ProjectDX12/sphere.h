@@ -12,7 +12,7 @@ public:
 	virtual ~Sphere(){}
 
 public:
-	virtual void Create(MeshMaterialManager::MeshMaterialSetupData materials) override;
+	virtual void Create(MaterialRegistry::SetupTable materials) override;
 
 private:
 	virtual void CreatePrimitive(unsigned int instanced) override;

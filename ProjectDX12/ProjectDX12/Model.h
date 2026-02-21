@@ -39,7 +39,7 @@ public:
 	virtual ~Model(){}
 
 public:
-	void Create(const char* path, MeshMaterialManager::MeshMaterialSetupData materials);
+	void Create(const char* path, MaterialRegistry::SetupTable materials);
 
 private:
 	void CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV);
@@ -76,7 +76,7 @@ public:
 	virtual ~MeshletModel() {}
 
 public:
-	void Create(const char* path, MeshMaterialManager::MeshMaterialSetupData materials, DescriptorHeap* heap);
+	void Create(const char* path, MaterialRegistry::SetupTable materials, DescriptorHeap* heap);
 
 private:
 	void CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV, DescriptorHeap* heap);

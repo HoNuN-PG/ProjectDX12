@@ -27,7 +27,7 @@ void DrawDirectX(void(func)(void),const float clearColor[4]);
 ID3D12Device8* GetDevice();
 ID3D12GraphicsCommandList6* GetCommandList();
 ID3D12CommandQueue* GetCommandQueue();
-D3D12_CPU_DESCRIPTOR_HANDLE GetRTV();
+D3D12_CPU_DESCRIPTOR_HANDLE GetBBuffer();
 
 void SetViewPort(float width, float height);
 void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE * hRTV);

@@ -53,6 +53,7 @@ namespace BlurParam
 class Gauss
 {
 public:
+
 	enum GaussPipelineType
 	{
 		XBlurPipeline = 0,
@@ -88,12 +89,13 @@ public:
 	static void Destroy();
 private:
 	static std::unique_ptr<Gauss> Instance;
-
 public:
+
 	Gauss() {};
 	~Gauss() {};
 
 public:
+
 	/// <summary>
 	/// ÉKÉEÉXÇÃé¿çs
 	/// </summary>
@@ -116,26 +118,29 @@ public:
 	static void CalcWeights(std::weak_ptr<float[]> weights,int num, float blur);
 
 private:
+
 	void ExecuteScreenGauss2(int& gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	void ExecuteScreenGauss4(int& gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	void ExecuteScreenGauss8(int& gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
 	void MakeGaussData(int& gaussIdx, DirectX::XMFLOAT2 screen ,int split);
 
 private:
-	std::unique_ptr<MeshBuffer>									Screen;
-	std::shared_ptr<DescriptorHeap>								Heap;
-	std::shared_ptr<DescriptorHeap>								RTVHeap;
+
+	std::unique_ptr<MeshBuffer>									pScreen;
+	std::shared_ptr<DescriptorHeap>								pHeap;
+	std::shared_ptr<DescriptorHeap>								pRTVHeap;
 	std::vector<std::unique_ptr<RenderTarget>>					GaussRTVs;
 	std::vector<std::unique_ptr<class ConstantBuffer>>			Params;
 
 private:
+
 	// Gauss2
 	std::unique_ptr<RootSignature>								Gauss2RootSignatureData;
 	std::vector<std::unique_ptr<Pipeline>>						Gauss2PipelineData;
 	// Gauss4
 	std::unique_ptr<RootSignature>								Gauss4RootSignatureData;
 	std::vector<std::unique_ptr<Pipeline>>						Gauss4PipelineData;
-	// Gauss4
+	// Gauss8
 	std::unique_ptr<RootSignature>								Gauss8RootSignatureData;
 	std::vector<std::unique_ptr<Pipeline>>						Gauss8PipelineData;
 

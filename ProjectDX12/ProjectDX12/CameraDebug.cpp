@@ -12,11 +12,8 @@
 CameraDebug::CameraDebug()
 {
 	m_Position = { 0,5,-10 };
-	m_Up = { 0,1,0 };
 	m_Target = { 0,0,0 };
-
-	m_MoveSpeed = 0.5;
-	m_MouseSpeed = 1.0f;
+	m_Up = { 0,1,0 };
 }
 
 void CameraDebug::Init()
@@ -47,7 +44,7 @@ void CameraDebug::Init()
 	ProcDCC(arg);
 
 	// メインカメラパラメータの設定
-	SetMainParams();
+	SetMainParam();
 }
 
 void CameraDebug::Update()
@@ -83,17 +80,12 @@ void CameraDebug::Update()
 	ProcDCC(arg);
 
 	// メインカメラパラメータの設定
-	SetMainParams();
+	SetMainParam();
 }
 
 void CameraDebug::Draw()
 {
-	ImGui::Begin("Camera");
-	{
-		ImGui::SliderFloat("Camera_MoveSpeed", &m_MoveSpeed, 0.0f, 5.0f);
-		ImGui::SliderFloat("Camera_MouseSpeed", &m_MouseSpeed, 0.0f, 5.0f);
-	}
-	ImGui::End();
+
 }
 
 void CameraDebug::ProcDCC(Argument& arg)

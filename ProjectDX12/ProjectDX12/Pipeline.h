@@ -7,6 +7,7 @@
 class  Pipeline
 {
 public:
+
 	struct InputLayout
 	{
 		const char* name;
@@ -19,6 +20,7 @@ public:
 	static UINT IED_POS_NOR_TEX_COLOR_COUNT;
 
 public:
+
 	struct Description
 	{
 		// シェーダー
@@ -43,14 +45,24 @@ public:
 	};
 
 public:
+
 	Pipeline(Description desc);
 	~Pipeline();
 
 public:
+
 	/// <summary>
 	/// コマンドリストにパイプラインを設定
 	/// </summary>
 	void Bind() { GetCommandList()->SetPipelineState(PipelineData.Get()); }
+
+private:
+	void CreateAmplificationShaderPipelineState(Description desc, 
+		D3D12_RASTERIZER_DESC rasterizer, D3D12_BLEND_DESC blend, D3D12_DEPTH_STENCIL_DESC stencil);
+	void CreateMeshShaderPipelineState(Description desc, 
+		D3D12_RASTERIZER_DESC rasterizer, D3D12_BLEND_DESC blend, D3D12_DEPTH_STENCIL_DESC stencil);
+	void CreateDefaultPipelineState(Description desc, 
+		D3D12_RASTERIZER_DESC rasterizer, D3D12_BLEND_DESC blend, D3D12_DEPTH_STENCIL_DESC stencil);
 
 private:
 	ComPtr<ID3D12PipelineState> PipelineData;

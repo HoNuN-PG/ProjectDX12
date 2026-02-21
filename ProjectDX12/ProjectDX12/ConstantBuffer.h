@@ -7,6 +7,7 @@
 class ConstantBuffer
 {
 public:
+
 	struct Description
 	{
 		DescriptorHeap*	pHeap;	// ディスクリプタヒープ
@@ -14,21 +15,24 @@ public:
 	};
 
 public:
+
 	ConstantBuffer(Description desc);
 	~ConstantBuffer();
 
 public:
-	void Write(const void* data) { memcpy_s(Ptr, Size, data, Size); }
+
+	void Write(const void* data) { memcpy_s(ptr, Size, data, Size); }
 
 public:
+
 	DescriptorHeap::Handle GetHandle() { return Handle; }
 
 private:
 	DescriptorHeap::Handle			Handle;		// ディスクリプタのハンドル
 	UINT							Size;		// 定数バッファのサイズ
-	ComPtr<ID3D12Resource>			Resource;	// 定数バッファリソース
+	ComPtr<ID3D12Resource>			pResource;	// 定数バッファリソース
 	D3D12_CONSTANT_BUFFER_VIEW_DESC	CBV;		// 定数バッファビュー
-	void*							Ptr;		// 書き込み先アドレス
+	void*							ptr;		// 書き込み先アドレス
 
 };
 

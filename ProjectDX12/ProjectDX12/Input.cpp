@@ -36,3 +36,8 @@ bool Input::GetKeyTrigger(BYTE KeyCode)
 {
 	return ((m_KeyState[KeyCode] & 0x80) && !(m_OldKeyState[KeyCode] & 0x80));
 }
+
+bool Input::GetKeyRelease(BYTE KeyCode)
+{
+	return (!(m_KeyState[KeyCode] & 0x80) && (m_OldKeyState[KeyCode] & 0x80));
+}

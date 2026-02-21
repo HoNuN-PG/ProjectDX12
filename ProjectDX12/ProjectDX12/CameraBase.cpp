@@ -2,6 +2,9 @@
 // Game/Camera
 #include "CameraBase.h"
 
+// ImGUI
+#include "imgui/imgui.h"
+
 // Lib
 #include "MyMath.h"
 
@@ -10,14 +13,20 @@ DirectX::XMFLOAT3	CameraBase::m_MainUp;
 DirectX::XMFLOAT3	CameraBase::m_MainTarget;
 DirectX::XMFLOAT4X4	CameraBase::m_MainViewMatrix;
 DirectX::XMFLOAT4X4	CameraBase::m_MainProjMatrix;
+float CameraBase::m_MoveSpeed = 1.0f;
+float CameraBase::m_MouseSpeed = 1.0f;
 
-void CameraBase::SetMainParams()
+CameraBase::CameraBase()
+{
+}
+
+void CameraBase::SetMainParam()
 {
 	if (!m_IsMain) return;
 
 	m_MainPosition = m_Position;
-	m_MainUp = m_Up;
 	m_MainTarget = m_Target;
+	m_MainUp = m_Up;
 	m_MainViewMatrix = m_ViewMatrix;
 	m_MainProjMatrix = m_ProjMatrix;
 }
@@ -90,4 +99,14 @@ std::vector<DirectX::XMFLOAT4> CameraBase::GetMainFrustumPlanes()
 	}
 
 	return planes;
+}
+
+void CameraBase::DrawUpdateSpeed()
+{
+	ImGui::Begin("Camera");
+	{
+		ImGui::SliderFloat("Camera_MoveSpeed", &m_MoveSpeed, 0.0f, 5.0f);
+		ImGui::SliderFloat("Camera_MouseSpeed", &m_MouseSpeed, 0.0f, 5.0f);
+	}
+	ImGui::End();
 }

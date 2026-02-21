@@ -10,12 +10,14 @@
 class PostProcess
 {
 public:
+
 	PostProcess() {};
 	~PostProcess();
 	void Update();
 	void Draw();
 
 public:
+
 	template <typename T> 
 	std::shared_ptr<T> AddVolume()
 	{
@@ -38,6 +40,7 @@ public:
 	}
 
 private:
+
 	std::list<std::shared_ptr<Volume>> Volumes;
 
 };

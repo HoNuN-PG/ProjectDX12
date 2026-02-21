@@ -28,19 +28,19 @@ void Vignette::Init()
 		RootSignature::Description desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
-		RootSignatureData = std::make_unique<RootSignature>(desc);
+		pRootSignatureData = std::make_unique<RootSignature>(desc);
 	}
 	// パイプライン
 	{
 		Pipeline::Description desc = {};
-		desc.pRootSignature = RootSignatureData->Get();
+		desc.pRootSignature = pRootSignatureData->Get();
 		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"../game/assets/shader/PS_Vignette.cso";
 		desc.pInputLayout = Pipeline::IED_POS_TEX;
 		desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
 		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.RenderTargetNum = 1;
-		PipelineData.push_back(std::make_unique<Pipeline>(desc));
+		pPipelineData.push_back(std::make_unique<Pipeline>(desc));
 	}
 	// RTV
 	{
@@ -48,14 +48,14 @@ void Vignette::Init()
 		desc.width = WINDOW_WIDTH;
 		desc.height = WINDOW_HEIGHT;
 		desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		desc.pRTVHeap = RTVHeap.get();
-		desc.pSRVHeap = Heap.get();
-		RTV = std::make_shared<RenderTarget>(desc);
+		desc.pRTVHeap = pRTVHeap.get();
+		desc.pSRVHeap = pHeap.get();
+		pRTV = std::make_shared<RenderTarget>(desc);
 	}
 	// パラメーター定数バッファ
 	{
 		ConstantBuffer::Description desc = {};
-		desc.pHeap = Heap.get();
+		desc.pHeap = pHeap.get();
 		desc.size = sizeof(VignetteParams);
 		Params = std::make_unique<ConstantBuffer>(desc);
 	}
@@ -88,10 +88,10 @@ void Vignette::Draw()
 	BindPostProcessRTV();
 	// 各種オブジェクトをバインド
 	BindHeap();
-	engine.lock()->CopyGlobalTextureSRV(RTV.get()->GetHandleSRV().hCPU, GlobalTextureResourceKey::MainTexture);
+	engine.lock()->CopyGlobalTextureSRV(pRTV.get()->GetHandleSRV().hCPU, GlobalTextureResourceKey::MainTexture);
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = 
 	{
-		RTV.get()->GetHandleSRV().hGPU,
+		pRTV.get()->GetHandleSRV().hGPU,
 		Params.get()->GetHandle().hGPU,
 	};
 	BindRootSignature(desc, _countof(desc));
@@ -100,8 +100,8 @@ void Vignette::Draw()
 	Rendering();
 
 	// MainTextureに張り付け
-	PostProcessRTV->RTV2SRV();
+	pPostProcessRTV->RTV2SRV();
 	engine.lock()->GlobalTextureSRV2RTV(GlobalTextureResourceKey::MainTexture);
-	Copy::ExecuteCopy(Heap.get(), PostProcessRTV.get()->GetHandleSRV().hGPU, engine.lock()->GetGlobalTextureRTV(GlobalTextureResourceKey::MainTexture).hCPU);
+	Copy::ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine.lock()->GetGlobalTextureRTV(GlobalTextureResourceKey::MainTexture).hCPU);
 	engine.lock()->GlobalTextureRTV2SRV(GlobalTextureResourceKey::MainTexture);
 }

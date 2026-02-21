@@ -7,6 +7,7 @@
 class DescriptorHeap
 {
 public:
+
 	struct Description
 	{
 		D3D12_DESCRIPTOR_HEAP_TYPE	heapType;	// ヒープの種類
@@ -20,10 +21,12 @@ public:
 	};
 
 public:
+
 	DescriptorHeap(Description desc);
 	~DescriptorHeap();
 
 public:
+
 	/// <summary>
 	/// 使用可能なディスクリプタの取得
 	/// </summary>
@@ -31,6 +34,7 @@ public:
 	Handle Allocate();
 
 public:
+
 	/// <summary>
 	/// コマンドリストにヒープを設定
 	/// </summary>
@@ -38,9 +42,11 @@ public:
 	static void Bind(ID3D12DescriptorHeap** _heaps, UINT _num);
 
 public:
+
 	ID3D12DescriptorHeap* Get() { return Heap.Get(); }
 
 private:
+
 	ComPtr<ID3D12DescriptorHeap>		Heap;		// ヒープ
 	D3D12_DESCRIPTOR_HEAP_TYPE			Type;		// ディスクリプタヒープの種類
 	UINT								AllocCout;	// 確保したディスクリプタ数

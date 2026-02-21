@@ -17,6 +17,7 @@
 class Volume
 {
 public:
+
 	struct Vertex
 	{
 		float pos[3];
@@ -24,10 +25,12 @@ public:
 	};
 
 public:
+
 	static void Load();
 	static void Unload();
 
 public:
+
 	Volume() {};
 	virtual ~Volume() {};
 
@@ -35,9 +38,11 @@ public:
 	virtual void Draw() {};
 
 protected:
+
 	virtual void Init(UINT heapNum,UINT rtvNum);
 
 public:
+
 	void SetDestroy() { bDestroy = true; }
 	bool IsDestroy() { return bDestroy; }
 	bool Destroy() 
@@ -52,6 +57,7 @@ private:
 	bool bDestroy = false;
 
 protected:
+
 	void BindPostProcessRTV();
 	void BindHeap();
 	void BindRootSignature(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num);
@@ -59,15 +65,16 @@ protected:
 	void Rendering();
 
 protected:
-	std::shared_ptr<DescriptorHeap>										Heap;
-	std::shared_ptr<DescriptorHeap>										RTVHeap;
+
+	std::shared_ptr<DescriptorHeap>	pHeap;
+	std::shared_ptr<DescriptorHeap>	pRTVHeap;
 
 private:
-	static std::unique_ptr<MeshBuffer>									Screen;
+	static std::unique_ptr<MeshBuffer> pScreen;
 protected:
-	std::unique_ptr<RootSignature>										RootSignatureData;
-	std::vector<std::unique_ptr<Pipeline>>								PipelineData;
-	std::unique_ptr<RenderTarget>										PostProcessRTV;
+	std::unique_ptr<RenderTarget> pPostProcessRTV;
+	std::unique_ptr<RootSignature> pRootSignatureData;
+	std::vector<std::unique_ptr<Pipeline>> pPipelineData;
 
 };
 

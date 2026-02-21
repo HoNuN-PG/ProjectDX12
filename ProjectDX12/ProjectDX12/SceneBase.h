@@ -16,6 +16,7 @@
 class SceneBase
 {
 public:
+
 	enum Layer
 	{
 		Camera = 0,
@@ -30,6 +31,7 @@ public:
 	};
 
 public:
+
 	SceneBase(){}
 	virtual ~SceneBase() {};
 
@@ -45,6 +47,7 @@ public:
 
 	// ゲームオブジェクト
 public:
+
 	template <typename T>
 	std::shared_ptr<T> AddGameObject(Layer layer = Opaque)
 	{
@@ -84,20 +87,24 @@ public:
 		}
 		return objects;
 	}
+
 protected:
+
 	std::array<std::list<std::shared_ptr<GameObject>>, MAX_LAYER> GameObjects;
 
 	// レンダリングエンジン
 public:
+
 	std::shared_ptr<RenderingEngine> GetRenderingEngine();
 private:
-	std::shared_ptr<RenderingEngine> Engine;
+	std::shared_ptr<RenderingEngine> pEngine;
 
 	// シーンヒープ
 public:
-	std::shared_ptr<DescriptorHeap> GetHeap() { return Heap; }
+
+	std::shared_ptr<DescriptorHeap> GetHeap() { return pHeap; }
 protected:
-	std::shared_ptr<DescriptorHeap>	Heap;
+	std::shared_ptr<DescriptorHeap>	pHeap;
 
 };
 

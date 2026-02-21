@@ -14,19 +14,19 @@
 
 void Primitive::Draw()
 {
-	MeshMaterialData->Add2RenderingEngine(Owner);
+	pMaterialRegistry->Register2RenderingEngine(Owner);
 }
 
 void Primitive::Rendering()
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingTiming();
-	std::vector<MeshMaterialManager::MeshMaterialInfo> infos = MeshMaterialData->GetRenderingMaterial(current);
+	std::vector<MaterialRegistry::MeshMaterialInfo> infos = pMaterialRegistry->GetRenderingMaterial(current);
 
 	for (auto&& info : infos)
 	{
 		// ƒ}ƒeƒŠƒAƒ‹Ý’è
-		info.material->WriteWVP(ConstantWVP::Calc3DMatrix(
+		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(
 			Owner.lock()->GetPosition(),
 			Owner.lock()->GetRotation(),
 			Owner.lock()->GetScale()),
@@ -34,7 +34,7 @@ void Primitive::Rendering()
 		);
 		info.material->Bind(info.materialInstanceIdx);
 		// •`‰æ
-		MeshData[info.meshIdx]->Draw();
+		pMesh[info.meshIdx]->Draw();
 		if (info.meshIdx == 1)
 		{
 			int a = 0;

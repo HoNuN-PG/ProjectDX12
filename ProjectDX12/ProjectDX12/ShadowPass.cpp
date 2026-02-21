@@ -96,7 +96,7 @@ void ShadowPass::Execute()
 		M_ShadowMapsBase::CurrentShadowMapsNo = i;
 		// シャドウマップ
 		ShadowMapsParam = ShadowParam::ShadowMapsParam(lvpc4x4);
-		Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + i, &ShadowMapsParam);
+		pEngine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + i, &ShadowMapsParam);
 		// シャドウレシーバ
 		ShadowReceiveParam.LVP[i] = lvpc4x4;
 
@@ -129,7 +129,7 @@ void ShadowPass::Execute()
 
 	// パラメータ設定
 	ShadowReceiveParam.CascadeAreas = DirectX::XMFLOAT4( CascadeAreas[Near],CascadeAreas[Middle],CascadeAreas[Far],0 );
-	Engine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever,&ShadowReceiveParam);
+	pEngine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever,&ShadowReceiveParam);
 
 	// ぼかし
 	Gauss::ExecuteScreenGauss8D2(

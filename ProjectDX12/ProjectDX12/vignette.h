@@ -12,6 +12,7 @@ class ConstantBuffer;
 class Vignette : public Volume
 {
 public:
+
 	struct VignetteParams
 	{
 		DirectX::XMFLOAT4 color;
@@ -21,15 +22,18 @@ public:
 	};
 
 public:
+
 	Vignette() {};
 	~Vignette() {}
 	void Init() override;
 	void Draw() override;
 
 private:
-	std::shared_ptr<RenderTarget>	RTV;
+
+	std::shared_ptr<RenderTarget>	pRTV;
 
 private:
+
 	std::unique_ptr<ConstantBuffer> Params;
 	VignetteParams					VignetteParam;
 

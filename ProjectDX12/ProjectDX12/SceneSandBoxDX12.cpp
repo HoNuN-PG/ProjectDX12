@@ -47,7 +47,7 @@ HRESULT SceneSandBoxDX12::Init()
 
 	// マテリアル作成
 	Material::Description desc;
-	desc.pHeap = Heap.get();
+	desc.pHeap = pHeap.get();
 
 	// ===============================
 	// SkyBox
@@ -144,7 +144,7 @@ HRESULT SceneSandBoxDX12::Init()
 
 	// モデル作成
 	{// スカイボックス
-		MeshMaterialManager::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupTable materials;
 
 		materials[0].push_back(sky_box);
 	
@@ -158,10 +158,10 @@ HRESULT SceneSandBoxDX12::Init()
 		model->Create(materials);
 	}
 	{// グリッド
-		MeshMaterialManager::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupTable materials;
 
 		materials[0].push_back(opaque_depth_normal);
-		materials[0].push_back(grid_shadow);
+		materials[0].push_back(grid_shadow_vsm);
 	
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,0 });
@@ -171,7 +171,7 @@ HRESULT SceneSandBoxDX12::Init()
 		model->Create(materials);
 	}
 	{// 木
-		MeshMaterialManager::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupTable materials;
 
 		materials[0].push_back(shadow_map);
 		materials[0].push_back(opaque_depth_normal);
@@ -199,7 +199,7 @@ HRESULT SceneSandBoxDX12::Init()
 		Material::Initialize(deffered_albedo_normal, desc);
 		deffered_albedo_normal->AddTexture("../game/assets/model/spot/spot_texture.png");
 		
-		MeshMaterialManager::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupTable materials;
 
 		materials[0].push_back(opaque_depth_normal);
 		materials[0].push_back(deffered_albedo_normal);
@@ -211,24 +211,24 @@ HRESULT SceneSandBoxDX12::Init()
 	}
 #if 1
 	{// 銅像
-		MeshMaterialManager::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupTable materials;
 
 		materials[0].push_back(ms);
 
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,-10 });
 		std::shared_ptr<MeshletModel> model = obj->AddComponent<MeshletModel>(obj);
-		model->Create("../game/assets/model/castles/staue/Staue01a.fbx", materials, Heap.get());
+		model->Create("../game/assets/model/castles/staue/Staue01a.fbx", materials, pHeap.get());
 	}
 	{// 銅像カリング
-		MeshMaterialManager::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupTable materials;
 		
 		materials[0].push_back(ms_culling);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,-20 });
 		std::shared_ptr<MeshletModel> model = obj->AddComponent<MeshletModel>(obj);
-		model->Create("../game/assets/model/castles/staue/Staue01a.fbx", materials, Heap.get());
+		model->Create("../game/assets/model/castles/staue/Staue01a.fbx", materials, pHeap.get());
 	}
 #endif
 

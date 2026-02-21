@@ -5,7 +5,7 @@
 #include "GlobalResourceKey.h"
 #include "RenderingEngine.h"
 
-std::unique_ptr<MeshBuffer>	Volume::Screen;
+std::unique_ptr<MeshBuffer>	Volume::pScreen;
 
 void Volume::Load()
 {
@@ -24,15 +24,15 @@ void Volume::Load()
 		desc.vtxSize = sizeof(Vertex);
 		desc.vtxCount = _countof(screenVtx);
 		desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-		Screen = std::make_unique<MeshBuffer>(desc);
+		pScreen = std::make_unique<MeshBuffer>(desc);
 	}
 }
 
 void Volume::Unload()
 {
-	if (Screen)
+	if (pScreen)
 	{
-		Screen.reset(nullptr);
+		pScreen.reset(nullptr);
 	}
 }
 
@@ -43,14 +43,14 @@ void Volume::Init(UINT heapNum, UINT rtvNum)
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = heapNum + 1;
-		Heap = std::make_shared<DescriptorHeap>(desc);
+		pHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ボリュームディスクリプターヒープ(レンダーターゲット)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		desc.num = rtvNum + 1;
-		RTVHeap = std::make_shared<DescriptorHeap>(desc);
+		pRTVHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// PostProcessRTV
 	{
@@ -58,9 +58,9 @@ void Volume::Init(UINT heapNum, UINT rtvNum)
 		desc.width = WINDOW_WIDTH;
 		desc.height = WINDOW_HEIGHT;
 		desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		desc.pRTVHeap = RTVHeap.get();
-		desc.pSRVHeap = Heap.get();
-		PostProcessRTV = std::make_unique<RenderTarget>(desc);
+		desc.pRTVHeap = pRTVHeap.get();
+		desc.pSRVHeap = pHeap.get();
+		pPostProcessRTV = std::make_unique<RenderTarget>(desc);
 	}
 }
 
@@ -68,30 +68,30 @@ void Volume::BindHeap()
 {
 	ID3D12DescriptorHeap* heaps[] =
 	{
-		Heap->Get(),
+		pHeap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
 }
 
 void Volume::BindRootSignature(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num)
 {
-	RootSignatureData->Bind(handle, num);
+	pRootSignatureData->Bind(handle, num);
 }
 
 void Volume::BindPipeline(UINT idx)
 {
-	PipelineData[idx]->Bind();
+	pPipelineData[idx]->Bind();
 }
 
 void Volume::BindPostProcessRTV()
 {
 	// RTVの設定
 	constexpr static float clearColor[4] = { 0,0,0,0 };
-	PostProcessRTV->SRV2RTV();
-	PostProcessRTV->Clear(clearColor);
+	pPostProcessRTV->SRV2RTV();
+	pPostProcessRTV->Clear(clearColor);
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
 	{
-		PostProcessRTV->GetHandleRTV().hCPU,
+		pPostProcessRTV->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs);
 }
@@ -100,5 +100,5 @@ void Volume::Rendering()
 {
 	// 表示領域の設定
 	SetViewPort(WINDOW_WIDTH, WINDOW_HEIGHT);
-	Screen->Draw();
+	pScreen->Draw();
 }

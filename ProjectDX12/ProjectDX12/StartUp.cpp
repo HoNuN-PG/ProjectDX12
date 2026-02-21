@@ -12,7 +12,7 @@
 #include "SceneManager.h"
 
 // ImGUI
-#include "DebugImGUI.h"
+#include "imguiImage.h"
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_dx12.h>
 #include <imgui/imgui_impl_win32.h>
@@ -28,109 +28,14 @@ bool bBorderlessed{ false };
 std::unique_ptr<TimerFPS> gTimer;
 std::unique_ptr<TimerFPS> gUpdateTimer;
 std::unique_ptr<TimerFPS> gDrawTimer;
-std::unique_ptr<DebugImGUI> gDebugImGUI;
+std::unique_ptr<ImGUIImage> gImGUIImage;
 std::unique_ptr<SceneManager> gSceneManager;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
+LRESULT WinProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
 void SetBorderless(HWND hwnd, bool enabled);
 void Update();
 void Draw();
-
-LRESULT WinProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
-{
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wparam, lparam))
-	{
-		return true;
-	}
-		
-	switch (msg)
-	{
-	default: 
-		break;
-	case(WM_DESTROY):
-		PostQuitMessage(0);
-		break;
-	case WM_KEYDOWN:
-		switch (wparam)
-		{
-		case VK_ESCAPE:
-			int id = MessageBox(NULL, TEXT("プログラムを終了しますか？"),TEXT("App"), MB_OKCANCEL | MB_ICONQUESTION);
-			switch (id)
-			{
-			case IDOK:
-				DestroyWindow(hWnd);
-				break;
-			case IDCANCEL:
-				break;
-			}
-			break;
-		}
-		break;
-	case WM_SIZE:
-		switch (wparam)
-		{
-		case(SIZE_MAXIMIZED):
-			if (!bBorderlessed)
-			{
-				SetBorderless(gWindow, bBorderlessed = true);
-			}
-			break;
-		case(SIZE_MINIMIZED):
-			if (bBorderlessed)
-			{
-				SetBorderless(gWindow, bBorderlessed = false);
-			}
-			break;
-		}
-		break;
-	}
-	return DefWindowProc(hWnd,msg,wparam,lparam);
-}
-
-void SetBorderless(HWND hwnd, bool enabled)
-{
-	if (enabled)
-	{
-		// 現在のモニター
-		HMONITOR hMon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
-		MONITORINFO mi = { sizeof(mi) };
-		GetMonitorInfo(hMon, &mi);
-
-		// 装飾を削除
-		LONG style = GetWindowLong(hwnd, GWL_STYLE);
-		style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
-		SetWindowLong(hwnd, GWL_STYLE, style);
-
-		LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-		exStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-		SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
-
-		// モニター全体にフィット
-		SetWindowPos(
-			hwnd,
-			HWND_TOP,
-			mi.rcMonitor.left,
-			mi.rcMonitor.top,
-			mi.rcMonitor.right - mi.rcMonitor.left,
-			mi.rcMonitor.bottom - mi.rcMonitor.top,
-			SWP_FRAMECHANGED | SWP_NOOWNERZORDER | SWP_SHOWWINDOW
-		);
-	}
-	else
-	{
-		// 元に戻す
-		LONG style = WS_OVERLAPPEDWINDOW;
-		SetWindowLong(hwnd, GWL_STYLE, style);
-
-		LONG exStyle = WS_EX_OVERLAPPEDWINDOW;
-		SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
-
-		RECT rc = { 0,0,WINDOW_WIDTH,WINDOW_HEIGHT };
-		AdjustWindowRect(&rc, style, FALSE);
-
-		SetWindowPos(hwnd,HWND_TOP, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, SWP_FRAMECHANGED | SWP_NOOWNERZORDER | SWP_SHOWWINDOW);
-	}
-}
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmdLine, int nCmdShow)
 {
@@ -178,8 +83,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	gDrawTimer = std::make_unique<TimerFPS>();
 
 	// デバッグ用IｍGUI初期化
-	gDebugImGUI = std::make_unique<DebugImGUI>();
-	gDebugImGUI->Create(gWindow);
+	gImGUIImage = std::make_unique<ImGUIImage>();
+	gImGUIImage->Create(gWindow);
 
 	// 入力初期化
 	Input::Init();
@@ -217,7 +122,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 			gDrawTimer->et = timeGetTime();
 			float drf = gDrawTimer->GetObservationDbFPS(1);
 
-			gDebugImGUI->Completed();
+			gImGUIImage->Completed();
 		}
 	}
 	//------------------------------
@@ -233,6 +138,102 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 
 	UnregisterClass(wc.lpszClassName,hInstance);
 	return 0;
+}
+
+LRESULT WinProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wparam, lparam))
+	{
+		return true;
+	}
+
+	switch (msg)
+	{
+	default:
+		break;
+	case(WM_DESTROY):
+		PostQuitMessage(0);
+		break;
+	case WM_KEYDOWN:
+		switch (wparam)
+		{
+		case VK_ESCAPE:
+			int id = MessageBox(NULL, TEXT("プログラムを終了しますか？"), TEXT("App"), MB_OKCANCEL | MB_ICONQUESTION);
+			switch (id)
+			{
+			case IDOK:
+				DestroyWindow(hWnd);
+				break;
+			case IDCANCEL:
+				break;
+			}
+			break;
+		}
+		break;
+	case WM_SIZE:
+		switch (wparam)
+		{
+		case(SIZE_MAXIMIZED):
+			if (!bBorderlessed)
+			{
+				SetBorderless(gWindow, bBorderlessed = true);
+			}
+			break;
+		case(SIZE_MINIMIZED):
+			if (bBorderlessed)
+			{
+				SetBorderless(gWindow, bBorderlessed = false);
+			}
+			break;
+		}
+		break;
+	}
+	return DefWindowProc(hWnd, msg, wparam, lparam);
+}
+
+void SetBorderless(HWND hwnd, bool enabled)
+{
+	if (enabled)
+	{
+		// 現在のモニター
+		HMONITOR hMon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+		MONITORINFO mi = { sizeof(mi) };
+		GetMonitorInfo(hMon, &mi);
+
+		// 装飾を削除
+		LONG style = GetWindowLong(hwnd, GWL_STYLE);
+		style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
+		SetWindowLong(hwnd, GWL_STYLE, style);
+
+		LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+		exStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
+		SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
+
+		// モニター全体にフィット
+		SetWindowPos(
+			hwnd,
+			HWND_TOP,
+			mi.rcMonitor.left,
+			mi.rcMonitor.top,
+			mi.rcMonitor.right - mi.rcMonitor.left,
+			mi.rcMonitor.bottom - mi.rcMonitor.top,
+			SWP_FRAMECHANGED | SWP_NOOWNERZORDER | SWP_SHOWWINDOW
+		);
+	}
+	else
+	{
+		// 元に戻す
+		LONG style = WS_OVERLAPPEDWINDOW;
+		SetWindowLong(hwnd, GWL_STYLE, style);
+
+		LONG exStyle = WS_EX_OVERLAPPEDWINDOW;
+		SetWindowLong(hwnd, GWL_EXSTYLE, exStyle);
+
+		RECT rc = { 0,0,WINDOW_WIDTH,WINDOW_HEIGHT };
+		AdjustWindowRect(&rc, style, FALSE);
+
+		SetWindowPos(hwnd, HWND_TOP, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, SWP_FRAMECHANGED | SWP_NOOWNERZORDER | SWP_SHOWWINDOW);
+	}
 }
 
 void Update()
@@ -259,7 +260,7 @@ void Draw()
 
 	// ImGUI終了
 	ImGui::Render();
-	ID3D12DescriptorHeap* heap = gDebugImGUI->GetImGUIDescriptorHeap()->Get();
+	ID3D12DescriptorHeap* heap = gImGUIImage->GetImGUIDescriptorHeap()->Get();
 	GetCommandList()->SetDescriptorHeaps(1, &heap);
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), GetCommandList());
 }

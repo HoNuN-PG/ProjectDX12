@@ -42,7 +42,7 @@ void Copy::Load()
 	desc.vtxSize = sizeof(Vertex);
 	desc.vtxCount = _countof(screenVtx);
 	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-	Instance->Screen = std::make_unique<MeshBuffer>(desc);
+	Instance->pScreen = std::make_unique<MeshBuffer>(desc);
 
 	// ルートシグネチャ
 	{
@@ -54,25 +54,25 @@ void Copy::Load()
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
 		desc.filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-		Instance->RootSignatureData = std::make_unique<RootSignature>(desc);
+		Instance->pRootSignatureData = std::make_unique<RootSignature>(desc);
 	}
 	// パイプライン
 	{
 		Pipeline::Description desc = {};
-		desc.pRootSignature = Instance->RootSignatureData->Get();
+		desc.pRootSignature = Instance->pRootSignatureData->Get();
 		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"../game/assets/shader/PS_Copy.cso";
 		desc.pInputLayout = Pipeline::IED_POS_TEX;
 		desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
 		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.RenderTargetNum = 1;
-		Instance->PipelineData = std::make_unique<Pipeline>(desc);
+		Instance->pPipelineData = std::make_unique<Pipeline>(desc);
 	}
 }
 
 void Copy::ExecuteScreenDraw()
 {
-	Instance->Screen->Draw();
+	Instance->pScreen->Draw();
 }
 
 void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest)
@@ -96,9 +96,9 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3
 	{
 		src,
 	};
-	Instance->RootSignatureData->Bind(hScreen, _countof(hScreen));
-	Instance->PipelineData->Bind();
-	Instance->Screen->Draw();
+	Instance->pRootSignatureData->Bind(hScreen, _countof(hScreen));
+	Instance->pPipelineData->Bind();
+	Instance->pScreen->Draw();
 }
 
 void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, std::shared_ptr<RenderTarget> dest)
@@ -122,9 +122,9 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, st
 	{
 		src,
 	};
-	Instance->RootSignatureData->Bind(hScreen, _countof(hScreen));
-	Instance->PipelineData->Bind();
-	Instance->Screen->Draw();
+	Instance->pRootSignatureData->Bind(hScreen, _countof(hScreen));
+	Instance->pPipelineData->Bind();
+	Instance->pScreen->Draw();
 
 	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);
 }

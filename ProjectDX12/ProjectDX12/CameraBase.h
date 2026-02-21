@@ -19,7 +19,7 @@
 class CameraBase : public GameObject
 {
 public:
-	CameraBase() {}
+	CameraBase();
 	virtual ~CameraBase() {}
 	virtual void Init() override {}
 	virtual void Uninit() override {}
@@ -30,9 +30,9 @@ public:
 public:
 	void SetIsMain(bool main) { m_IsMain = main; }
 protected:
-	void SetMainParams();
+	void SetMainParam();
 protected:
-	bool m_IsMain;
+	bool m_IsMain = false;
 
 public:
 	static DirectX::XMFLOAT4X4 GetMainViewProjectionInvMatrix();
@@ -52,13 +52,13 @@ public:
 	{ 
 		return m_Position; 
 	}
-	DirectX::XMFLOAT3 GetUp()
-	{
-		return m_Up;
-	}
 	DirectX::XMFLOAT3 GetTarget()
 	{
 		return m_Target;
+	}
+	DirectX::XMFLOAT3 GetUp()
+	{
+		return m_Up;
 	}
 	DirectX::XMFLOAT3 GetForward()
 	{
@@ -71,15 +71,17 @@ public:
 
 protected:
 	DirectX::XMFLOAT3 m_Position;
-	DirectX::XMFLOAT3 m_Up;
 	DirectX::XMFLOAT3 m_Target;
+	DirectX::XMFLOAT3 m_Up;
 	DirectX::XMFLOAT4X4 m_ViewMatrix;
 	DirectX::XMFLOAT4X4 m_ProjMatrix;
 
 	// ˆÚ“®‘¬“x
 public:
-	float m_MoveSpeed;
-	float m_MouseSpeed;
+	void DrawUpdateSpeed();
+public:
+	static float m_MoveSpeed;
+	static float m_MouseSpeed;
 
 };
 

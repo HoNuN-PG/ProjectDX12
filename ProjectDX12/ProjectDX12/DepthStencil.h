@@ -7,6 +7,7 @@
 class DepthStencil 
 {
 public:
+
 	struct Description 
 	{
 		UINT width;
@@ -15,16 +16,20 @@ public:
 	};
 
 public:
+
 	DepthStencil(Description desc);
 	~DepthStencil();
 
 public:
+
 	void Clear();
 
 public:
+
 	DescriptorHeap::Handle GetHandleDSV();
 
 private:
+
 	ComPtr<ID3D12Resource> Resource;
 	DescriptorHeap::Handle DSV;
 

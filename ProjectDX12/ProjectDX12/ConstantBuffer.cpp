@@ -6,9 +6,9 @@ ConstantBuffer::ConstantBuffer(Description desc)
 	:
 	Handle{},
 	Size(0),
-	Resource(nullptr),
+	pResource(nullptr),
 	CBV{},
-	Ptr(nullptr)
+	ptr(nullptr)
 {
 	HRESULT hr;
 	ID3D12Device* pDevice = GetDevice();
@@ -42,22 +42,22 @@ ConstantBuffer::ConstantBuffer(Description desc)
 		&res, 
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr, 
-		IID_PPV_ARGS(Resource.GetAddressOf())
+		IID_PPV_ARGS(pResource.GetAddressOf())
 	);
 	if (FAILED(hr)) { return; }
 
 	// 定数バッファビュー生成
-	CBV.BufferLocation	= Resource->GetGPUVirtualAddress();
+	CBV.BufferLocation	= pResource->GetGPUVirtualAddress();
 	CBV.SizeInBytes		= static_cast<UINT>(res.Width);	// 256アライメントでないとGPUアクセスエラー
 	Handle				= desc.pHeap->Allocate();
 	pDevice->CreateConstantBufferView(&CBV, Handle.hCPU);
 
 	// データ初期化
-	hr = Resource->Map(0, nullptr, &Ptr);
+	hr = pResource->Map(0, nullptr, &ptr);
 	if (FAILED(hr)) { return; }
-	ZeroMemory(Ptr, desc.size);
+	ZeroMemory(ptr, desc.size);
 	Size = desc.size;
-	Resource->Unmap(0, nullptr);
+	pResource->Unmap(0, nullptr);
 }
 
 ConstantBuffer::~ConstantBuffer()

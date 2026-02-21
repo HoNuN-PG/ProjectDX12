@@ -2,12 +2,12 @@
 // Model
 #include "plane.h"
 
-void Plane::Create(MeshMaterialManager::MeshMaterialSetupData materials)
+void Plane::Create(MaterialRegistry::SetupTable materials)
 {
 	CreatePrimitive(0);
 	// ƒ}ƒeƒŠƒAƒ‹İ’è
-	MeshMaterialData = std::make_unique<MeshMaterialManager>();
-	MeshMaterialData->SetUp(materials);
+	pMaterialRegistry = std::make_unique<MaterialRegistry>();
+	pMaterialRegistry->SetUp(materials);
 }
 
 void Plane::CreatePrimitive(unsigned int instanced)
@@ -27,5 +27,5 @@ void Plane::CreatePrimitive(unsigned int instanced)
 	desc.vtxSize = sizeof(Vertex);
 	desc.vtxCount = _countof(screenVtx);
 	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-	MeshData.push_back(std::make_unique<MeshBuffer>(desc));
+	pMesh.push_back(std::make_unique<MeshBuffer>(desc));
 }

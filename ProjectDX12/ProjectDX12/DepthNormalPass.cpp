@@ -9,7 +9,7 @@
 OpaqueDepthNormalPass::OpaqueDepthNormalPass()
 {
 	PassType = RenderingPass::RenderingPassType::OpaqueDepthNormal;
-	DSV = Engine->GetDSV();
+	DSV = pEngine->GetDSV();
 }
 
 void OpaqueDepthNormalPass::Execute()

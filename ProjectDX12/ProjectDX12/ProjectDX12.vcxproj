@@ -178,7 +178,7 @@
     <ClCompile Include="ConstantWVP.cpp" />
     <ClCompile Include="Copy.cpp" />
     <ClCompile Include="CustomDepthNormalPass.cpp" />
-    <ClCompile Include="DebugImGUI.cpp" />
+    <ClCompile Include="imguiImage.cpp" />
     <ClCompile Include="DepthNormalPass.cpp" />
     <ClCompile Include="DepthStencil.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
@@ -192,7 +192,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="MeshMaterialManager.cpp" />
+    <ClCompile Include="MaterialRegistry.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="M_Deffered_Albedo_Normal.cpp" />
     <ClCompile Include="M_DepthNormal.cpp" />
@@ -233,7 +233,7 @@
     <ClInclude Include="ConstantWVP.h" />
     <ClInclude Include="Copy.h" />
     <ClInclude Include="CustomDepthNormalPass.h" />
-    <ClInclude Include="DebugImGUI.h" />
+    <ClInclude Include="imguiImage.h" />
     <ClInclude Include="DepthNormalPass.h" />
     <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="DescriptorHeap.h" />
@@ -242,7 +242,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GlobalResourceKey.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="MeshMaterialManager.h" />
+    <ClInclude Include="MaterialRegistry.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyMath.h" />
     <ClInclude Include="M_Deffered_Albedo_Normal.h" />

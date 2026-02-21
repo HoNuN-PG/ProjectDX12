@@ -10,9 +10,13 @@
 // System
 #include "DirectX.h"
 
+/// <summary>
+/// メッシュバッファ
+/// </summary>
 class MeshBuffer
 {
 public:
+
 	struct Description
 	{
 		const void*					pVtx;
@@ -25,12 +29,14 @@ public:
 	};
 
 public:
+
 	MeshBuffer() {};
 	MeshBuffer(Description desc);
 	virtual ~MeshBuffer();
 	virtual void Draw();
 
 protected:
+
 	Description					Desc;
 	ComPtr<ID3D12Resource>		Vtx;
 	D3D12_VERTEX_BUFFER_VIEW	Vbv;
@@ -39,47 +45,13 @@ protected:
 
 };
 
-class InstanceMeshBuffer : MeshBuffer
-{
-public:
-	struct InstanceData
-	{
-		DirectX::XMFLOAT3 position;
-		DirectX::XMFLOAT3 rotation;
-		DirectX::XMFLOAT3 scale;
-
-		InstanceData(
-			const DirectX::XMFLOAT3& position,
-			const DirectX::XMFLOAT3& rotation,
-			const DirectX::XMFLOAT3& scale)
-		{
-			this->position = position;
-			this->rotation = rotation;
-			this->scale = scale;
-		}
-	};
-	static const int MAX_INSTANCE = 100;
-
-public:
-	InstanceMeshBuffer() {};
-	InstanceMeshBuffer(Description desc, unsigned int count = 1);
-	virtual ~InstanceMeshBuffer();
-	virtual void Draw() override;
-
-public:
-	void MappingUploder();
-
-private:
-	std::vector<InstanceData>	InsData;
-	UINT						InsCount;
-	ComPtr<ID3D12Resource>		InsResource;
-	ComPtr<ID3D12Resource>		InsUploader;
-
-};
-
+/// <summary>
+/// メッシュレットバッファ
+/// </summary>
 class MeshletBuffer
 {
 public:
+
 	struct Description
 	{
 		DescriptorHeap*						pHeap;
@@ -94,12 +66,14 @@ public:
 	};
 
 public:
+
 	MeshletBuffer() {};
 	MeshletBuffer(Description desc);
 	virtual ~MeshletBuffer();
-	virtual void Draw(int AmpShaderResourceStartSlot, int MeshShaderResourceStartSlot);
+	virtual void Draw(int AmpShaderResourceStartSlot = -1, int MeshShaderResourceStartSlot = -1);
 
 public:
+
 	int GetMeshletCount() { return (int)meshlets.size(); }
 
 protected:
@@ -107,6 +81,7 @@ protected:
 	ComPtr<ID3D12Resource>					Vtx;
 	DescriptorHeap::Handle					hVtx;
 
+	// メッシュレットデータ
 	std::vector<DirectX::Meshlet>			meshlets;
 	ComPtr<ID3D12Resource>					pMeshlets;
 	DescriptorHeap::Handle					hMeshlets;
@@ -119,6 +94,7 @@ protected:
 	ComPtr<ID3D12Resource>					pPrimitiveIndices;
 	DescriptorHeap::Handle					hPrimitiveIndices;
 
+	// カリングデータ
 	std::vector<DirectX::CullData>			cullDatas;
 	ComPtr<ID3D12Resource>					pCullDatas;
 	DescriptorHeap::Handle					hCullDatas;

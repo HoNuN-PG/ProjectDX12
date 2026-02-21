@@ -30,7 +30,7 @@ public:
 	virtual ~Primitive() {}
 
 public:
-	virtual void Create(MeshMaterialManager::MeshMaterialSetupData materials) = 0;
+	virtual void Create(MaterialRegistry::SetupTable materials) = 0;
 
 protected:
 	virtual void CreatePrimitive(unsigned int instanced) = 0;

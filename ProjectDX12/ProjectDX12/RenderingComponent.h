@@ -5,7 +5,7 @@
 #include <vector>
 
 // Model
-#include "MeshMaterialManager.h"
+#include "MaterialRegistry.h"
 #include "MeshBuffer.h"
 
 // System/Component
@@ -25,14 +25,17 @@ public:
 	virtual void Rendering() = 0;
 
 public:
-	virtual std::vector<MeshMaterialManager::MaterialInstance> GetMeshMaterialInstances(UINT meshIdx) { return MeshMaterialData->GetMaterialInstances(meshIdx); }
+	virtual std::vector<MaterialRegistry::MaterialInstanceData> GetMeshMaterialInstances(UINT meshIdx) { return pMaterialRegistry->GetMaterialInstances(meshIdx); }
 
 protected:
 	// マテリアルデータ
-	std::unique_ptr<MeshMaterialManager> MeshMaterialData;
+	std::unique_ptr<MaterialRegistry> pMaterialRegistry;
 
 };
 
+/// <summary>
+/// メッシュ描画コンポーネント
+/// </summary>
 class MRenderingComponent : public RenderingComponent
 {
 public:
@@ -42,10 +45,13 @@ public:
 
 protected:
 	// メッシュデータ
-	std::vector<std::unique_ptr<MeshBuffer>> MeshData;
+	std::vector<std::unique_ptr<MeshBuffer>> pMesh;
 
 };
 
+/// <summary>
+/// メッシュレット描画コンポーネント
+/// </summary>
 class MLRenderingComponent : public RenderingComponent
 {
 public:
@@ -54,11 +60,11 @@ public:
 	virtual ~MLRenderingComponent() {};
 
 public:
-	std::vector<MeshMaterialManager::MaterialInstance> GetMeshMaterialInstances(UINT meshIdx) { return MeshMaterialData->GetMaterialInstances(meshIdx); }
+	std::vector<MaterialRegistry::MaterialInstanceData> GetMeshMaterialInstances(UINT meshIdx) { return pMaterialRegistry->GetMaterialInstances(meshIdx); }
 
 protected:
 	// メッシュデータ
-	std::vector<std::unique_ptr<MeshletBuffer>> MeshData;
+	std::vector<std::unique_ptr<MeshletBuffer>> pMesh;
 
 };
 

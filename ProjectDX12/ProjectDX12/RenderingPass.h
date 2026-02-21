@@ -14,6 +14,7 @@ class RenderTarget;
 class RenderingPass
 {
 public:
+
 	enum RenderingPassType
 	{
 		None = 0,
@@ -29,11 +30,13 @@ protected:
 	RenderingPassType PassType;
 
 public:
+
 	RenderingPass();
 	virtual ~RenderingPass() {};
 	virtual void Execute() {};
 
 public:
+
 	// èâä˙âª
 	virtual void Init(
 		std::shared_ptr<DescriptorHeap> rtvHeap,
@@ -44,12 +47,14 @@ public:
 	virtual void AddObj(GameObject& obj) {};
 
 public:
+
 	virtual std::shared_ptr<RenderTarget> GetTexture(UINT idx) = 0;
 	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) = 0;
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) = 0;
 
 protected:
-	static std::shared_ptr<class RenderingEngine> Engine;
+
+	static std::shared_ptr<class RenderingEngine> pEngine;
 
 };
 

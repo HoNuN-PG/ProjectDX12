@@ -40,7 +40,7 @@ void M_MS::Initialize(Description desc)
 
 void M_MS::Bind(UINT materialinstance)
 {
-	RootSignature::CustomBindSetting setting[] =
+	RootSignature::BindSetting setting[] =
 	{
 		{WVP[materialinstance]->GetHandle().hGPU, TRUE },
 		{D3D12_GPU_DESCRIPTOR_HANDLE()			, FALSE},
@@ -121,7 +121,7 @@ void M_MSCulling::Bind(UINT materialinstance)
 	std::vector<DirectX::XMFLOAT4> planes = CameraBase::GetMainFrustumPlanes();
 	Params[0]->Write(planes.data());
 
-	RootSignature::CustomBindSetting setting[] =
+	RootSignature::BindSetting setting[] =
 	{
 		{WVP[materialinstance]->GetHandle().hGPU, TRUE },
 		{Params[0]->GetHandle().hGPU			, TRUE },

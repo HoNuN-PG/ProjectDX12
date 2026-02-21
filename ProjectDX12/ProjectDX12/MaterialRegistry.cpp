@@ -1,15 +1,15 @@
 
 // Model
-#include "MeshMaterialManager.h"
+#include "MaterialRegistry.h"
 
 // System/GameObject
 #include "GameObject.h"
 
-MeshMaterialManager::~MeshMaterialManager()
+MaterialRegistry::~MaterialRegistry()
 {
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
-		std::vector<MaterialInstance> instances = item->second;
+		std::vector<MaterialInstanceData> instances = item->second;
 		for (int i = 0; i < instances.size(); ++i)
 		{
 			// マテリアルインスタンスの削除
@@ -18,14 +18,14 @@ MeshMaterialManager::~MeshMaterialManager()
 	}
 }
 
-void MeshMaterialManager::SetUp(MeshMaterialSetupData materials)
+void MaterialRegistry::SetUp(SetupTable materials)
 {
 	for (auto&& item = materials.begin(); item != materials.end(); ++item)
 	{
 		for(int i = 0; i < item->second.size(); ++i)
 		{ 
 			// メッシュごとにマテリアルインスタンスを作成
-			MaterialInstance instance;
+			MaterialInstanceData instance;
 			instance.first = item->second[i]; // マテリアル
 			instance.second = item->second[i]->AddMaterialInstance(); // マテリアルインスタンスインデックス
 			Materials[item->first].push_back(instance); // メッシュごとに使用するマテリアルインスタンスを追加
@@ -33,13 +33,13 @@ void MeshMaterialManager::SetUp(MeshMaterialSetupData materials)
 	}
 }
 
-std::vector<MeshMaterialManager::MeshMaterialInfo> MeshMaterialManager::GetRenderingMaterial(UINT timing)
+std::vector<MaterialRegistry::MeshMaterialInfo> MaterialRegistry::GetRenderingMaterial(UINT timing)
 {
 	std::vector<MeshMaterialInfo> infos;
 
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
-		std::vector<MaterialInstance> instances = item->second;
+		std::vector<MaterialInstanceData> instances = item->second;
 		for (int i = 0; i < instances.size(); ++i)
 		{
 			// 描画タイミングが異なれば無効
@@ -60,17 +60,17 @@ std::vector<MeshMaterialManager::MeshMaterialInfo> MeshMaterialManager::GetRende
 	return infos;
 }
 
-void MeshMaterialManager::Add2RenderingEngine(std::weak_ptr<class GameObject> owner)
+void MaterialRegistry::Register2RenderingEngine(std::weak_ptr<class GameObject> owner)
 {
 	// 登録済み描画タイミング
 	std::vector<Material::RenderingTiming> timing;
 
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
-		std::vector<MaterialInstance> instances = item->second;
+		std::vector<MaterialInstanceData> instances = item->second;
 		for (int i = 0; i < instances.size(); ++i)
 		{
-			if(CheckAddedTiming(timing, instances[i].first->GetRenderTiming()))
+			if(IsRegisted(timing, instances[i].first->GetRenderTiming()))
 			{ 
 				// すでに登録済みの描画タイミングなら無効
 				continue;
@@ -82,7 +82,7 @@ void MeshMaterialManager::Add2RenderingEngine(std::weak_ptr<class GameObject> ow
 	}
 }
 
-bool MeshMaterialManager::CheckAddedTiming(std::vector<Material::RenderingTiming> timing, UINT check)
+bool MaterialRegistry::IsRegisted(std::vector<Material::RenderingTiming> timing, UINT check)
 {
 	for(int i = 0; i < timing.size(); ++i)
 	{

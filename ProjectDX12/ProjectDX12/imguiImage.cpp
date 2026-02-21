@@ -2,7 +2,7 @@
 #include <tchar.h>
 
 // ImGUI
-#include "DebugImGUI.h"
+#include "imguiImage.h"
 #include <imgui/imgui_impl_dx12.h>
 #include <imgui/imgui_impl_win32.h>
 
@@ -10,14 +10,14 @@
 #include "ConstantBuffer.h"
 #include "ConstantWVP.h"
 
-std::unique_ptr<MeshBuffer>									DebugImGUI::Screen;
-std::unique_ptr<RootSignature>								DebugImGUI::RootSignatureData;
-std::unique_ptr<Pipeline>									DebugImGUI::PipelineData;
-std::vector<std::pair<bool, std::unique_ptr<RenderTarget>>>	DebugImGUI::Images;
-std::unique_ptr<DescriptorHeap>								DebugImGUI::pHeap;
-std::unique_ptr<DescriptorHeap>								DebugImGUI::pRTVHeap;
+std::unique_ptr<MeshBuffer>									ImGUIImage::pScreen;
+std::unique_ptr<RootSignature>								ImGUIImage::pRootSignatureData;
+std::unique_ptr<Pipeline>									ImGUIImage::pPipelineData;
+std::vector<std::pair<bool, std::unique_ptr<RenderTarget>>>	ImGUIImage::Images;
+std::unique_ptr<DescriptorHeap>								ImGUIImage::pHeap;
+std::unique_ptr<DescriptorHeap>								ImGUIImage::pRTVHeap;
 
-DebugImGUI::DebugImGUI()
+ImGUIImage::ImGUIImage()
 {
 	// スクリーン頂点
 	Vertex screenVtx[] =
@@ -34,14 +34,14 @@ DebugImGUI::DebugImGUI()
 	desc.vtxSize = sizeof(Vertex);
 	desc.vtxCount = _countof(screenVtx);
 	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-	Screen = std::make_unique<MeshBuffer>(desc);
+	pScreen = std::make_unique<MeshBuffer>(desc);
 }
 
-DebugImGUI::~DebugImGUI()
+ImGUIImage::~ImGUIImage()
 {
 }
 
-MSG DebugImGUI::Create(HWND _hwnd)
+MSG ImGUIImage::Create(HWND _hwnd)
 {
 	MSG msg = {};
 
@@ -99,19 +99,19 @@ MSG DebugImGUI::Create(HWND _hwnd)
 		RootSignature::Description desc = {};
 		desc.pParam = param;
 		desc.paramNum = _countof(param);
-		RootSignatureData = std::make_unique<RootSignature>(desc);
+		pRootSignatureData = std::make_unique<RootSignature>(desc);
 	}
 	// パイプライン
 	{
 		Pipeline::Description desc = {};
 		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
 		desc.PSFile = L"../game/assets/shader/PS_Copy.cso";
-		desc.pRootSignature = RootSignatureData->Get();
+		desc.pRootSignature = pRootSignatureData->Get();
 		desc.pInputLayout = Pipeline::IED_POS_TEX;
 		desc.InputLayoutNum = Pipeline::IED_POS_TEX_COUNT;
 		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.RenderTargetNum = 1;
-		PipelineData = std::make_unique<Pipeline>(desc);
+		pPipelineData = std::make_unique<Pipeline>(desc);
 	}
 	// RTV用のディスクリプタヒープを確保
 	{
@@ -137,7 +137,7 @@ MSG DebugImGUI::Create(HWND _hwnd)
 	return msg;
 }
 
-ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* heap, RenderTarget* srv)
+ImTextureID ImGUIImage::GetImage(DescriptorHeap* heap, RenderTarget* srv)
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 
@@ -178,16 +178,16 @@ ImTextureID DebugImGUI::GetImGUIImage(DescriptorHeap* heap, RenderTarget* srv)
 	{
 		srv->GetHandleSRV().hGPU,
 	};
-	RootSignatureData->Bind(handle, _countof(handle));
-	PipelineData->Bind();
-	Screen->Draw();
+	pRootSignatureData->Bind(handle, _countof(handle));
+	pPipelineData->Bind();
+	pScreen->Draw();
 
 	target->RTV2SRV();
 
 	return (ImTextureID)target->GetHandleSRV().hGPU.ptr;
 }
 
-void DebugImGUI::Completed()
+void ImGUIImage::Completed()
 {
 	for (int i = 0; i < Images.size(); i++)
 	{

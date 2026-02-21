@@ -7,15 +7,15 @@
 
 HRESULT SceneBase::InitBase()
 {
-	Engine = std::make_shared<RenderingEngine>();
-	Engine->Init();
+	pEngine = std::make_shared<RenderingEngine>();
+	pEngine->Init();
 
 	// ディスクリプタヒープ
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = 256;
-		Heap = std::make_shared<DescriptorHeap>(desc);
+		pHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 
 	Init();
@@ -34,7 +34,7 @@ void SceneBase::UninitBase()
 		objectList.clear();
 	}
 	Uninit();
-	Engine->Uninit();
+	pEngine->Uninit();
 }
 
 void SceneBase::UpdateBase()
@@ -62,7 +62,7 @@ void SceneBase::UpdateBase()
 		);
 	}
 	Update();
-	Engine->Update();
+	pEngine->Update();
 }
 
 void SceneBase::DrawBase()
@@ -77,10 +77,10 @@ void SceneBase::DrawBase()
 		}
 	}
 	Draw();
-	Engine->Draw();
+	pEngine->Draw();
 }
 
 std::shared_ptr<RenderingEngine> SceneBase::GetRenderingEngine()
 {
-	return Engine;
+	return pEngine;
 }

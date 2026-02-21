@@ -14,6 +14,7 @@ MeshBuffer::MeshBuffer(Description desc)
 	Ibv{}
 {
 	HRESULT hr;
+
 	// ヒープの設定
 	D3D12_HEAP_PROPERTIES heapProp	= {};
 	heapProp.Type						= D3D12_HEAP_TYPE_UPLOAD;
@@ -114,99 +115,6 @@ void MeshBuffer::Draw()
 	}
 }
 
-InstanceMeshBuffer::InstanceMeshBuffer(Description desc, unsigned int count) 
-	:
-	MeshBuffer(desc)
-{
-	InsCount = count;
-
-	D3D12_HEAP_PROPERTIES heapProp = {};
-	heapProp.Type					= D3D12_HEAP_TYPE_DEFAULT;
-	heapProp.CPUPageProperty		= D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-	heapProp.MemoryPoolPreference	= D3D12_MEMORY_POOL_UNKNOWN;
-	heapProp.CreationNodeMask		= 1;
-	heapProp.VisibleNodeMask		= 1;
-
-	D3D12_RESOURCE_DESC resDesc = {};
-	resDesc.Dimension			= D3D12_RESOURCE_DIMENSION_BUFFER;
-	resDesc.Width				= sizeof(InstanceData) * max(InsCount, MAX_INSTANCE);
-	resDesc.Height				= 1;
-	resDesc.DepthOrArraySize	= 1;
-	resDesc.MipLevels			= 1;
-	resDesc.Format				= DXGI_FORMAT_UNKNOWN;
-	resDesc.SampleDesc.Count	= 1;
-	resDesc.Layout				= D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	resDesc.Flags				= D3D12_RESOURCE_FLAG_NONE;
-
-	// リソースの生成
-	auto result = GetDevice()->CreateCommittedResource(
-		&heapProp,
-		D3D12_HEAP_FLAG_NONE,
-		&resDesc,
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		nullptr,
-		IID_PPV_ARGS(InsResource.GetAddressOf())
-	);
-	if (FAILED(result)) { return; }
-
-	// アップローダーの生成
-	heapProp.Type = D3D12_HEAP_TYPE_UPLOAD;
-	result = GetDevice()->CreateCommittedResource(
-		&heapProp,
-		D3D12_HEAP_FLAG_NONE,
-		&resDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(InsUploader.GetAddressOf())
-	);
-	if (FAILED(result)) { return; }
-}
-
-InstanceMeshBuffer::~InstanceMeshBuffer()
-{
-}
-
-void InstanceMeshBuffer::MappingUploder()
-{
-	void* mappedData;
-	auto hr = InsUploader->Map(0, nullptr, reinterpret_cast<void**>(&mappedData));
-	if (SUCCEEDED(hr))
-	{
-		memcpy(mappedData, InsData.data(), sizeof(InstanceData) * InsData.size());
-	}
-	InsUploader->Unmap(0, nullptr);
-
-	D3D12_SUBRESOURCE_DATA subResourceData = {};
-	subResourceData.pData		= mappedData;
-	subResourceData.RowPitch	= sizeof(InstanceData);
-	subResourceData.SlicePitch	= subResourceData.RowPitch;
-
-	UpdateSubresources(
-		GetCommandList(), 
-		InsResource.Get(), 
-		InsUploader.Get(), 
-		0, 
-		0, 
-		1, 
-		&subResourceData
-	);
-}
-
-void InstanceMeshBuffer::Draw()
-{
-	GetCommandList()->IASetPrimitiveTopology(Desc.topology);
-	GetCommandList()->IASetVertexBuffers(0, 1, &Vbv);
-	if (Idx)
-	{
-		GetCommandList()->IASetIndexBuffer(&Ibv);
-		GetCommandList()->DrawIndexedInstanced(Desc.idxCount, InsCount, 0, 0, 0);
-	}
-	else 
-	{
-		GetCommandList()->DrawInstanced(Desc.vtxCount, 1, 0, 0);
-	}
-}
-
 MeshletBuffer::MeshletBuffer(Description desc)
 	:
 	Vtx(nullptr),
@@ -215,9 +123,9 @@ MeshletBuffer::MeshletBuffer(Description desc)
 	pPrimitiveIndices(nullptr)
 {
 	HRESULT hr;
+
 	// ヒープの設定
-	D3D12_HEAP_PROPERTIES 
-		heapProp = {};
+	D3D12_HEAP_PROPERTIES heapProp	= {};
 	heapProp.Type					= D3D12_HEAP_TYPE_UPLOAD;
 	heapProp.CPUPageProperty		= D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
 	heapProp.MemoryPoolPreference	= D3D12_MEMORY_POOL_UNKNOWN;

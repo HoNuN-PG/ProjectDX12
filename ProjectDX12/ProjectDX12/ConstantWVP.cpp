@@ -12,9 +12,9 @@
 // System
 #include "DirectX.h"
 
-void * ConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
+void * CalcConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
 {
-	sConstantWVP wvp;
+	ConstantWVP wvp;
 
 	// ワールドマトマトリクス設定
 	DirectX::XMMATRIX scale, rot, trans;
@@ -54,9 +54,9 @@ void * ConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, D
 	return &wvp;
 }
 
-void * ConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
+void * CalcConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
 {
-	sConstantWVP wvp;
+	ConstantWVP wvp;
 
 	DirectX::XMMATRIX scale, rot, trans;
 	scale = DirectX::XMMatrixScaling(Scale.x, Scale.y, 0);
@@ -87,7 +87,7 @@ void * ConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, D
 	return &wvp;
 }
 
-DirectX::XMFLOAT4X4 ConstantWVP::CalcInversVPMatrix()
+DirectX::XMFLOAT4X4 CalcConstantWVP::CalcInversVPMatrix()
 {
 	// ビューマトリクス
 	CameraBase* camera = SceneManager::GetCamera().get();

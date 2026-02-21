@@ -18,11 +18,11 @@
 // System
 #include "StartUp.h"
 
-void Model::Create(const char* path, MeshMaterialManager::MeshMaterialSetupData materials)
+void Model::Create(const char* path, MaterialRegistry::SetupTable materials)
 {
 	// マテリアル設定
-	MeshMaterialData = std::make_unique<MeshMaterialManager>();
-	MeshMaterialData->SetUp(materials);
+	pMaterialRegistry = std::make_unique<MaterialRegistry>();
+	pMaterialRegistry->SetUp(materials);
 	
 	// モデル読込
 	Assimp::Importer importer;
@@ -95,24 +95,24 @@ void Model::CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV)
 	desc.vtxCount	= dest.Vertices.size();
 	desc.pIdx		= dest.Indices.data();
 	desc.idxCount	= dest.Indices.size();
-	MeshData.push_back(std::make_unique<MeshBuffer>(desc));
+	pMesh.push_back(std::make_unique<MeshBuffer>(desc));
 }
 
 void Model::Draw()
 {
-	MeshMaterialData->Add2RenderingEngine(Owner);
+	pMaterialRegistry->Register2RenderingEngine(Owner);
 }
 
 void Model::Rendering()
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingTiming();
-	std::vector<MeshMaterialManager::MeshMaterialInfo> infos = MeshMaterialData->GetRenderingMaterial(current);
+	std::vector<MaterialRegistry::MeshMaterialInfo> infos = pMaterialRegistry->GetRenderingMaterial(current); // 現在の描画タイミングで描画するマテリアルを取得
 
 	for(auto&& info : infos)
 	{
 		// マテリアル設定
-		info.material->WriteWVP(ConstantWVP::Calc3DMatrix(
+		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(
 			Owner.lock()->GetPosition(),
 			Owner.lock()->GetRotation(),
 			Owner.lock()->GetScale()),
@@ -120,15 +120,15 @@ void Model::Rendering()
 		);
 		info.material->Bind(info.materialInstanceIdx);
 		// 描画
-		MeshData[info.meshIdx]->Draw();
+		pMesh[info.meshIdx]->Draw();
 	}
 }
 
-void MeshletModel::Create(const char* path, MeshMaterialManager::MeshMaterialSetupData materials, DescriptorHeap* heap)
+void MeshletModel::Create(const char* path, MaterialRegistry::SetupTable materials, DescriptorHeap* heap)
 {
 	// マテリアル設定
-	MeshMaterialData = std::make_unique<MeshMaterialManager>();
-	MeshMaterialData->SetUp(materials);
+	pMaterialRegistry = std::make_unique<MaterialRegistry>();
+	pMaterialRegistry->SetUp(materials);
 
 	// モデル読込
 	Assimp::Importer importer;
@@ -197,38 +197,42 @@ void MeshletModel::CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool inv
 	}
 
 	// データ生成
-	for(int i = 0; i < dest.Vertices.size(); ++i) desc.positions.push_back(dest.Vertices[i].pos);
+	for(int i = 0; i < dest.Vertices.size(); ++i) 
+		desc.positions.push_back(dest.Vertices[i].pos);
 	desc.pVtx = dest.Vertices.data();
 	desc.vtxCount = dest.Vertices.size();
-	for(int i = 0; i < dest.Indices.size(); ++i) desc.indices.push_back(dest.Indices[i]);
+
+	for(int i = 0; i < dest.Indices.size(); ++i) 
+		desc.indices.push_back(dest.Indices[i]);
 	desc.pIdx = dest.Indices.data();
 	desc.idxCount = dest.Indices.size();
-	MeshData.push_back(std::make_unique<MeshletBuffer>(desc));
+
+	pMesh.push_back(std::make_unique<MeshletBuffer>(desc));
 }
 
 void MeshletModel::Draw()
 {
-	MeshMaterialData->Add2RenderingEngine(Owner);
+	pMaterialRegistry->Register2RenderingEngine(Owner);
 }
 
 void MeshletModel::Rendering()
 {
 	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
 	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingTiming();
-	std::vector<MeshMaterialManager::MeshMaterialInfo> infos = MeshMaterialData->GetRenderingMaterial(current);
+	std::vector<MaterialRegistry::MeshMaterialInfo> infos = pMaterialRegistry->GetRenderingMaterial(current); // 現在の描画タイミングで描画するマテリアルを取得
 
 	for (auto&& info : infos)
 	{
 		// マテリアル設定
-		info.material->WriteWVP(ConstantWVP::Calc3DMatrix(
+		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(
 			Owner.lock()->GetPosition(),
 			Owner.lock()->GetRotation(),
 			Owner.lock()->GetScale()),
 			info.materialInstanceIdx
 		);
-		info.material->WriteMeshletCount(MeshData[info.meshIdx]->GetMeshletCount());
+		info.material->WriteMeshletCount(pMesh[info.meshIdx]->GetMeshletCount());
 		info.material->Bind(info.materialInstanceIdx);
 		// 描画
-		MeshData[info.meshIdx]->Draw(info.material->GetAmpShaderSRVStartSlot(), info.material->GetMeshShaderSRVStartSlot());
+		pMesh[info.meshIdx]->Draw(info.material->GetAmpShaderSRVStartSlot(), info.material->GetMeshShaderSRVStartSlot());
 	}
 }

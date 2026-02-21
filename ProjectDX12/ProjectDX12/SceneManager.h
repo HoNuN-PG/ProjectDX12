@@ -13,6 +13,7 @@ class CameraBase;
 class SceneManager
 {
 private:
+
 	enum SceneType 
 	{
 		SANDBOXDX12 = 0,
@@ -23,6 +24,7 @@ private:
 	static std::vector<std::unique_ptr<SceneBase>> Scenes;
 
 public:
+
 	SceneManager();
 
 	static HRESULT Init();
@@ -31,10 +33,12 @@ public:
 	static void Draw();
 
 public:
+
 	static SceneBase* GetCurrentScene(){ return Scenes[CurrentScene].get(); }
 	static std::shared_ptr<class RenderingEngine> GetRenderingEngine(){ return Scenes[CurrentScene].get()->GetRenderingEngine(); }
 
 public:
+
 	static std::shared_ptr<CameraBase> GetCamera();
 
 };
