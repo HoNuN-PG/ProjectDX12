@@ -76,7 +76,7 @@ protected:
 
 	// ˆÚ“®‘¬“x
 public:
-	void DrawUpdateSpeed();
+	void DrawImGUI();
 public:
 	static float m_MoveSpeed;
 	static float m_MouseSpeed;

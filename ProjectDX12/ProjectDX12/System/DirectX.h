@@ -21,8 +21,8 @@ using namespace Microsoft::WRL;
 
 HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen);
 void UninitDirectX();
-void UpdateDirectX(void(func)(void));
-void DrawDirectX(void(func)(void),const float clearColor[4]);
+void BeginRendering();
+void EndRendering();
 
 ID3D12Device8* GetDevice();
 ID3D12GraphicsCommandList6* GetCommandList();

@@ -1,18 +1,19 @@
 
 #include "System/DirectX.h"
 
-ComPtr<ID3D12Device8>				g_pDevice;			// DirectX12デバイスオブジェクト
-ComPtr<IDXGIFactory6>				g_pFactory;			// ディスプレイへの出力機能の制御
-ComPtr<ID3D12CommandAllocator>		g_pCmdAllocator;	// コマンドアロケータ
-ComPtr<ID3D12GraphicsCommandList6>	g_pCmdList;			// コマンドリスト
-ComPtr<ID3D12CommandQueue>			g_pCmdQueue;		// コマンドキュー
+#define BACKBUFFER_COUNT (2)											// バックバッファの数
+
+ComPtr<ID3D12Device8>				g_pDevice;							// DirectX12デバイスオブジェクト
+ComPtr<IDXGIFactory6>				g_pFactory;							// ディスプレイへの出力機能の制御
+ComPtr<ID3D12CommandAllocator>		g_pCmdAllocator[BACKBUFFER_COUNT];	// コマンドアロケータ
+ComPtr<ID3D12GraphicsCommandList6>	g_pCmdList;							// コマンドリスト
+ComPtr<ID3D12CommandQueue>			g_pCmdQueue;						// コマンドキュー
 ComPtr<IDXGISwapChain3>				g_pSwapChain;
-ComPtr<ID3D12DescriptorHeap>		g_BBufferHeap;		// バックバッファヒープ
-ID3D12Resource**					g_ppBackBuf;		// バックバッファ
-UINT64								g_fenceLevel;
-ComPtr<ID3D12Fence>					g_pFence;			// フェンス
-D3D12_VIEWPORT						g_viewPort;			// ビューポート
-D3D12_RECT							g_scissor;			// シザー
+ComPtr<ID3D12DescriptorHeap>		g_BBufferHeap;						// バックバッファヒープ
+ComPtr<ID3D12Resource>				g_pBackBuf[BACKBUFFER_COUNT];		// バックバッファ
+UINT64								g_BackBufferIdx;					// バックバッファのインデックス	
+UINT64								g_fenceLevel[BACKBUFFER_COUNT];
+ComPtr<ID3D12Fence>					g_pFence;							// フェンス
 
 HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 {
@@ -29,7 +30,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 
 	// ファクトリ作成
 #ifdef _DEBUG
-	hr = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(g_pFactory.GetAddressOf()));
+	hr = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(g_pFactory.ReleaseAndGetAddressOf()));
 #else
 	hr = CreateDXGIFactory1(IID_PPV_ARGS(&g_pFactory));
 #endif
@@ -55,7 +56,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 			hr = D3D12CreateDevice(
 				adapter.Get(),
 				lv,
-				IID_PPV_ARGS(g_pDevice.GetAddressOf())
+				IID_PPV_ARGS(g_pDevice.ReleaseAndGetAddressOf())
 			);
 			if (SUCCEEDED(hr))
 			{
@@ -78,23 +79,6 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 
 	// コマンドの種類
 	D3D12_COMMAND_LIST_TYPE cmdListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
-	
-	// コマンドアロケーター
-	hr = g_pDevice->CreateCommandAllocator(
-		cmdListType, 
-		IID_PPV_ARGS(g_pCmdAllocator.GetAddressOf())
-	);
-	if (FAILED(hr)) { return hr; }
-
-	// コマンドリスト
-	hr = g_pDevice->CreateCommandList(
-		0,
-		cmdListType,
-		g_pCmdAllocator.Get(),
-		nullptr,
-		IID_PPV_ARGS(g_pCmdList.GetAddressOf())
-	);
-	if (FAILED(hr)) { return hr; }
 
 	// コマンドキュー
 	D3D12_COMMAND_QUEUE_DESC cmdQueueDesc = {};
@@ -102,7 +86,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	cmdQueueDesc.Priority	= D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;	// コマンドキュ―の優先順位
 	cmdQueueDesc.Flags		= D3D12_COMMAND_QUEUE_FLAG_NONE;		// GPUのタイムアウト有効
 	cmdQueueDesc.NodeMask	= 0;									// 複数のGPUの場合に、適用するGPUを識別するビット
-	hr = g_pDevice->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(g_pCmdQueue.GetAddressOf()));
+	hr = g_pDevice->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(g_pCmdQueue.ReleaseAndGetAddressOf()));
 	if (FAILED(hr)) { return hr; }
 
 	// スワップチェーン
@@ -117,7 +101,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	scDesc.SampleDesc.Quality	= 0;
 	// バックバッファのフラグ
 	scDesc.BufferUsage			= DXGI_USAGE_BACK_BUFFER;
-	scDesc.BufferCount			= 2;
+	scDesc.BufferCount			= BACKBUFFER_COUNT;
 	// バッファ出力とターゲット出力の一致の為サイズ変更を行う
 	scDesc.Scaling				= DXGI_SCALING_STRETCH;
 	scDesc.SwapEffect			= DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -129,88 +113,105 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 		&scDesc,
 		nullptr,
 		nullptr,
-		reinterpret_cast<IDXGISwapChain1**>(g_pSwapChain.GetAddressOf())
+		reinterpret_cast<IDXGISwapChain1**>(g_pSwapChain.ReleaseAndGetAddressOf())
 	);
 	if (FAILED(hr)) { return hr; }
 
+	// バックバッファインデックス
+	g_BackBufferIdx = g_pSwapChain->GetCurrentBackBufferIndex();
+
+	// コマンドアロケーター
+	for (UINT i = 0; i < BACKBUFFER_COUNT; ++i)
+	{
+		hr = g_pDevice->CreateCommandAllocator(
+			cmdListType,
+			IID_PPV_ARGS(g_pCmdAllocator[i].ReleaseAndGetAddressOf())
+		);
+	}
+	if (FAILED(hr)) { return hr; }
+
+	// コマンドリスト
+	hr = g_pDevice->CreateCommandList(
+		0,
+		cmdListType,
+		g_pCmdAllocator[g_BackBufferIdx].Get(),
+		nullptr,
+		IID_PPV_ARGS(g_pCmdList.ReleaseAndGetAddressOf())
+	);
+	if (FAILED(hr)) { return hr; }
+	g_pCmdList->Close();
+
 	// ディスクリプタヒープ
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDHDesc = {};
-	rtvDHDesc.Type				= D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	rtvDHDesc.NumDescriptors	= 2;
-	rtvDHDesc.Flags				= D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	rtvDHDesc.NodeMask			= 0;
+	rtvDHDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	rtvDHDesc.NumDescriptors = BACKBUFFER_COUNT;
+	rtvDHDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	rtvDHDesc.NodeMask = 0;
 	hr = g_pDevice->CreateDescriptorHeap(&rtvDHDesc, IID_PPV_ARGS(g_BBufferHeap.GetAddressOf()));
 	if (FAILED(hr)) { return hr; }
 
 	// レンダーターゲットビューのディスクリプタを作成
-	g_ppBackBuf = new ID3D12Resource*[scDesc.BufferCount];
 	D3D12_CPU_DESCRIPTOR_HANDLE handle = g_BBufferHeap->GetCPUDescriptorHandleForHeapStart();
-	for (UINT i = 0; i < scDesc.BufferCount; ++i)
+	for (UINT i = 0; i < BACKBUFFER_COUNT; ++i)
 	{
 		// ディスプレイに紐づいたリソースから、ディスクリプタを作成
-		hr = g_pSwapChain->GetBuffer(i, IID_PPV_ARGS(&g_ppBackBuf[i]));
-		g_pDevice->CreateRenderTargetView(g_ppBackBuf[i], nullptr, handle);
+		hr = g_pSwapChain->GetBuffer(i, IID_PPV_ARGS(g_pBackBuf[i].ReleaseAndGetAddressOf()));
+		g_pDevice->CreateRenderTargetView(g_pBackBuf[i].Get(), nullptr, handle);
 
 		// ヒープ内の次の位置へ移動
 		handle.ptr += g_pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	}
 
 	// フェンス
-	g_fenceLevel = 0;
-	hr = g_pDevice->CreateFence(g_fenceLevel, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(g_pFence.GetAddressOf()));
+	hr = g_pDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(g_pFence.GetAddressOf()));
 	if (FAILED(hr)) { return hr; }
+	g_fenceLevel[g_BackBufferIdx] = 0;
 
 	return hr;
 }
 
 void UninitDirectX()
 {
-	DXGI_SWAP_CHAIN_DESC1 scDesc;
-	g_pSwapChain->GetDesc1(&scDesc);
-	for(UINT i = 0;i < scDesc.BufferCount;++i)
-	{
-		SAFE_RELEASE(g_ppBackBuf[i]);
-	}
-	delete g_ppBackBuf;
-	g_ppBackBuf = nullptr;
 }
 
-void UpdateDirectX(void(func)(void))
+void BeginRendering()
 {
-	func();
-}
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-void DrawDirectX(void(func)(void), const float clearColor[4])
-{
-	// 描画準備
-	UINT bbIdx = g_pSwapChain->GetCurrentBackBufferIndex(); // 現在のバックバッファのインデックス
-	g_pCmdAllocator->Reset();								// コマンドアロケーターのクリア
-	g_pCmdList->Reset(g_pCmdAllocator.Get(), nullptr);		// コマンドリストのクリア
+	g_pCmdAllocator[g_BackBufferIdx]->Reset();										// コマンドアロケーターのクリア
+	g_pCmdList->Reset(g_pCmdAllocator[g_BackBufferIdx].Get(), nullptr);				// コマンドリストのクリア
 
 	// バックバッファに対するリソースバリア
 	D3D12_RESOURCE_BARRIER barrierDesc = {};
-	barrierDesc.Type					= D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barrierDesc.Flags					= D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrierDesc.Transition.pResource	= g_ppBackBuf[bbIdx];
-	barrierDesc.Transition.Subresource	= 0;
-	barrierDesc.Transition.StateBefore	= D3D12_RESOURCE_STATE_PRESENT;
-	barrierDesc.Transition.StateAfter	= D3D12_RESOURCE_STATE_RENDER_TARGET;
-	g_pCmdList->ResourceBarrier(1,&barrierDesc);
+	barrierDesc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrierDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrierDesc.Transition.pResource = g_pBackBuf[g_BackBufferIdx].Get();
+	barrierDesc.Transition.Subresource = 0;
+	barrierDesc.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+	barrierDesc.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	g_pCmdList->ResourceBarrier(1, &barrierDesc);
 
 	// レンダーターゲット設定
 	D3D12_CPU_DESCRIPTOR_HANDLE hRTV;
 	hRTV = g_BBufferHeap->GetCPUDescriptorHandleForHeapStart();
-	hRTV.ptr += bbIdx * g_pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	hRTV.ptr += g_BackBufferIdx * g_pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	SetRenderTarget(1, &hRTV);
 	g_pCmdList->ClearRenderTargetView(hRTV, clearColor, 0, nullptr);
+}
 
+void EndRendering()
+{
 	// 描画
 	ID3D12CommandList* pCmdList[] = { g_pCmdList.Get() };
-	func();
 
 	// バックバッファに対するリソースバリア
-	barrierDesc.Transition.StateBefore	= D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrierDesc.Transition.StateAfter	= D3D12_RESOURCE_STATE_PRESENT;
+	D3D12_RESOURCE_BARRIER barrierDesc = {};
+	barrierDesc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrierDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrierDesc.Transition.pResource = g_pBackBuf[g_BackBufferIdx].Get();
+	barrierDesc.Transition.Subresource = 0;
+	barrierDesc.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	barrierDesc.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	g_pCmdList->ResourceBarrier(1, &barrierDesc);
 
 	// 描画命令発行停止
@@ -220,16 +221,24 @@ void DrawDirectX(void(func)(void), const float clearColor[4])
 	// 画面出力
 	g_pSwapChain->Present(1, 0);
 
+	// シグナル
+	g_pCmdQueue->Signal(g_pFence.Get(), g_fenceLevel[g_BackBufferIdx]);
+
+	// バックバッファインデックス
+	g_BackBufferIdx = g_pSwapChain->GetCurrentBackBufferIndex();
+
 	// コマンドリストの完了をチェック
-	g_pCmdQueue->Signal(g_pFence.Get(), ++g_fenceLevel);
-	if (g_pFence->GetCompletedValue() != g_fenceLevel)
+	if (g_pFence->GetCompletedValue() < g_fenceLevel[g_BackBufferIdx])
 	{
 		// Windowsのイベントで処理を待つ
 		auto event = CreateEvent(nullptr, false, false, nullptr);
-		g_pFence->SetEventOnCompletion(g_fenceLevel, event);		// 終了値に到達した際に通知するイベントを設定
-		WaitForSingleObject(event, INFINITE);						// イベントが発行されるまで待機
-		CloseHandle(event);											// イベントの破棄
+		g_pFence->SetEventOnCompletion(g_fenceLevel[g_BackBufferIdx], event); // 終了値に到達した際に通知するイベントを設定
+		WaitForSingleObject(event, INFINITE); // イベントが発行されるまで待機
+		CloseHandle(event);	// イベントの破棄
 	}
+
+	// フェンス値更新
+	++g_fenceLevel[g_BackBufferIdx];
 }
 
 ID3D12Device8 * GetDevice()

@@ -147,7 +147,7 @@ void RenderingEngine::Draw()
 	// ŠÂ‹«î•ñ‚ÌÝ’è
 	{
 		// ƒJƒƒ‰
-		Camera[CurrentCameraType]->DrawUpdateSpeed();
+		Camera[CurrentCameraType]->DrawImGUI();
 		DirectX::XMFLOAT4X4 camera;
 		camera._11 = Camera[CurrentCameraType]->GetPosition().x;
 		camera._12 = Camera[CurrentCameraType]->GetPosition().y;

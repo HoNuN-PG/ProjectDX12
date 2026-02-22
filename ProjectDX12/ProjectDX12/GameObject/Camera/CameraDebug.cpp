@@ -81,7 +81,6 @@ void CameraDebug::Update()
 
 void CameraDebug::Draw()
 {
-
 }
 
 void CameraDebug::ProcDCC(Argument& arg)

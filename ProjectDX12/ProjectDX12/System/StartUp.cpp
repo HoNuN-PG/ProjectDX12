@@ -104,13 +104,15 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 
 			// XV
 			gUpdateTimer->st = timeGetTime();
-			UpdateDirectX(Update);
+			Update();
 			gUpdateTimer->et = timeGetTime();
 			float upf = gUpdateTimer->GetObservationDbFPS(1);
 
 			// •`‰æ
 			gDrawTimer->st = timeGetTime();
-			DrawDirectX(Draw, clear);
+			BeginRendering();
+			Draw();
+			EndRendering();
 			gDrawTimer->et = timeGetTime();
 			float drf = gDrawTimer->GetObservationDbFPS(1);
 

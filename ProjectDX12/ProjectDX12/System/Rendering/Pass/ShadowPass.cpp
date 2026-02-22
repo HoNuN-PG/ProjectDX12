@@ -13,6 +13,15 @@ ShadowPass::ShadowPass()
 {
 	PassType = RenderingPass::RenderingPassType::Shadow;
 
+	// シャドウマップテクスチャ設定
+	ShadowMapsSize[TextureType::Near] = { 4096,4096 };
+	ShadowMapsSize[TextureType::Middle] = { 2048 ,2048 };
+	ShadowMapsSize[TextureType::Far] = { 1024,1024 };
+	VSMShadowMapsSize[TextureType::Near] = { 4096,4096 };
+	VSMShadowMapsSize[TextureType::Middle] = { 2048 ,2048 };
+	VSMShadowMapsSize[TextureType::Far] = { 1024,1024 };
+	ShadowMapsFormat = DXGI_FORMAT_R16G16_FLOAT;
+
 	// カスケード設定
 	CascadeAreas.resize(SHADOW_MAP_COUNT);
 	CascadeAreas[0] = (50);
@@ -20,20 +29,6 @@ ShadowPass::ShadowPass()
 	CascadeAreas[2] = (CAM_FAR);
 
 	pCamera = SceneManager::GetCurrentScene()->GetGameObject<CameraBase>();
-
-	for (int i = 0; i < TextureType::MAX; ++i)
-	{
-		GaussIdx[i] = -1;
-	}
-
-	// シャドウマップテクスチャ設定
-	ShadowMapsSize[TextureType::Near] = { 4096,4096 };
-	ShadowMapsSize[TextureType::Middle] = {2048 ,2048 };
-	ShadowMapsSize[TextureType::Far] = {1024,1024};
-	VSMShadowMapsSize[TextureType::Near] = { 4096,4096 };
-	VSMShadowMapsSize[TextureType::Middle] = { 2048 ,2048 };
-	VSMShadowMapsSize[TextureType::Far] = { 1024,1024 };
-	ShadowMapsFormat = DXGI_FORMAT_R16G16_FLOAT;
 }
 
 void ShadowPass::Execute()
@@ -67,7 +62,7 @@ void ShadowPass::Execute()
 		DirectX::XMFLOAT4X4 LV = LightBase::GetLightViewMat();
 		DirectX::XMFLOAT4X4 crop = CalcTexelSnappedCrop(nearDepth, i, ShadowMapsSize[i].x,LV);
 
-		// ライトビュープロジェクション行列とクロップ行列を乗算
+		// ライトビュー行列とクロップ行列を乗算
 		DirectX::XMMATRIX lvpc;
 		DirectX::XMMATRIX m1 = DirectX::XMLoadFloat4x4(&LV);
 		DirectX::XMMATRIX m2 = DirectX::XMLoadFloat4x4(&crop);

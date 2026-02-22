@@ -96,7 +96,7 @@ std::vector<DirectX::XMFLOAT4> CameraBase::GetMainFrustumPlanes()
 	return planes;
 }
 
-void CameraBase::DrawUpdateSpeed()
+void CameraBase::DrawImGUI()
 {
 	ImGui::Begin("Camera");
 	{
