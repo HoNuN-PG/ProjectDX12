@@ -20,6 +20,14 @@
 
 void RenderingEngine::Init()
 {
+	// グローバル定数バッファディスクリプタヒープ
+	{
+		DescriptorHeap::Description desc = {};
+		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		desc.staging = TRUE;
+		desc.num = 256;
+		pConstantHeap = std::make_shared<DescriptorHeap>(desc);
+	}
 	// グローバルディスクリプタヒープ
 	{
 		DescriptorHeap::Description desc = {};
@@ -41,10 +49,10 @@ void RenderingEngine::Init()
 		desc.num = 32;
 		pDSVHeap = std::make_shared<DescriptorHeap>(desc);
 	}
-	// グローバルリソース
+	// グローバル定数バッファリソース
 	{
 		ConstantBuffer::Description desc = {};
-		desc.pHeap = pHeap.get();
+		desc.pHeap = pConstantHeap.get();
 		desc.size = sizeof(DirectX::XMFLOAT4X4);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera] = std::make_shared<ConstantBuffer>(desc);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light] = std::make_shared<ConstantBuffer>(desc);
@@ -461,7 +469,7 @@ void RenderingEngine::AfterOpaqueDepthNormalRendering()
 
 void RenderingEngine::EnvironmentRendering()
 {
-	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
+	static const float clearColor[4] = { 0, 0, 0, 0 };
 
 	// ターゲット化
 	GlobalTexture[GlobalTextureResourceKey::MainTexture]->SRV2RTV();
@@ -486,7 +494,7 @@ void RenderingEngine::EnvironmentRendering()
 
 void RenderingEngine::DefferedRendering()
 {
-	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
+	static const float clearColor[4] = { 0, 0, 0, 0 };
 
 	// ターゲット化
 	for (int i = 0; i < MAX_GBUFFER; i++)

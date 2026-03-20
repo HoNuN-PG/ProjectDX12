@@ -10,7 +10,7 @@ CustomDepthNormalPass::CustomDepthNormalPass()
 
 void CustomDepthNormalPass::Execute()
 {
-	static const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0 };
+	static const float clearColor[4] = { 0, 0, 0, 0 };
 
 	// ターゲット化
 	Depth->SRV2RTV();

@@ -26,7 +26,10 @@ RenderTarget::RenderTarget(Description desc)
 	// ƒŠƒ\[ƒXì¬
 	D3D12_CLEAR_VALUE clearValue;
 	clearValue.Format	= rtvResourceDesc.Format;
-	clearValue.Color[0] = clearValue.Color[1] = clearValue.Color[2] = clearValue.Color[3] = 0.0f;
+	if(desc.clearColor >= 0)
+		clearValue.Color[0] = clearValue.Color[1] = clearValue.Color[2] = clearValue.Color[3] = desc.clearColor;
+	else
+		clearValue.Color[0] = clearValue.Color[1] = clearValue.Color[2] = clearValue.Color[3] = 0;
 	HRESULT hr = GetDevice()->CreateCommittedResource(
 		&rtvProp, 
 		D3D12_HEAP_FLAG_NONE,

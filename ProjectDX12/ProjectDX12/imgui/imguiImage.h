@@ -13,18 +13,8 @@
 #include "System/Rendering/Pipeline/RootSignature.h"
 #include "System/Rendering/Texture/RenderTarget.h"
 
-class ConstantBuffer;
-
 class ImGUIImage
 {
-public:
-
-	struct Vertex
-	{
-		float pos[3];
-		float uv[2];
-	};
-
 private:
 
 	/// <summary>
@@ -34,12 +24,29 @@ private:
 
 public:
 
+	struct Vertex
+	{
+		float pos[3];
+		float uv[2];
+	};
+
+public:
+
 	ImGUIImage();
 	~ImGUIImage();
 
 public:
 
 	static MSG Create(HWND _hwnd);
+
+public:
+
+	static DescriptorHeap* GetImGUIDescriptorHeap() { return pHeap.get(); }
+
+private:
+
+	static std::unique_ptr<DescriptorHeap> pHeap;
+	static std::unique_ptr<DescriptorHeap> pRTVHeap;
 
 public:
 
@@ -60,19 +67,18 @@ public:
 
 private:
 
-	static std::unique_ptr<MeshBuffer> pScreen;
-	static std::unique_ptr<RootSignature> pRootSignatureData;
-	static std::unique_ptr<PipelineState> pPipelineData;
-	static std::vector<std::pair<bool,std::unique_ptr<RenderTarget>>> Images;
-
-public:
-
-	static DescriptorHeap* GetImGUIDescriptorHeap() { return pHeap.get(); }
+	struct ImGUIImageData
+	{
+		bool bUsed;
+		std::unique_ptr<RenderTarget> pImage;
+	};
 
 private:
 
-	static std::unique_ptr<DescriptorHeap> pHeap;
-	static std::unique_ptr<DescriptorHeap> pRTVHeap;
+	static std::unique_ptr<MeshBuffer> pScreen;
+	static std::unique_ptr<RootSignature> pRootSignatureData;
+	static std::unique_ptr<PipelineState> pPipelineData;
+	static std::vector<ImGUIImageData> ImageData;
 
 };
 

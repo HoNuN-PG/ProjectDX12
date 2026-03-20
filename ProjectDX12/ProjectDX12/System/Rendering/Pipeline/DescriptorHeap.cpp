@@ -1,19 +1,32 @@
 
 #include "System/Rendering/Pipeline/DescriptorHeap.h"
 
+/*
+* ステージ用の非シェーダー可視ヒープを別途作る（D3D12_DESCRIPTOR_HEAP_FLAG_NONE）。CPU で作成／書き込みするヒープをソースにして、宛先をシェーダー可視ヒープにして CopyDescriptorsSimple を呼ぶ。
+*/
+
 DescriptorHeap::DescriptorHeap(Description desc)
 	:
 	AllocCout(0),
-	Type()
+	Type(),
+	visibleShader(false)
 {
 	// ディスクリプターヒープ作成
 	D3D12_DESCRIPTOR_HEAP_DESC heap = {};
 	Type = heap.Type = desc.heapType;
 
 	// シェーダーから参照するか
-	if (desc.heapType == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+	if (desc.staging)
 	{
-		heap.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+		heap.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	}
+	else
+	{
+		if (heap.Type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+		{
+			visibleShader = true;
+			heap.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+		}
 	}
 	heap.NumDescriptors	= desc.num;
 	heap.NodeMask = 0;
@@ -27,22 +40,28 @@ DescriptorHeap::~DescriptorHeap()
 
 DescriptorHeap::Handle DescriptorHeap::Allocate()
 {
-	D3D12_CPU_DESCRIPTOR_HANDLE hCPU = Heap->GetCPUDescriptorHandleForHeapStart();
-	D3D12_GPU_DESCRIPTOR_HANDLE hGPU = Heap->GetGPUDescriptorHandleForHeapStart();
-
-	// GPUごとのデータサイズを取得
-	UINT increment = GetDevice()->GetDescriptorHandleIncrementSize(Type);
+	Handle handle;
 
 	// 目的のデスクリプタにアクセス
-	increment	*= AllocCout;
+	UINT increment = GetDevice()->GetDescriptorHandleIncrementSize(Type);	
+	increment *= AllocCout;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE hCPU = Heap->GetCPUDescriptorHandleForHeapStart();
 	hCPU.ptr	+= increment;
-	hGPU.ptr	+= increment;
+	handle.hCPU = hCPU;
+
+	if (visibleShader)
+	{
+		D3D12_GPU_DESCRIPTOR_HANDLE hGPU = Heap->GetGPUDescriptorHandleForHeapStart();
+		hGPU.ptr += increment;
+		handle.hGPU = hGPU;
+	}
+
+	handle.Type = Type;
+
 	// カウンタ更新
 	++AllocCout;
 
-	Handle handle;
-	handle.hCPU = hCPU;
-	handle.hGPU = hGPU;
 	return handle;
 }
 

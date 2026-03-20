@@ -14,6 +14,7 @@ public:
 		DXGI_FORMAT format;
 		DescriptorHeap* pRTVHeap;
 		DescriptorHeap* pSRVHeap;
+		float clearColor = -1;
 	};
 
 public:

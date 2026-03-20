@@ -10,7 +10,7 @@
 std::unique_ptr<MeshBuffer>									ImGUIImage::pScreen;
 std::unique_ptr<RootSignature>								ImGUIImage::pRootSignatureData;
 std::unique_ptr<PipelineState>								ImGUIImage::pPipelineData;
-std::vector<std::pair<bool, std::unique_ptr<RenderTarget>>>	ImGUIImage::Images;
+std::vector<ImGUIImage::ImGUIImageData>						ImGUIImage::ImageData;
 std::unique_ptr<DescriptorHeap>								ImGUIImage::pHeap;
 std::unique_ptr<DescriptorHeap>								ImGUIImage::pRTVHeap;
 
@@ -127,7 +127,8 @@ MSG ImGUIImage::Create(HWND _hwnd)
 			desc.format = DXGI_FORMAT_B8G8R8A8_UNORM;
 			desc.pRTVHeap = pRTVHeap.get();
 			desc.pSRVHeap = pHeap.get();
-			Images.push_back(std::make_pair<bool, std::unique_ptr<RenderTarget>>(false, std::make_unique<RenderTarget>(desc)));
+			ImGUIImageData data = { false, std::make_unique<RenderTarget>(desc) };
+			ImageData.push_back(std::move(data));
 		}
 	}
 
@@ -146,15 +147,17 @@ ImTextureID ImGUIImage::GetImage(DescriptorHeap* heap, RenderTarget* srv)
 
 	// 使用するRTVを決定
 	RenderTarget* target = nullptr;
-	for (int i = 0; i < Images.size(); i++)
+	for (int i = 0; i < ImageData.size(); i++)
 	{
-		if (Images[i].first) continue;
+		if (ImageData[i].bUsed) 
+			continue;
 
-		Images[i].first = true;
-		target = Images[i].second.get();
+		ImageData[i].bUsed = true;
+		target = ImageData[i].pImage.get();
 		break;
 	}
-	if (!target) return (ImTextureID)0;
+	if (!target) 
+		return (ImTextureID)0;
 
 	// レンダーターゲット切り替え
 	target->SRV2RTV();
@@ -186,8 +189,8 @@ ImTextureID ImGUIImage::GetImage(DescriptorHeap* heap, RenderTarget* srv)
 
 void ImGUIImage::Completed()
 {
-	for (int i = 0; i < Images.size(); i++)
+	for (int i = 0; i < ImageData.size(); i++)
 	{
-		Images[i].first = false;
+		ImageData[i].bUsed = false;
 	}
 }

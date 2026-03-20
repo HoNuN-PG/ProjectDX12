@@ -49,9 +49,11 @@ public:
 	// ====================
 	// •`‰æƒq[ƒv
 public:
+	DescriptorHeap* GetConstantHeap() { return pConstantHeap.get(); }
 	DescriptorHeap* GetHeap() { return pHeap.get(); }
 	DescriptorHeap* GetRTVHeap() { return pRTVHeap.get(); }
 private:
+	std::shared_ptr<DescriptorHeap> pConstantHeap;
 	std::shared_ptr<DescriptorHeap> pHeap;
 	std::shared_ptr<DescriptorHeap>	pRTVHeap;
 	std::shared_ptr<DescriptorHeap>	pDSVHeap;

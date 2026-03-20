@@ -176,7 +176,7 @@ void UninitDirectX()
 
 void BeginRendering()
 {
-	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float clearColor[4] = { 0, 0, 0, 0 };
 
 	g_pCmdAllocator[g_BackBufferIdx]->Reset();										// コマンドアロケーターのクリア
 	g_pCmdList->Reset(g_pCmdAllocator[g_BackBufferIdx].Get(), nullptr);				// コマンドリストのクリア

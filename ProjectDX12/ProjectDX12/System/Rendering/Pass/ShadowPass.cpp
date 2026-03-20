@@ -33,7 +33,7 @@ ShadowPass::ShadowPass()
 
 void ShadowPass::Execute()
 {
-	static const float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1 };
+	static const float clearColor[4] = { 1, 1, 1, 1 };
 	
 	// シャドウマップの描画
 	float nearDepth = CAM_NEAR;
@@ -148,6 +148,7 @@ void ShadowPass::Init(
 		desc.format = ShadowMapsFormat;
 		desc.pRTVHeap = rtvHeap.get();
 		desc.pSRVHeap = srvHeap.get();
+		desc.clearColor = 1;
 
 		for (int i = 0; i <= TextureType::Far; ++i)
 		{

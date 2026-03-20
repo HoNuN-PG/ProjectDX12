@@ -10,6 +10,7 @@ public:
 	struct Description
 	{
 		D3D12_DESCRIPTOR_HEAP_TYPE	heapType;	// ヒープの種類
+		BOOL						staging = FALSE; // 直接シェーダーに渡さない（ステージング目的）
 		UINT						num;		// ディスクリプタの最大数
 	};
 
@@ -17,6 +18,7 @@ public:
 	{
 		D3D12_CPU_DESCRIPTOR_HANDLE hCPU;
 		D3D12_GPU_DESCRIPTOR_HANDLE hGPU;
+		D3D12_DESCRIPTOR_HEAP_TYPE	Type;
 	};
 
 public:
@@ -49,6 +51,7 @@ private:
 	ComPtr<ID3D12DescriptorHeap>		Heap;		// ヒープ
 	D3D12_DESCRIPTOR_HEAP_TYPE			Type;		// ディスクリプタヒープの種類
 	UINT								AllocCout;	// 確保したディスクリプタ数
+	bool								visibleShader; // シェーダーから参照するか
 
 };
 
