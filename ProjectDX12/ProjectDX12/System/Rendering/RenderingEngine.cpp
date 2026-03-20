@@ -26,7 +26,7 @@ void RenderingEngine::Init()
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.staging = TRUE;
 		desc.num = 256;
-		pConstantHeap = std::make_shared<DescriptorHeap>(desc);
+		pStagingHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// グローバルディスクリプタヒープ
 	{
@@ -52,7 +52,7 @@ void RenderingEngine::Init()
 	// グローバル定数バッファリソース
 	{
 		ConstantBuffer::Description desc = {};
-		desc.pHeap = pConstantHeap.get();
+		desc.pHeap = pStagingHeap.get();
 		desc.size = sizeof(DirectX::XMFLOAT4X4);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera] = std::make_shared<ConstantBuffer>(desc);
 		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light] = std::make_shared<ConstantBuffer>(desc);
@@ -72,6 +72,8 @@ void RenderingEngine::Init()
 			desc.height = WINDOW_HEIGHT;
 			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 			desc.pRTVHeap = pRTVHeap.get();
+			desc.pSRVHeap = pStagingHeap.get();
+			GlobalTextureStaging[GlobalTextureResourceKey::MainTexture] = std::make_shared<RenderTarget>(desc);
 			desc.pSRVHeap = pHeap.get();
 			GlobalTexture[GlobalTextureResourceKey::MainTexture] = std::make_shared<RenderTarget>(desc);
 		}
@@ -82,6 +84,8 @@ void RenderingEngine::Init()
 			desc.height = WINDOW_HEIGHT;
 			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 			desc.pRTVHeap = pRTVHeap.get();
+			desc.pSRVHeap = pStagingHeap.get();
+			GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_shared<RenderTarget>(desc);
 			desc.pSRVHeap = pHeap.get();
 			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_shared<RenderTarget>(desc);
 		}
@@ -108,9 +112,9 @@ void RenderingEngine::Init()
 
 	// レンダリングパス
 	ShadowMapsPass = std::make_shared<ShadowPass>();
-	ShadowMapsPass->Init(pRTVHeap, pHeap, pDSVHeap);
+	ShadowMapsPass->Init(pRTVHeap, pStagingHeap, pHeap, pDSVHeap);
 	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>();
-	ODepthNormalPass->Init(pRTVHeap, pHeap, pDSVHeap);
+	ODepthNormalPass->Init(pRTVHeap, pStagingHeap, pHeap, pDSVHeap);
 
 	// ポストプロセス
 	ObjectPostProcess = std::make_unique<PostProcess>();
@@ -213,6 +217,8 @@ void RenderingEngine::Draw()
 	CurrentRenderingTiming = Material::RenderingTiming::Other;
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
+	// ステージングから読み取り専用テクスチャへコピー
+	CopyTextureSRV(GlobalTextureStaging[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU, GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU);
 	// メインテクスチャへのコピー
 	Copy::ExecuteCopy(pHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU, GetBBuffer());
 	// バッファ描画
@@ -260,6 +266,13 @@ std::shared_ptr<RenderTarget> RenderingEngine::GetGlobalRenderTarget(UINT key)
 	return GlobalTexture[key];
 }
 
+DescriptorHeap::Handle RenderingEngine::GetGlobalTextureStagingRTV(UINT key)
+{
+	if (!GlobalTextureStaging.contains(key))
+		return DescriptorHeap::Handle();
+	return GlobalTextureStaging[key]->GetHandleRTV();
+}
+
 DescriptorHeap::Handle RenderingEngine::GetGlobalTextureRTV(UINT key)
 {
 	if (!GlobalTexture.contains(key))
@@ -267,11 +280,32 @@ DescriptorHeap::Handle RenderingEngine::GetGlobalTextureRTV(UINT key)
 	return GlobalTexture[key]->GetHandleRTV();
 }
 
+DescriptorHeap::Handle RenderingEngine::GetGlobalTextureStagingSRV(UINT key)
+{
+	if (!GlobalTextureStaging.contains(key))
+		return DescriptorHeap::Handle();
+	return GlobalTextureStaging[key]->GetHandleSRV();
+}
+
 DescriptorHeap::Handle RenderingEngine::GetGlobalTextureSRV(UINT key)
 {
 	if (!GlobalTexture.contains(key))
 		return DescriptorHeap::Handle();
 	return GlobalTexture[key]->GetHandleSRV();
+}
+
+void RenderingEngine::GlobalTextureStagingRTV2SRV(UINT key)
+{
+	if (!GlobalTextureStaging.contains(key))
+		return;
+	GlobalTextureStaging[key]->RTV2SRV();
+}
+
+void RenderingEngine::GlobalTextureStagingSRV2RTV(UINT key)
+{
+	if (!GlobalTextureStaging.contains(key))
+		return;
+	GlobalTextureStaging[key]->SRV2RTV();
 }
 
 void RenderingEngine::GlobalTextureRTV2SRV(UINT key)
@@ -293,7 +327,7 @@ void RenderingEngine::CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UIN
 	GetDevice()->CopyDescriptorsSimple(
 		1,
 		dest,
-		GetGlobalTextureSRV(key).hCPU,
+		GetGlobalTextureStagingSRV(key).hCPU,
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 }
@@ -392,13 +426,48 @@ std::shared_ptr<ShadowPass> RenderingEngine::GetShadowMapsPass()
 
 void RenderingEngine::CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx)
 {
-	std::shared_ptr<RenderTarget> src = GetPassTexture(timing, type, idx);
+	std::shared_ptr<RenderTarget> src = GetPassTextureStaging(timing, type, idx);
 	GetDevice()->CopyDescriptorsSimple(
 		1,
 		dest,
 		src->GetHandleSRV().hCPU,
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
+}
+
+std::shared_ptr<RenderTarget> RenderingEngine::GetPassTextureStaging(UINT timing, UINT type, UINT idx)
+{
+	switch (timing)
+	{
+	case Material::Shadow:
+		return ShadowMapsPass->GetTextureStaging(idx);
+		break;
+	case Material::OpaqueDepthNormal:
+		return ODepthNormalPass->GetTextureStaging(idx);
+		break;
+	case Material::AfterOpaqueDepthNormal:
+		if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
+			return RenderingPasses[timing][type]->GetTextureStaging(idx);
+		break;
+	case Material::Deffered:
+		return nullptr;
+		break;
+	case Material::Forward:
+		return nullptr;
+		break;
+	case Material::TranslucentDepthNormal:
+		return nullptr;
+		break;
+	case Material::Canvas:
+		return nullptr;
+		break;
+	case Material::Other:
+		return nullptr;
+		break;
+	default:
+		return nullptr;
+		break;
+	}
 }
 
 std::shared_ptr<RenderTarget> RenderingEngine::GetPassTexture(UINT timing, UINT type, UINT idx)
@@ -472,13 +541,13 @@ void RenderingEngine::EnvironmentRendering()
 	static const float clearColor[4] = { 0, 0, 0, 0 };
 
 	// ターゲット化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->SRV2RTV();
+	GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->SRV2RTV();
 
 	// RTVの設定
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->Clear(clearColor);
+	GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->Clear(clearColor);
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
 	{
-		GlobalTexture[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
+		GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs);
 
@@ -489,7 +558,7 @@ void RenderingEngine::EnvironmentRendering()
 	}
 
 	// リソース化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->RTV2SRV();
+	GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->RTV2SRV();
 }
 
 void RenderingEngine::DefferedRendering()
@@ -499,17 +568,17 @@ void RenderingEngine::DefferedRendering()
 	// ターゲット化
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->SRV2RTV();
+		GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->SRV2RTV();
 	}
 
 	// RTVの設定
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->Clear(clearColor);
+		GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->Clear(clearColor);
 	}
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
 	{
-		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture]->GetHandleRTV().hCPU,
+		GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
@@ -522,19 +591,25 @@ void RenderingEngine::DefferedRendering()
 	// リソース化
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->RTV2SRV();
+		GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->RTV2SRV();
+	}
+
+	// ステージングから読み取り専用テクスチャへコピー
+	for (int i = 0; i < MAX_GBUFFER; i++)
+	{
+		CopyTextureSRV(GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture + i].get()->GetHandleSRV().hCPU, GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i].get()->GetHandleSRV().hCPU);
 	}
 }
 
 void RenderingEngine::DefferedLighting()
 {
 	// ターゲット化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->SRV2RTV();
+	GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->SRV2RTV();
 
 	// RTVの設定
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
 	{
-		GlobalTexture[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
+		GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs);
 
@@ -572,18 +647,18 @@ void RenderingEngine::DefferedLighting()
 	Copy::ExecuteScreenDraw();
 
 	// リソース化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->RTV2SRV();
+	GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->RTV2SRV();
 }
 
 void RenderingEngine::ForwardRendering()
 {
 	// ターゲット化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->SRV2RTV();
+	GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->SRV2RTV();
 
 	// RTVの設定
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
 	{
-		GlobalTexture[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
+		GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
@@ -594,7 +669,7 @@ void RenderingEngine::ForwardRendering()
 	}
 
 	// リソース化
-	GlobalTexture[GlobalTextureResourceKey::MainTexture]->RTV2SRV();
+	GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->RTV2SRV();
 }
 
 void RenderingEngine::TranslucentDepthNormalRendering()

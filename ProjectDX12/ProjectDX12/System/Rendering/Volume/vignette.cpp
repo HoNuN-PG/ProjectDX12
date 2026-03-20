@@ -94,7 +94,7 @@ void Vignette::Draw()
 
 	// MainTexture‚É’£‚è•t‚¯
 	pPostProcessRTV->RTV2SRV();
-	engine.lock()->GlobalTextureSRV2RTV(GlobalTextureResourceKey::MainTexture);
-	Copy::ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine.lock()->GetGlobalTextureRTV(GlobalTextureResourceKey::MainTexture).hCPU);
-	engine.lock()->GlobalTextureRTV2SRV(GlobalTextureResourceKey::MainTexture);
+	engine.lock()->GlobalTextureStagingSRV2RTV(GlobalTextureResourceKey::MainTexture);
+	Copy::ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine.lock()->GetGlobalTextureStagingRTV(GlobalTextureResourceKey::MainTexture).hCPU);
+	engine.lock()->GlobalTextureStagingRTV2SRV(GlobalTextureResourceKey::MainTexture);
 }

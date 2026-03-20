@@ -41,6 +41,7 @@ void OpaqueDepthNormalPass::Execute()
 
 void OpaqueDepthNormalPass::Init(
 	std::shared_ptr<DescriptorHeap> rtvHeap, 
+	std::shared_ptr<DescriptorHeap> stagingHeap,
 	std::shared_ptr<DescriptorHeap> srvHeap, 
 	std::shared_ptr<DescriptorHeap> dsvHeap
 )
@@ -66,6 +67,20 @@ void OpaqueDepthNormalPass::AddObj(GameObject& obj)
 	RenderObjects.push_back(info);
 }
 
+std::shared_ptr<RenderTarget> OpaqueDepthNormalPass::GetTextureStaging(UINT idx)
+{
+	switch (idx)
+	{
+	case(TextureType::DepthTexture):
+		return Depth;
+	case(TextureType::NormalTexture):
+		return Normal;
+	default:
+		break;
+	}
+	return nullptr;
+}
+
 std::shared_ptr<RenderTarget> OpaqueDepthNormalPass::GetTexture(UINT idx)
 {
 	switch (idx)
@@ -80,6 +95,20 @@ std::shared_ptr<RenderTarget> OpaqueDepthNormalPass::GetTexture(UINT idx)
 	return nullptr;
 }
 
+DescriptorHeap::Handle OpaqueDepthNormalPass::GetTextureStagingRTV(UINT idx)
+{
+	switch (idx)
+	{
+	case(TextureType::DepthTexture):
+		return Depth->GetHandleRTV();
+	case(TextureType::NormalTexture):
+		return Normal->GetHandleRTV();
+	default:
+		break;
+	}
+	return DescriptorHeap::Handle();
+}
+
 DescriptorHeap::Handle OpaqueDepthNormalPass::GetTextureRTV(UINT idx)
 {
 	switch (idx)
@@ -88,6 +117,20 @@ DescriptorHeap::Handle OpaqueDepthNormalPass::GetTextureRTV(UINT idx)
 		return Depth->GetHandleRTV();
 	case(TextureType::NormalTexture):
 		return Normal->GetHandleRTV();
+	default:
+		break;
+	}
+	return DescriptorHeap::Handle();
+}
+
+DescriptorHeap::Handle OpaqueDepthNormalPass::GetTextureStagingSRV(UINT idx)
+{
+	switch (idx)
+	{
+	case(TextureType::DepthTexture):
+		return Depth->GetHandleSRV();
+	case(TextureType::NormalTexture):
+		return Normal->GetHandleSRV();
 	default:
 		break;
 	}

@@ -39,6 +39,7 @@ public:
 	// èâä˙âª
 	virtual void Init(
 		std::shared_ptr<DescriptorHeap> rtvHeap,
+		std::shared_ptr<DescriptorHeap> stagingHeap,
 		std::shared_ptr<DescriptorHeap> srvHeap,
 		std::shared_ptr<DescriptorHeap> dsvHeap
 	) = 0;
@@ -47,8 +48,11 @@ public:
 
 public:
 
+	virtual std::shared_ptr<RenderTarget> GetTextureStaging(UINT idx) = 0;
 	virtual std::shared_ptr<RenderTarget> GetTexture(UINT idx) = 0;
+	virtual DescriptorHeap::Handle GetTextureStagingRTV(UINT idx) = 0;
 	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) = 0;
+	virtual DescriptorHeap::Handle GetTextureStagingSRV(UINT idx) = 0;
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) = 0;
 
 protected:

@@ -40,6 +40,7 @@ void CustomDepthNormalPass::Execute()
 
 void CustomDepthNormalPass::Init(
 	std::shared_ptr<DescriptorHeap> rtvHeap, 
+	std::shared_ptr<DescriptorHeap> stagingHeap,
 	std::shared_ptr<DescriptorHeap> srvHeap, 
 	std::shared_ptr<DescriptorHeap> dsvHeap
 )
@@ -72,6 +73,20 @@ void CustomDepthNormalPass::AddObj(GameObject& obj)
 	RenderObjects.push_back(info);
 }
 
+std::shared_ptr<RenderTarget> CustomDepthNormalPass::GetTextureStaging(UINT idx)
+{
+	switch (idx)
+	{
+	case(TextureType::DepthTexture):
+		return Depth;
+	case(TextureType::NormalTexture):
+		return Normal;
+	default:
+		break;
+	}
+	return nullptr;
+}
+
 std::shared_ptr<RenderTarget> CustomDepthNormalPass::GetTexture(UINT idx)
 {
 	switch (idx)
@@ -86,6 +101,20 @@ std::shared_ptr<RenderTarget> CustomDepthNormalPass::GetTexture(UINT idx)
 	return nullptr;
 }
 
+DescriptorHeap::Handle CustomDepthNormalPass::GetTextureStagingRTV(UINT idx)
+{
+	switch (idx)
+	{
+	case(TextureType::DepthTexture):
+		return Depth->GetHandleRTV();
+	case(TextureType::NormalTexture):
+		return Normal->GetHandleRTV();
+	default:
+		break;
+	}
+	return DescriptorHeap::Handle();
+}
+
 DescriptorHeap::Handle CustomDepthNormalPass::GetTextureRTV(UINT idx)
 {
 	switch (idx)
@@ -94,6 +123,20 @@ DescriptorHeap::Handle CustomDepthNormalPass::GetTextureRTV(UINT idx)
 		return Depth->GetHandleRTV();
 	case(TextureType::NormalTexture):
 		return Normal->GetHandleRTV();
+	default:
+		break;
+	}
+	return DescriptorHeap::Handle();
+}
+
+DescriptorHeap::Handle CustomDepthNormalPass::GetTextureStagingSRV(UINT idx)
+{
+	switch (idx)
+	{
+	case(TextureType::DepthTexture):
+		return Depth->GetHandleSRV();
+	case(TextureType::NormalTexture):
+		return Normal->GetHandleSRV();
 	default:
 		break;
 	}

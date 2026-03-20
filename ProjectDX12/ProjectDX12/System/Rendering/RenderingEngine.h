@@ -49,11 +49,11 @@ public:
 	// ====================
 	// 描画ヒープ
 public:
-	DescriptorHeap* GetConstantHeap() { return pConstantHeap.get(); }
+	DescriptorHeap* GeStagingHeap() { return pStagingHeap.get(); }
 	DescriptorHeap* GetHeap() { return pHeap.get(); }
 	DescriptorHeap* GetRTVHeap() { return pRTVHeap.get(); }
 private:
-	std::shared_ptr<DescriptorHeap> pConstantHeap;
+	std::shared_ptr<DescriptorHeap> pStagingHeap;
 	std::shared_ptr<DescriptorHeap> pHeap;
 	std::shared_ptr<DescriptorHeap>	pRTVHeap;
 	std::shared_ptr<DescriptorHeap>	pDSVHeap;
@@ -73,13 +73,18 @@ public:
 	void WriteGlobalConstantBufferResource(UINT key, void* data);
 	// グローバルテクスチャ
 	std::shared_ptr<RenderTarget> GetGlobalRenderTarget(UINT key);
+	DescriptorHeap::Handle GetGlobalTextureStagingRTV(UINT key);
 	DescriptorHeap::Handle GetGlobalTextureRTV(UINT key);
+	DescriptorHeap::Handle GetGlobalTextureStagingSRV(UINT key);
 	DescriptorHeap::Handle GetGlobalTextureSRV(UINT key);
+	void GlobalTextureStagingRTV2SRV(UINT key);
+	void GlobalTextureStagingSRV2RTV(UINT key);
 	void GlobalTextureRTV2SRV(UINT key);
 	void GlobalTextureSRV2RTV(UINT key);
 	void CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key);
 private:
 	std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
+	std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTextureStaging;
 	std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
 
 	// ====================
@@ -168,7 +173,7 @@ public:
 		if (RenderingPasses[timing].contains(passType)) 
 			return;
 		RenderingPasses[timing][passType] = std::make_unique<T>();
-		RenderingPasses[timing][passType]->Init(pRTVHeap,pHeap,pDSVHeap);
+		RenderingPasses[timing][passType]->Init(pRTVHeap, pStagingHeap, pHeap,pDSVHeap);
 	}
 	std::shared_ptr<class ShadowPass> GetShadowMapsPass();
 	template<typename T>
@@ -188,6 +193,7 @@ public:
 	/// <param name="type">パスの種類</param>
 	/// <param name="idx">パス内のテクスチャインデックス</param>
 	/// <returns></returns>
+	std::shared_ptr<RenderTarget> GetPassTextureStaging(UINT timing, UINT type, UINT idx);
 	std::shared_ptr<RenderTarget> GetPassTexture(UINT timing, UINT type, UINT idx);
 
 	/// <summary>

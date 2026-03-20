@@ -84,17 +84,17 @@ void ShadowPass::Execute()
 		ShadowReceiveParam.LVP[i] = lvpc4x4;
 
 		// ターゲット化
-		ShadowMaps[i]->SRV2RTV();
+		StagingShadowMaps[i]->SRV2RTV();
 
 		// RTVの設定
-		ShadowMaps[i]->Clear(clearColor);
+		StagingShadowMaps[i]->Clear(clearColor);
 		DSVs[i]->Clear();
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
 		{
-			ShadowMaps[i]->GetHandleRTV().hCPU,
+			StagingShadowMaps[i]->GetHandleRTV().hCPU,
 		};
 		SetRenderTarget(_countof(rtvs), rtvs, DSVs[i]->GetHandleDSV().hCPU);
-		SetViewPort(ShadowMaps[i]->Width,ShadowMaps[i]->Height);
+		SetViewPort(StagingShadowMaps[i]->Width,StagingShadowMaps[i]->Height);
 
 		// シャドウマップ描画
 		for (int j = 0; j < RenderObjects.size(); ++j)
@@ -104,7 +104,7 @@ void ShadowPass::Execute()
 		}
 
 		// リソース化
-		ShadowMaps[i]->RTV2SRV();
+		StagingShadowMaps[i]->RTV2SRV();
 
 		nearDepth = CascadeAreas[i];
 	}
@@ -118,27 +118,35 @@ void ShadowPass::Execute()
 	Gauss::ExecuteScreenGauss8D2(
 		GaussIdx[TextureType::Near],
 		{ VSMShadowMaps[TextureType::Near]->Width,VSMShadowMaps[TextureType::Near]->Height },
-		ShadowMaps[TextureType::Near], 
-		VSMShadowMaps[TextureType::Near]
+		StagingShadowMaps[TextureType::Near], 
+		StagingVSMShadowMaps[TextureType::Near]
 	);
 	Gauss::ExecuteScreenGauss4D2(
 		GaussIdx[TextureType::Middle],
 		{ VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height },
-		ShadowMaps[TextureType::Middle], 
-		VSMShadowMaps[TextureType::Middle]
+		StagingShadowMaps[TextureType::Middle], 
+		StagingVSMShadowMaps[TextureType::Middle]
 	);
 	Gauss::ExecuteScreenGauss2D1(
 		GaussIdx[TextureType::Far],
 		{ VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height },
-		ShadowMaps[TextureType::Far], 
-		VSMShadowMaps[TextureType::Far]
+		StagingShadowMaps[TextureType::Far], 
+		StagingVSMShadowMaps[TextureType::Far]
 	);
+
+	// ステージングから読み取り専用テクスチャへコピー
+	for (int i = 0; i <= TextureType::Far; ++i)
+	{
+		RenderingEngine::CopyTextureSRV(StagingShadowMaps[i].get()->GetHandleSRV().hCPU, ShadowMaps[i].get()->GetHandleSRV().hCPU);
+		RenderingEngine::CopyTextureSRV(StagingVSMShadowMaps[i].get()->GetHandleSRV().hCPU, VSMShadowMaps[i].get()->GetHandleSRV().hCPU);
+	}
 
 	RenderObjects.clear();
 }
 
 void ShadowPass::Init(
 	std::shared_ptr<DescriptorHeap> rtvHeap, 
+	std::shared_ptr<DescriptorHeap> stagingHeap,
 	std::shared_ptr<DescriptorHeap> srvHeap, 
 	std::shared_ptr<DescriptorHeap> dsvHeap)
 {
@@ -147,9 +155,18 @@ void ShadowPass::Init(
 		RenderTarget::Description desc = {};
 		desc.format = ShadowMapsFormat;
 		desc.pRTVHeap = rtvHeap.get();
-		desc.pSRVHeap = srvHeap.get();
+		desc.pSRVHeap = stagingHeap.get();
 		desc.clearColor = 1;
-
+		for (int i = 0; i <= TextureType::Far; ++i)
+		{
+			desc.width = ShadowMapsSize[i].x;
+			desc.height = ShadowMapsSize[i].y;
+			StagingShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
+			desc.width = VSMShadowMapsSize[i].x;
+			desc.height = VSMShadowMapsSize[i].y;
+			StagingVSMShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
+		}
+		desc.pSRVHeap = srvHeap.get();
 		for (int i = 0; i <= TextureType::Far; ++i)
 		{
 			desc.width		= ShadowMapsSize[i].x;
@@ -185,6 +202,19 @@ void ShadowPass::AddObj(GameObject& obj)
 	RenderObjects.push_back(info);
 }
 
+std::shared_ptr<RenderTarget> ShadowPass::GetTextureStaging(UINT idx)
+{
+	if (idx < StagingShadowMaps.size())
+	{
+		return StagingShadowMaps[idx];
+	}
+	else if (idx < (StagingShadowMaps.size() + StagingVSMShadowMaps.size()))
+	{
+		return StagingVSMShadowMaps[idx - StagingShadowMaps.size()];
+	}
+	return nullptr;
+}
+
 std::shared_ptr<RenderTarget> ShadowPass::GetTexture(UINT idx)
 {
 	if (idx < ShadowMaps.size())
@@ -198,6 +228,19 @@ std::shared_ptr<RenderTarget> ShadowPass::GetTexture(UINT idx)
 	return nullptr;
 }
 
+DescriptorHeap::Handle ShadowPass::GetTextureStagingRTV(UINT idx)
+{
+	if (idx < StagingShadowMaps.size())
+	{
+		return StagingShadowMaps[idx]->GetHandleRTV();
+	}
+	else if (idx < (StagingShadowMaps.size() + StagingVSMShadowMaps.size()))
+	{
+		return StagingVSMShadowMaps[idx - StagingShadowMaps.size()]->GetHandleRTV();
+	}
+	return DescriptorHeap::Handle();
+}
+
 DescriptorHeap::Handle ShadowPass::GetTextureRTV(UINT idx)
 {
 	if (idx < ShadowMaps.size())
@@ -207,6 +250,19 @@ DescriptorHeap::Handle ShadowPass::GetTextureRTV(UINT idx)
 	else if (idx < (ShadowMaps.size() + VSMShadowMaps.size()))
 	{
 		return VSMShadowMaps[idx - ShadowMaps.size()]->GetHandleRTV();
+	}
+	return DescriptorHeap::Handle();
+}
+
+DescriptorHeap::Handle ShadowPass::GetTextureStagingSRV(UINT idx)
+{
+	if (idx < StagingShadowMaps.size())
+	{
+		return StagingShadowMaps[idx]->GetHandleSRV();
+	}
+	else if (idx < (ShadowMaps.size() + StagingVSMShadowMaps.size()))
+	{
+		return StagingVSMShadowMaps[idx - StagingShadowMaps.size()]->GetHandleSRV();
 	}
 	return DescriptorHeap::Handle();
 }

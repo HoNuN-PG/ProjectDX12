@@ -221,24 +221,24 @@ void EndRendering()
 	// 画面出力
 	g_pSwapChain->Present(1, 0);
 
-	// シグナル
-	g_pCmdQueue->Signal(g_pFence.Get(), g_fenceLevel[g_BackBufferIdx]);
+	// フェンス値更新
+	UINT64 fence = ++g_fenceLevel[g_BackBufferIdx];
 
-	// バックバッファインデックス
-	g_BackBufferIdx = g_pSwapChain->GetCurrentBackBufferIndex();
+	// シグナル
+	g_pCmdQueue->Signal(g_pFence.Get(), fence);
 
 	// コマンドリストの完了をチェック
-	if (g_pFence->GetCompletedValue() < g_fenceLevel[g_BackBufferIdx])
+	if (g_pFence->GetCompletedValue() < fence)
 	{
 		// Windowsのイベントで処理を待つ
 		auto event = CreateEvent(nullptr, false, false, nullptr);
-		g_pFence->SetEventOnCompletion(g_fenceLevel[g_BackBufferIdx], event); // 終了値に到達した際に通知するイベントを設定
+		g_pFence->SetEventOnCompletion(fence, event); // 終了値に到達した際に通知するイベントを設定
 		WaitForSingleObject(event, INFINITE); // イベントが発行されるまで待機
 		CloseHandle(event);	// イベントの破棄
 	}
 
-	// フェンス値更新
-	++g_fenceLevel[g_BackBufferIdx];
+	// バックバッファインデックス
+	g_BackBufferIdx = g_pSwapChain->GetCurrentBackBufferIndex();
 }
 
 ID3D12Device8 * GetDevice()

@@ -363,7 +363,9 @@ void Gauss::ExecuteScreenGauss2(UINT32 gaussIdx, std::shared_ptr<RenderTarget> s
 
 	//-------------------------------------------------------------------------------
 	// コピー
+	dest->SRV2RTV();
 	Copy::ExecuteCopy(Instance->pHeap.get(), Instance->GaussRTVs[yIdx]->GetHandleSRV().hGPU, dest);
+	dest->RTV2SRV();
 }
 
 void Gauss::ExecuteScreenGauss4(UINT32 gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest)
@@ -444,7 +446,9 @@ void Gauss::ExecuteScreenGauss4(UINT32 gaussIdx, std::shared_ptr<RenderTarget> s
 
 	//-------------------------------------------------------------------------------
 	// コピー
+	dest->SRV2RTV();
 	Copy::ExecuteCopy(Instance->pHeap.get(), Instance->GaussRTVs[yIdx]->GetHandleSRV().hGPU, dest);
+	dest->RTV2SRV();
 }
 
 void Gauss::ExecuteScreenGauss8(UINT32 gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest)
@@ -525,7 +529,9 @@ void Gauss::ExecuteScreenGauss8(UINT32 gaussIdx, std::shared_ptr<RenderTarget> s
 
 	//-------------------------------------------------------------------------------
 	// コピー
+	dest->SRV2RTV();
 	Copy::ExecuteCopy(Instance->pHeap.get(), Instance->GaussRTVs[yIdx]->GetHandleSRV().hGPU, dest);
+	dest->RTV2SRV();
 }
 
 void Gauss::MakeGaussData(UINT32 gaussIdx, DirectX::XMFLOAT2 screen, int split)
