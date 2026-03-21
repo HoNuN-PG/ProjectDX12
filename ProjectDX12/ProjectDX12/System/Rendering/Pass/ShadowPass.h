@@ -24,16 +24,11 @@ public:
 		Near = 0,
 		Middle,
 		Far,
-
-		MAX
-	};
-	enum VSMTextureType
-	{
-		NearVSM = 3,
+		NearVSM,
 		MiddleVSM,
 		FarVSM,
 
-		MAX_VSM
+		MAX
 	};
 
 public:
@@ -60,6 +55,7 @@ public:
 	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) override;
 	virtual DescriptorHeap::Handle GetTextureStagingSRV(UINT idx) override;
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) override;
+	virtual std::vector<DXGI_FORMAT> GetPassFormat() override;
 
 private:
 
@@ -81,9 +77,8 @@ public:
 
 public:
 
-	DirectX::XMFLOAT2 ShadowMapsSize[TextureType::MAX];
-	DirectX::XMFLOAT2 VSMShadowMapsSize[TextureType::MAX];
-	DXGI_FORMAT ShadowMapsFormat;
+	DirectX::XMFLOAT2 ShadowMapsSize[TextureType::NearVSM];
+	DirectX::XMFLOAT2 VSMShadowMapsSize[TextureType::NearVSM];
 
 private:
 
@@ -108,7 +103,7 @@ private:
 private:
 
 	// ガウスパラメータ
-	int GaussIdx[TextureType::MAX];
+	int GaussIdx[TextureType::NearVSM];
 
 };
 

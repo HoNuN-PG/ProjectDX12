@@ -105,7 +105,7 @@ void PipelineState::CreateAmplificationShaderPipelineState(Description desc,
 	pipelineDesc.NumRenderTargets = desc.RenderTargetNum;
 	for (int i = 0; i < desc.RenderTargetNum; ++i)
 	{
-		pipelineDesc.RTVFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		pipelineDesc.RTVFormats[i] = desc.RenderTargetFormat[i];
 	}
 	// 深度バッファ
 	pipelineDesc.DepthStencilState = stencil;
@@ -160,7 +160,7 @@ void PipelineState::CreateMeshShaderPipelineState(Description desc,
 	pipelineDesc.NumRenderTargets = desc.RenderTargetNum;
 	for (int i = 0; i < desc.RenderTargetNum; ++i)
 	{
-		pipelineDesc.RTVFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		pipelineDesc.RTVFormats[i] = desc.RenderTargetFormat[i];
 	}
 	// 深度バッファ
 	pipelineDesc.DepthStencilState = stencil;
@@ -233,7 +233,7 @@ void PipelineState::CreateDefaultPipelineState(Description desc,
 	pipelineDesc.NumRenderTargets = desc.RenderTargetNum;
 	for (int i = 0; i < desc.RenderTargetNum; ++i)
 	{
-		pipelineDesc.RTVFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		pipelineDesc.RTVFormats[i] = desc.RenderTargetFormat[i];
 	}
 	// 深度バッファ
 	pipelineDesc.DepthStencilState = stencil;

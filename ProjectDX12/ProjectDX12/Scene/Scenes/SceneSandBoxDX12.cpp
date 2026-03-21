@@ -1,7 +1,7 @@
 
 #include "Component/FollowActorComponent.h"
 #include "GameObject/Camera/CameraBase.h"
-#include "Material/Materials/M_Deffered_Albedo_Normal.h"
+#include "Material/Materials/M_Deffered_Albedo.h"
 #include "Material/Materials/M_DepthNormal.h"
 #include "Material/Materials/M_Grid.h"
 #include "Material/Materials/M_MS.h"
@@ -37,7 +37,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_SkyBox> sky_box = std::make_shared<M_SkyBox>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_FRONT;
-		desc.WriteDepth = TRUE;
+		desc.WriteDepth = FALSE;
 		desc.Timing = Material::RenderingTiming::Environment;
 		
 		Material::Initialize(sky_box, desc);
@@ -117,7 +117,7 @@ HRESULT SceneSandBoxDX12::Init()
 		grid_shadow_vsm->SetSubGridSize(5);
 	}
 	// Deffered
-	std::shared_ptr<Material> deffered_albedo_normal = std::make_shared<M_Deffered_Albedo_Normal>();
+	std::shared_ptr<Material> deffered_albedo_normal = std::make_shared<M_Deffered_Albedo>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.WriteDepth = TRUE;

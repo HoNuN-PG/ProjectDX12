@@ -72,6 +72,7 @@ public:
 	DescriptorHeap::Handle GetGlobalConstantBufferResource(UINT key);
 	void WriteGlobalConstantBufferResource(UINT key, void* data);
 	// グローバルテクスチャ
+	std::shared_ptr<RenderTarget> GetGlobalStagingRenderTarget(UINT key);
 	std::shared_ptr<RenderTarget> GetGlobalRenderTarget(UINT key);
 	DescriptorHeap::Handle GetGlobalTextureStagingRTV(UINT key);
 	DescriptorHeap::Handle GetGlobalTextureRTV(UINT key);
@@ -86,6 +87,7 @@ private:
 	std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
 	std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTextureStaging;
 	std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
+	std::unordered_map<UINT, DXGI_FORMAT> GlobalTextureFormat;
 
 	// ====================
 	// 環境オブジェクト
@@ -116,8 +118,6 @@ public:
 		std::unique_ptr<PipelineState> pPipelineData;
 		std::vector<std::unique_ptr<ConstantBuffer>> Params;
 	};
-private:
-	void SetupDefferedShader();
 private:
 	DefferedData DefferedLightingShader;
 
@@ -204,6 +204,15 @@ public:
 	/// <param name="type">パスの種類</param>
 	/// <param name="idx">パス内のテクスチャインデックス</param>
 	void CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx);
+
+	/// <summary>
+	/// パスのテクスチャのフォーマットの取得
+	/// </summary>
+	/// <param name="timing"></param>
+	/// <param name="type"></param>
+	/// <param name="idx"></param>
+	/// <returns></returns>
+	std::vector<DXGI_FORMAT> GetPassFormat(UINT timing, UINT type);
 
 private:
 

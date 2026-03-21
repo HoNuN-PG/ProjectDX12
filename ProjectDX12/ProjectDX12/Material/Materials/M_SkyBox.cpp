@@ -1,5 +1,6 @@
 
 #include "Material/Materials/M_SkyBox.h"
+#include "System/Rendering/RenderingEngine.h"
 
 void M_SkyBox::Initialize(Description desc)
 {
@@ -19,6 +20,7 @@ void M_SkyBox::Initialize(Description desc)
 	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.CullMode = desc.CullMode;
 	pipeline.RenderTargetNum = 1;
+	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing,PassType);
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(

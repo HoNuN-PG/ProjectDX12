@@ -237,7 +237,7 @@
     <ClCompile Include="Model\sphere.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="Material\Materials\M_Deffered_Albedo_Normal.cpp">
+    <ClCompile Include="Material\Materials\M_Deffered_Albedo.cpp">
       <Filter>Material\Materials</Filter>
     </ClCompile>
     <ClCompile Include="Material\Materials\M_DepthNormal.cpp">
@@ -392,7 +392,7 @@
     <ClInclude Include="Model\sphere.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Material\Materials\M_Deffered_Albedo_Normal.h">
+    <ClInclude Include="Material\Materials\M_Deffered_Albedo.h">
       <Filter>Material\Materials</Filter>
     </ClInclude>
     <ClInclude Include="Material\Materials\M_DepthNormal.h">

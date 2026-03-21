@@ -73,6 +73,8 @@ void Gauss::Create()
 			desc.InputLayoutNum = PipelineState::IED_POS_TEX_COUNT;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
 			desc.RenderTargetNum = 1;
+			desc.RenderTargetFormat.push_back(DXGI_FORMAT_R16G16B16A16_FLOAT);
+			desc.WriteDepth = FALSE;
 
 			desc.VSFile = L"../game/assets/shader/VS_Blur2X.cso";
 			desc.PSFile = L"../game/assets/shader/PS_Blur2.cso";
@@ -124,6 +126,8 @@ void Gauss::Create()
 			desc.InputLayoutNum = PipelineState::IED_POS_TEX_COUNT;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
 			desc.RenderTargetNum = 1;
+			desc.RenderTargetFormat.push_back(DXGI_FORMAT_R16G16B16A16_FLOAT);
+			desc.WriteDepth = FALSE;
 
 			desc.VSFile = L"../game/assets/shader/VS_Blur4X.cso";
 			desc.PSFile = L"../game/assets/shader/PS_Blur4.cso";
@@ -175,6 +179,8 @@ void Gauss::Create()
 			desc.InputLayoutNum = PipelineState::IED_POS_TEX_COUNT;
 			desc.CullMode = D3D12_CULL_MODE_BACK;
 			desc.RenderTargetNum = 1;
+			desc.RenderTargetFormat.push_back(DXGI_FORMAT_R16G16B16A16_FLOAT);
+			desc.WriteDepth = FALSE;
 
 			desc.VSFile = L"../game/assets/shader/VS_Blur8X.cso";
 			desc.PSFile = L"../game/assets/shader/PS_Blur8.cso";

@@ -33,6 +33,7 @@ void M_SimpleLit::Initialize(Description desc)
 	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.CullMode = desc.CullMode;
 	pipeline.RenderTargetNum = 1;
+	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
@@ -95,6 +96,7 @@ void M_OpaqueSimpleLit::Initialize(Description desc)
 	pipeline.pInputLayout = PipelineState::IED_POS_NOR_TEX_COLOR;
 	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.RenderTargetNum = 1;
+	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
 	pipeline.CullMode = desc.CullMode;
 	pipeline.WriteDepth = desc.WriteDepth;
 

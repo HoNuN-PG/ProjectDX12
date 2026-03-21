@@ -58,6 +58,7 @@ RenderTarget::RenderTarget(Description desc)
 
 	Width = desc.width;
 	Height = desc.height;
+	Format = desc.format;
 }
 
 RenderTarget::~RenderTarget()

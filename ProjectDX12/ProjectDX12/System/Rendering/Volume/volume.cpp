@@ -62,6 +62,19 @@ void Volume::Init(UINT heapNum, UINT rtvNum)
 	}
 }
 
+void Volume::BindPostProcessRTV()
+{
+	// RTV‚ÌÝ’è
+	constexpr static float clearColor[4] = { 0,0,0,0 };
+	pPostProcessRTV->SRV2RTV();
+	pPostProcessRTV->Clear(clearColor);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] =
+	{
+		pPostProcessRTV->GetHandleRTV().hCPU,
+	};
+	SetRenderTarget(_countof(rtvs), rtvs);
+}
+
 void Volume::BindHeap()
 {
 	ID3D12DescriptorHeap* heaps[] =
@@ -79,19 +92,6 @@ void Volume::BindRootSignature(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num)
 void Volume::BindPipeline(UINT idx)
 {
 	pPipelineData[idx]->Bind();
-}
-
-void Volume::BindPostProcessRTV()
-{
-	// RTV‚ÌÝ’è
-	constexpr static float clearColor[4] = { 0,0,0,0 };
-	pPostProcessRTV->SRV2RTV();
-	pPostProcessRTV->Clear(clearColor);
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
-	{
-		pPostProcessRTV->GetHandleRTV().hCPU,
-	};
-	SetRenderTarget(_countof(rtvs), rtvs);
 }
 
 void Volume::Rendering()

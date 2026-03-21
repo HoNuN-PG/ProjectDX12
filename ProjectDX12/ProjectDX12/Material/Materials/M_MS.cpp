@@ -1,6 +1,7 @@
 
 #include "GameObject/Camera/CameraBase.h"
 #include "Material/Materials/M_MS.h"
+#include "System/Rendering/RenderingEngine.h"
 
 void M_MS::Initialize(Description desc)
 {
@@ -26,6 +27,7 @@ void M_MS::Initialize(Description desc)
 	pipeline.PSFile = L"../game/assets/shader/PS_MS.cso";
 	pipeline.CullMode = desc.CullMode;
 	pipeline.RenderTargetNum = 1;
+	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
@@ -104,6 +106,7 @@ void M_MSCulling::Initialize(Description desc)
 	pipeline.PSFile = L"../game/assets/shader/PS_MS.cso";
 	pipeline.CullMode = desc.CullMode;
 	pipeline.RenderTargetNum = 1;
+	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(

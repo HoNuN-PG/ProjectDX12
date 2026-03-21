@@ -1,15 +1,9 @@
 
-// Scene
-#include "SceneBase.h"
-#include "SceneManager.h"
-
-// Model
-#include "RenderingComponent.h"
-
-// System/GameObject
-#include "GameObject.h"
-// System/Rendering
-#include "RenderingEngine.h"
+#include "Component/Rendering/RenderingComponent.h"
+#include "Scene/SceneBase.h"
+#include "Scene/SceneManager.h"
+#include "System/GameObject/GameObject.h"
+#include "System/Rendering/RenderingEngine.h"
 
 void GameObject::InitBase()
 {

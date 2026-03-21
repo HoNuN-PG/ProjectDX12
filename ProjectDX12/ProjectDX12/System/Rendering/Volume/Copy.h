@@ -31,7 +31,7 @@ public:
 	Copy() {};
 	~Copy() {};
 	static void ExecuteScreenDraw();
-	static void ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest);
+	static void ExecuteCopy2BBuffer(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src);
 	static void ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, std::shared_ptr<RenderTarget> dest);
 
 private:
@@ -42,7 +42,7 @@ private:
 
 	std::unique_ptr<MeshBuffer>		pScreen;
 	std::unique_ptr<RootSignature>	pRootSignatureData;
-	std::unique_ptr<PipelineState>		pPipelineData;
+	std::unordered_map<DXGI_FORMAT,std::unique_ptr<PipelineState>> pPipelineData;
 
 };
 

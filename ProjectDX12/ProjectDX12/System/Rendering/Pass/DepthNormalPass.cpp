@@ -6,6 +6,11 @@
 OpaqueDepthNormalPass::OpaqueDepthNormalPass()
 {
 	PassType = RenderingPass::RenderingPassType::OpaqueDepthNormal;
+
+	PassFormats.resize(TextureType::MAX);
+	PassFormats[TextureType::DepthTexture] = DXGI_FORMAT_R32G32_FLOAT;
+	PassFormats[TextureType::NormalTexture] = DXGI_FORMAT_R8G8B8A8_UNORM;
+
 	DSV = pEngine->GetDSV();
 }
 
@@ -54,9 +59,9 @@ void OpaqueDepthNormalPass::Init(
 		desc.pSRVHeap	= srvHeap.get();
 		desc.width		= WINDOW_WIDTH;
 		desc.height		= WINDOW_HEIGHT;
-		desc.format		= DXGI_FORMAT_R32G32_FLOAT;
+		desc.format		= PassFormats[TextureType::DepthTexture];
 		Depth			= std::make_shared<RenderTarget>(desc);
-		desc.format		= DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.format		= PassFormats[TextureType::NormalTexture];
 		Normal			= std::make_shared<RenderTarget>(desc);
 	}
 }
@@ -149,4 +154,9 @@ DescriptorHeap::Handle OpaqueDepthNormalPass::GetTextureSRV(UINT idx)
 		break;
 	}
 	return DescriptorHeap::Handle();
+}
+
+std::vector<DXGI_FORMAT> OpaqueDepthNormalPass::GetPassFormat()
+{
+	return PassFormats;
 }

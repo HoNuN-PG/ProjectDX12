@@ -184,7 +184,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Material\Material.cpp" />
-    <ClCompile Include="Material\Materials\M_Deffered_Albedo_Normal.cpp" />
+    <ClCompile Include="Material\Materials\M_Deffered_Albedo.cpp" />
     <ClCompile Include="Material\Materials\M_DepthNormal.cpp" />
     <ClCompile Include="Material\Materials\M_Grid.cpp" />
     <ClCompile Include="Material\Materials\M_MS.cpp" />
@@ -231,7 +231,7 @@
     <ClInclude Include="GameObject\Light\LightBase.h" />
     <ClInclude Include="imgui\imguiImage.h" />
     <ClInclude Include="Material\Material.h" />
-    <ClInclude Include="Material\Materials\M_Deffered_Albedo_Normal.h" />
+    <ClInclude Include="Material\Materials\M_Deffered_Albedo.h" />
     <ClInclude Include="Material\Materials\M_DepthNormal.h" />
     <ClInclude Include="Material\Materials\M_Grid.h" />
     <ClInclude Include="Material\Materials\M_MS.h" />

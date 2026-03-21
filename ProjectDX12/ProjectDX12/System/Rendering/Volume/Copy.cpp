@@ -63,7 +63,18 @@ void Copy::Load()
 		desc.InputLayoutNum = PipelineState::IED_POS_TEX_COUNT;
 		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.RenderTargetNum = 1;
-		Instance->pPipelineData = std::make_unique<PipelineState>(desc);
+		desc.WriteDepth = FALSE;
+
+		desc.RenderTargetFormat.push_back(DXGI_FORMAT_R16G16B16A16_FLOAT);
+		Instance->pPipelineData[DXGI_FORMAT_R16G16B16A16_FLOAT] = std::make_unique<PipelineState>(desc);
+
+		desc.RenderTargetFormat.clear();
+		desc.RenderTargetFormat.push_back(DXGI_FORMAT_R16G16_FLOAT);
+		Instance->pPipelineData[DXGI_FORMAT_R16G16_FLOAT] = std::make_unique<PipelineState>(desc);
+
+		desc.RenderTargetFormat.clear();
+		desc.RenderTargetFormat.push_back(DXGI_FORMAT_R8G8B8A8_UNORM);
+		Instance->pPipelineData[DXGI_FORMAT_R8G8B8A8_UNORM] = std::make_unique<PipelineState>(desc);
 	}
 }
 
@@ -72,7 +83,7 @@ void Copy::ExecuteScreenDraw()
 	Instance->pScreen->Draw();
 }
 
-void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest)
+void Copy::ExecuteCopy2BBuffer(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src)
 {
 	// 表示領域の設定
 	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);
@@ -80,7 +91,7 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3
 	// レンダーターゲット切り替え
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
 	{
-		dest,
+		GetBBuffer(),
 	};
 	SetRenderTarget(1, rtvs);
 
@@ -94,7 +105,7 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, D3
 		src,
 	};
 	Instance->pRootSignatureData->Bind(hScreen, _countof(hScreen));
-	Instance->pPipelineData->Bind();
+	Instance->pPipelineData[DXGI_FORMAT_R8G8B8A8_UNORM]->Bind();
 	Instance->pScreen->Draw();
 }
 
@@ -120,7 +131,7 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, st
 		src,
 	};
 	Instance->pRootSignatureData->Bind(hScreen, _countof(hScreen));
-	Instance->pPipelineData->Bind();
+	Instance->pPipelineData[dest->Format]->Bind();
 	Instance->pScreen->Draw();
 
 	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);

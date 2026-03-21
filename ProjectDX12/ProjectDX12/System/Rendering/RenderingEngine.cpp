@@ -65,12 +65,16 @@ void RenderingEngine::Init()
 	}
 	// グローバルRTV
 	{
+		GlobalTextureFormat[GlobalTextureResourceKey::MainTexture] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		GlobalTextureFormat[GlobalTextureResourceKey::DefferedAlbedoTexture] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	}
+	{
 		// Main
 		{
 			RenderTarget::Description desc = {};
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
-			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			desc.format = GlobalTextureFormat[GlobalTextureResourceKey::MainTexture];
 			desc.pRTVHeap = pRTVHeap.get();
 			desc.pSRVHeap = pStagingHeap.get();
 			GlobalTextureStaging[GlobalTextureResourceKey::MainTexture] = std::make_shared<RenderTarget>(desc);
@@ -82,7 +86,7 @@ void RenderingEngine::Init()
 			RenderTarget::Description desc = {};
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
-			desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			desc.format = GlobalTextureFormat[GlobalTextureResourceKey::DefferedAlbedoTexture];
 			desc.pRTVHeap = pRTVHeap.get();
 			desc.pSRVHeap = pStagingHeap.get();
 			GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_shared<RenderTarget>(desc);
@@ -121,7 +125,53 @@ void RenderingEngine::Init()
 	CanvasPostProcess = std::make_unique<PostProcess>();
 
 	// ディファードシェーダー
-	SetupDefferedShader();
+	{
+		// ルートシグネチャ
+		{
+			RootSignature::Parameter param[] =
+			{
+				{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+				{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+				{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
+			};
+			RootSignature::Description desc = {};
+			desc.pParam = param;
+			desc.paramNum = _countof(param);
+			DefferedLightingShader.pRootSignatureData = std::make_unique<RootSignature>(desc);
+		}
+		// パイプライン
+		{
+			PipelineState::InputLayout layout[] =
+			{
+				{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
+				{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
+			};
+			PipelineState::Description desc = {};
+			desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
+			desc.PSFile = L"../game/assets/shader/PS_DefferedLighting.cso";
+			desc.pRootSignature = DefferedLightingShader.pRootSignatureData->Get();
+			desc.pInputLayout = layout;
+			desc.InputLayoutNum = _countof(layout);
+			desc.CullMode = D3D12_CULL_MODE_BACK;
+			desc.RenderTargetNum = 1;
+			desc.RenderTargetFormat = GetPassFormat(Material::RenderingTiming::Deffered, RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE);
+			desc.WriteDepth = FALSE;
+			DefferedLightingShader.pPipelineData = std::make_unique<PipelineState>(desc);
+		}
+		// パラメーター定数バッファ
+		{
+			ConstantBuffer::Description desc = {};
+			desc.pHeap = pHeap.get();
+			// Params
+			desc.size = sizeof(DirectX::XMFLOAT4X4);
+			DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
+			DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
+			DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // VPINV
+		}
+	}
 }
 
 void RenderingEngine::Uninit()
@@ -220,7 +270,7 @@ void RenderingEngine::Draw()
 	// ステージングから読み取り専用テクスチャへコピー
 	CopyTextureSRV(GlobalTextureStaging[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU, GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU);
 	// メインテクスチャへのコピー
-	Copy::ExecuteCopy(pHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU, GetBBuffer());
+	Copy::ExecuteCopy2BBuffer(pHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU);
 	// バッファ描画
 	ViewShadowMaps();
 	ViewDepthNormal();
@@ -257,6 +307,13 @@ DescriptorHeap::Handle RenderingEngine::GetGlobalConstantBufferResource(UINT key
 void RenderingEngine::WriteGlobalConstantBufferResource(UINT key, void* data)
 {
 	GlobalConstantBuffer[key]->Write(data);
+}
+
+std::shared_ptr<RenderTarget> RenderingEngine::GetGlobalStagingRenderTarget(UINT key)
+{
+	if (!GlobalTextureStaging.contains(key))
+		return nullptr;
+	return GlobalTextureStaging[key];
 }
 
 std::shared_ptr<RenderTarget> RenderingEngine::GetGlobalRenderTarget(UINT key)
@@ -332,54 +389,6 @@ void RenderingEngine::CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UIN
 	);
 }
 
-void RenderingEngine::SetupDefferedShader()
-{
-	// ルートシグネチャ
-	{
-		RootSignature::Parameter param[] =
-		{
-			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
-		};
-		RootSignature::Description desc = {};
-		desc.pParam = param;
-		desc.paramNum = _countof(param);
-		DefferedLightingShader.pRootSignatureData = std::make_unique<RootSignature>(desc);
-	}
-	// パイプライン
-	{
-		PipelineState::InputLayout layout[] =
-		{
-			{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-			{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-		};
-		PipelineState::Description desc = {};
-		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"../game/assets/shader/PS_DefferedLighting.cso";
-		desc.pRootSignature = DefferedLightingShader.pRootSignatureData->Get();
-		desc.pInputLayout = layout;
-		desc.InputLayoutNum = _countof(layout);
-		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.RenderTargetNum = 1;
-		DefferedLightingShader.pPipelineData = std::make_unique<PipelineState>(desc);
-	}
-	// パラメーター定数バッファ
-	{
-		ConstantBuffer::Description desc = {};
-		desc.pHeap = pHeap.get();
-		// Params
-		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
-		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
-		DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // VPINV
-	}
-}
-
-
 void RenderingEngine::AddRenderObject(
 	GameObject& obj,
 	UINT timing,
@@ -441,33 +450,28 @@ std::shared_ptr<RenderTarget> RenderingEngine::GetPassTextureStaging(UINT timing
 	{
 	case Material::Shadow:
 		return ShadowMapsPass->GetTextureStaging(idx);
-		break;
 	case Material::OpaqueDepthNormal:
 		return ODepthNormalPass->GetTextureStaging(idx);
-		break;
 	case Material::AfterOpaqueDepthNormal:
 		if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
 			return RenderingPasses[timing][type]->GetTextureStaging(idx);
 		break;
+	case Material::Environment:
+		return nullptr;
 	case Material::Deffered:
 		return nullptr;
-		break;
 	case Material::Forward:
 		return nullptr;
-		break;
 	case Material::TranslucentDepthNormal:
 		return nullptr;
-		break;
 	case Material::Canvas:
 		return nullptr;
-		break;
 	case Material::Other:
 		return nullptr;
-		break;
 	default:
 		return nullptr;
-		break;
 	}
+	return nullptr;
 }
 
 std::shared_ptr<RenderTarget> RenderingEngine::GetPassTexture(UINT timing, UINT type, UINT idx)
@@ -476,33 +480,65 @@ std::shared_ptr<RenderTarget> RenderingEngine::GetPassTexture(UINT timing, UINT 
 	{
 	case Material::Shadow:
 		return ShadowMapsPass->GetTexture(idx);
-		break;
 	case Material::OpaqueDepthNormal:
 		return ODepthNormalPass->GetTexture(idx);
-		break;
 	case Material::AfterOpaqueDepthNormal:
 		if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
 			return RenderingPasses[timing][type]->GetTexture(idx);
 		break;
+	case Material::Environment:
+		return nullptr;
 	case Material::Deffered:
 		return nullptr;
-		break;
 	case Material::Forward:
 		return nullptr;
-		break;
 	case Material::TranslucentDepthNormal:
 		return nullptr;
-		break;
 	case Material::Canvas:
 		return nullptr;
-		break;
 	case Material::Other:
 		return nullptr;
-		break;
 	default:
 		return nullptr;
-		break;
 	}
+	return nullptr;
+}
+
+std::vector<DXGI_FORMAT> RenderingEngine::GetPassFormat(UINT timing, UINT type)
+{
+	std::vector<DXGI_FORMAT> formats;
+	switch (timing)
+	{
+	case Material::Shadow:
+		return ShadowMapsPass->GetPassFormat();
+	case Material::OpaqueDepthNormal:
+		return ODepthNormalPass->GetPassFormat();
+	case Material::AfterOpaqueDepthNormal:
+		if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
+			return RenderingPasses[timing][type]->GetPassFormat();
+		break;
+	case Material::Environment:
+		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
+		return formats;
+	case Material::Deffered:
+		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
+		return formats;
+	case Material::Forward:
+		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
+		return formats;
+	case Material::TranslucentDepthNormal:
+		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
+		return formats;
+	case Material::Canvas:
+		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
+		return formats;
+	case Material::Other:
+		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
+		return formats;
+	default:
+		return std::vector<DXGI_FORMAT>();
+	}
+	return std::vector<DXGI_FORMAT>();
 }
 
 void RenderingEngine::RegisterRenderingComponentRef(std::shared_ptr<RenderingComponent> component)

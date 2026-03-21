@@ -45,6 +45,7 @@ void Material::SetUp(
 		desc.pInputLayout = pipeline.pInputLayout;
 		desc.InputLayoutNum = pipeline.InputLayoutNum;
 		desc.RenderTargetNum = pipeline.RenderTargetNum;
+		desc.RenderTargetFormat = pipeline.RenderTargetFormat;
 		desc.CullMode = pipeline.CullMode;
 		desc.WriteDepth = pipeline.WriteDepth;
 		pPipelineData = std::make_unique<PipelineState>(desc);
@@ -147,4 +148,9 @@ void Material::WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDL
 		startHandle,
 		type
 	);
+}
+
+std::weak_ptr<RenderingEngine> Material::GetRenderingEngine()
+{
+	return SceneManager::GetCurrentScene()->GetRenderingEngine();
 }

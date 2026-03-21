@@ -108,6 +108,8 @@ MSG ImGUIImage::Create(HWND _hwnd)
 		desc.InputLayoutNum = PipelineState::IED_POS_TEX_COUNT;
 		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.RenderTargetNum = 1;
+		desc.RenderTargetFormat.push_back(DXGI_FORMAT_B8G8R8A8_UNORM);
+		desc.WriteDepth = FALSE;
 		pPipelineData = std::make_unique<PipelineState>(desc);
 	}
 	// RTV用のディスクリプタヒープを確保

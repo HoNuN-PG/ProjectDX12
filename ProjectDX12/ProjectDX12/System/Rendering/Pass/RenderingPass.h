@@ -54,10 +54,15 @@ public:
 	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) = 0;
 	virtual DescriptorHeap::Handle GetTextureStagingSRV(UINT idx) = 0;
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) = 0;
+	virtual std::vector<DXGI_FORMAT> GetPassFormat() = 0;
 
 protected:
 
 	static std::shared_ptr<class RenderingEngine> pEngine;
+
+protected:
+
+	std::vector<DXGI_FORMAT> PassFormats;
 
 };
 

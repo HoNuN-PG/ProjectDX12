@@ -38,9 +38,10 @@ public:
 		UINT					InputLayoutNum;
 
 		// パイプライン設定
-		D3D12_CULL_MODE			CullMode = D3D12_CULL_MODE_BACK;
-		UINT					RenderTargetNum;
-		BOOL					WriteDepth = TRUE;
+		D3D12_CULL_MODE				CullMode = D3D12_CULL_MODE_BACK;
+		UINT						RenderTargetNum;
+		std::vector<DXGI_FORMAT>	RenderTargetFormat;
+		BOOL						WriteDepth = TRUE;
 	};
 
 public:

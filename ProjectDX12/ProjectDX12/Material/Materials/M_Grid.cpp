@@ -34,6 +34,7 @@ void M_Grid::Initialize(Description desc)
 	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.CullMode = desc.CullMode;
 	pipeline.RenderTargetNum = 1;
+	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
@@ -95,6 +96,7 @@ void M_GridShadow::Initialize(Description desc)
 	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.CullMode = desc.CullMode;
 	pipeline.RenderTargetNum = 1;
+	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
@@ -121,9 +123,9 @@ void M_GridShadow::Bind(UINT materialinstance)
 		WVP[materialinstance]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 		Params[2]->GetHandle().hGPU,
-		ShadowMaps[ShadowPass::Near]->GetHandleSRV().hGPU,
-		ShadowMaps[ShadowPass::Middle]->GetHandleSRV().hGPU,
-		ShadowMaps[ShadowPass::Far]->GetHandleSRV().hGPU,
+		ShadowMaps[ShadowPass::TextureType::Near]->GetHandleSRV().hGPU,
+		ShadowMaps[ShadowPass::TextureType::Middle]->GetHandleSRV().hGPU,
+		ShadowMaps[ShadowPass::TextureType::Far]->GetHandleSRV().hGPU,
 		Params[0]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 		Params[2]->GetHandle().hGPU,
@@ -169,6 +171,7 @@ void M_GridShadowVSM::Initialize(Description desc)
 	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
 	pipeline.CullMode = desc.CullMode;
 	pipeline.RenderTargetNum = 1;
+	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
 	pipeline.WriteDepth = desc.WriteDepth;
 
 	Material::SetUp(
@@ -195,9 +198,9 @@ void M_GridShadowVSM::Bind(UINT materialinstance)
 		WVP[materialinstance]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 		Params[2]->GetHandle().hGPU,
-		ShadowMaps[ShadowPass::Near]->GetHandleSRV().hGPU,
-		ShadowMaps[ShadowPass::Middle]->GetHandleSRV().hGPU,
-		ShadowMaps[ShadowPass::Far]->GetHandleSRV().hGPU,
+		ShadowMaps[ShadowPass::TextureType::Near]->GetHandleSRV().hGPU,
+		ShadowMaps[ShadowPass::TextureType::Middle]->GetHandleSRV().hGPU,
+		ShadowMaps[ShadowPass::TextureType::Far]->GetHandleSRV().hGPU,
 		Params[0]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 		Params[2]->GetHandle().hGPU,

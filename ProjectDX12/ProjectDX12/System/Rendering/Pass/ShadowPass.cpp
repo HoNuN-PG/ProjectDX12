@@ -20,7 +20,10 @@ ShadowPass::ShadowPass()
 	VSMShadowMapsSize[TextureType::Near] = { 4096,4096 };
 	VSMShadowMapsSize[TextureType::Middle] = { 2048 ,2048 };
 	VSMShadowMapsSize[TextureType::Far] = { 1024,1024 };
-	ShadowMapsFormat = DXGI_FORMAT_R16G16_FLOAT;
+	for (int i = 0; i < TextureType::MAX; ++i)
+	{
+		PassFormats.push_back(DXGI_FORMAT_R16G16_FLOAT);
+	}
 
 	// カスケード設定
 	CascadeAreas.resize(SHADOW_MAP_COUNT);
@@ -153,7 +156,7 @@ void ShadowPass::Init(
 	// RTV
 	{
 		RenderTarget::Description desc = {};
-		desc.format = ShadowMapsFormat;
+		desc.format = DXGI_FORMAT_R16G16_FLOAT;
 		desc.pRTVHeap = rtvHeap.get();
 		desc.pSRVHeap = stagingHeap.get();
 		desc.clearColor = 1;
@@ -204,80 +207,85 @@ void ShadowPass::AddObj(GameObject& obj)
 
 std::shared_ptr<RenderTarget> ShadowPass::GetTextureStaging(UINT idx)
 {
-	if (idx < StagingShadowMaps.size())
+	if (idx < NearVSM)
 	{
 		return StagingShadowMaps[idx];
 	}
-	else if (idx < (StagingShadowMaps.size() + StagingVSMShadowMaps.size()))
+	else if (idx <= FarVSM)
 	{
-		return StagingVSMShadowMaps[idx - StagingShadowMaps.size()];
+		return StagingVSMShadowMaps[idx - NearVSM];
 	}
 	return nullptr;
 }
 
 std::shared_ptr<RenderTarget> ShadowPass::GetTexture(UINT idx)
 {
-	if (idx < ShadowMaps.size())
+	if (idx < NearVSM)
 	{
 		return ShadowMaps[idx];
 	}
-	else if(idx < (ShadowMaps.size() + VSMShadowMaps.size()))
+	else if (idx <= FarVSM)
 	{
-		return VSMShadowMaps[idx - ShadowMaps.size()];
+		return VSMShadowMaps[idx - NearVSM];
 	}
 	return nullptr;
 }
 
 DescriptorHeap::Handle ShadowPass::GetTextureStagingRTV(UINT idx)
 {
-	if (idx < StagingShadowMaps.size())
+	if (idx < NearVSM)
 	{
 		return StagingShadowMaps[idx]->GetHandleRTV();
 	}
-	else if (idx < (StagingShadowMaps.size() + StagingVSMShadowMaps.size()))
+	else if (idx <= FarVSM)
 	{
-		return StagingVSMShadowMaps[idx - StagingShadowMaps.size()]->GetHandleRTV();
+		return StagingVSMShadowMaps[idx - NearVSM]->GetHandleRTV();
 	}
 	return DescriptorHeap::Handle();
 }
 
 DescriptorHeap::Handle ShadowPass::GetTextureRTV(UINT idx)
 {
-	if (idx < ShadowMaps.size())
+	if (idx < NearVSM)
 	{
 		return ShadowMaps[idx]->GetHandleRTV();
 	}
-	else if (idx < (ShadowMaps.size() + VSMShadowMaps.size()))
+	else if (idx <= FarVSM)
 	{
-		return VSMShadowMaps[idx - ShadowMaps.size()]->GetHandleRTV();
+		return VSMShadowMaps[idx - NearVSM]->GetHandleRTV();
 	}
 	return DescriptorHeap::Handle();
 }
 
 DescriptorHeap::Handle ShadowPass::GetTextureStagingSRV(UINT idx)
 {
-	if (idx < StagingShadowMaps.size())
+	if (idx < NearVSM)
 	{
 		return StagingShadowMaps[idx]->GetHandleSRV();
 	}
-	else if (idx < (ShadowMaps.size() + StagingVSMShadowMaps.size()))
+	else if (idx <= FarVSM)
 	{
-		return StagingVSMShadowMaps[idx - StagingShadowMaps.size()]->GetHandleSRV();
+		return StagingVSMShadowMaps[idx - NearVSM]->GetHandleSRV();
 	}
 	return DescriptorHeap::Handle();
 }
 
 DescriptorHeap::Handle ShadowPass::GetTextureSRV(UINT idx)
 {
-	if (idx < ShadowMaps.size())
+	if (idx < NearVSM)
 	{
 		return ShadowMaps[idx]->GetHandleSRV();
 	}
-	else if (idx < (ShadowMaps.size() + VSMShadowMaps.size()))
+	else if (idx <= FarVSM)
 	{
-		return VSMShadowMaps[idx - ShadowMaps.size()]->GetHandleSRV();
+		return VSMShadowMaps[idx - NearVSM]->GetHandleSRV();
 	}
 	return DescriptorHeap::Handle();
+}
+
+std::vector<DXGI_FORMAT> ShadowPass::GetPassFormat()
+{
+	return PassFormats;
 }
 
 DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(

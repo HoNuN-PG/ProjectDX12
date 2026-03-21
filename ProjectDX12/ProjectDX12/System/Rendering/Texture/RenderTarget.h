@@ -45,6 +45,7 @@ public:
 
 	float Width;
 	float Height;
+	DXGI_FORMAT Format;
 
 private:
 

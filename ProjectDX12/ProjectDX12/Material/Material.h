@@ -150,6 +150,10 @@ public:
 	virtual int GetAmpShaderSRVStartSlot() const { return -1; }
 	virtual void WriteMeshletCount(int count) {}
 
+public:
+	
+	std::weak_ptr<class RenderingEngine> GetRenderingEngine();
+
 };
 
 #endif

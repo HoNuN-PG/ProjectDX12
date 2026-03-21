@@ -33,6 +33,8 @@ void Vignette::Init()
 		desc.InputLayoutNum = PipelineState::IED_POS_TEX_COUNT;
 		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.RenderTargetNum = 1;
+		desc.RenderTargetFormat.push_back(DXGI_FORMAT_R16G16B16A16_FLOAT);
+		desc.WriteDepth = FALSE;
 		pPipelineData.push_back(std::make_unique<PipelineState>(desc));
 	}
 	// RTV
@@ -95,6 +97,6 @@ void Vignette::Draw()
 	// MainTexture‚É’£‚è•t‚¯
 	pPostProcessRTV->RTV2SRV();
 	engine.lock()->GlobalTextureStagingSRV2RTV(GlobalTextureResourceKey::MainTexture);
-	Copy::ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine.lock()->GetGlobalTextureStagingRTV(GlobalTextureResourceKey::MainTexture).hCPU);
+	Copy::ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine.lock()->GetGlobalStagingRenderTarget(GlobalTextureResourceKey::MainTexture));
 	engine.lock()->GlobalTextureStagingRTV2SRV(GlobalTextureResourceKey::MainTexture);
 }

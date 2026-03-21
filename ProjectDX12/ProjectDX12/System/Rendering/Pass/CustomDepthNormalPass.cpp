@@ -6,6 +6,10 @@
 CustomDepthNormalPass::CustomDepthNormalPass()
 {
 	PassType = RenderingPass::RenderingPassType::CustomDepthNormal;
+
+	PassFormats.resize(TextureType::MAX);
+	PassFormats[TextureType::DepthTexture] = DXGI_FORMAT_R16G16_FLOAT;
+	PassFormats[TextureType::NormalTexture] = DXGI_FORMAT_R8G8B8A8_UNORM;
 }
 
 void CustomDepthNormalPass::Execute()
@@ -155,4 +159,9 @@ DescriptorHeap::Handle CustomDepthNormalPass::GetTextureSRV(UINT idx)
 		break;
 	}
 	return DescriptorHeap::Handle();
+}
+
+std::vector<DXGI_FORMAT> CustomDepthNormalPass::GetPassFormat()
+{
+	return PassFormats;
 }
