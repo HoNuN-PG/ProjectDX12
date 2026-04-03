@@ -38,6 +38,8 @@ public:
 	static float GetViewAngle() { return DirectX::XMConvertToRadians(VIEW_ANGLE); }
 	static float GetAspect() { return (float)WINDOW_WIDTH / WINDOW_HEIGHT; }
 
+	// ===========================================
+	// カメラのパラメータ
 public:
 	static DirectX::XMFLOAT3 m_MainPosition;
 	static DirectX::XMFLOAT3 m_MainTarget;
