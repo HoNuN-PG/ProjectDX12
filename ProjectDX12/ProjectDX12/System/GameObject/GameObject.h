@@ -12,6 +12,7 @@
 class GameObject
 {
 public:
+
 	GameObject() {}
 	virtual ~GameObject() {}
 
@@ -30,6 +31,7 @@ public:
 	// =================================================
 	// トランスフォーム
 public:
+
 	DirectX::XMFLOAT3 GetPosition() { return Position; }
 	DirectX::XMFLOAT3 GetRotation() { return Rotation; }
 	DirectX::XMFLOAT3 GetScale() { return Scale; }
@@ -39,7 +41,9 @@ public:
 	DirectX::XMFLOAT3 GetWorldPosition() { return WorldPosition; }
 	DirectX::XMFLOAT4X4 GetWorldMatrix() { return fx4World; }
 	DirectX::XMFLOAT3 GetForwardVector();
+
 protected:
+
 	DirectX::XMFLOAT3 Position	= DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	DirectX::XMFLOAT3 Rotation	= DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	DirectX::XMFLOAT3 Scale		= DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
@@ -49,19 +53,24 @@ protected:
 	// =================================================
 	// 削除
 public:
+
 	void SetDestroy() { bDestroy = true; }
 	bool IsDestroy() { return bDestroy; }
 	bool Destroy();
+
 protected:
+
 	bool bDestroy = false;
 
 	// =================================================
 	// ゲームオブジェクト構成要素
 protected:
+
 	std::list<std::shared_ptr<GameObject>> ChildGameObjects;				// 子オブジェクト
 	std::list<std::shared_ptr<Component>> Components;						// コンポーネント
 
 public:
+
 	// 子オブジェクトの追加
 	template <typename T>
 	std::shared_ptr<T> AddChild()
@@ -71,7 +80,9 @@ public:
 		ChildGameObjects.back()->InitBase();
 		return child;
 	}
+
 public:
+
 	// コンポーネントの追加・取得
 	template <typename T>
 	std::shared_ptr<T> AddComponent(std::shared_ptr<GameObject> own)
@@ -118,12 +129,17 @@ public:
 	// =================================================
 	// レンダリングエンジン
 public:
+
 	// レンダリングエンジンにオブジェクトを描画登録
 	void Add2RenderingEngine(UINT timing, UINT passType);
+
 private:
+
 	// レンダリングコンポーネントの参照をレンダリングエンジンに登録
 	void RegisterComponent2RenderingEngine(std::shared_ptr<class RenderingComponent> comp);
+
 private:
+
 	std::shared_ptr<class RenderingEngine> Engine;
 	std::vector<std::weak_ptr<class RenderingComponent>> RenderingComponents;
 

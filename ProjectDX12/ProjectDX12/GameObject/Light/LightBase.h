@@ -29,6 +29,7 @@ public:
 	// ===================================================
 	// 各種ライトパラメータ
 public:
+
 	DirectX::XMFLOAT3 GetPosition() { return m_Position; }
 	DirectX::XMFLOAT3 GetTarget() { return m_Target; }
 	DirectX::XMFLOAT3 GetDirection() { return { m_Target.x - m_Position.x,m_Target.y - m_Position.y, m_Target.z - m_Position.z }; }
@@ -39,16 +40,20 @@ public:
 	// ===================================================
 	// マトリクス
 public:
+
 	static DirectX::XMFLOAT4X4 GetLightViewMat() { return m_ViewMatrix; }
 	static DirectX::XMFLOAT4X4 GetLightProjectionMat() { return m_ProjectionMatrix; }
 	static DirectX::XMFLOAT4X4 GetLightViewProjectionMat();
+
 private:
+
 	static DirectX::XMFLOAT4X4 m_ViewMatrix;
 	static DirectX::XMFLOAT4X4 m_ProjectionMatrix;
 
 	// ===================================================
 	// ライトパラメータ
 private:
+
 	DirectX::XMFLOAT3 m_Position;
 	DirectX::XMFLOAT3 m_Target;
 	DirectX::XMFLOAT3 m_TargetOffset;	// 注視点オフセット

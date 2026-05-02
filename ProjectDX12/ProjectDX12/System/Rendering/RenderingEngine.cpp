@@ -428,6 +428,16 @@ void RenderingEngine::AddRenderObject(
 	}
 }
 
+void RenderingEngine::RegisterRenderingComponentRef(std::shared_ptr<RenderingComponent> component)
+{
+	RenderingComponents.push_back(component);
+}
+
+void RenderingEngine::RegisterMaterialRef(std::shared_ptr<Material> material)
+{
+	RenderingMaterials.push_back(material);
+}
+
 std::shared_ptr<ShadowPass> RenderingEngine::GetShadowMapsPass()
 {
 	return std::dynamic_pointer_cast<ShadowPass>(ShadowMapsPass);
@@ -539,16 +549,6 @@ std::vector<DXGI_FORMAT> RenderingEngine::GetPassFormat(UINT timing, UINT type)
 		return std::vector<DXGI_FORMAT>();
 	}
 	return std::vector<DXGI_FORMAT>();
-}
-
-void RenderingEngine::RegisterRenderingComponentRef(std::shared_ptr<RenderingComponent> component)
-{
-	RenderingComponents.push_back(component);
-}
-
-void RenderingEngine::RegisterMaterialRef(std::shared_ptr<Material> material)
-{
-	RenderingMaterials.push_back(material);
 }
 
 void RenderingEngine::ShadowMapsRendering()

@@ -7,42 +7,50 @@
 #include "Material/Material.h"
 
 /**
-* @class MeshMaterialManager
-* @brief メッシュが使用するマテリアルを管理
+* @class MaterialRegistry
+* @brief メッシュのマテリアルを管理
 */
 class MaterialRegistry
 {
 public:
-	// メッシュインデックスとインデックスのメッシュに登録するマテリアル
-	using SetupTable = std::unordered_map<UINT, std::vector<std::shared_ptr<Material>>>;
+
+	// マテリアル/マテリアルインスタンスインデックス
+	using MaterialInstanceData = std::pair<std::shared_ptr<Material>, UINT>;
 
 public:
-	// マテリアルとマテリアルのインスタンスインデックス
-	using MaterialInstanceData = std::pair<std::shared_ptr<Material>, UINT>;
-	// メッシュインデックスとインデックスのメッシュに登録するマテリアルインスタンス
+
+	// メッシュインデックス/メッシュのマテリアル
+	using MeshMaterialSetupData = std::unordered_map<UINT, std::vector<std::shared_ptr<Material>>>;
+
+	// メッシュインデックス/メッシュのマテリアルインスタンス
 	using MeshMaterialData = std::unordered_map<UINT, std::vector<MaterialInstanceData>>;
 
 public:
+
+	// メッシュのマテリアルの情報
 	struct MeshMaterialInfo
 	{
 		UINT meshIdx;						// メッシュインデックス
-		std::shared_ptr<Material> material; // マテリアル
-		UINT materialInstanceIdx;			// マテリアルのインスタンスインデックス
+		std::shared_ptr<Material> material; // マテリアルインスタンス
+		UINT materialInstanceIdx;			// マテリアルインスタンスインデックス
 	};
 
 public:
+
 	MaterialRegistry() {}
 	~MaterialRegistry();
 
 public:
+
 	/// <summary>
 	/// セットアップ
 	/// １つのメッシュに対して同じ描画タイミングのマテリアルを複数設定することはできない
 	/// </summary>
 	/// <param name="materials"></param>
-	void SetUp(SetupTable materials);
+	void SetUp(MeshMaterialSetupData materials);
 
 public:
+
 	/// <summary>
 	/// レンダリングエンジンにオブジェクトを描画登録
 	/// </summary>
@@ -50,6 +58,7 @@ public:
 	void Register2RenderingEngine(std::weak_ptr<class GameObject> owner);
 
 private:
+
 	/// <summary>
 	/// すでに登録した描画タイミングかチェック
 	/// </summary>
@@ -59,12 +68,6 @@ private:
 	bool IsRegisted(std::vector<Material::RenderingTiming> timing, UINT check);
 
 public:
-	/// <summary>
-	/// 指定したタイミングで描画するマテリアルを取得
-	/// </summary>
-	/// <param name="timing"></param>
-	/// <returns></returns>
-	std::vector<MeshMaterialInfo> GetRenderingMaterial(UINT timing);
 
 	/// <summary>
 	/// メッシュが使用しているマテリアルインスタンスを取得
@@ -73,7 +76,15 @@ public:
 	/// <returns></returns>
 	std::vector<MaterialInstanceData> GetMaterialInstances(UINT mesh) { return Materials.contains(mesh) ? Materials[mesh] : std::vector<MaterialInstanceData>(); }
 
+	/// <summary>
+	/// 指定したタイミングで描画されるマテリアルインスタンスを取得
+	/// </summary>
+	/// <param name="timing"></param>
+	/// <returns></returns>
+	std::vector<MeshMaterialInfo> GetRenderingMaterial(UINT timing);
+
 private:
+
 	MeshMaterialData Materials;
 
 };

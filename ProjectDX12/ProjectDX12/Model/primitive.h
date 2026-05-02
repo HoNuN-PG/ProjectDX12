@@ -8,6 +8,7 @@
 class Primitive : public MRenderingComponent
 {
 public:
+
 	struct Vertex 
 	{
 		float pos[3];
@@ -17,6 +18,7 @@ public:
 	};
 
 public:
+
 	using MRenderingComponent::MRenderingComponent;
 
 	virtual void Init() override {};
@@ -26,12 +28,15 @@ public:
 	virtual void Rendering() override;
 
 public:
+
 	virtual ~Primitive() {}
 
 public:
-	virtual void Create(MaterialRegistry::SetupTable materials) = 0;
+
+	virtual void Create(MaterialRegistry::MeshMaterialSetupData materials) = 0;
 
 protected:
+
 	virtual void CreatePrimitive(unsigned int instanced) = 0;
 
 };

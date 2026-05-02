@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Model/MeshBuffer.h"
+#include "System/Rendering/ConstantBuffer/ConstantBuffer.h"
 #include "System/Rendering/Pipeline/DescriptorHeap.h"
 #include "System/Rendering/Pipeline/PipelineState.h"
 #include "System/Rendering/Pipeline/RootSignature.h"
@@ -12,14 +13,6 @@
 
 class Volume
 {
-public:
-
-	struct Vertex
-	{
-		float pos[3];
-		float uv[2];
-	};
-
 public:
 
 	static void Load();
@@ -49,7 +42,9 @@ public:
 		}
 		return false;
 	}
+
 private:
+
 	bool bDestroy = false;
 
 protected:
@@ -66,11 +61,18 @@ protected:
 	std::shared_ptr<DescriptorHeap>	pRTVHeap;
 
 private:
+
 	static std::unique_ptr<MeshBuffer> pScreen;
+
 protected:
+
 	std::unique_ptr<RenderTarget> pPostProcessRTV;
 	std::unique_ptr<RootSignature> pRootSignatureData;
 	std::vector<std::unique_ptr<PipelineState>> pPipelineData;
+
+protected:
+
+	std::unique_ptr<ConstantBuffer> Params;
 
 };
 

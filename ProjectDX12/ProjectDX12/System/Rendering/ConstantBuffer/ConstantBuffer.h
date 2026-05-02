@@ -27,6 +27,7 @@ public:
 	DescriptorHeap::Handle GetHandle() { return Handle; }
 
 private:
+
 	DescriptorHeap::Handle			Handle;		// ディスクリプタのハンドル
 	UINT							Size;		// 定数バッファのサイズ
 	ComPtr<ID3D12Resource>			pResource;	// 定数バッファリソース

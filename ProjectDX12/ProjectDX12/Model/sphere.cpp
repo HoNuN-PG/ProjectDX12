@@ -3,7 +3,7 @@
 
 #include "Model/sphere.h"
 
-void Sphere::Create(MaterialRegistry::SetupTable materials)
+void Sphere::Create(MaterialRegistry::MeshMaterialSetupData materials)
 {
 	CreatePrimitive(0);
 	// ƒ}ƒeƒŠƒAƒ‹İ’è

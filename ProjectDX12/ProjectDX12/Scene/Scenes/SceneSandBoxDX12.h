@@ -10,6 +10,7 @@
 class SceneSandBoxDX12 : public SceneBase
 {
 public:
+
 	HRESULT Init();
 	void Uninit();
 	void Update();

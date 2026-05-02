@@ -42,7 +42,6 @@ public:
 	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) override;
 	virtual DescriptorHeap::Handle GetTextureStagingSRV(UINT idx) override;
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) override;
-	virtual std::vector<DXGI_FORMAT> GetPassFormat() override;
 
 private:
 

@@ -7,17 +7,17 @@
 #include "System/Rendering/ConstantBuffer/ConstantBuffer.h"
 #include "System/Rendering/ConstantBuffer/ConstantWVP.h"
 
+std::unique_ptr<DescriptorHeap>								ImGUIImage::pHeap;
+std::unique_ptr<DescriptorHeap>								ImGUIImage::pRTVHeap;
 std::unique_ptr<MeshBuffer>									ImGUIImage::pScreen;
 std::unique_ptr<RootSignature>								ImGUIImage::pRootSignatureData;
 std::unique_ptr<PipelineState>								ImGUIImage::pPipelineData;
 std::vector<ImGUIImage::ImGUIImageData>						ImGUIImage::ImageData;
-std::unique_ptr<DescriptorHeap>								ImGUIImage::pHeap;
-std::unique_ptr<DescriptorHeap>								ImGUIImage::pRTVHeap;
 
 ImGUIImage::ImGUIImage()
 {
 	// スクリーン頂点
-	Vertex screenVtx[] =
+	ScreenVertex screenVtx[] =
 	{
 		{{-0.5f, 0.5f,0} ,{0,0}} ,
 		{{ 0.5f, 0.5f,0} ,{1,0}} ,
@@ -28,7 +28,7 @@ ImGUIImage::ImGUIImage()
 	// スクリーン
 	MeshBuffer::Description desc = {};
 	desc.pVtx = screenVtx;
-	desc.vtxSize = sizeof(Vertex);
+	desc.vtxSize = sizeof(ScreenVertex);
 	desc.vtxCount = _countof(screenVtx);
 	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 	pScreen = std::make_unique<MeshBuffer>(desc);

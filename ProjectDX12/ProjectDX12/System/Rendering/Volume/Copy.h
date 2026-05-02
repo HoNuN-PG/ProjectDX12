@@ -15,17 +15,13 @@ class Copy
 {
 public:
 
-	struct Vertex
-	{
-		float pos[3];
-		float uv[2];
-	};
-
-public:
 	static void Create();
 	static void Destroy();
+
 private:
+
 	static std::unique_ptr<Copy> Instance;
+
 public:
 
 	Copy() {};

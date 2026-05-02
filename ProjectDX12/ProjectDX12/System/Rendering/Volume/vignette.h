@@ -33,7 +33,6 @@ private:
 
 private:
 
-	std::unique_ptr<ConstantBuffer> Params;
 	VignetteParams					VignetteParam;
 
 };

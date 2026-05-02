@@ -6,14 +6,17 @@
 class Plane : public Primitive
 {
 public:
+
 	using Primitive::Primitive;
 
 	virtual ~Plane() {}
 
 public:
-	virtual void Create(MaterialRegistry::SetupTable materials) override;
+
+	virtual void Create(MaterialRegistry::MeshMaterialSetupData materials) override;
 
 private:
+
 	virtual void CreatePrimitive(unsigned int instanced) override;
 
 };

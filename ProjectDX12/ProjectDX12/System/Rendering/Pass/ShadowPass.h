@@ -55,7 +55,6 @@ public:
 	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) override;
 	virtual DescriptorHeap::Handle GetTextureStagingSRV(UINT idx) override;
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) override;
-	virtual std::vector<DXGI_FORMAT> GetPassFormat() override;
 
 private:
 
@@ -95,15 +94,16 @@ private:
 	std::vector<std::shared_ptr<RenderTarget>> StagingVSMShadowMaps;
 	std::vector<std::shared_ptr<RenderTarget>> VSMShadowMaps;
 
+	// ガウスパラメータ
+	int GaussIdx[TextureType::NearVSM];
+
 private:
 
-	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
 	std::shared_ptr<CameraBase> pCamera;
 
 private:
 
-	// ガウスパラメータ
-	int GaussIdx[TextureType::NearVSM];
+	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
 
 };
 

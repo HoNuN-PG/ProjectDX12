@@ -160,8 +160,3 @@ DescriptorHeap::Handle CustomDepthNormalPass::GetTextureSRV(UINT idx)
 	}
 	return DescriptorHeap::Handle();
 }
-
-std::vector<DXGI_FORMAT> CustomDepthNormalPass::GetPassFormat()
-{
-	return PassFormats;
-}

@@ -94,14 +94,18 @@ protected:
 public:
 
 	std::shared_ptr<RenderingEngine> GetRenderingEngine();
+
 private:
+
 	std::shared_ptr<RenderingEngine> pEngine;
 
 	// シーンヒープ
 public:
 
 	std::shared_ptr<DescriptorHeap> GetHeap() { return pHeap; }
+
 protected:
+
 	std::shared_ptr<DescriptorHeap>	pHeap;
 
 };

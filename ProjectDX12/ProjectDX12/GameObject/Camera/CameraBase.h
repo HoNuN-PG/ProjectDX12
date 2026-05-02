@@ -26,28 +26,34 @@ public:
 	// ===========================================
 	// メインカメラのパラメータ
 public:
-	void SetIsMain(bool main) { m_IsMain = main; }
-protected:
-	void SetMainParam();
-protected:
-	bool m_IsMain = false;
 
-public:
+	void SetIsMain(bool main) { m_IsMain = main; }
+
 	static DirectX::XMFLOAT4X4 GetMainViewProjectionInvMatrix();
 	static std::vector<DirectX::XMFLOAT4> GetMainFrustumPlanes();
 	static float GetViewAngle() { return DirectX::XMConvertToRadians(VIEW_ANGLE); }
 	static float GetAspect() { return (float)WINDOW_WIDTH / WINDOW_HEIGHT; }
 
-	// ===========================================
-	// カメラのパラメータ
+protected:
+
+	void SetMainParam();
+
+protected:
+
+	bool m_IsMain = false;
+
 public:
+
 	static DirectX::XMFLOAT3 m_MainPosition;
 	static DirectX::XMFLOAT3 m_MainTarget;
 	static DirectX::XMFLOAT3 m_MainUp;
 	static DirectX::XMFLOAT4X4 m_MainViewMatrix;
 	static DirectX::XMFLOAT4X4 m_MainProjMatrix;
 
+	// ===========================================
+	// カメラのパラメータ
 public:
+
 	DirectX::XMFLOAT3 GetPosition() 
 	{ 
 		return m_Position; 
@@ -70,16 +76,21 @@ public:
 	}
 
 protected:
+
 	DirectX::XMFLOAT3 m_Position;
 	DirectX::XMFLOAT3 m_Target;
 	DirectX::XMFLOAT3 m_Up;
 	DirectX::XMFLOAT4X4 m_ViewMatrix;
 	DirectX::XMFLOAT4X4 m_ProjMatrix;
 
+	// ===========================================
 	// 移動速度
 public:
+
 	void DrawImGUI();
+
 public:
+
 	static float m_MoveSpeed;
 	static float m_MouseSpeed;
 
@@ -88,6 +99,7 @@ public:
 class CameraDebug : public CameraBase
 {
 private:
+
 	struct Argument
 	{
 		DirectX::XMFLOAT2 mouseMove;
@@ -100,6 +112,7 @@ private:
 	};
 
 public:
+
 	CameraDebug();
 	~CameraDebug() {}
 	virtual void Init() override;
@@ -107,9 +120,11 @@ public:
 	virtual void Draw() override;
 
 private:
+
 	void ProcDCC(Argument& arg);
 
 private:
+
 	POINT m_oldPos;
 
 };

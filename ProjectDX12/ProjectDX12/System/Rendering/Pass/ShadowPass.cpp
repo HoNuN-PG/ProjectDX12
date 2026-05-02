@@ -283,11 +283,6 @@ DescriptorHeap::Handle ShadowPass::GetTextureSRV(UINT idx)
 	return DescriptorHeap::Handle();
 }
 
-std::vector<DXGI_FORMAT> ShadowPass::GetPassFormat()
-{
-	return PassFormats;
-}
-
 DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(
 	float depth,
 	int area,

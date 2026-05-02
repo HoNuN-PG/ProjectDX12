@@ -23,9 +23,13 @@ public:
 
 		MAX_RENDERING_PASS_TYPE
 	};
+
 public:
+
 	RenderingPassType GetType() { return PassType; }
+
 protected:
+
 	RenderingPassType PassType;
 
 public:
@@ -54,7 +58,7 @@ public:
 	virtual DescriptorHeap::Handle GetTextureRTV(UINT idx) = 0;
 	virtual DescriptorHeap::Handle GetTextureStagingSRV(UINT idx) = 0;
 	virtual DescriptorHeap::Handle GetTextureSRV(UINT idx) = 0;
-	virtual std::vector<DXGI_FORMAT> GetPassFormat() = 0;
+	std::vector<DXGI_FORMAT> GetPassFormat() { return PassFormats; }
 
 protected:
 

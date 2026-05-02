@@ -13,14 +13,16 @@ RootSignature::RootSignature(Description desc)
 	{
 		if(desc.pParam[i].type == D3D12_DESCRIPTOR_RANGE_TYPE_SRV && 
 			(desc.pParam[i].shader == D3D12_SHADER_VISIBILITY_AMPLIFICATION || desc.pParam[i].shader == D3D12_SHADER_VISIBILITY_MESH))
-		{ // 増幅/メッシュシェーダー使用の場合はSRVを使用
+		{ 
+			// 増幅/メッシュシェーダー使用の場合はSRVを使用
 			param[i].ParameterType						= D3D12_ROOT_PARAMETER_TYPE_SRV;
 			param[i].Descriptor.ShaderRegister			= desc.pParam[i].slot;
 			param[i].Descriptor.RegisterSpace			= 0;
 			param[i].ShaderVisibility					= desc.pParam[i].shader;
 		}
 		else
-		{ // ディスクリプタテーブルを使用
+		{ 
+			// ディスクリプタテーブルを使用
 			range[i].RangeType								= desc.pParam[i].type;
 			range[i].NumDescriptors							= desc.pParam[i].num;
 			range[i].BaseShaderRegister						= desc.pParam[i].slot;

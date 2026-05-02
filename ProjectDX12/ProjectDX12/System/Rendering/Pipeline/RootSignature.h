@@ -34,6 +34,12 @@ public:
 		{}
 	};
 
+	struct BindSetting
+	{
+		D3D12_GPU_DESCRIPTOR_HANDLE handle;
+		BOOL bUseDescriptorTable;
+	};
+
 public:
 
 	RootSignature(Description desc);
@@ -51,12 +57,7 @@ private:
 	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param, UINT num, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, BOOL bMeshShader);
 
 public:
-	struct BindSetting
-	{
-		D3D12_GPU_DESCRIPTOR_HANDLE handle;
-		BOOL bUseDescriptorTable;
-	};
-public:
+
 	/// <summary>
 	/// １つのディスクリプタヒープ内のディスクリプタをディスクリプタテーブルと紐づけ
 	/// </summary>
@@ -66,9 +67,11 @@ public:
 	void Bind(BindSetting* setting, UINT num);
 
 public:
+
 	ID3D12RootSignature* Get() { return RootSignatureData.Get(); }
 
 private:
+
 	ComPtr<ID3D12RootSignature> RootSignatureData;
 
 };

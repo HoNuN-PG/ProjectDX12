@@ -14,6 +14,7 @@ class DescriptorHeap;
 
 namespace BlurParam
 {
+	// ブラースクリーン情報
 	struct ScreenParam
 	{
 		float width;
@@ -32,6 +33,7 @@ namespace BlurParam
 		}
 	};
 
+	// ガウスの重さ
 	enum{GAUSS_WEIGHTS_TYPE = 3};
 	enum{GAUSS2_WEIGHTS = 2};
 	enum{GAUSS4_WEIGHTS = 4};
@@ -73,17 +75,14 @@ public:
 	};
 
 public:
-	struct Vertex
-	{
-		float pos[3];
-		float uv[2];
-	};
 
-public:
 	static void Create();
 	static void Destroy();
+
 private:
+
 	static std::unique_ptr<Gauss> Instance;
+
 public:
 
 	Gauss() {};
@@ -91,6 +90,7 @@ public:
 
 public:
 
+	// ガウスのデータ構築（D1,D2,D4はダウンサンプリングの強さ）
 	static UINT32 MakeGaussD1Data(DirectX::XMFLOAT2 screen);
 	static UINT32 MakeGaussD2Data(DirectX::XMFLOAT2 screen);
 	static UINT32 MakeGaussD4Data(DirectX::XMFLOAT2 screen);
@@ -137,13 +137,13 @@ private:
 
 	// Gauss2
 	std::unique_ptr<RootSignature>								Gauss2RootSignatureData;
-	std::vector<std::unique_ptr<PipelineState>>						Gauss2PipelineData;
+	std::vector<std::unique_ptr<PipelineState>>					Gauss2PipelineData;
 	// Gauss4
 	std::unique_ptr<RootSignature>								Gauss4RootSignatureData;
-	std::vector<std::unique_ptr<PipelineState>>						Gauss4PipelineData;
+	std::vector<std::unique_ptr<PipelineState>>					Gauss4PipelineData;
 	// Gauss8
 	std::unique_ptr<RootSignature>								Gauss8RootSignatureData;
-	std::vector<std::unique_ptr<PipelineState>>						Gauss8PipelineData;
+	std::vector<std::unique_ptr<PipelineState>>					Gauss8PipelineData;
 
 	std::unique_ptr<ConstantBuffer>								Gauss2Param;
 	std::unique_ptr<ConstantBuffer>								Gauss4Param;

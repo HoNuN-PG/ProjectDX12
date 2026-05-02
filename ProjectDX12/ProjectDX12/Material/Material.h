@@ -35,6 +35,7 @@ public:
 	};
 
 public:
+
 	/// <summary>
 	/// 初期化デスク
 	/// </summary>
@@ -57,19 +58,24 @@ public:
 	};
 
 public:
+
 	Material();
 	virtual ~Material() {};
 
 	// =============================================
 	// 初期化
 public:
+
 	static void Initialize(std::shared_ptr<Material> material, Description desc);
+
 protected:
+
 	virtual void Initialize(Description desc) = 0;
 
 	// =============================================
 	// セットアップ
 protected:
+
 	void SetUp(
 		DescriptorHeap* heap,
 		RootSignature::Description rootsignature,
@@ -80,14 +86,17 @@ protected:
 	// =============================================
 	// バインド
 public:
+
 	virtual void Bind(UINT materialinstance) = 0;
 protected:
+
 	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
 	void BindBase(RootSignature::BindSetting* setting, UINT handleNum);
 
 	// =============================================
 	// マテリアルインスタンス
 public:
+
 	/// <summary>
 	/// マテリアルインスタンスの追加
 	/// </summary>
@@ -100,12 +109,14 @@ public:
 	void RemoveMaterialInstance(UINT instance);
 
 protected:
+
 	unsigned int		MaterialInstanceCount;	// マテリアルインスタンスの総数
 	std::vector<bool>	MaterialInstanceList;	// マテリアルインスタンスの使用状況
 
 	// =============================================
 	// マテリアルパラメータ
 public:
+
 	/// <summary>
 	/// テクスチャ追加
 	/// </summary>
@@ -113,9 +124,11 @@ public:
 	void AddTexture(const char* path);
 
 protected:
+
 	std::vector<std::unique_ptr<Texture>> Textures;
 
 public:
+
 	/// <summary>
 	/// WVPの書き込み
 	/// マテリアルインスタンスに書き込まれる
@@ -126,18 +139,24 @@ public:
 	void WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDLE startHandle, D3D12_DESCRIPTOR_HEAP_TYPE type);
 
 protected:
+
 	std::vector<std::unique_ptr<ConstantBuffer>> WVP;
 	std::vector<std::unique_ptr<ConstantBuffer>> Params;
 
+	// =============================================
+	// 描画タイミングとパスの種類
 public:
+
 	RenderingTiming GetRenderTiming() { return Timing; };
 	RenderingPass::RenderingPassType GetPassType() { return PassType; }
 
 protected:
+
 	RenderingTiming	Timing;
 	RenderingPass::RenderingPassType PassType;
 
 protected:
+
 	DescriptorHeap*	pHeap;
 	std::shared_ptr<DescriptorHeap>	pRTVHeap;
 	std::unique_ptr<RootSignature> pRootSignatureData;
@@ -146,6 +165,7 @@ protected:
 	// =============================================
 	// メッシュシェーダー処理
 public:
+
 	virtual int GetMeshShaderSRVStartSlot() const { return -1; }
 	virtual int GetAmpShaderSRVStartSlot() const { return -1; }
 	virtual void WriteMeshletCount(int count) {}

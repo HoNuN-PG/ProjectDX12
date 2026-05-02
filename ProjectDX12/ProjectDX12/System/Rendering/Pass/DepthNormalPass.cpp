@@ -155,8 +155,3 @@ DescriptorHeap::Handle OpaqueDepthNormalPass::GetTextureSRV(UINT idx)
 	}
 	return DescriptorHeap::Handle();
 }
-
-std::vector<DXGI_FORMAT> OpaqueDepthNormalPass::GetPassFormat()
-{
-	return PassFormats;
-}

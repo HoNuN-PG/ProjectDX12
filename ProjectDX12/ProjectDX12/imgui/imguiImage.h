@@ -22,12 +22,15 @@ private:
 	/// </summary>
 	static const int HEAP_NUM = 32;
 
-public:
+private:
 
-	struct Vertex
+	/// <summary>
+	/// ImGUI描画データ
+	/// </summary>
+	struct ImGUIImageData
 	{
-		float pos[3];
-		float uv[2];
+		bool bUsed;
+		std::unique_ptr<RenderTarget> pImage;
 	};
 
 public:
@@ -41,6 +44,7 @@ public:
 
 public:
 
+	// ImGUIのヒープを取得
 	static DescriptorHeap* GetImGUIDescriptorHeap() { return pHeap.get(); }
 
 private:
@@ -64,14 +68,6 @@ public:
 	/// 描画終了
 	/// </summary>
 	static void Completed();
-
-private:
-
-	struct ImGUIImageData
-	{
-		bool bUsed;
-		std::unique_ptr<RenderTarget> pImage;
-	};
 
 private:
 

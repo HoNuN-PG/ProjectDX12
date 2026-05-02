@@ -14,7 +14,7 @@ void Gauss::Create()
 		Instance = std::make_unique<Gauss>();
 
 		// スクリーン頂点
-		Vertex screenVtx[] =
+		ScreenVertex screenVtx[] =
 		{
 			{{-0.5f, 0.5f,0} ,{0,0}} ,
 			{{ 0.5f, 0.5f,0} ,{1,0}} ,
@@ -25,7 +25,7 @@ void Gauss::Create()
 		// スクリーン
 		MeshBuffer::Description desc = {};
 		desc.pVtx = screenVtx;
-		desc.vtxSize = sizeof(Vertex);
+		desc.vtxSize = sizeof(ScreenVertex);
 		desc.vtxCount = _countof(screenVtx);
 		desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 		Instance->pScreen = std::make_unique<MeshBuffer>(desc);

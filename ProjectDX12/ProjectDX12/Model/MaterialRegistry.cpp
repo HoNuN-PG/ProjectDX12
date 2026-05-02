@@ -15,7 +15,7 @@ MaterialRegistry::~MaterialRegistry()
 	}
 }
 
-void MaterialRegistry::SetUp(SetupTable materials)
+void MaterialRegistry::SetUp(MeshMaterialSetupData materials)
 {
 	for (auto&& item = materials.begin(); item != materials.end(); ++item)
 	{
@@ -28,33 +28,6 @@ void MaterialRegistry::SetUp(SetupTable materials)
 			Materials[item->first].push_back(instance); // メッシュごとに使用するマテリアルインスタンスを追加
 		}
 	}
-}
-
-std::vector<MaterialRegistry::MeshMaterialInfo> MaterialRegistry::GetRenderingMaterial(UINT timing)
-{
-	std::vector<MeshMaterialInfo> infos;
-
-	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
-	{
-		std::vector<MaterialInstanceData> instances = item->second;
-		for (int i = 0; i < instances.size(); ++i)
-		{
-			// 描画タイミングが異なれば無効
-			if (instances[i].first->GetRenderTiming() != timing)
-			{
-				continue;
-			}
-
-			// 構造体に詰める
-			MeshMaterialInfo info;
-			info.meshIdx = item->first;
-			info.material = instances[i].first;
-			info.materialInstanceIdx = instances[i].second;
-			infos.push_back(info);
-		}
-	}
-
-	return infos;
 }
 
 void MaterialRegistry::Register2RenderingEngine(std::weak_ptr<class GameObject> owner)
@@ -89,4 +62,31 @@ bool MaterialRegistry::IsRegisted(std::vector<Material::RenderingTiming> timing,
 		}
 	}
 	return false;
+}
+
+std::vector<MaterialRegistry::MeshMaterialInfo> MaterialRegistry::GetRenderingMaterial(UINT timing)
+{
+	std::vector<MeshMaterialInfo> infos;
+
+	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
+	{
+		std::vector<MaterialInstanceData> instances = item->second;
+		for (int i = 0; i < instances.size(); ++i)
+		{
+			// 描画タイミングが異なれば無効
+			if (instances[i].first->GetRenderTiming() != timing)
+			{
+				continue;
+			}
+
+			// 構造体に詰める
+			MeshMaterialInfo info;
+			info.meshIdx = item->first;
+			info.material = instances[i].first;
+			info.materialInstanceIdx = instances[i].second;
+			infos.push_back(info);
+		}
+	}
+
+	return infos;
 }

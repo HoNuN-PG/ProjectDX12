@@ -11,6 +11,7 @@
 class RenderingComponent : public Component
 {
 public:
+
 	using Component::Component;
 
 	virtual ~RenderingComponent() {};
@@ -22,9 +23,12 @@ public:
 	virtual void Rendering() = 0;
 
 public:
+
+	// メッシュのマテリアルインスタンスを取得
 	virtual std::vector<MaterialRegistry::MaterialInstanceData> GetMeshMaterialInstances(UINT meshIdx) { return pMaterialRegistry->GetMaterialInstances(meshIdx); }
 
 protected:
+
 	// マテリアルデータ
 	std::unique_ptr<MaterialRegistry> pMaterialRegistry;
 
@@ -36,11 +40,13 @@ protected:
 class MRenderingComponent : public RenderingComponent
 {
 public:
+
 	using RenderingComponent::RenderingComponent;
 
 	virtual ~MRenderingComponent() {};
 
 protected:
+
 	// メッシュデータ
 	std::vector<std::unique_ptr<MeshBuffer>> pMesh;
 
@@ -52,14 +58,13 @@ protected:
 class MLRenderingComponent : public RenderingComponent
 {
 public:
+
 	using RenderingComponent::RenderingComponent;
 
 	virtual ~MLRenderingComponent() {};
 
-public:
-	std::vector<MaterialRegistry::MaterialInstanceData> GetMeshMaterialInstances(UINT meshIdx) { return pMaterialRegistry->GetMaterialInstances(meshIdx); }
-
 protected:
+
 	// メッシュデータ
 	std::vector<std::unique_ptr<MeshletBuffer>> pMesh;
 

@@ -57,6 +57,7 @@ public:
 	void Bind() { GetCommandList()->SetPipelineState(PipelineData.Get()); }
 
 private:
+
 	void CreateAmplificationShaderPipelineState(Description desc, 
 		D3D12_RASTERIZER_DESC rasterizer, D3D12_BLEND_DESC blend, D3D12_DEPTH_STENCIL_DESC stencil);
 	void CreateMeshShaderPipelineState(Description desc, 
@@ -65,6 +66,7 @@ private:
 		D3D12_RASTERIZER_DESC rasterizer, D3D12_BLEND_DESC blend, D3D12_DEPTH_STENCIL_DESC stencil);
 
 private:
+
 	ComPtr<ID3D12PipelineState> PipelineData;
 
 };

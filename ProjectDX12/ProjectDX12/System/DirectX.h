@@ -19,6 +19,13 @@
 
 using namespace Microsoft::WRL;
 
+// スクリーン頂点データ
+struct ScreenVertex
+{
+	float pos[3];
+	float uv[2];
+};
+
 HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen);
 void UninitDirectX();
 void BeginRendering();
