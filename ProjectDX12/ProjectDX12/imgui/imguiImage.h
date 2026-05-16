@@ -62,8 +62,6 @@ public:
 	/// <returns></returns>
 	static ImTextureID GetImage(DescriptorHeap* _heap, RenderTarget* _srv);
 
-public:
-
 	/// <summary>
 	/// •`‰æI—¹
 	/// </summary>

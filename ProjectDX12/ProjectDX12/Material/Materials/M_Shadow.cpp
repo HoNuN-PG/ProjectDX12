@@ -36,15 +36,20 @@ void M_SimpleShadowMaps::Initialize(Description desc)
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
 	// パイプライン
-	PipelineState::Description pipeline;
-	pipeline.VSFile = L"../game/assets/shader/VS_ShadowMap.cso";
-	pipeline.PSFile = L"../game/assets/shader/PS_SimpleShadowMap.cso";
-	pipeline.pInputLayout = PipelineState::IED_POS_NOR_TEX_COLOR;
-	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.RenderTargetNum = 1;
-	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
-	pipeline.WriteDepth = desc.WriteDepth;
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	PipelineState::Description pipeline = {
+		L"",
+		L"",
+		L"../game/assets/shader/VS_ShadowMap.cso",
+		L"../game/assets/shader/PS_SimpleShadowMap.cso",
+		nullptr,
+		PipelineState::IED_POS_NOR_TEX_COLOR,
+		PipelineState::IED_POS_NOR_TEX_COLOR_COUNT,
+		desc.CullMode,
+		1,
+		formats,
+		desc.WriteDepth,
+	};
 
 	Material::SetUp(
 		desc.pHeap,
@@ -110,15 +115,21 @@ void M_OpaqueSimpleShadowMaps::Initialize(Description desc)
 	rootsignature.paramNum = _countof(param);
 	rootsignature.sample = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
-	PipelineState::Description pipeline;
-	pipeline.VSFile = L"../game/assets/shader/VS_ShadowMap.cso";
-	pipeline.PSFile = L"../game/assets/shader/PS_OpaqueSimpleShadowMap.cso";
-	pipeline.pInputLayout = PipelineState::IED_POS_NOR_TEX_COLOR;
-	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.RenderTargetNum = 1;
-	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
-	pipeline.WriteDepth = desc.WriteDepth;
+	// パイプライン
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	PipelineState::Description pipeline = {
+		L"",
+		L"",
+		L"../game/assets/shader/VS_ShadowMap.cso",
+		L"../game/assets/shader/PS_OpaqueSimpleShadowMap.cso",
+		nullptr,
+		PipelineState::IED_POS_NOR_TEX_COLOR,
+		PipelineState::IED_POS_NOR_TEX_COLOR_COUNT,
+		desc.CullMode,
+		1,
+		formats,
+		desc.WriteDepth,
+	};
 
 	Material::SetUp(
 		desc.pHeap,

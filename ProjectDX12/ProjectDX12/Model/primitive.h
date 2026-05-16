@@ -33,7 +33,7 @@ public:
 
 public:
 
-	virtual void Create(MaterialRegistry::MeshMaterialSetupData materials) = 0;
+	virtual void Create(MaterialRegistry::SetupData materials) = 0;
 
 protected:
 

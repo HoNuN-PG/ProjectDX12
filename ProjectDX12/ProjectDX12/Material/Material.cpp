@@ -34,21 +34,8 @@ void Material::SetUp(
 	}
 	// パイプライン
 	{
-		PipelineState::Description desc = {};
-		desc.AmpShader = pipeline.AmpShader;
-		desc.MeshShader = pipeline.MeshShader;
-		desc.ASFile = pipeline.ASFile;
-		desc.MSFile = pipeline.MSFile;
-		desc.VSFile = pipeline.VSFile;
-		desc.PSFile = pipeline.PSFile;
-		desc.pRootSignature = pRootSignatureData->Get();
-		desc.pInputLayout = pipeline.pInputLayout;
-		desc.InputLayoutNum = pipeline.InputLayoutNum;
-		desc.RenderTargetNum = pipeline.RenderTargetNum;
-		desc.RenderTargetFormat = pipeline.RenderTargetFormat;
-		desc.CullMode = pipeline.CullMode;
-		desc.WriteDepth = pipeline.WriteDepth;
-		pPipelineData = std::make_unique<PipelineState>(desc);
+		pipeline.pRootSignature = pRootSignatureData->Get();
+		pPipelineData = std::make_unique<PipelineState>(pipeline);
 	}
 	// マテリアルディスクリプターヒープ(レンダーターゲット)
 	if(rtvNum > 0)

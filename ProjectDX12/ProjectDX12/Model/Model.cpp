@@ -10,7 +10,7 @@
 #include "System/Rendering/RenderingEngine.h"
 #include "System/StartUp.h"
 
-void Model::Create(const char* path, MaterialRegistry::MeshMaterialSetupData materials)
+void Model::Create(const char* path, MaterialRegistry::SetupData materials)
 {
 	// マテリアル設定
 	pMaterialRegistry = std::make_unique<MaterialRegistry>();
@@ -116,7 +116,7 @@ void Model::Rendering()
 	}
 }
 
-void MeshletModel::Create(const char* path, MaterialRegistry::MeshMaterialSetupData materials, DescriptorHeap* heap)
+void MeshletModel::Create(const char* path, MaterialRegistry::SetupData materials, DescriptorHeap* heap)
 {
 	// マテリアル設定
 	pMaterialRegistry = std::make_unique<MaterialRegistry>();

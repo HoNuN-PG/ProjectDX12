@@ -16,6 +16,10 @@
 class Material
 {
 public:
+	// マテリアル/マテリアルインスタンスインデックス
+	using MaterialInstanceData = std::pair<std::shared_ptr<Material>, UINT>;
+
+public:
 	/// <summary>
 	/// 描画タイミング
 	/// </summary>
@@ -166,8 +170,8 @@ protected:
 	// メッシュシェーダー処理
 public:
 
-	virtual int GetMeshShaderSRVStartSlot() const { return -1; }
 	virtual int GetAmpShaderSRVStartSlot() const { return -1; }
+	virtual int GetMeshShaderSRVStartSlot() const { return -1; }
 	virtual void WriteMeshletCount(int count) {}
 
 public:

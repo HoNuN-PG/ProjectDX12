@@ -13,15 +13,20 @@ void M_SkyBox::Initialize(Description desc)
 	rootsignature.pParam = param;
 	rootsignature.paramNum = _countof(param);
 
-	PipelineState::Description pipeline;
-	pipeline.VSFile = L"../game/assets/shader/VS_Object.cso";
-	pipeline.PSFile = L"../game/assets/shader/PS_UnLit.cso";
-	pipeline.pInputLayout = PipelineState::IED_POS_NOR_TEX_COLOR;
-	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.RenderTargetNum = 1;
-	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing,PassType);
-	pipeline.WriteDepth = desc.WriteDepth;
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	PipelineState::Description pipeline = {
+		L"",
+		L"",
+		L"../game/assets/shader/VS_Object.cso",
+		L"../game/assets/shader/PS_UnLit.cso",
+		nullptr,
+		PipelineState::IED_POS_NOR_TEX_COLOR,
+		PipelineState::IED_POS_NOR_TEX_COLOR_COUNT,
+		desc.CullMode,
+		1,
+		formats,
+		desc.WriteDepth,
+	};
 
 	Material::SetUp(
 		desc.pHeap,

@@ -41,7 +41,7 @@ public:
 
 public:
 
-	void Create(const char* path, MaterialRegistry::MeshMaterialSetupData materials);
+	void Create(const char* path, MaterialRegistry::SetupData materials);
 
 private:
 
@@ -83,7 +83,7 @@ public:
 
 public:
 
-	void Create(const char* path, MaterialRegistry::MeshMaterialSetupData materials, DescriptorHeap* heap);
+	void Create(const char* path, MaterialRegistry::SetupData materials, DescriptorHeap* heap);
 
 private:
 

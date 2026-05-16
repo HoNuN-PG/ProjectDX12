@@ -23,8 +23,6 @@ public:
 	struct Description
 	{
 		// シェーダー
-		BOOL					AmpShader = FALSE;
-		BOOL					MeshShader = FALSE;
 		const wchar_t*			ASFile;
 		const wchar_t*			MSFile;
 		const wchar_t*			VSFile;

@@ -53,11 +53,11 @@ PipelineState::PipelineState(Description desc)
 		dsDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	}
 
-	if (desc.AmpShader)
+	if (desc.ASFile != nullptr && desc.ASFile[0] != L'\0')
 	{
 		CreateAmplificationShaderPipelineState(desc, rasterDesc, blendDesc, dsDesc);
 	}
-	else if (desc.MeshShader)
+	else if (desc.MSFile != nullptr && desc.MSFile[0] != L'\0')
 	{
 		CreateMeshShaderPipelineState(desc, rasterDesc, blendDesc, dsDesc);
 	}

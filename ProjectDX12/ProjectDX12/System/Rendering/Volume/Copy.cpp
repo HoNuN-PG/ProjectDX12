@@ -2,6 +2,7 @@
 #include "System/Rendering/Pipeline/DescriptorHeap.h"
 #include "System/Rendering/Texture/RenderTarget.h"
 #include "System/Rendering/Volume/Copy.h"
+#include "System/DirectX.h"
 
 std::unique_ptr<Copy> Copy::Instance;
 
@@ -55,16 +56,21 @@ void Copy::Load()
 	}
 	// パイプライン
 	{
-		PipelineState::Description desc = {};
-		desc.pRootSignature = Instance->pRootSignatureData->Get();
-		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"../game/assets/shader/PS_Copy.cso";
-		desc.pInputLayout = PipelineState::IED_POS_TEX;
-		desc.InputLayoutNum = PipelineState::IED_POS_TEX_COUNT;
-		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.RenderTargetNum = 1;
-		desc.WriteDepth = FALSE;
+		PipelineState::Description desc = {
+			L"",
+			L"",
+			L"../game/assets/shader/VS_Sprite.cso",
+			L"../game/assets/shader/PS_Copy.cso",
+			Instance->pRootSignatureData->Get(),
+			PipelineState::IED_POS_TEX,
+			PipelineState::IED_POS_TEX_COUNT,
+			D3D12_CULL_MODE_BACK,
+			1,
+			std::vector<DXGI_FORMAT>(),
+			FALSE,
+		};
 
+		desc.RenderTargetFormat.clear();
 		desc.RenderTargetFormat.push_back(DXGI_FORMAT_R16G16B16A16_FLOAT);
 		Instance->pPipelineData[DXGI_FORMAT_R16G16B16A16_FLOAT] = std::make_unique<PipelineState>(desc);
 
@@ -114,25 +120,20 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, st
 	// 表示領域の設定
 	SetViewPort(dest->Width,dest->Height);
 
-	// レンダーターゲット切り替え
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
-	{
-		dest->GetHandleRTV().hCPU,
-	};
-	SetRenderTarget(1, rtvs);
-
-	ID3D12DescriptorHeap* heaps[] =
-	{
-		heap->Get(),
-	};
-	DescriptorHeap::Bind(heaps, 1);
-	D3D12_GPU_DESCRIPTOR_HANDLE hScreen[] = 
+	std::vector<RenderTarget*> targets = { dest.get() };
+	D3D12_GPU_DESCRIPTOR_HANDLE handle[] =
 	{
 		src,
 	};
-	Instance->pRootSignatureData->Bind(hScreen, _countof(hScreen));
-	Instance->pPipelineData[dest->Format]->Bind();
-	Instance->pScreen->Draw();
+	ScreenDraw_NoClear(
+		targets,
+		heap->Get(),
+		handle,
+		_countof(handle),
+		Instance->pRootSignatureData.get(),
+		Instance->pPipelineData[dest->Format].get(),
+		Instance->pScreen.get()
+	);
 
 	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);
 }

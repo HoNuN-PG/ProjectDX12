@@ -144,21 +144,21 @@ void RenderingEngine::Init()
 		}
 		// パイプライン
 		{
-			PipelineState::InputLayout layout[] =
-			{
-				{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-				{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
+			std::vector<DXGI_FORMAT> formats = { GlobalTextureFormat[GlobalTextureResourceKey::DefferedAlbedoTexture] };
+			PipelineState::Description desc = {
+				L"",
+				L"",
+				L"../game/assets/shader/VS_Sprite.cso",
+				L"../game/assets/shader/PS_DefferedLighting.cso",
+				DefferedLightingShader.pRootSignatureData->Get(),
+				PipelineState::IED_POS_TEX,
+				PipelineState::IED_POS_TEX_COUNT,
+				D3D12_CULL_MODE_BACK,
+				1,
+				formats,
+				FALSE,
 			};
-			PipelineState::Description desc = {};
-			desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
-			desc.PSFile = L"../game/assets/shader/PS_DefferedLighting.cso";
-			desc.pRootSignature = DefferedLightingShader.pRootSignatureData->Get();
-			desc.pInputLayout = layout;
-			desc.InputLayoutNum = _countof(layout);
-			desc.CullMode = D3D12_CULL_MODE_BACK;
-			desc.RenderTargetNum = 1;
-			desc.RenderTargetFormat = GetPassFormat(Material::RenderingTiming::Deffered, RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE);
-			desc.WriteDepth = FALSE;
+
 			DefferedLightingShader.pPipelineData = std::make_unique<PipelineState>(desc);
 		}
 		// パラメーター定数バッファ

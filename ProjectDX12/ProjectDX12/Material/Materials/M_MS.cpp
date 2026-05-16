@@ -21,14 +21,19 @@ void M_MS::Initialize(Description desc)
 	CalcMeshShaderStartSlot_SRV(param, _countof(param));
 
 	// パイプライン
-	PipelineState::Description pipeline;
-	pipeline.MeshShader = TRUE;
-	pipeline.MSFile = L"../game/assets/shader/MS_Object.cso";
-	pipeline.PSFile = L"../game/assets/shader/PS_MS.cso";
-	pipeline.CullMode = desc.CullMode;
-	pipeline.RenderTargetNum = 1;
-	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
-	pipeline.WriteDepth = desc.WriteDepth;
+	PipelineState::Description pipeline = {
+		L"",
+		L"../game/assets/shader/MS_Object.cso",
+		L"",
+		L"../game/assets/shader/PS_MS.cso",
+		nullptr,
+		PipelineState::IED_POS_TEX,
+		PipelineState::IED_POS_TEX_COUNT,
+		desc.CullMode,
+		1,
+		GetRenderingEngine().lock()->GetPassFormat(Timing, PassType),
+		desc.WriteDepth,
+	};
 
 	Material::SetUp(
 		desc.pHeap,
@@ -98,16 +103,20 @@ void M_MSCulling::Initialize(Description desc)
 	CalcMeshShaderStartSlot_SRV(param, _countof(param));
 
 	// パイプライン
-	PipelineState::Description pipeline;
-	pipeline.AmpShader = TRUE;
-	pipeline.MeshShader = TRUE;
-	pipeline.ASFile = L"../game/assets/shader/AS_CullingObject.cso";
-	pipeline.MSFile = L"../game/assets/shader/MS_CullingObject.cso";
-	pipeline.PSFile = L"../game/assets/shader/PS_MS.cso";
-	pipeline.CullMode = desc.CullMode;
-	pipeline.RenderTargetNum = 1;
-	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
-	pipeline.WriteDepth = desc.WriteDepth;
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	PipelineState::Description pipeline = {
+		L"../game/assets/shader/AS_CullingObject.cso",
+		L"../game/assets/shader/MS_CullingObject.cso",
+		L"",
+		L"../game/assets/shader/PS_MS.cso",
+		nullptr,
+		PipelineState::IED_POS_TEX,
+		PipelineState::IED_POS_TEX_COUNT,
+		desc.CullMode,
+		1,
+		formats,
+		desc.WriteDepth,
+	};
 
 	Material::SetUp(
 		desc.pHeap,

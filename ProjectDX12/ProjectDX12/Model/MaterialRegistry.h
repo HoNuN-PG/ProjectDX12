@@ -14,16 +14,11 @@ class MaterialRegistry
 {
 public:
 
-	// マテリアル/マテリアルインスタンスインデックス
-	using MaterialInstanceData = std::pair<std::shared_ptr<Material>, UINT>;
+	// メッシュインデックス/メッシュに割り当てるマテリアル
+	using SetupData = std::unordered_map<UINT, std::vector<std::shared_ptr<Material>>>;
 
-public:
-
-	// メッシュインデックス/メッシュのマテリアル
-	using MeshMaterialSetupData = std::unordered_map<UINT, std::vector<std::shared_ptr<Material>>>;
-
-	// メッシュインデックス/メッシュのマテリアルインスタンス
-	using MeshMaterialData = std::unordered_map<UINT, std::vector<MaterialInstanceData>>;
+	// メッシュインデックス/メッシュに割り当てるマテリアルインスタンス
+	using MeshMaterialData = std::unordered_map<UINT, std::vector<Material::MaterialInstanceData>>;
 
 public:
 
@@ -47,9 +42,7 @@ public:
 	/// １つのメッシュに対して同じ描画タイミングのマテリアルを複数設定することはできない
 	/// </summary>
 	/// <param name="materials"></param>
-	void SetUp(MeshMaterialSetupData materials);
-
-public:
+	void SetUp(SetupData materials);
 
 	/// <summary>
 	/// レンダリングエンジンにオブジェクトを描画登録
@@ -74,7 +67,7 @@ public:
 	/// </summary>
 	/// <param name="mesh">メッシュインデックス</param>
 	/// <returns></returns>
-	std::vector<MaterialInstanceData> GetMaterialInstances(UINT mesh) { return Materials.contains(mesh) ? Materials[mesh] : std::vector<MaterialInstanceData>(); }
+	std::vector<Material::MaterialInstanceData> GetMaterialInstances(UINT mesh) { return Materials.contains(mesh) ? Materials[mesh] : std::vector<Material::MaterialInstanceData>(); }
 
 	/// <summary>
 	/// 指定したタイミングで描画されるマテリアルインスタンスを取得

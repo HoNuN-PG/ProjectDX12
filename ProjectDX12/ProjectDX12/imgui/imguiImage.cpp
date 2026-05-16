@@ -6,6 +6,7 @@
 #include "imgui/imguiImage.h"
 #include "System/Rendering/ConstantBuffer/ConstantBuffer.h"
 #include "System/Rendering/ConstantBuffer/ConstantWVP.h"
+#include "System/DirectX.h"
 
 std::unique_ptr<DescriptorHeap>								ImGUIImage::pHeap;
 std::unique_ptr<DescriptorHeap>								ImGUIImage::pRTVHeap;
@@ -100,16 +101,20 @@ MSG ImGUIImage::Create(HWND _hwnd)
 	}
 	// パイプライン
 	{
-		PipelineState::Description desc = {};
-		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"../game/assets/shader/PS_Copy.cso";
-		desc.pRootSignature = pRootSignatureData->Get();
-		desc.pInputLayout = PipelineState::IED_POS_TEX;
-		desc.InputLayoutNum = PipelineState::IED_POS_TEX_COUNT;
-		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.RenderTargetNum = 1;
-		desc.RenderTargetFormat.push_back(DXGI_FORMAT_B8G8R8A8_UNORM);
-		desc.WriteDepth = FALSE;
+		std::vector<DXGI_FORMAT> foarmats = { DXGI_FORMAT_B8G8R8A8_UNORM };
+		PipelineState::Description desc = {
+			L"",
+			L"",
+			L"../game/assets/shader/VS_Sprite.cso",
+			L"../game/assets/shader/PS_Copy.cso",
+			pRootSignatureData->Get(),
+			PipelineState::IED_POS_TEX,
+			PipelineState::IED_POS_TEX_COUNT,
+			D3D12_CULL_MODE_BACK,
+			1,
+			foarmats,
+			FALSE,
+		};
 		pPipelineData = std::make_unique<PipelineState>(desc);
 	}
 	// RTV用のディスクリプタヒープを確保
@@ -161,30 +166,13 @@ ImTextureID ImGUIImage::GetImage(DescriptorHeap* heap, RenderTarget* srv)
 	if (!target) 
 		return (ImTextureID)0;
 
-	// レンダーターゲット切り替え
-	target->SRV2RTV();
-	target->Clear();
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
-	{
-		target->GetHandleRTV().hCPU,
-	};
-	SetRenderTarget(1, rtvs);
-
 	// ImGUI用RTVに描画
-	ID3D12DescriptorHeap* heaps[] =
-	{
-		heap->Get(),
-	};
-	DescriptorHeap::Bind(heaps, 1);
+	std::vector<RenderTarget*> targets = { target };
 	D3D12_GPU_DESCRIPTOR_HANDLE handle[] = 
 	{
 		srv->GetHandleSRV().hGPU,
 	};
-	pRootSignatureData->Bind(handle, _countof(handle));
-	pPipelineData->Bind();
-	pScreen->Draw();
-
-	target->RTV2SRV();
+	ScreenDraw(targets, heap->Get(), handle, _countof(handle), pRootSignatureData.get(), pPipelineData.get(), pScreen.get());
 
 	return (ImTextureID)target->GetHandleSRV().hGPU.ptr;
 }

@@ -25,16 +25,21 @@ void Vignette::Init()
 	}
 	// パイプライン
 	{
-		PipelineState::Description desc = {};
-		desc.pRootSignature = pRootSignatureData->Get();
-		desc.VSFile = L"../game/assets/shader/VS_Sprite.cso";
-		desc.PSFile = L"../game/assets/shader/PS_Vignette.cso";
-		desc.pInputLayout = PipelineState::IED_POS_TEX;
-		desc.InputLayoutNum = PipelineState::IED_POS_TEX_COUNT;
-		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.RenderTargetNum = 1;
-		desc.RenderTargetFormat.push_back(DXGI_FORMAT_R16G16B16A16_FLOAT);
-		desc.WriteDepth = FALSE;
+		std::vector<DXGI_FORMAT> formats = { DXGI_FORMAT_R16G16B16A16_FLOAT };
+		PipelineState::Description desc = {
+			L"",
+			L"",
+			L"../game/assets/shader/VS_Sprite.cso",
+			L"../game/assets/shader/PS_Vignette.cso",
+			pRootSignatureData->Get(),
+			PipelineState::IED_POS_TEX,
+			PipelineState::IED_POS_TEX_COUNT,
+			D3D12_CULL_MODE_BACK,
+			1,
+			formats,
+			FALSE,
+		};
+
 		pPipelineData.push_back(std::make_unique<PipelineState>(desc));
 	}
 	// RTV
@@ -96,7 +101,5 @@ void Vignette::Draw()
 
 	// MainTextureに張り付け
 	pPostProcessRTV->RTV2SRV();
-	engine.lock()->GlobalTextureStagingSRV2RTV(GlobalTextureResourceKey::MainTexture);
 	Copy::ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine.lock()->GetGlobalStagingRenderTarget(GlobalTextureResourceKey::MainTexture));
-	engine.lock()->GlobalTextureStagingRTV2SRV(GlobalTextureResourceKey::MainTexture);
 }

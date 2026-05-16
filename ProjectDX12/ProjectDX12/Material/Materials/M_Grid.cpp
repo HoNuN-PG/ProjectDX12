@@ -27,15 +27,20 @@ void M_Grid::Initialize(Description desc)
 	rootsignature.paramNum = _countof(param);
 
 	// パイプライン
-	PipelineState::Description pipeline;
-	pipeline.VSFile = L"../game/assets/shader/VS_WorldObject.cso";
-	pipeline.PSFile = L"../game/assets/shader/PS_Grid.cso";
-	pipeline.pInputLayout = PipelineState::IED_POS_NOR_TEX_COLOR;
-	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.RenderTargetNum = 1;
-	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
-	pipeline.WriteDepth = desc.WriteDepth;
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	PipelineState::Description pipeline = {
+		L"",
+		L"",
+		L"../game/assets/shader/VS_WorldObject.cso",
+		L"../game/assets/shader/PS_Grid.cso",
+		nullptr,
+		PipelineState::IED_POS_NOR_TEX_COLOR,
+		PipelineState::IED_POS_NOR_TEX_COLOR_COUNT,
+		desc.CullMode,
+		1,
+		formats,
+		desc.WriteDepth,
+	};
 
 	Material::SetUp(
 		desc.pHeap,
@@ -89,15 +94,20 @@ void M_GridShadow::Initialize(Description desc)
 	rootsignature.paramNum = _countof(param);
 
 	// パイプライン
-	PipelineState::Description pipeline;
-	pipeline.VSFile = L"../game/assets/shader/VS_ShadowReciever.cso";
-	pipeline.PSFile = L"../game/assets/shader/PS_GridShadow.cso";
-	pipeline.pInputLayout = PipelineState::IED_POS_NOR_TEX_COLOR;
-	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.RenderTargetNum = 1;
-	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
-	pipeline.WriteDepth = desc.WriteDepth;
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	PipelineState::Description pipeline = {
+		L"",
+		L"",
+		L"../game/assets/shader/VS_ShadowReciever.cso",
+		L"../game/assets/shader/PS_GridShadow.cso",
+		nullptr,
+		PipelineState::IED_POS_NOR_TEX_COLOR,
+		PipelineState::IED_POS_NOR_TEX_COLOR_COUNT,
+		desc.CullMode,
+		1,
+		formats,
+		desc.WriteDepth,
+	};
 
 	Material::SetUp(
 		desc.pHeap,
@@ -164,15 +174,20 @@ void M_GridShadowVSM::Initialize(Description desc)
 	rootsignature.paramNum = _countof(param);
 
 	// パイプライン
-	PipelineState::Description pipeline;
-	pipeline.VSFile = L"../game/assets/shader/VS_ShadowReciever.cso";
-	pipeline.PSFile = L"../game/assets/shader/PS_GridShadowVSM.cso";
-	pipeline.pInputLayout = PipelineState::IED_POS_NOR_TEX_COLOR;
-	pipeline.InputLayoutNum = PipelineState::IED_POS_NOR_TEX_COLOR_COUNT;
-	pipeline.CullMode = desc.CullMode;
-	pipeline.RenderTargetNum = 1;
-	pipeline.RenderTargetFormat = GetRenderingEngine().lock()->GetPassFormat(Timing, PassType);
-	pipeline.WriteDepth = desc.WriteDepth;
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	PipelineState::Description pipeline = {
+		L"",
+		L"",
+		L"../game/assets/shader/VS_ShadowReciever.cso",
+		L"../game/assets/shader/PS_GridShadowVSM.cso",
+		nullptr,
+		PipelineState::IED_POS_NOR_TEX_COLOR,
+		PipelineState::IED_POS_NOR_TEX_COLOR_COUNT,
+		desc.CullMode,
+		1,
+		formats,
+		desc.WriteDepth,
+	};
 
 	Material::SetUp(
 		desc.pHeap,

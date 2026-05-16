@@ -1,4 +1,9 @@
 
+#include "Model/MeshBuffer.h"
+#include "System/Rendering/Pipeline/DescriptorHeap.h"
+#include "System/Rendering/Pipeline/PipelineState.h"
+#include "System/Rendering/Pipeline/RootSignature.h"
+#include "System/Rendering/Texture/RenderTarget.h"
 #include "System/DirectX.h"
 
 #define BACKBUFFER_COUNT (2)											// バックバッファの数
@@ -291,4 +296,51 @@ void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV, D3D12_CPU_DESCR
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	pCmdList->OMSetRenderTargets(num, hRTV, FALSE, hDSV.ptr ? &hDSV : nullptr);
+}
+
+void ScreenDraw(std::vector<class RenderTarget*> rts, ID3D12DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE* handle, int handlecount, RootSignature* rootsigunature, PipelineState* pipeline, MeshBuffer* screen)
+{
+	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtHandles;
+
+	for (auto target : rts)
+	{
+		target->SRV2RTV();
+		target->Clear();
+		rtHandles.push_back(target->GetHandleRTV().hCPU);
+	}
+
+	SetRenderTarget(rtHandles.size(), rtHandles.data());
+
+	DescriptorHeap::Bind(&heap, 1);
+	rootsigunature->Bind(handle, handlecount);
+	pipeline->Bind();
+	screen->Draw();
+
+	for (auto target : rts)
+	{
+		target->RTV2SRV();
+	}
+}
+
+void ScreenDraw_NoClear(std::vector<class RenderTarget*> rts, ID3D12DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE* handle, int handlecount, RootSignature* rootsigunature, PipelineState* pipeline, MeshBuffer* screen)
+{
+	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtHandles;
+
+	for (auto target : rts)
+	{
+		target->SRV2RTV();
+		rtHandles.push_back(target->GetHandleRTV().hCPU);
+	}
+
+	SetRenderTarget(rtHandles.size(), rtHandles.data());
+
+	DescriptorHeap::Bind(&heap, 1);
+	rootsigunature->Bind(handle, handlecount);
+	pipeline->Bind();
+	screen->Draw();
+
+	for (auto target : rts)
+	{
+		target->RTV2SRV();
+	}
 }

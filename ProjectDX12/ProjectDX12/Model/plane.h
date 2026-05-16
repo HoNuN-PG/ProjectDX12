@@ -13,7 +13,7 @@ public:
 
 public:
 
-	virtual void Create(MaterialRegistry::MeshMaterialSetupData materials) override;
+	virtual void Create(MaterialRegistry::SetupData materials) override;
 
 private:
 

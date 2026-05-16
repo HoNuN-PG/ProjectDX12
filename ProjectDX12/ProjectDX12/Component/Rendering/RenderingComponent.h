@@ -25,7 +25,7 @@ public:
 public:
 
 	// メッシュのマテリアルインスタンスを取得
-	virtual std::vector<MaterialRegistry::MaterialInstanceData> GetMeshMaterialInstances(UINT meshIdx) { return pMaterialRegistry->GetMaterialInstances(meshIdx); }
+	virtual std::vector<Material::MaterialInstanceData> GetMeshMaterialInstances(UINT meshIdx) { return pMaterialRegistry->GetMaterialInstances(meshIdx); }
 
 protected:
 

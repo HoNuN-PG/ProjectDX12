@@ -6,7 +6,7 @@ MaterialRegistry::~MaterialRegistry()
 {
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
-		std::vector<MaterialInstanceData> instances = item->second;
+		std::vector<Material::MaterialInstanceData> instances = item->second;
 		for (int i = 0; i < instances.size(); ++i)
 		{
 			// マテリアルインスタンスの削除
@@ -15,14 +15,14 @@ MaterialRegistry::~MaterialRegistry()
 	}
 }
 
-void MaterialRegistry::SetUp(MeshMaterialSetupData materials)
+void MaterialRegistry::SetUp(SetupData materials)
 {
 	for (auto&& item = materials.begin(); item != materials.end(); ++item)
 	{
 		for(int i = 0; i < item->second.size(); ++i)
 		{ 
 			// メッシュごとにマテリアルインスタンスを作成
-			MaterialInstanceData instance;
+			Material::MaterialInstanceData instance;
 			instance.first = item->second[i]; // マテリアル
 			instance.second = item->second[i]->AddMaterialInstance(); // マテリアルインスタンスインデックス
 			Materials[item->first].push_back(instance); // メッシュごとに使用するマテリアルインスタンスを追加
@@ -37,7 +37,7 @@ void MaterialRegistry::Register2RenderingEngine(std::weak_ptr<class GameObject> 
 
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
-		std::vector<MaterialInstanceData> instances = item->second;
+		std::vector<Material::MaterialInstanceData> instances = item->second;
 		for (int i = 0; i < instances.size(); ++i)
 		{
 			if(IsRegisted(timing, instances[i].first->GetRenderTiming()))
@@ -70,7 +70,7 @@ std::vector<MaterialRegistry::MeshMaterialInfo> MaterialRegistry::GetRenderingMa
 
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
-		std::vector<MaterialInstanceData> instances = item->second;
+		std::vector<Material::MaterialInstanceData> instances = item->second;
 		for (int i = 0; i < instances.size(); ++i)
 		{
 			// 描画タイミングが異なれば無効

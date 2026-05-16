@@ -183,7 +183,7 @@ HRESULT SceneSandBoxDX12::Init()
 	// モデル作成
 	{
 		// スカイボックス
-		MaterialRegistry::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupData materials;
 
 		materials[0].push_back(sky_box);
 	
@@ -198,10 +198,10 @@ HRESULT SceneSandBoxDX12::Init()
 	}
 	{
 		// グリッド
-		MaterialRegistry::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupData materials;
 
 		materials[0].push_back(opaque_depth_normal);
-		materials[0].push_back(grid_shadow);
+		materials[0].push_back(grid_shadow_vsm);
 	
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,0 });
@@ -212,7 +212,7 @@ HRESULT SceneSandBoxDX12::Init()
 	}
 	{
 		// 木
-		MaterialRegistry::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupData materials;
 
 		materials[0].push_back(shadow_map);
 		materials[0].push_back(opaque_depth_normal);
@@ -230,7 +230,7 @@ HRESULT SceneSandBoxDX12::Init()
 	}
 	{
 		// 牛
-		MaterialRegistry::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupData materials;
 
 		materials[0].push_back(opaque_depth_normal);
 		materials[0].push_back(deffered_albedo_normal);
@@ -243,7 +243,7 @@ HRESULT SceneSandBoxDX12::Init()
 #if 1
 	{
 		// 銅像
-		MaterialRegistry::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupData materials;
 
 		materials[0].push_back(ms);
 
@@ -254,7 +254,7 @@ HRESULT SceneSandBoxDX12::Init()
 	}
 	{
 		// 銅像カリング
-		MaterialRegistry::MeshMaterialSetupData materials;
+		MaterialRegistry::SetupData materials;
 		
 		materials[0].push_back(ms_culling);
 		
