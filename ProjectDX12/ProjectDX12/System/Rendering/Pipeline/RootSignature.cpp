@@ -19,6 +19,7 @@ RootSignature::RootSignature(Description desc)
 			param[i].Descriptor.ShaderRegister			= desc.pParam[i].slot;
 			param[i].Descriptor.RegisterSpace			= 0;
 			param[i].ShaderVisibility					= desc.pParam[i].shader;
+			bMeshShader = TRUE;
 		}
 		else
 		{ 
@@ -34,7 +35,7 @@ RootSignature::RootSignature(Description desc)
 		}
 	}
 
-	SetUp(param, desc.paramNum, desc.sample, desc.filter,  desc.bMeshShader);
+	SetUp(param, desc.paramNum, desc.sample, desc.filter,  bMeshShader);
 }
 
 RootSignature::~RootSignature()

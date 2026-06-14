@@ -22,9 +22,11 @@ void M_Grid::Initialize(Description desc)
 		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::Description rootsignature;
-	rootsignature.pParam = param;
-	rootsignature.paramNum = _countof(param);
+	RootSignature::Description rootsignature =
+	{
+		param,
+		_countof(param)
+	};
 
 	// パイプライン
 	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
@@ -89,9 +91,11 @@ void M_GridShadow::Initialize(Description desc)
 		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 3, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::Description rootsignature;
-	rootsignature.pParam = param;
-	rootsignature.paramNum = _countof(param);
+	RootSignature::Description rootsignature =
+	{
+		param,
+		_countof(param)
+	};
 
 	// パイプライン
 	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
@@ -169,9 +173,11 @@ void M_GridShadowVSM::Initialize(Description desc)
 		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 3, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::Description rootsignature;
-	rootsignature.pParam = param;
-	rootsignature.paramNum = _countof(param);
+	RootSignature::Description rootsignature =
+	{
+		param,
+		_countof(param)
+	};
 
 	// パイプライン
 	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };

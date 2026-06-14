@@ -18,10 +18,12 @@ void Vignette::Init()
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::Description desc = {};
-		desc.pParam = param;
-		desc.paramNum = _countof(param);
-		pRootSignatureData = std::make_unique<RootSignature>(desc);
+		RootSignature::Description rootsignature =
+		{
+			param,
+			_countof(param)
+		};
+		pRootSignatureData = std::make_unique<RootSignature>(rootsignature);
 	}
 	// パイプライン
 	{
@@ -84,22 +86,17 @@ void Vignette::Draw()
 
 	// バッファに書き込み
 	Params->Write(&VignetteParam);
-	// ポストプロセス用RTVをバインド
-	BindPostProcessRTV();
-	// 各種オブジェクトをバインド
-	BindHeap();
+
+	// 描画
 	engine.lock()->CopyGlobalTextureSRV(pRTV.get()->GetHandleSRV().hCPU, GlobalTextureResourceKey::MainTexture);
-	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = 
+	std::vector<RenderTarget*> targets = { pPostProcessRTV.get() };
+	D3D12_GPU_DESCRIPTOR_HANDLE handle[] =
 	{
 		pRTV.get()->GetHandleSRV().hGPU,
 		Params.get()->GetHandle().hGPU,
 	};
-	BindRootSignature(desc, _countof(desc));
-	BindPipeline(0);
-	// 描画
-	Rendering();
+	ScreenDraw(targets, pHeap->Get(), handle, _countof(handle), pRootSignatureData.get(), pPipelineData[0].get(), pScreen.get());
 
 	// MainTextureに張り付け
-	pPostProcessRTV->RTV2SRV();
 	Copy::ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine.lock()->GetGlobalStagingRenderTarget(GlobalTextureResourceKey::MainTexture));
 }

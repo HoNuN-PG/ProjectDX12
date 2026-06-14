@@ -23,15 +23,34 @@ public:
 		UINT						paramNum;
 		D3D12_TEXTURE_ADDRESS_MODE	sample;
 		D3D12_FILTER				filter;
-		BOOL						bMeshShader;
 
 		Description() :
 			pParam(nullptr),
 			paramNum(0),
 			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP),
-			filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR),
-			bMeshShader(FALSE)
+			filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
 		{}
+		Description(Parameter* _pParam, UINT _num) :
+			pParam(_pParam),
+			paramNum(_num),
+			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP),
+			filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
+		{
+		}
+		Description(Parameter* _pParam, UINT _num, D3D12_TEXTURE_ADDRESS_MODE _sample) :
+			pParam(_pParam),
+			paramNum(_num),
+			sample(_sample),
+			filter(D3D12_FILTER_MIN_MAG_MIP_LINEAR)
+		{
+		}
+		Description(Parameter* _pParam, UINT _num, D3D12_FILTER _filter) :
+			pParam(_pParam),
+			paramNum(_num),
+			sample(D3D12_TEXTURE_ADDRESS_MODE_CLAMP),
+			filter(_filter)
+		{
+		}
 	};
 
 	struct BindSetting

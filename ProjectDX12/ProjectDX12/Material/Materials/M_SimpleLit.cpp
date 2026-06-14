@@ -22,9 +22,11 @@ void M_SimpleLit::Initialize(Description desc)
 		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::Description rootsignature;
-	rootsignature.pParam = param;
-	rootsignature.paramNum = _countof(param);
+	RootSignature::Description rootsignature =
+	{
+		param,
+		_countof(param)
+	};
 
 	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
@@ -91,9 +93,11 @@ void M_OpaqueSimpleLit::Initialize(Description desc)
 		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::Description rootsignature;
-	rootsignature.pParam = param;
-	rootsignature.paramNum = _countof(param);
+	RootSignature::Description rootsignature =
+	{
+		param,
+		_countof(param)
+	};
 
 	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {

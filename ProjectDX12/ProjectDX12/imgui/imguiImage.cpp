@@ -94,10 +94,12 @@ MSG ImGUIImage::Create(HWND _hwnd)
 		{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::Description desc = {};
-		desc.pParam = param;
-		desc.paramNum = _countof(param);
-		pRootSignatureData = std::make_unique<RootSignature>(desc);
+		RootSignature::Description rootsignature =
+		{
+			param,
+			_countof(param)
+		};
+		pRootSignatureData = std::make_unique<RootSignature>(rootsignature);
 	}
 	// パイプライン
 	{

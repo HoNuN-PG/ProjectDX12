@@ -48,11 +48,13 @@ void Copy::Load()
 		{
 			{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 		};
-		RootSignature::Description desc = {};
-		desc.pParam = param;
-		desc.paramNum = _countof(param);
-		desc.filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-		Instance->pRootSignatureData = std::make_unique<RootSignature>(desc);
+		RootSignature::Description rootsignature =
+		{
+			param,
+			_countof(param),
+			D3D12_FILTER_MIN_MAG_MIP_LINEAR
+		};
+		Instance->pRootSignatureData = std::make_unique<RootSignature>(rootsignature);
 	}
 	// パイプライン
 	{

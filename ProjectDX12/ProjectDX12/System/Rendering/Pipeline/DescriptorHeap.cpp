@@ -2,14 +2,15 @@
 #include "System/Rendering/Pipeline/DescriptorHeap.h"
 
 /*
-* ステージ用の非シェーダー可視ヒープを別途作る（D3D12_DESCRIPTOR_HEAP_FLAG_NONE）。CPU で作成／書き込みするヒープをソースにして、宛先をシェーダー可視ヒープにして CopyDescriptorsSimple を呼ぶ。
+* ステージ用の非シェーダー可視ヒープを別途作る（D3D12_DESCRIPTOR_HEAP_FLAG_NONE）
+* CPUで作成／書き込みするヒープをソースとして宛先をシェーダー可視ヒープにしてCopyDescriptorsSimpleを呼ぶ
 */
 
 DescriptorHeap::DescriptorHeap(Description desc)
 	:
 	AllocCout(0),
 	Type(),
-	visibleShader(false)
+	bVisibleShader(false)
 {
 	// ディスクリプターヒープ作成
 	D3D12_DESCRIPTOR_HEAP_DESC heap = {};
@@ -24,7 +25,7 @@ DescriptorHeap::DescriptorHeap(Description desc)
 	{
 		if (heap.Type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 		{
-			visibleShader = true;
+			bVisibleShader = true;
 			heap.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 		}
 	}
@@ -50,7 +51,7 @@ DescriptorHeap::Handle DescriptorHeap::Allocate()
 	hCPU.ptr	+= increment;
 	handle.hCPU = hCPU;
 
-	if (visibleShader)
+	if (bVisibleShader)
 	{
 		D3D12_GPU_DESCRIPTOR_HANDLE hGPU = Heap->GetGPUDescriptorHandleForHeapStart();
 		hGPU.ptr += increment;

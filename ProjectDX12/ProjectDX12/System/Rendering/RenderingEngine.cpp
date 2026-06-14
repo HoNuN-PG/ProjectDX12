@@ -103,27 +103,6 @@ void RenderingEngine::Init()
 		DSV = std::make_shared<DepthStencil>(desc);
 	}
 
-	// 汎用クラス作成
-	Volume::Load();
-	Copy::Create();
-	Gauss::Create();
-
-	// リソースオブジェクト
-	Camera[CameraType::MAIN] = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
-	Camera[CameraType::MAIN]->SetIsMain(true);
-	Camera[CameraType::FRUSTUM] = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
-	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
-
-	// レンダリングパス
-	ShadowMapsPass = std::make_shared<ShadowPass>();
-	ShadowMapsPass->Init(pRTVHeap, pStagingHeap, pHeap, pDSVHeap);
-	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>();
-	ODepthNormalPass->Init(pRTVHeap, pStagingHeap, pHeap, pDSVHeap);
-
-	// ポストプロセス
-	ObjectPostProcess = std::make_unique<PostProcess>();
-	CanvasPostProcess = std::make_unique<PostProcess>();
-
 	// ディファードシェーダー
 	{
 		// ルートシグネチャ
@@ -137,10 +116,12 @@ void RenderingEngine::Init()
 				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			};
-			RootSignature::Description desc = {};
-			desc.pParam = param;
-			desc.paramNum = _countof(param);
-			DefferedLightingShader.pRootSignatureData = std::make_unique<RootSignature>(desc);
+			RootSignature::Description rootsignature =
+			{
+				param,
+				_countof(param)
+			};
+			DefferedLightingShader.pRootSignatureData = std::make_unique<RootSignature>(rootsignature);
 		}
 		// パイプライン
 		{
@@ -172,6 +153,27 @@ void RenderingEngine::Init()
 			DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // VPINV
 		}
 	}
+
+	// 汎用クラス作成
+	Volume::Load();
+	Copy::Create();
+	Gauss::Create();
+
+	// リソースオブジェクト
+	Camera[CameraType::MAIN] = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
+	Camera[CameraType::MAIN]->SetIsMain(true);
+	Camera[CameraType::FRUSTUM] = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
+	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
+
+	// レンダリングパス
+	ShadowMapsPass = std::make_shared<ShadowPass>();
+	ShadowMapsPass->Init(pRTVHeap, pStagingHeap, pHeap, pDSVHeap);
+	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>();
+	ODepthNormalPass->Init(pRTVHeap, pStagingHeap, pHeap, pDSVHeap);
+
+	// ポストプロセス
+	ObjectPostProcess = std::make_unique<PostProcess>();
+	CanvasPostProcess = std::make_unique<PostProcess>();
 }
 
 void RenderingEngine::Uninit()

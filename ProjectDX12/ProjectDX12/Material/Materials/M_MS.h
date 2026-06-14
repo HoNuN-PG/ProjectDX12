@@ -37,8 +37,8 @@ public:
 	virtual void WriteMeshletCount(int count) override;
 
 protected:
-	void CalcAmpShaderStartSlot_SRV(RootSignature::Parameter* parameters, UINT num);
-	void CalcMeshShaderStartSlot_SRV(RootSignature::Parameter* parameters, UINT num);
+	void CalcAmpShaderStartSlotSRV(RootSignature::Parameter* parameters, UINT num);
+	void CalcMeshShaderStartSlotSRV(RootSignature::Parameter* parameters, UINT num);
 
 private:
 	int AmpShaderSRVStartSlot;

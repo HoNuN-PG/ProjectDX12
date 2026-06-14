@@ -10,9 +10,11 @@ void M_Deffered_Albedo::Initialize(Description desc)
 		{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_VERTEX},
 		{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 	};
-	RootSignature::Description rootsignature;
-	rootsignature.pParam = param;
-	rootsignature.paramNum = _countof(param);
+	RootSignature::Description rootsignature =
+	{
+		param,
+		_countof(param)
+	};
 
 	// パイプライン
 	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };

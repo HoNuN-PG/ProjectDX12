@@ -59,10 +59,12 @@ void Gauss::Create()
 				{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			};
-			RootSignature::Description desc = {};
-			desc.pParam = param;
-			desc.paramNum = _countof(param);
-			Instance->Gauss2RootSignatureData = std::make_unique<RootSignature>(desc);
+			RootSignature::Description rootsignature =
+			{
+				param,
+				_countof(param)
+			};
+			Instance->Gauss2RootSignatureData = std::make_unique<RootSignature>(rootsignature);
 		}
 		// パイプライン
 		{
@@ -118,10 +120,12 @@ void Gauss::Create()
 				{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			};
-			RootSignature::Description desc = {};
-			desc.pParam = param;
-			desc.paramNum = _countof(param);
-			Instance->Gauss4RootSignatureData = std::make_unique<RootSignature>(desc);
+			RootSignature::Description rootsignature =
+			{
+				param,
+				_countof(param)
+			};
+			Instance->Gauss4RootSignatureData = std::make_unique<RootSignature>(rootsignature);
 		}
 		// パイプライン
 		{
@@ -177,10 +181,12 @@ void Gauss::Create()
 				{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 				{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 0, 1, D3D12_SHADER_VISIBILITY_PIXEL},
 			};
-			RootSignature::Description desc = {};
-			desc.pParam = param;
-			desc.paramNum = _countof(param);
-			Instance->Gauss8RootSignatureData = std::make_unique<RootSignature>(desc);
+			RootSignature::Description rootsignature =
+			{
+				param,
+				_countof(param)
+			};
+			Instance->Gauss8RootSignatureData = std::make_unique<RootSignature>(rootsignature);
 		}
 		// パイプライン
 		{

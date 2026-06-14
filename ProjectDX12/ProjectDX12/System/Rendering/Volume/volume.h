@@ -60,11 +60,9 @@ protected:
 	std::shared_ptr<DescriptorHeap>	pHeap;
 	std::shared_ptr<DescriptorHeap>	pRTVHeap;
 
-private:
+protected:
 
 	static std::unique_ptr<MeshBuffer> pScreen;
-
-protected:
 
 	std::unique_ptr<RenderTarget> pPostProcessRTV;
 	std::unique_ptr<RootSignature> pRootSignatureData;

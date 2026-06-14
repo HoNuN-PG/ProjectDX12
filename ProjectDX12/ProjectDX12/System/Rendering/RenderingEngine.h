@@ -54,16 +54,6 @@ private:
 	std::shared_ptr<DescriptorHeap>	pDSVHeap;
 
 	// ====================
-	// 描画リソース
-public:
-
-	std::shared_ptr<DepthStencil> GetDSV() { return DSV; };
-
-private:
-
-	std::shared_ptr<DepthStencil> DSV;
-
-	// ====================
 	// グローバルリソース
 public:
 
@@ -91,7 +81,29 @@ private:
 	std::unordered_map<UINT, DXGI_FORMAT> GlobalTextureFormat;
 
 	// ====================
+	// リソース
+public:
+
+	std::shared_ptr<DepthStencil> GetDSV() { return DSV; };
+
+private:
+
+	std::shared_ptr<DepthStencil> DSV;
+
+	// ====================
 	// DefferedRendering
+private:
+
+	/// <summary>
+	/// GBuffer
+	/// </summary>
+	enum GBuffer
+	{
+		Albedo = 0,	// アルベド
+
+		MAX_GBUFFER
+	};
+
 public:
 
 	/// <summary>
@@ -106,30 +118,9 @@ public:
 
 private:
 
-	/// <summary>
-	/// GBuffer
-	/// </summary>
-	enum GBuffer
-	{
-		Albedo = 0,	// アルベド
-
-		MAX_GBUFFER
-	};
-
-private:
-
 	DefferedData DefferedLightingShader;
 
 	// ====================
-	// レンダリングオブジェクト
-public:
-
-	// 描画するゲームオブジェクト
-	struct RenderingInfo
-	{
-		GameObject& obj;
-	};
-
 	// 環境オブジェクト
 private:
 
@@ -150,6 +141,16 @@ private:
 
 	std::shared_ptr<CameraBase> Camera[CameraType::MAX];
 	std::shared_ptr<LightBase> Light;
+
+	// ====================
+	// レンダリングオブジェクト
+public:
+
+	// 描画するゲームオブジェクト
+	struct RenderingInfo
+	{
+		GameObject& obj;
+	};
 
 public:
 

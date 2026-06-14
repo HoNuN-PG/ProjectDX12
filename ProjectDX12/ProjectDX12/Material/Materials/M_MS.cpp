@@ -14,10 +14,11 @@ void M_MS::Initialize(Description desc)
 		{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1, D3D12_SHADER_VISIBILITY_MESH},
 		{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 1, D3D12_SHADER_VISIBILITY_MESH},
 	};
-	RootSignature::Description rootsignature;
-	rootsignature.pParam = param;
-	rootsignature.paramNum = _countof(param);
-	rootsignature.bMeshShader = TRUE;
+	RootSignature::Description rootsignature =
+	{
+		param,
+		_countof(param)
+	};
 	CalcMeshShaderStartSlot_SRV(param, _countof(param));
 
 	// パイプライン
@@ -95,12 +96,13 @@ void M_MSCulling::Initialize(Description desc)
 		{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1, D3D12_SHADER_VISIBILITY_MESH},
 		{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 1, D3D12_SHADER_VISIBILITY_MESH},
 	};
-	RootSignature::Description rootsignature;
-	rootsignature.pParam = param;
-	rootsignature.paramNum = _countof(param);
-	rootsignature.bMeshShader = TRUE;
-	CalcAmpShaderStartSlot_SRV(param, _countof(param));
-	CalcMeshShaderStartSlot_SRV(param, _countof(param));
+	RootSignature::Description rootsignature =
+	{
+		param,
+		_countof(param)
+	};
+	CalcAmpShaderStartSlotSRV(param, _countof(param));
+	CalcMeshShaderStartSlotSRV(param, _countof(param));
 
 	// パイプライン
 	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
@@ -152,7 +154,7 @@ void M_MSCulling::WriteMeshletCount(int count)
 	Params[1]->Write(&info);
 }
 
-void M_MSCulling::CalcAmpShaderStartSlot_SRV(RootSignature::Parameter* parameters, UINT num)
+void M_MSCulling::CalcAmpShaderStartSlotSRV(RootSignature::Parameter* parameters, UINT num)
 {
 	// 増幅シェーダーのSRVは順番にまとまっている想定
 	// 1.CullData
@@ -166,7 +168,7 @@ void M_MSCulling::CalcAmpShaderStartSlot_SRV(RootSignature::Parameter* parameter
 	}
 }
 
-void M_MSCulling::CalcMeshShaderStartSlot_SRV(RootSignature::Parameter* parameters, UINT num)
+void M_MSCulling::CalcMeshShaderStartSlotSRV(RootSignature::Parameter* parameters, UINT num)
 {
 	// メッシュシェーダーのSRVは順番にまとまっている想定
 	// 1.入力 2.Meshlet 3.頂点インデックス 4.プリミティブインデックス

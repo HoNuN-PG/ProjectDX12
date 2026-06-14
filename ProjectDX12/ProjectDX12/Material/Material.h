@@ -16,10 +16,12 @@
 class Material
 {
 public:
+
 	// マテリアル/マテリアルインスタンスインデックス
 	using MaterialInstanceData = std::pair<std::shared_ptr<Material>, UINT>;
 
 public:
+
 	/// <summary>
 	/// 描画タイミング
 	/// </summary>
@@ -51,6 +53,8 @@ public:
 		RenderingTiming Timing = RenderingTiming::Forward;
 		RenderingPass::RenderingPassType PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 	};
+
+public:
 
 	/// <summary>
 	/// マテリアル共通パラメータ
@@ -159,6 +163,8 @@ protected:
 	RenderingTiming	Timing;
 	RenderingPass::RenderingPassType PassType;
 
+	// =============================================
+	// 描画パイプライン
 protected:
 
 	DescriptorHeap*	pHeap;
