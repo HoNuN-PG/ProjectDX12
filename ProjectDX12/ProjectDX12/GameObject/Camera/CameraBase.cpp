@@ -42,13 +42,16 @@ DirectX::XMFLOAT4X4 CameraBase::GetMainViewProjectionInvMatrix()
 
 std::vector<DirectX::XMFLOAT4> CameraBase::GetMainFrustumPlanes()
 {
-	// フラスタムの法線の計算
+	// フラスタム平面の計算
+	// 平面の方程式について https://manabitimes.jp/math/679
+	// 上下左右に関しては点（0,0,0)を通るのでD=0でよい（パラメータ的に正規化もされている）
+	// 前奥に関しては点（0,0,CAM_NEAR)と点（0,0,CAM_FAR)を通るのでD=-CAM_NEARとD=CAM_FARになる
 	DirectX::XMFLOAT4 frustum[6];
 	float fov = GetViewAngle();
 	frustum[0] = { 0,-cosf(fov / 2.0f),sinf(fov / 2.0f),0 };				// 上
 	frustum[1] = { 0, cosf(fov / 2.0f),sinf(fov / 2.0f),0 };				// 下
-	frustum[2] = { cosf(fov / 2.0f),0,GetAspect() * sinf(fov / 2.0f),0 };	// 左
-	frustum[3] = { -cosf(fov / 2.0f),0,GetAspect() * sinf(fov / 2.0f),0 };	// 右
+	frustum[2] = { cosf(fov / 2.0f),0,GetAspect() * sinf(fov / 2.0f),0 };	// 左 // 正規化する必要がある
+	frustum[3] = { -cosf(fov / 2.0f),0,GetAspect() * sinf(fov / 2.0f),0 };	// 右 // 正規化する必要がある
 	frustum[4] = { 0,0, 1,-CAM_NEAR }; // 前
 	frustum[5] = { 0,0,-1 ,CAM_FAR };  // 奥
 
@@ -58,7 +61,7 @@ std::vector<DirectX::XMFLOAT4> CameraBase::GetMainFrustumPlanes()
 		vFrustum[i] = DirectX::XMLoadFloat4(&frustum[i]);
 	}
 
-	// ワールド変換
+	// カメラ空間からワールド空間への変換
 	DirectX::XMFLOAT3 z = 
 	{
 		m_MainTarget.x - m_MainPosition.x,
@@ -71,6 +74,7 @@ std::vector<DirectX::XMFLOAT4> CameraBase::GetMainFrustumPlanes()
 	DirectX::XMFLOAT3 y = DXFL::Cross(z, x);
 	y = DXFL::Normalize(y);
 
+	// ワールド変換行列
 	DirectX::XMFLOAT4X4 world;
 	DirectX::XMStoreFloat4x4(&world, DirectX::XMMatrixIdentity());
 	world._11 = x.x; world._12 = x.y; world._13 = x.z;
@@ -78,7 +82,7 @@ std::vector<DirectX::XMFLOAT4> CameraBase::GetMainFrustumPlanes()
 	world._31 = z.x; world._32 = z.y; world._33 = z.z;
 	world._41 = m_MainPosition.x; world._42 = m_MainPosition.y; world._43 = m_MainPosition.z;
 	DirectX::XMMATRIX mW = DirectX::XMLoadFloat4x4(&world);
-	mW = DirectX::XMMatrixInverse(nullptr, mW);
+	mW = DirectX::XMMatrixInverse(nullptr, mW); // カメラ空間→ワールド空間へ戻す（ワールド変換を打ち消す）ため逆行列を作成
 	mW = DirectX::XMMatrixTranspose(mW);
 	for (int i = 0; i < 6; ++i)
 	{

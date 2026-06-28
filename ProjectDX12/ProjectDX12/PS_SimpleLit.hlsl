@@ -23,5 +23,5 @@ float4 main(PS_IN input) : SV_TARGET
 {
     float3 color = input.color.xyz;
     float lambert = CalcLambert(input.normal, LightParams.LightDir.xyz) * LightParams.LightAdd.x + LightParams.LightAdd.y;
-    return float4(color * lambert,1);
+    return float4(color * lambert * LightParams.LightColor.xyz, 1);
 }

@@ -33,5 +33,5 @@ float4 main(PS_IN input) : SV_TARGET
     float4 color = albedoTex.Sample(samp, input.uv);
     clip(color.a - CommonParams.AlphaCut);
     float lambert = CalcLambert(input.normal, LightParams.LightDir.xyz) * LightParams.LightAdd.x + LightParams.LightAdd.y;
-    return float4(color.xyz * lambert, 1);
+    return float4(color.xyz * lambert * LightParams.LightColor.xyz, 1);
 }

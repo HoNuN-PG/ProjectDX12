@@ -323,7 +323,7 @@ void MeshletBuffer::Draw(int AmpShaderResourceStartSlot, int MeshShaderResourceS
 	if (AmpShaderResourceStartSlot != -1)
 	{
 		GetCommandList()->SetGraphicsRootShaderResourceView((UINT)AmpShaderResourceStartSlot, pCullDatas->GetGPUVirtualAddress());
-		num = (num + LANE_COUNT - 1) / LANE_COUNT;
+		num = (num + LANE_COUNT - 1) / LANE_COUNT; // メッシュレット数に対応するWAVE数を割り出す（1WAVEでLANE_COUNT(32)個のメッシュレットを処理する）
 	}
 	GetCommandList()->SetGraphicsRootShaderResourceView((UINT)MeshShaderResourceStartSlot, Vtx->GetGPUVirtualAddress());
 	GetCommandList()->SetGraphicsRootShaderResourceView((UINT)MeshShaderResourceStartSlot + 1, pMeshlets->GetGPUVirtualAddress());

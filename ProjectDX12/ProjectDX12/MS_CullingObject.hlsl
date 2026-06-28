@@ -84,14 +84,14 @@ void main(
     // スレッドグループの頂点数とプリミティブ数を設定
     SetMeshOutputCounts(m.VertCount, m.PrimCount);
 
-    if (gtid < m.PrimCount)
-    {
-        tris[gtid] = GetPrimitive(m, gtid);
-    }
-
     if (gtid < m.VertCount)
     {
         uint vertexIndex = GetVertexIndex(m, gtid);
         verts[gtid] = GetVertexAttributes(gid, vertexIndex);
+    }
+    
+    if (gtid < m.PrimCount)
+    {
+        tris[gtid] = GetPrimitive(m, gtid);
     }
 }

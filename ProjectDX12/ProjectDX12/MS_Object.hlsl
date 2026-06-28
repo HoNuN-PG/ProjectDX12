@@ -70,7 +70,7 @@ MS_OUT GetVertexAttributes(uint meshletIndex, uint vertexIndex)
 [OutputTopology("triangle")]
 void main(
     uint gtid   : SV_GroupThreadID,     // スレッドグループ内のスレッドID
-    uint gid    : SV_GroupID,           // スレッドグループID
+    uint gid    : SV_GroupID,           // スレッドグループID（Dispatchを（メッシュレット数,1,1）で行うため、X値がそのままメッシュレットのインデックスになる）
     out vertices MS_OUT verts[256],     // 頂点データ
     out indices uint3   tris[256]       // プリミティブごとの頂点番号
 )
@@ -80,14 +80,16 @@ void main(
     // スレッドグループの頂点数とプリミティブ数を設定
     SetMeshOutputCounts(m.VertCount, m.PrimCount);
 
-    if (gtid < m.PrimCount)
-    {
-        tris[gtid] = GetPrimitive(m, gtid);
-    }
-
+    // 頂点を取得
     if (gtid < m.VertCount)
     {
         uint vertexIndex = GetVertexIndex(m, gtid);
         verts[gtid] = GetVertexAttributes(gid, vertexIndex);
+    }
+    
+    // プリミティブを取得
+    if (gtid < m.PrimCount)
+    {
+        tris[gtid] = GetPrimitive(m, gtid);
     }
 }
