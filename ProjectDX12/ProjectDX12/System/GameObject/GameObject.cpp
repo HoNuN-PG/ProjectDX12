@@ -13,15 +13,13 @@ void GameObject::InitBase()
 
 void GameObject::UninitBase()
 {
-	for (std::shared_ptr<GameObject> child : ChildGameObjects)
+	for (const std::shared_ptr<GameObject>& child : ChildGameObjects)
 	{
 		child->UninitBase();
-		child = nullptr;
 	}
-	for (std::shared_ptr<Component> component : Components)
+	for (const std::shared_ptr<Component>& component : Components)
 	{
 		component->Uninit();
-		component = nullptr;
 	}
 	Uninit();
 
@@ -31,11 +29,11 @@ void GameObject::UninitBase()
 
 void GameObject::UpdateBase()
 {
-	for (std::shared_ptr<GameObject> child : ChildGameObjects)
+	for (const std::shared_ptr<GameObject>& child : ChildGameObjects)
 	{
 		child->UpdateBase();
 	}
-	for (std::shared_ptr<Component> component : Components)
+	for (const std::shared_ptr<Component>& component : Components)
 	{
 		component->Update();
 	}
@@ -54,13 +52,13 @@ void GameObject::DrawBase(DirectX::XMFLOAT4X4 ParentMatrix)
 	);
 	WorldPosition = { fx4World._41,fx4World._42,fx4World._43 };
 
-	for (std::shared_ptr<GameObject> child : ChildGameObjects)
+	for (const std::shared_ptr<GameObject>& child : ChildGameObjects)
 	{
 		child->DrawBase(fx4World);
 	}
 
 	Draw();
-	for (std::shared_ptr<Component> component : Components)
+	for (const std::shared_ptr<Component>& component : Components)
 	{
 		component->Draw();
 	}
@@ -69,7 +67,7 @@ void GameObject::DrawBase(DirectX::XMFLOAT4X4 ParentMatrix)
 void GameObject::RenderingBase()
 {
 	Rendering();
-	for (std::weak_ptr<RenderingComponent> comp : RenderingComponents)
+	for (const std::weak_ptr<RenderingComponent>& comp : RenderingComponents)
 	{
 		// 描画コンポーネントは自身のComponentsが保持しているため常に有効
 		std::shared_ptr<RenderingComponent> c = comp.lock();

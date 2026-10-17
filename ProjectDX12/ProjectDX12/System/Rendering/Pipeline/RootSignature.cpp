@@ -42,7 +42,7 @@ RootSignature::~RootSignature()
 {
 }
 
-void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, UINT num, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, BOOL bMeshShader)
+void RootSignature::SetUp(const std::vector<D3D12_ROOT_PARAMETER>& param, UINT num, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, BOOL bMeshShader)
 {
 	// ƒTƒ“ƒvƒ‰
 	D3D12_STATIC_SAMPLER_DESC sampler = {};

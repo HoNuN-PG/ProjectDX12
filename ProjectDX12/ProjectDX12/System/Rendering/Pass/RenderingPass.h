@@ -63,7 +63,7 @@ public:
 
 protected:
 
-	RenderingEngine* pEngine; // 非所有参照：寿命は所有元のRenderingEngineが保証する
+	RenderingEngine* pEngine; // パスはRenderingEngineが所有しているため必ずRenderingEngineの参照が保証される
 
 protected:
 

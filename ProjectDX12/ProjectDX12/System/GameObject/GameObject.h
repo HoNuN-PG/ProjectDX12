@@ -87,7 +87,7 @@ public:
 	template <typename T>
 	std::shared_ptr<T> AddComponent()
 	{
-		std::shared_ptr<T> component = std::make_shared<T>(shared_from_this());
+		std::shared_ptr<T> component = std::make_shared<T>(this);
 		this->Components.push_back(component);
 		this->Components.back()->Init();
 
@@ -103,7 +103,7 @@ public:
 	template <typename T>
 	std::shared_ptr<T> GetComponent()
 	{
-		for (std::shared_ptr<Component> component : Components)
+		for (const std::shared_ptr<Component>& component : Components)
 		{ // íTçı
 			if (std::shared_ptr<T> c = std::dynamic_pointer_cast<T>(component))
 			{
@@ -116,7 +116,7 @@ public:
 	std::vector<std::shared_ptr<T>> GetComponents()
 	{
 		std::vector<std::shared_ptr<T>> components;
-		for (std::shared_ptr<Component> component : Components)
+		for (const std::shared_ptr<Component>& component : Components)
 		{ // íTçı
 			if (std::shared_ptr<T> c = std::dynamic_pointer_cast<T>(component))
 			{

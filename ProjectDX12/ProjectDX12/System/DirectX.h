@@ -46,7 +46,7 @@ void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HAND
 void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV);
 
 void ScreenDraw(
-	std::vector<class RenderTarget*> rts,
+	const std::vector<class RenderTarget*>& rts,
 	ID3D12DescriptorHeap* heap, 
 	D3D12_GPU_DESCRIPTOR_HANDLE* handle, 
 	int handlecount, 
@@ -56,7 +56,7 @@ void ScreenDraw(
 );
 
 void ScreenDraw_NoClear(
-	std::vector<class RenderTarget*> rts,
+	const std::vector<class RenderTarget*>& rts,
 	ID3D12DescriptorHeap* heap,
 	D3D12_GPU_DESCRIPTOR_HANDLE* handle,
 	int handlecount,

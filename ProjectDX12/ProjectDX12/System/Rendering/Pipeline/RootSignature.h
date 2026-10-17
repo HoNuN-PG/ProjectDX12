@@ -73,7 +73,7 @@ private:
 	/// <param name="sample"></param>
 	/// <param name="filter"></param>
 	/// <param name="num"></param>
-	void SetUp(std::vector<D3D12_ROOT_PARAMETER> param, UINT num, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, BOOL bMeshShader);
+	void SetUp(const std::vector<D3D12_ROOT_PARAMETER>& param, UINT num, D3D12_TEXTURE_ADDRESS_MODE sample, D3D12_FILTER filter, BOOL bMeshShader);
 
 public:
 

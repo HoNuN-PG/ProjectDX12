@@ -102,17 +102,13 @@ void Model::Rendering()
 	Material::RenderingTiming current = engine->GetCurrentRenderingTiming();
 	std::vector<MaterialRegistry::MeshMaterialInfo> infos = pMaterialRegistry->GetRenderingMaterial(current); // 現在の描画タイミングで描画するマテリアルを取得
 
-	// コンポーネントは所有元のGameObjectが保持しているため、Ownerは常に有効
-	std::shared_ptr<GameObject> owner = Owner.lock();
-	assert(owner);
-
 	for(auto&& info : infos)
 	{
 		// マテリアル設定
 		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(
-			owner->GetPosition(),
-			owner->GetRotation(),
-			owner->GetScale()),
+			Owner->GetPosition(),
+			Owner->GetRotation(),
+			Owner->GetScale()),
 			info.materialInstanceIdx
 		);
 		info.material->Bind(info.materialInstanceIdx);
@@ -219,17 +215,13 @@ void MeshletModel::Rendering()
 	Material::RenderingTiming current = engine->GetCurrentRenderingTiming();
 	std::vector<MaterialRegistry::MeshMaterialInfo> infos = pMaterialRegistry->GetRenderingMaterial(current); // 現在の描画タイミングで描画するマテリアルを取得
 
-	// コンポーネントは所有元のGameObjectが保持しているため、Ownerは常に有効
-	std::shared_ptr<GameObject> owner = Owner.lock();
-	assert(owner);
-
 	for (auto&& info : infos)
 	{
 		// マテリアル設定
 		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(
-			owner->GetPosition(),
-			owner->GetRotation(),
-			owner->GetScale()),
+			Owner->GetPosition(),
+			Owner->GetRotation(),
+			Owner->GetScale()),
 			info.materialInstanceIdx
 		);
 		info.material->WriteMeshletCount(pMesh[info.meshIdx]->GetMeshletCount());

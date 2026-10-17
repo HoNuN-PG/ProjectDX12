@@ -6,12 +6,12 @@
 class Component
 {
 protected:
-	std::weak_ptr<class GameObject> Owner;
+	class GameObject* Owner; // コンポーネントはGameObjectが所有するため参照が保証されている
 
 public:
 
 	Component() = delete;
-	Component(std::shared_ptr<class GameObject> Object) { Owner = Object; }
+	Component(class GameObject* Object) { Owner = Object; }
 	virtual ~Component() {}
 
 	virtual void Init() {};

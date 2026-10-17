@@ -24,7 +24,8 @@ private:
 
 public:
 
-	SceneManager();
+	// 静的クラスのためインスタンス化しない
+	SceneManager() = delete;
 
 	static HRESULT Init();
 	static void Uninit();

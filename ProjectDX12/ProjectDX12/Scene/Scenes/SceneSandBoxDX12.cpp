@@ -265,7 +265,7 @@ HRESULT SceneSandBoxDX12::Init()
 	}
 #endif
 
-    return E_NOTIMPL;
+	return S_OK;
 }
 
 void SceneSandBoxDX12::Uninit()

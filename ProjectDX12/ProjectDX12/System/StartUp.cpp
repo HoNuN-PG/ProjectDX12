@@ -21,7 +21,6 @@ std::unique_ptr<TimerFPS> gTimer;
 std::unique_ptr<TimerFPS> gUpdateTimer;
 std::unique_ptr<TimerFPS> gDrawTimer;
 std::unique_ptr<ImGUIImage> gImGUIImage;
-std::unique_ptr<SceneManager> gSceneManager;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 LRESULT WinProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
@@ -33,8 +32,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 {
 	// 高DPI対応
 	ImGui_ImplWin32_EnableDpiAwareness();
-
-	//-----------------
+	
 	// ウィンドウ作成
 	WNDCLASSEX wc = {};
 	wc.cbSize = sizeof(WNDCLASSEX);
@@ -42,7 +40,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	wc.lpszClassName = _T("DirectX12");
 	wc.hInstance = hInstance;
 	RegisterClassEx(&wc);
-
 	// ウィンドウサイズを調整
 	RECT wndRect = { 0,0,WINDOW_WIDTH,WINDOW_HEIGHT };
 	auto style = WS_OVERLAPPEDWINDOW;
@@ -53,18 +50,21 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	);
 	// ウィンドウスタイル変更
 	SetBorderless(gWindow, bBorderlessed = true);
-	//-----------------
 
 	float clear[] = { 0.0f,0.0f,0.0f,1 };
 	MSG msg = {};
-
-	//---------------------------------
-	// Init
+	
 	// 乱数初期化
 	srand((unsigned int)timeGetTime());
 
 	// DirectX初期化
-	InitDirectX(gWindow,WINDOW_WIDTH,WINDOW_HEIGHT,false);
+	if (FAILED(InitDirectX(gWindow,WINDOW_WIDTH,WINDOW_HEIGHT,false)))
+	{
+		MessageBox(gWindow, TEXT("DirectXの初期化に失敗しました"), TEXT("Error"), MB_OK | MB_ICONERROR);
+		UninitDirectX();
+		UnregisterClass(wc.lpszClassName, hInstance);
+		return -1;
+	}
 
 	// ウィンドウ表示
 	ShowWindow(gWindow, nCmdShow);
@@ -78,9 +78,16 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	Input::Init();
 
 	// シーン初期化
-	gSceneManager = std::make_unique<SceneManager>();
-	gSceneManager->Init();
-	//---------------------------------
+	if (FAILED(SceneManager::Init()))
+	{
+		MessageBox(gWindow, TEXT("シーンの初期化に失敗しました"), TEXT("Error"), MB_OK | MB_ICONERROR);
+		WaitForGpu();
+		SceneManager::Uninit();
+		Input::Uninit();
+		UninitDirectX();
+		UnregisterClass(wc.lpszClassName, hInstance);
+		return -1;
+	}
 
 	// デバッグ用IｍGUI初期化
 	gImGUIImage = std::make_unique<ImGUIImage>();
@@ -132,17 +139,17 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
-
-	//--------------
+	
 	// Uninit
-	gSceneManager->Uninit();
-	gSceneManager.reset();
+	SceneManager::Uninit();
+	
 	Input::Uninit();
+	
 	gTimer.reset();
 	gUpdateTimer.reset();
 	gDrawTimer.reset();
+	
 	UninitDirectX();
-	//--------------
 
 	UnregisterClass(wc.lpszClassName,hInstance);
 	return 0;
@@ -247,7 +254,7 @@ void SetBorderless(HWND hwnd, bool enabled)
 void Update()
 {
 	// シーン更新
-	gSceneManager->Update();
+	SceneManager::Update();
 }
 
 void Draw()
@@ -258,7 +265,7 @@ void Draw()
 	ImGui::NewFrame();
 
 	// シーン描画
-	gSceneManager->Draw();
+	SceneManager::Draw();
 
 	// FPS出力
 	float fps = gTimer->GetObsevationGameFPS(100);

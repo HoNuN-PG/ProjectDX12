@@ -25,28 +25,28 @@ void RenderingEngine::Init()
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.staging = TRUE;
-		desc.num = 256;
+		desc.num = STAGING_HEAP_SIZE;
 		pStagingHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// グローバルディスクリプタヒープ
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		desc.num = 256;
+		desc.num = HEAP_SIZE;
 		pHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ディスクリプターヒープ(レンダーターゲット)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-		desc.num = 64;
+		desc.num = RTV_HEAP_SIZE;
 		pRTVHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// ディスクリプタヒープ（深度バッファ)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-		desc.num = 32;
+		desc.num = DSV_HEAP_SIZE;
 		pDSVHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 	// グローバル定数バッファリソース

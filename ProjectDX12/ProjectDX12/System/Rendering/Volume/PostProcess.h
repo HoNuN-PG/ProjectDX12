@@ -28,7 +28,7 @@ public:
 	template <typename T>
 	std::shared_ptr<T> GetVolume()
 	{
-		for (std::shared_ptr<Volume> volume : Volumes)
+		for (const std::shared_ptr<Volume>& volume : Volumes)
 		{
 			if (std::shared_ptr<T> v = std::dynamic_pointer_cast<T>(volume))
 			{

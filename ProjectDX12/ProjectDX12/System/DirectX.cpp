@@ -340,7 +340,7 @@ void SetRenderTarget(int num, D3D12_CPU_DESCRIPTOR_HANDLE* hRTV, D3D12_CPU_DESCR
 	pCmdList->OMSetRenderTargets(num, hRTV, FALSE, hDSV.ptr ? &hDSV : nullptr);
 }
 
-void ScreenDraw(std::vector<class RenderTarget*> rts, ID3D12DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE* handle, int handlecount, RootSignature* rootsigunature, PipelineState* pipeline, MeshBuffer* screen)
+void ScreenDraw(const std::vector<class RenderTarget*>& rts, ID3D12DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE* handle, int handlecount, RootSignature* rootsigunature, PipelineState* pipeline, MeshBuffer* screen)
 {
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtHandles;
 
@@ -364,7 +364,7 @@ void ScreenDraw(std::vector<class RenderTarget*> rts, ID3D12DescriptorHeap* heap
 	}
 }
 
-void ScreenDraw_NoClear(std::vector<class RenderTarget*> rts, ID3D12DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE* handle, int handlecount, RootSignature* rootsigunature, PipelineState* pipeline, MeshBuffer* screen)
+void ScreenDraw_NoClear(const std::vector<class RenderTarget*>& rts, ID3D12DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE* handle, int handlecount, RootSignature* rootsigunature, PipelineState* pipeline, MeshBuffer* screen)
 {
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtHandles;
 

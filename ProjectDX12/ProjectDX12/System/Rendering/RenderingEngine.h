@@ -53,6 +53,12 @@ private:
 	std::shared_ptr<DescriptorHeap>	pRTVHeap;
 	std::shared_ptr<DescriptorHeap>	pDSVHeap;
 
+	// ディスクリプタヒープの最大数
+	static constexpr UINT STAGING_HEAP_SIZE	= 256;
+	static constexpr UINT HEAP_SIZE			= 256;
+	static constexpr UINT RTV_HEAP_SIZE		= 64;
+	static constexpr UINT DSV_HEAP_SIZE		= 32;
+
 	// ====================
 	// グローバルリソース
 public:
