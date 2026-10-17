@@ -102,7 +102,7 @@ UINT Material::AddMaterialInstance()
 
 void Material::RemoveMaterialInstance(UINT instance)
 {
-	if(MaterialInstanceList.size() < instance)
+	if(instance < MaterialInstanceList.size())
 	{
 		MaterialInstanceList[instance] = false;
 	}
