@@ -24,7 +24,7 @@ public:
 
 public:
 
-	explicit CustomDepthNormalPass();
+	explicit CustomDepthNormalPass(RenderingEngine& engine);
 	~CustomDepthNormalPass() {};
 	void Execute() override;
 

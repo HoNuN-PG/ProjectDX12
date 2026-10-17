@@ -20,7 +20,7 @@ public:
 
 public:
 
-	OpaqueDepthNormalPass();
+	explicit OpaqueDepthNormalPass(RenderingEngine& engine);
 	~OpaqueDepthNormalPass() {};
 	void Execute() override;
 

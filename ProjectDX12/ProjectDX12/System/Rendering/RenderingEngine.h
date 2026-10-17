@@ -214,7 +214,7 @@ public:
 	{
 		if (RenderingPasses[timing].contains(passType)) 
 			return;
-		RenderingPasses[timing][passType] = std::make_unique<T>();
+		RenderingPasses[timing][passType] = std::make_unique<T>(*this);
 		RenderingPasses[timing][passType]->Init(pRTVHeap, pStagingHeap, pHeap,pDSVHeap);
 	}
 

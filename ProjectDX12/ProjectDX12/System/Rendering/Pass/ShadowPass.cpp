@@ -9,7 +9,9 @@
 #include "System/Rendering/RenderingEngine.h"
 #include "System/MyMath.h"
 
-ShadowPass::ShadowPass()
+ShadowPass::ShadowPass(RenderingEngine& engine)
+	:
+	RenderingPass(engine)
 {
 	PassType = RenderingPass::RenderingPassType::Shadow;
 

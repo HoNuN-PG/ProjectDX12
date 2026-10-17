@@ -3,7 +3,9 @@
 #include "System/Rendering/Pass/DepthNormalPass.h"
 #include "System/Rendering/GlobalResourceKey.h"
 
-OpaqueDepthNormalPass::OpaqueDepthNormalPass()
+OpaqueDepthNormalPass::OpaqueDepthNormalPass(RenderingEngine& engine)
+	:
+	RenderingPass(engine)
 {
 	PassType = RenderingPass::RenderingPassType::OpaqueDepthNormal;
 

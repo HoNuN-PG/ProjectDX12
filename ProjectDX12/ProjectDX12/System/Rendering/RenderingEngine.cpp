@@ -166,9 +166,9 @@ void RenderingEngine::Init()
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
 
 	// レンダリングパス
-	ShadowMapsPass = std::make_shared<ShadowPass>();
+	ShadowMapsPass = std::make_shared<ShadowPass>(*this);
 	ShadowMapsPass->Init(pRTVHeap, pStagingHeap, pHeap, pDSVHeap);
-	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>();
+	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>(*this);
 	ODepthNormalPass->Init(pRTVHeap, pStagingHeap, pHeap, pDSVHeap);
 
 	// ポストプロセス
@@ -178,6 +178,11 @@ void RenderingEngine::Init()
 
 void RenderingEngine::Uninit()
 {
+	RenderingPasses.clear();
+	ODepthNormalPass.reset();
+	ShadowMapsPass.reset();
+	ObjectPostProcess.reset();
+	CanvasPostProcess.reset();
 	Gauss::Destroy();
 	Copy::Destroy();
 	Volume::Unload();

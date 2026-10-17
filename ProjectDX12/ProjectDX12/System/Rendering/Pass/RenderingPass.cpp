@@ -1,11 +1,9 @@
 
-#include "Scene/SceneManager.h"
 #include "System/Rendering/Pass/RenderingPass.h"
 #include "System/Rendering/RenderingEngine.h"
 
-std::shared_ptr<RenderingEngine> RenderingPass::pEngine;
-
-RenderingPass::RenderingPass()
+RenderingPass::RenderingPass(RenderingEngine& engine)
+	:
+	pEngine(&engine)
 {
-	pEngine = SceneManager::GetCurrentScene()->GetRenderingEngine();
 }

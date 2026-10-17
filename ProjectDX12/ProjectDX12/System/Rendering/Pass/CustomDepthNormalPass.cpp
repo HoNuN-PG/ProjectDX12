@@ -3,7 +3,9 @@
 #include "System/Rendering/Pass/CustomDepthNormalPass.h"
 #include "System/Rendering/Texture/RenderTarget.h"
 
-CustomDepthNormalPass::CustomDepthNormalPass()
+CustomDepthNormalPass::CustomDepthNormalPass(RenderingEngine& engine)
+	:
+	RenderingPass(engine)
 {
 	PassType = RenderingPass::RenderingPassType::CustomDepthNormal;
 

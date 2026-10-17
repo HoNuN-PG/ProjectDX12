@@ -9,6 +9,7 @@
 
 class GameObject;
 class RenderTarget;
+class RenderingEngine;
 
 class RenderingPass
 {
@@ -34,9 +35,9 @@ protected:
 
 public:
 
-	RenderingPass();
-	virtual ~RenderingPass() {};
-	virtual void Execute() {};
+	explicit RenderingPass(RenderingEngine& engine);
+	virtual ~RenderingPass() = default;
+	virtual void Execute() {}
 
 public:
 
@@ -62,7 +63,7 @@ public:
 
 protected:
 
-	static std::shared_ptr<class RenderingEngine> pEngine;
+	RenderingEngine* pEngine; // 非所有参照：寿命は所有元のRenderingEngineが保証する
 
 protected:
 

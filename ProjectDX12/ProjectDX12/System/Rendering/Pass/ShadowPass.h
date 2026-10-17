@@ -33,7 +33,7 @@ public:
 
 public:
 
-	explicit ShadowPass();
+	explicit ShadowPass(RenderingEngine& engine);
 	~ShadowPass() {};
 	void Execute() override;
 
