@@ -5,6 +5,7 @@
 #include "Scene/Scenes/SceneSandBoxDX12.h"
 #include "System/Rendering/RenderingEngine.h"
 #include "System/Input.h"
+#include "System/DirectX.h"
 
 int SceneManager::CurrentScene = SceneManager::SceneType::SANDBOXDX12;
 std::vector<std::unique_ptr<SceneBase>> SceneManager::Scenes;
@@ -56,6 +57,8 @@ void SceneManager::Update()
 	{
 		int newScene = CurrentScene;
 		CurrentScene = preScene;
+		// GPU‚Ìˆ—Š®—¹‚ğ‘Ò‚Á‚Ä‚©‚çƒV[ƒ“‚ğ”jŠü‚·‚é
+		WaitForGpu();
 		Uninit();
 		CurrentScene = newScene;
 		Init();

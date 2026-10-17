@@ -1,4 +1,4 @@
-
+	
 #include <tchar.h>
 #include <Windows.h>
 #pragma comment(lib,"winmm.lib")
@@ -122,6 +122,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	//------------------------------
 
 	timeEndPeriod(1);
+
+	// GPU‚Ìˆ—Š®—¹‚ð‘Ò‚Á‚Ä‚©‚ç‰ð•ú‚·‚é
+	WaitForGpu();
 
 	gImGUIImage->Destroy();
 	gImGUIImage.reset();

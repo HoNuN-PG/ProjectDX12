@@ -17,15 +17,16 @@ ComPtr<IDXGISwapChain3>				g_pSwapChain;
 ComPtr<ID3D12DescriptorHeap>		g_BBufferHeap;						// バックバッファヒープ
 ComPtr<ID3D12Resource>				g_pBackBuf[BACKBUFFER_COUNT];		// バックバッファ
 UINT64								g_BackBufferIdx;					// バックバッファのインデックス	
-UINT64								g_fenceLevel[BACKBUFFER_COUNT];
 ComPtr<ID3D12Fence>					g_pFence;							// フェンス
+UINT64								g_fenceValue = 0;					// 最後にシグナルしたフェンス値（単調増加）
+HANDLE								g_fenceEvent = nullptr;				// フェンス待機用イベント
 
 HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 {
 #ifdef _DEBUG
 	// デバッグ設定
-	ID3D12Debug* pDebug;
-	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&pDebug)))) 
+	ComPtr<ID3D12Debug> pDebug;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(pDebug.GetAddressOf())))) 
 	{
 		pDebug->EnableDebugLayer();
 	}
@@ -170,13 +171,39 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	// フェンス
 	hr = g_pDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(g_pFence.GetAddressOf()));
 	if (FAILED(hr)) { return hr; }
-	g_fenceLevel[g_BackBufferIdx] = 0;
+	g_fenceValue = 0;
+	g_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	if (!g_fenceEvent) { return HRESULT_FROM_WIN32(GetLastError()); }
 
 	return hr;
 }
 
+// GPUの処理完了を待機（リソース解放前に呼ぶ）
+void WaitForGpu()
+{
+	if (!g_pCmdQueue || !g_pFence || !g_fenceEvent) { return; }
+
+	// フェンス値は単調増加させる
+	const UINT64 fence = ++g_fenceValue;
+	g_pCmdQueue->Signal(g_pFence.Get(), fence);
+
+	// コマンドの完了をチェック
+	if (g_pFence->GetCompletedValue() < fence)
+	{
+		g_pFence->SetEventOnCompletion(fence, g_fenceEvent);	// 終了値に到達した際に通知するイベントを設定
+		WaitForSingleObject(g_fenceEvent, INFINITE);			// イベントが発行されるまで待機
+	}
+}
+
 void UninitDirectX()
 {
+	WaitForGpu();
+
+	if (g_fenceEvent)
+	{
+		CloseHandle(g_fenceEvent);
+		g_fenceEvent = nullptr;
+	}
 	g_pFence.Reset();
 	for (auto& backBuffer : g_pBackBuf)
 	{
@@ -252,21 +279,10 @@ void EndRendering()
 	// 画面出力
 	g_pSwapChain->Present(1, 0);
 
-	// フェンス値更新
-	UINT64 fence = ++g_fenceLevel[g_BackBufferIdx];
-
-	// シグナル
-	g_pCmdQueue->Signal(g_pFence.Get(), fence);
-
-	// コマンドリストの完了をチェック
-	if (g_pFence->GetCompletedValue() < fence)
-	{
-		// Windowsのイベントで処理を待つ
-		auto event = CreateEvent(nullptr, false, false, nullptr);
-		g_pFence->SetEventOnCompletion(fence, event); // 終了値に到達した際に通知するイベントを設定
-		WaitForSingleObject(event, INFINITE); // イベントが発行されるまで待機
-		CloseHandle(event);	// イベントの破棄
-	}
+	// フレームの完了を待機
+	// 定数バッファ等のリソースはフレーム間で共有（単一バッファ）のため、
+	// 次フレームでCPUが書き換える前にGPUの処理完了を待つ
+	WaitForGpu();
 
 	// バックバッファインデックス
 	g_BackBufferIdx = g_pSwapChain->GetCurrentBackBufferIndex();

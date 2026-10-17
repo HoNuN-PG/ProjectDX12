@@ -33,6 +33,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen);
 void UninitDirectX();
 void BeginRendering();
 void EndRendering();
+void WaitForGpu();
 
 ID3D12Device8* GetDevice();
 ID3D12GraphicsCommandList6* GetCommandList();
