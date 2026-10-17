@@ -102,10 +102,16 @@ bool GameObject::Destroy()
 
 void GameObject::Add2RenderingEngine(UINT timing, UINT passType)
 {
-	Engine->AddRenderObject(*this, timing, passType);
+	if (auto engine = Engine.lock())
+	{
+		engine->AddRenderObject(*this, timing, passType);
+	}
 }
 
 void GameObject::RegisterComponent2RenderingEngine(std::shared_ptr<class RenderingComponent> comp)
 {
-	Engine->RegisterRenderingComponentRef(comp);
+	if (auto engine = Engine.lock())
+	{
+		engine->RegisterRenderingComponentRef(comp);
+	}
 }

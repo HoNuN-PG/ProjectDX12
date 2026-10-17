@@ -140,7 +140,7 @@ private:
 
 private:
 
-	std::shared_ptr<class RenderingEngine> Engine;
+	std::weak_ptr<class RenderingEngine> Engine;
 	std::vector<std::weak_ptr<class RenderingComponent>> RenderingComponents;
 
 };
