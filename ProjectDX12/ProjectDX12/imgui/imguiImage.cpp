@@ -144,6 +144,20 @@ MSG ImGUIImage::Create(HWND _hwnd)
 	return msg;
 }
 
+void ImGUIImage::Destroy()
+{
+	pHeap.reset();
+	pRTVHeap.reset();
+	pScreen.reset();
+	pRootSignatureData.reset();
+	pPipelineData.reset();
+	for (int i = 0; i < ImageData.size(); i++)
+	{
+		ImageData[i].pImage.reset();
+	}
+	ImageData.clear();
+}
+
 ImTextureID ImGUIImage::GetImage(DescriptorHeap* heap, RenderTarget* srv)
 {
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();

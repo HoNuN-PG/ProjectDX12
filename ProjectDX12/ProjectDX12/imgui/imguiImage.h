@@ -41,6 +41,7 @@ public:
 public:
 
 	static MSG Create(HWND _hwnd);
+	static void Destroy();
 
 public:
 
