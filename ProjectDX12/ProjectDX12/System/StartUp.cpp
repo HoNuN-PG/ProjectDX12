@@ -74,10 +74,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	gUpdateTimer = std::make_unique<TimerFPS>();
 	gDrawTimer = std::make_unique<TimerFPS>();
 
-	// デバッグ用IｍGUI初期化
-	gImGUIImage = std::make_unique<ImGUIImage>();
-	gImGUIImage->Create(gWindow);
-
 	// 入力初期化
 	Input::Init();
 
@@ -85,6 +81,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	gSceneManager = std::make_unique<SceneManager>();
 	gSceneManager->Init();
 	//---------------------------------
+
+	// デバッグ用IｍGUI初期化
+	gImGUIImage = std::make_unique<ImGUIImage>();
+	gImGUIImage->Create(gWindow);
 
 	timeBeginPeriod(1);
 
@@ -123,10 +123,21 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 
 	timeEndPeriod(1);
 
+	gImGUIImage->Destroy();
+	gImGUIImage.reset();
+	// Shutdown ImGui backends and destroy context
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+
 	//--------------
 	// Uninit
 	gSceneManager->Uninit();
+	gSceneManager.reset();
 	Input::Uninit();
+	gTimer.reset();
+	gUpdateTimer.reset();
+	gDrawTimer.reset();
 	UninitDirectX();
 	//--------------
 
