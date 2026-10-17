@@ -76,10 +76,12 @@ void PipelineState::CreateAmplificationShaderPipelineState(Description desc,
 {
 	// シェーダー
 	HRESULT hr;
-	ID3DBlob* pAS = nullptr, * pMS = nullptr, * pPS = nullptr;
-	hr = D3DReadFileToBlob(desc.ASFile, &pAS);
-	hr = D3DReadFileToBlob(desc.MSFile, &pMS);
-	hr = D3DReadFileToBlob(desc.PSFile, &pPS);
+	ComPtr<ID3DBlob> pAS, pMS, pPS;
+	hr = D3DReadFileToBlob(desc.ASFile, pAS.GetAddressOf());
+	if (FAILED(hr)) { return; }
+	hr = D3DReadFileToBlob(desc.MSFile, pMS.GetAddressOf());
+	if (FAILED(hr)) { return; }
+	hr = D3DReadFileToBlob(desc.PSFile, pPS.GetAddressOf());
 	if (FAILED(hr)) { return; }
 	assert(pAS != nullptr);
 	assert(pMS != nullptr);
@@ -134,9 +136,10 @@ void PipelineState::CreateMeshShaderPipelineState(Description desc,
 {
 	// シェーダー
 	HRESULT hr;
-	ID3DBlob* pMS = nullptr, * pPS = nullptr;
-	hr = D3DReadFileToBlob(desc.MSFile, &pMS);
-	hr = D3DReadFileToBlob(desc.PSFile, &pPS);
+	ComPtr<ID3DBlob> pMS, pPS;
+	hr = D3DReadFileToBlob(desc.MSFile, pMS.GetAddressOf());
+	if (FAILED(hr)) { return; }
+	hr = D3DReadFileToBlob(desc.PSFile, pPS.GetAddressOf());
 	if (FAILED(hr)) { return; }
 	assert(pMS != nullptr);
 	assert(pPS != nullptr);
@@ -189,9 +192,10 @@ void PipelineState::CreateDefaultPipelineState(Description desc,
 {
 	// シェーダー
 	HRESULT hr;
-	ID3DBlob* pVS = nullptr, * pPS = nullptr;
-	hr = D3DReadFileToBlob(desc.VSFile, &pVS);
-	hr = D3DReadFileToBlob(desc.PSFile, &pPS);
+	ComPtr<ID3DBlob> pVS, pPS;
+	hr = D3DReadFileToBlob(desc.VSFile, pVS.GetAddressOf());
+	if (FAILED(hr)) { return; }
+	hr = D3DReadFileToBlob(desc.PSFile, pPS.GetAddressOf());
 	if (FAILED(hr)) { return; }
 	assert(pVS != nullptr);
 	assert(pPS != nullptr);

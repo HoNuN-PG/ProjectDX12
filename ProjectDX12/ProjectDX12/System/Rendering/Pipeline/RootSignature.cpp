@@ -73,15 +73,22 @@ void RootSignature::SetUp(std::vector<D3D12_ROOT_PARAMETER> param, UINT num, D3D
 	}
 
 	// バイナリコード生成
-	ID3DBlob* signatureBlob		= nullptr;
-	ID3DBlob* errorBlob			= nullptr;
+	ComPtr<ID3DBlob> signatureBlob;
+	ComPtr<ID3DBlob> errorBlob;
 	HRESULT hr = D3D12SerializeRootSignature(
 		&signatureDesc, 
 		D3D_ROOT_SIGNATURE_VERSION_1_0, 
-		&signatureBlob, 
-		&errorBlob
+		signatureBlob.GetAddressOf(), 
+		errorBlob.GetAddressOf()
 	);
-	if (FAILED(hr)) { return; }
+	if (FAILED(hr))
+	{
+		if (errorBlob)
+		{
+			OutputDebugStringA(static_cast<const char*>(errorBlob->GetBufferPointer()));
+		}
+		return;
+	}
 
 	// ルートシグネチャ生成
 	hr = GetDevice()->CreateRootSignature(
