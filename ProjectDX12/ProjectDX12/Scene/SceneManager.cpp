@@ -26,8 +26,10 @@ HRESULT SceneManager::Init()
 	{
 		switch (CurrentScene) 
 		{
+		case SANDBOXDX12:
+			Scenes[CurrentScene] = std::make_unique<SceneSandBoxDX12>();
+			break;
 		default:break;
-		case SANDBOXDX12:Scenes[CurrentScene] = std::make_unique<SceneSandBoxDX12>();	break;
 		}	
 	}
 	return Scenes[CurrentScene]->InitBase();
@@ -38,7 +40,7 @@ void SceneManager::Uninit()
 	if (Scenes[CurrentScene])
 	{
 		Scenes[CurrentScene]->UninitBase();
-		Scenes[CurrentScene].release();
+		Scenes[CurrentScene].reset(nullptr);
 	}
 }
 
@@ -49,6 +51,7 @@ void SceneManager::Update()
 		CurrentScene = min(CurrentScene + 1, MAX_SCENES - 1);
 	if (Input::GetKeyTrigger(VK_LEFT))
 		CurrentScene = max(0, CurrentScene - 1);
+
 	if (CurrentScene != preScene) 
 	{
 		int newScene = CurrentScene;
@@ -58,7 +61,8 @@ void SceneManager::Update()
 		Init();
 	}
 
-	if(Scenes[CurrentScene]) Scenes[CurrentScene]->UpdateBase();
+	if(Scenes[CurrentScene]) 
+		Scenes[CurrentScene]->UpdateBase();
 }
 
 void SceneManager::Draw()

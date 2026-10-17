@@ -30,8 +30,14 @@ void SceneBase::UninitBase()
 		}
 		objectList.clear();
 	}
+
 	Uninit();
-	pEngine->Uninit();
+
+	if (pEngine)
+	{
+		pEngine->Uninit();
+		pEngine.reset();
+	}
 }
 
 void SceneBase::UpdateBase()
