@@ -177,6 +177,32 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 
 void UninitDirectX()
 {
+	g_pFence.Reset();
+	for (auto& backBuffer : g_pBackBuf)
+	{
+		backBuffer.Reset();
+	}
+	g_BBufferHeap.Reset();
+	g_pSwapChain.Reset();
+	g_pCmdQueue.Reset();
+	g_pCmdList.Reset();
+	for (auto& allocator : g_pCmdAllocator)
+	{
+		allocator.Reset();
+	}
+	g_pDevice.Reset();
+	g_pFactory.Reset();
+
+	Microsoft::WRL::ComPtr<IDXGIDebug1> dxgiDebug;
+
+	if (SUCCEEDED(DXGIGetDebugInterface1(
+		0,
+		IID_PPV_ARGS(&dxgiDebug))))
+	{
+		dxgiDebug->ReportLiveObjects(
+			DXGI_DEBUG_ALL,
+			DXGI_DEBUG_RLO_DETAIL);
+	}
 }
 
 void BeginRendering()
@@ -275,7 +301,7 @@ void SetViewPort(float width, float height)
 	ID3D12GraphicsCommandList* pCmdList = GetCommandList();
 	// •\Ž¦—Ìˆæ‚ÌÝ’è
 	D3D12_VIEWPORT vp = { 0, 0, width, height, 0.0f, 1.0f };
-	D3D12_RECT scissor = { 0, 0, width, height };
+	D3D12_RECT scissor = { 0, 0, (LONG)width, (LONG)height };
 	pCmdList->RSSetViewports(1, &vp);
 	pCmdList->RSSetScissorRects(1, &scissor);
 }
