@@ -71,7 +71,10 @@ void GameObject::RenderingBase()
 	Rendering();
 	for (std::weak_ptr<RenderingComponent> comp : RenderingComponents)
 	{
-		comp.lock()->Rendering();
+		// 描画コンポーネントは自身のComponentsが保持しているため常に有効
+		std::shared_ptr<RenderingComponent> c = comp.lock();
+		assert(c);
+		c->Rendering();
 	}
 }
 

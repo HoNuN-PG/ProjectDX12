@@ -51,6 +51,7 @@ private:
 	ComPtr<ID3D12DescriptorHeap>		Heap;			// ヒープ
 	D3D12_DESCRIPTOR_HEAP_TYPE			Type;			// ディスクリプタヒープの種類
 	UINT								AllocCout;		// 確保したディスクリプタ数
+	UINT								MaxCount;		// ディスクリプタの最大数
 	bool								bVisibleShader;	// シェーダーから参照するか
 
 };

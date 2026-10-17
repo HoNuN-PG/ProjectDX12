@@ -191,9 +191,9 @@ HRESULT SceneSandBoxDX12::Init()
 		obj->SetPosition({ 0,0,0 });
 		obj->SetRotation({ 0,0,0 });
 		obj->SetScale({ 100,100,100 });
-		std::shared_ptr<FollowActorComponent> cmp = obj->AddComponent<FollowActorComponent>(obj);
+		std::shared_ptr<FollowActorComponent> cmp = obj->AddComponent<FollowActorComponent>();
 		cmp->SetFollowActor(GetRenderingEngine()->GetCamera());
-		std::shared_ptr<Sphere> model = obj->AddComponent<Sphere>(obj);
+		std::shared_ptr<Sphere> model = obj->AddComponent<Sphere>();
 		model->Create(materials);
 	}
 	{
@@ -207,7 +207,7 @@ HRESULT SceneSandBoxDX12::Init()
 		obj->SetPosition({ 0,0,0 });
 		obj->SetRotation({ DirectX::XMConvertToRadians(90),0,0 });
 		obj->SetScale({100,100,1});
-		std::shared_ptr<Plane> model = obj->AddComponent<Plane>(obj);
+		std::shared_ptr<Plane> model = obj->AddComponent<Plane>();
 		model->Create(materials);
 	}
 	{
@@ -225,7 +225,7 @@ HRESULT SceneSandBoxDX12::Init()
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,-2.5f,0 });
 		obj->SetScale({2.5f,2.5f,2.5f});
-		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
+		std::shared_ptr<Model> model = obj->AddComponent<Model>();
 		model->Create("../game/assets/model/tree/height_tree.fbx", materials);
 	}
 	{
@@ -237,7 +237,7 @@ HRESULT SceneSandBoxDX12::Init()
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,10 });
-		std::shared_ptr<Model> model = obj->AddComponent<Model>(obj);
+		std::shared_ptr<Model> model = obj->AddComponent<Model>();
 		model->Create("../game/assets/model/spot/spot.fbx", materials);
 	}
 #if 1
@@ -249,7 +249,7 @@ HRESULT SceneSandBoxDX12::Init()
 
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,-10 });
-		std::shared_ptr<MeshletModel> model = obj->AddComponent<MeshletModel>(obj);
+		std::shared_ptr<MeshletModel> model = obj->AddComponent<MeshletModel>();
 		model->Create("../game/assets/model/castles/staue/Staue01a.fbx", materials, pHeap.get());
 	}
 	{
@@ -260,7 +260,7 @@ HRESULT SceneSandBoxDX12::Init()
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,-20 });
-		std::shared_ptr<MeshletModel> model = obj->AddComponent<MeshletModel>(obj);
+		std::shared_ptr<MeshletModel> model = obj->AddComponent<MeshletModel>();
 		model->Create("../game/assets/model/castles/staue/Staue01a.fbx", materials, pHeap.get());
 	}
 #endif

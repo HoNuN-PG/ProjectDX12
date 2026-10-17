@@ -9,6 +9,7 @@
 DescriptorHeap::DescriptorHeap(Description desc)
 	:
 	AllocCout(0),
+	MaxCount(desc.num),
 	Type(),
 	bVisibleShader(false)
 {
@@ -41,7 +42,11 @@ DescriptorHeap::~DescriptorHeap()
 
 DescriptorHeap::Handle DescriptorHeap::Allocate()
 {
-	Handle handle;
+	Handle handle = {};
+
+	// ヒープの容量を超えた確保は不正（ヒープサイズを見直すこと）
+	assert(AllocCout < MaxCount);
+	if (AllocCout >= MaxCount) { return handle; }
 
 	// 目的のデスクリプタにアクセス
 	UINT increment = GetDevice()->GetDescriptorHandleIncrementSize(Type);	

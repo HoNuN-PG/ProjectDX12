@@ -183,7 +183,7 @@ public:
 
 public:
 	
-	std::weak_ptr<class RenderingEngine> GetRenderingEngine();
+	std::shared_ptr<class RenderingEngine> GetRenderingEngine();
 
 };
 

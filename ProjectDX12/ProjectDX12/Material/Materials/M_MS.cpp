@@ -32,7 +32,7 @@ void M_MS::Initialize(Description desc)
 		PipelineState::IED_POS_TEX_COUNT,
 		desc.CullMode,
 		1,
-		GetRenderingEngine().lock()->GetPassFormat(Timing, PassType),
+		GetRenderingEngine()->GetPassFormat(Timing, PassType),
 		desc.WriteDepth,
 	};
 
@@ -105,7 +105,7 @@ void M_MSCulling::Initialize(Description desc)
 	CalcMeshShaderStartSlotSRV(param, _countof(param));
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"../game/assets/shader/AS_CullingObject.cso",
 		L"../game/assets/shader/MS_CullingObject.cso",

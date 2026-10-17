@@ -97,17 +97,22 @@ void Model::Draw()
 
 void Model::Rendering()
 {
-	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
-	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingTiming();
+	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	assert(engine);
+	Material::RenderingTiming current = engine->GetCurrentRenderingTiming();
 	std::vector<MaterialRegistry::MeshMaterialInfo> infos = pMaterialRegistry->GetRenderingMaterial(current); // 現在の描画タイミングで描画するマテリアルを取得
+
+	// コンポーネントは所有元のGameObjectが保持しているため、Ownerは常に有効
+	std::shared_ptr<GameObject> owner = Owner.lock();
+	assert(owner);
 
 	for(auto&& info : infos)
 	{
 		// マテリアル設定
 		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(
-			Owner.lock()->GetPosition(),
-			Owner.lock()->GetRotation(),
-			Owner.lock()->GetScale()),
+			owner->GetPosition(),
+			owner->GetRotation(),
+			owner->GetScale()),
 			info.materialInstanceIdx
 		);
 		info.material->Bind(info.materialInstanceIdx);
@@ -209,17 +214,22 @@ void MeshletModel::Draw()
 
 void MeshletModel::Rendering()
 {
-	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
-	Material::RenderingTiming current = engine.lock()->GetCurrentRenderingTiming();
+	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	assert(engine);
+	Material::RenderingTiming current = engine->GetCurrentRenderingTiming();
 	std::vector<MaterialRegistry::MeshMaterialInfo> infos = pMaterialRegistry->GetRenderingMaterial(current); // 現在の描画タイミングで描画するマテリアルを取得
+
+	// コンポーネントは所有元のGameObjectが保持しているため、Ownerは常に有効
+	std::shared_ptr<GameObject> owner = Owner.lock();
+	assert(owner);
 
 	for (auto&& info : infos)
 	{
 		// マテリアル設定
 		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(
-			Owner.lock()->GetPosition(),
-			Owner.lock()->GetRotation(),
-			Owner.lock()->GetScale()),
+			owner->GetPosition(),
+			owner->GetRotation(),
+			owner->GetScale()),
 			info.materialInstanceIdx
 		);
 		info.material->WriteMeshletCount(pMesh[info.meshIdx]->GetMeshletCount());

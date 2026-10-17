@@ -15,7 +15,7 @@ void M_SkyBox::Initialize(Description desc)
 		_countof(param)
 	};
 
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",

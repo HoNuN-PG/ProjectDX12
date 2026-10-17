@@ -80,6 +80,7 @@ UINT Material::AddMaterialInstance()
 		{
 			MaterialInstanceList[i] = true;
 			idx = i;
+			break;
 		}
 	}
 	if(idx == (UINT)-1)
@@ -137,7 +138,9 @@ void Material::WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDL
 	);
 }
 
-std::weak_ptr<RenderingEngine> Material::GetRenderingEngine()
+std::shared_ptr<RenderingEngine> Material::GetRenderingEngine()
 {
-	return SceneManager::GetCurrentScene()->GetRenderingEngine();
+	std::shared_ptr<RenderingEngine> engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
+	assert(engine);
+	return engine;
 }

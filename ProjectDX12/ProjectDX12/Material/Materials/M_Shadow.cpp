@@ -38,7 +38,7 @@ void M_SimpleShadowMaps::Initialize(Description desc)
 	};
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",
@@ -62,19 +62,20 @@ void M_SimpleShadowMaps::Initialize(Description desc)
 
 void M_SimpleShadowMaps::Bind(UINT materialinstance)
 {
-	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	assert(engine);
 
 	// 定数バッファの設定
 	WriteParams(
 		(UINT)1, 
 		0,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Light).hCPU, 
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Light).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 	WriteParams(
 		(UINT)1, 
 		1 + CurrentShadowMapsNo,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + CurrentShadowMapsNo).hCPU, 
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + CurrentShadowMapsNo).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 
@@ -120,7 +121,7 @@ void M_OpaqueSimpleShadowMaps::Initialize(Description desc)
 	};
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",
@@ -146,19 +147,20 @@ void M_OpaqueSimpleShadowMaps::Initialize(Description desc)
 
 void M_OpaqueSimpleShadowMaps::Bind(UINT materialinstance)
 {
-	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	assert(engine);
 
 	// 定数バッファの設定
 	WriteParams(
 		(UINT)1, 
 		0,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Light).hCPU, 
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Light).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 	WriteParams(
 		(UINT)1, 
 		1 + CurrentShadowMapsNo,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + CurrentShadowMapsNo).hCPU, 
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + CurrentShadowMapsNo).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 	Params[1 + SHADOW_MAP_COUNT]->Write(&common);
@@ -176,8 +178,10 @@ void M_OpaqueSimpleShadowMaps::Bind(UINT materialinstance)
 
 void M_ShadowRecieverBase::Initialize(Description desc)
 {
-	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
-	std::weak_ptr<ShadowPass> pass = engine.lock()->GetShadowMapsPass();
+	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	assert(engine);
+	std::shared_ptr<ShadowPass> pass = engine->GetShadowMapsPass();
+	assert(pass);
 
 	// 定数バッファ
 	{
@@ -193,13 +197,13 @@ void M_ShadowRecieverBase::Initialize(Description desc)
 	// RTV
 	{
 		RenderTarget::Description rtv = {};
-		rtv.format = pass.lock()->GetPassFormat()[0];
+		rtv.format = pass->GetPassFormat()[0];
 		rtv.pRTVHeap = pRTVHeap.get();
 		rtv.pSRVHeap = desc.pHeap;
 		for (int i = 0; i <= ShadowPass::TextureType::Far; ++i)
 		{
-			rtv.width = pass.lock()->ShadowMapsSize[i].x;
-			rtv.height = pass.lock()->ShadowMapsSize[i].y;
+			rtv.width = pass->ShadowMapsSize[i].x;
+			rtv.height = pass->ShadowMapsSize[i].y;
 			ShadowMaps.push_back(std::make_shared<RenderTarget>(rtv));
 		}
 	}
@@ -207,32 +211,35 @@ void M_ShadowRecieverBase::Initialize(Description desc)
 
 void M_ShadowRecieverBase::Bind(UINT materialinstance)
 {
-	std::weak_ptr<RenderingEngine> engine = GetRenderingEngine();
+	std::shared_ptr<RenderingEngine> engine = GetRenderingEngine();
+	assert(engine);
 
 	// 定数バッファの設定
 	WriteParams(
 		(UINT)2, 
 		0,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, 
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 	WriteParams(
 		(UINT)1, 
 		2,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever).hCPU, 
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 
 	// テクスチャコピー
-	engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Near].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Near);
-	engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Middle].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Middle);
-	engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Far].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Far);
+	engine->CopyPassTextureSRV(ShadowMaps[ShadowPass::Near].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Near);
+	engine->CopyPassTextureSRV(ShadowMaps[ShadowPass::Middle].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Middle);
+	engine->CopyPassTextureSRV(ShadowMaps[ShadowPass::Far].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Far);
 }
 
 void M_ShadowVSMRecieverBase::Initialize(Description desc)
 {
-	std::weak_ptr<RenderingEngine> engine = GetRenderingEngine();
-	std::weak_ptr<ShadowPass> pass = engine.lock()->GetShadowMapsPass();
+	std::shared_ptr<RenderingEngine> engine = GetRenderingEngine();
+	assert(engine);
+	std::shared_ptr<ShadowPass> pass = engine->GetShadowMapsPass();
+	assert(pass);
 
 	// 定数バッファ
 	{
@@ -248,13 +255,13 @@ void M_ShadowVSMRecieverBase::Initialize(Description desc)
 	// RTV
 	{
 		RenderTarget::Description rtv = {};
-		rtv.format = pass.lock()->GetPassFormat()[0];
+		rtv.format = pass->GetPassFormat()[0];
 		rtv.pRTVHeap = pRTVHeap.get();
 		rtv.pSRVHeap = desc.pHeap;
 		for (int i = 0; i <= ShadowPass::TextureType::Far; ++i)
 		{
-			rtv.width = pass.lock()->VSMShadowMapsSize[i].x / 2;
-			rtv.height = pass.lock()->VSMShadowMapsSize[i].y / 2;
+			rtv.width = pass->VSMShadowMapsSize[i].x / 2;
+			rtv.height = pass->VSMShadowMapsSize[i].y / 2;
 			ShadowMaps.push_back(std::make_shared<RenderTarget>(rtv));
 		}
 	}
@@ -262,24 +269,25 @@ void M_ShadowVSMRecieverBase::Initialize(Description desc)
 
 void M_ShadowVSMRecieverBase::Bind(UINT materialinstance)
 {
-	std::weak_ptr<RenderingEngine> engine = GetRenderingEngine();
+	std::shared_ptr<RenderingEngine> engine = GetRenderingEngine();
+	assert(engine);
 
 	// 定数バッファの設定
 	WriteParams(
 		(UINT)2, 
 		0,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, 
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 	WriteParams(
 		(UINT)1, 
 		2,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever).hCPU, 
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 
 	// テクスチャコピー
-	engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Near].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::NearVSM);
-	engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Middle].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::MiddleVSM);
-	engine.lock()->CopyPassTextureSRV(ShadowMaps[ShadowPass::Far].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::FarVSM);
+	engine->CopyPassTextureSRV(ShadowMaps[ShadowPass::Near].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::NearVSM);
+	engine->CopyPassTextureSRV(ShadowMaps[ShadowPass::Middle].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::MiddleVSM);
+	engine->CopyPassTextureSRV(ShadowMaps[ShadowPass::Far].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::FarVSM);
 }

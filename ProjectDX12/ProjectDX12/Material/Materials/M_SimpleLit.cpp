@@ -28,7 +28,7 @@ void M_SimpleLit::Initialize(Description desc)
 		_countof(param)
 	};
 
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",
@@ -52,13 +52,14 @@ void M_SimpleLit::Initialize(Description desc)
 
 void M_SimpleLit::Bind(UINT materialinstance)
 {
-	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	assert(engine);
 
 	// 定数バッファの設定
 	WriteParams(
 		(UINT)2, 
 		0,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, 
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 
@@ -99,7 +100,7 @@ void M_OpaqueSimpleLit::Initialize(Description desc)
 		_countof(param)
 	};
 
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",
@@ -125,13 +126,14 @@ void M_OpaqueSimpleLit::Initialize(Description desc)
 
 void M_OpaqueSimpleLit::Bind(UINT materialinstance)
 {
-	std::weak_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	assert(engine);
 
 	// 定数バッファの設定
 	WriteParams(
 		(UINT)2, 
 		0,
-		engine.lock()->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, 
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 	Params[2]->Write(&common);

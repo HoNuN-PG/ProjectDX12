@@ -298,6 +298,10 @@ void Gauss::ExecuteScreenGauss8D4(UINT32 gaussIdx, DirectX::XMFLOAT2 screen, std
 
 void Gauss::CalcWeights(std::weak_ptr<float[]> weights, int num, float blur)
 {
+	// 重み配列は呼び出し元のGaussが保持しているため常に有効
+	std::shared_ptr<float[]> w = weights.lock();
+	assert(w);
+
 	// 重みの合計
 	float total = 0;
 
@@ -305,14 +309,14 @@ void Gauss::CalcWeights(std::weak_ptr<float[]> weights, int num, float blur)
 	// ループ変数のxが基準テクセルからの距離
 	for (int x = 0; x < num; x++)
 	{
-		weights.lock()[x] = expf((float)(-x * x) / (2 * blur * blur));
-		total += 2.0f * weights.lock()[x];
+		w[x] = expf((float)(-x * x) / (2 * blur * blur));
+		total += 2.0f * w[x];
 	}
 
 	// 重みの合計で除算することで、重みの合計を1にしている
 	for (int i = 0; i < num; i++)
 	{
-		weights.lock()[i] /= total;
+		w[i] /= total;
 	}
 }
 

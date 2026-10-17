@@ -17,7 +17,7 @@ void M_Deffered_Albedo::Initialize(Description desc)
 	};
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine().lock()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",

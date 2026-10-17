@@ -437,11 +437,15 @@ void RenderingEngine::AddRenderObject(
 
 void RenderingEngine::RegisterRenderingComponentRef(std::shared_ptr<RenderingComponent> component)
 {
+	// ŠúŒÀØ‚ê‚ÌQÆ‚ğíœ‚µ‚Ä‚©‚ç“o˜^
+	RenderingComponents.remove_if([](const std::weak_ptr<RenderingComponent>& ref) { return ref.expired(); });
 	RenderingComponents.push_back(component);
 }
 
 void RenderingEngine::RegisterMaterialRef(std::shared_ptr<Material> material)
 {
+	// ŠúŒÀØ‚ê‚ÌQÆ‚ğíœ‚µ‚Ä‚©‚ç“o˜^
+	RenderingMaterials.remove_if([](const std::weak_ptr<Material>& ref) { return ref.expired(); });
 	RenderingMaterials.push_back(material);
 }
 

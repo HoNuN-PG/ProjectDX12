@@ -308,7 +308,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE GetBBuffer()
 	UINT bbIdx = g_pSwapChain->GetCurrentBackBufferIndex();
 	D3D12_CPU_DESCRIPTOR_HANDLE hRTV;
 	hRTV = g_BBufferHeap->GetCPUDescriptorHandleForHeapStart();
-	hRTV.ptr += bbIdx * g_pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hRTV.ptr += bbIdx * g_pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	return hRTV;
 }
 

@@ -35,6 +35,10 @@ void MaterialRegistry::Register2RenderingEngine(std::weak_ptr<class GameObject> 
 	// “o˜^Ï‚İ•`‰æƒ^ƒCƒ~ƒ“ƒO
 	std::vector<Material::RenderingTiming> timing;
 
+	// •`‰æ‚ğ“o˜^‚·‚é‚Ì‚ÍŠ—LŒ³‚ÌGameObject©g‚È‚Ì‚Åí‚É—LŒø
+	std::shared_ptr<GameObject> object = owner.lock();
+	assert(object);
+
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
 		std::vector<Material::MaterialInstanceData> instances = item->second;
@@ -47,7 +51,7 @@ void MaterialRegistry::Register2RenderingEngine(std::weak_ptr<class GameObject> 
 			}
 			// “o˜^
 			timing.push_back(instances[i].first->GetRenderTiming());
-			owner.lock()->Add2RenderingEngine(timing.back(), instances[i].first->GetPassType());
+			object->Add2RenderingEngine(timing.back(), instances[i].first->GetPassType());
 		}
 	}
 }

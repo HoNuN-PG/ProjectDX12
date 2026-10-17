@@ -9,7 +9,7 @@
 
 #include "System/Component/Component.h"
 
-class GameObject
+class GameObject : public std::enable_shared_from_this<GameObject>
 {
 public:
 
@@ -85,11 +85,11 @@ public:
 
 	// コンポーネントの追加・取得
 	template <typename T>
-	std::shared_ptr<T> AddComponent(std::shared_ptr<GameObject> own)
+	std::shared_ptr<T> AddComponent()
 	{
-		std::shared_ptr<T> component = std::make_shared<T>(own);
-		own->Components.push_back(component);
-		own->Components.back()->Init();
+		std::shared_ptr<T> component = std::make_shared<T>(shared_from_this());
+		this->Components.push_back(component);
+		this->Components.back()->Init();
 
 		// 描画コンポーネントの追加/登録
 		if (std::shared_ptr<class RenderingComponent> c = std::dynamic_pointer_cast<RenderingComponent>(component))
