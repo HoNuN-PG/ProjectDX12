@@ -6,7 +6,7 @@
 #include "System/Rendering/ConstantBuffer/ConstantWVP.h"
 #include "System/DirectX.h"
 
-void * CalcConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
+ConstantWVP CalcConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
 {
 	ConstantWVP wvp;
 
@@ -45,10 +45,10 @@ void * CalcConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Ro
 
 	DirectX::XMStoreFloat4x4(&(wvp.proj), proj);
 
-	return &wvp;
+	return wvp;
 }
 
-void * CalcConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
+ConstantWVP CalcConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
 {
 	ConstantWVP wvp;
 
@@ -78,7 +78,7 @@ void * CalcConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Ro
 
 	DirectX::XMStoreFloat4x4(&(wvp.proj), proj);
 
-	return &wvp;
+	return wvp;
 }
 
 DirectX::XMFLOAT4X4 CalcConstantWVP::CalcInversVPMatrix()

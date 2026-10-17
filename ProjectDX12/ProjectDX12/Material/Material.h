@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "System/Rendering/ConstantBuffer/ConstantBuffer.h"
+#include "System/Rendering/ConstantBuffer/ConstantWVP.h"
 #include "System/Rendering/Pass/RenderingPass.h"
 #include "System/Rendering/Pipeline/DescriptorHeap.h"
 #include "System/Rendering/Pipeline/PipelineState.h"
@@ -142,7 +143,7 @@ public:
 	/// マテリアルインスタンスに書き込まれる
 	/// </summary>
 	/// <param name="data"></param>
-	void WriteWVP(void* data, UINT instance);
+	void WriteWVP(const ConstantWVP& data, UINT instance);
 	void WriteParam(void* data, UINT idx);
 	void WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDLE startHandle, D3D12_DESCRIPTOR_HEAP_TYPE type);
 

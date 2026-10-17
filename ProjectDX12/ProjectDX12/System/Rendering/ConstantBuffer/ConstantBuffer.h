@@ -20,7 +20,7 @@ public:
 
 public:
 
-	void Write(const void* data) { memcpy_s(ptr, Size, data, Size); }
+	void Write(const void* data) { if (ptr) { memcpy_s(ptr, Size, data, Size); } }
 
 public:
 

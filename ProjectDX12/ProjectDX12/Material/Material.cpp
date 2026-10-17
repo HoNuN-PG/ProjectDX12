@@ -93,7 +93,7 @@ UINT Material::AddMaterialInstance()
 		// WVPŠm•Û
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = pHeap;
-		desc.size = sizeof(DirectX::XMFLOAT4X4) * 3;
+		desc.size = sizeof(ConstantWVP);
 		WVP.push_back(std::make_unique<ConstantBuffer>(desc));
 	}
 
@@ -116,10 +116,10 @@ void Material::AddTexture(const char* path)
 	Textures.push_back(std::make_unique<Texture>(desc));
 }
 
-void Material::WriteWVP(void* data, UINT instance)
+void Material::WriteWVP(const ConstantWVP& data, UINT instance)
 {
 	// WVP‘‚«ž‚Ý
-	WVP[instance]->Write(data);
+	WVP[instance]->Write(&data);
 }
 
 void Material::WriteParam(void* data, UINT idx)

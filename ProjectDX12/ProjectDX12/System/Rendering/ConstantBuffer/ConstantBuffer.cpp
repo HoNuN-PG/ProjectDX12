@@ -52,13 +52,18 @@ ConstantBuffer::ConstantBuffer(Description desc)
 	pDevice->CreateConstantBufferView(&CBV, Handle.hCPU);
 
 	// データ初期化
+	// アップロードヒープは永続マップで使用する（Unmapはデストラクタで行う）
 	hr = pResource->Map(0, nullptr, &ptr);
 	if (FAILED(hr)) { return; }
 	ZeroMemory(ptr, desc.size);
 	Size = desc.size;
-	pResource->Unmap(0, nullptr);
 }
 
 ConstantBuffer::~ConstantBuffer()
 {
+	if (pResource && ptr)
+	{
+		pResource->Unmap(0, nullptr);
+		ptr = nullptr;
+	}
 }
