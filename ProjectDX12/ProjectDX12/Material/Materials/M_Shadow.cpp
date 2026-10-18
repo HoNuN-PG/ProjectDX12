@@ -62,7 +62,7 @@ void M_SimpleShadowMaps::Initialize(Description desc)
 
 void M_SimpleShadowMaps::Bind(UINT materialinstance)
 {
-	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 
 	// 定数バッファの設定
@@ -147,7 +147,7 @@ void M_OpaqueSimpleShadowMaps::Initialize(Description desc)
 
 void M_OpaqueSimpleShadowMaps::Bind(UINT materialinstance)
 {
-	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 
 	// 定数バッファの設定
@@ -178,9 +178,9 @@ void M_OpaqueSimpleShadowMaps::Bind(UINT materialinstance)
 
 void M_ShadowRecieverBase::Initialize(Description desc)
 {
-	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
-	std::shared_ptr<ShadowPass> pass = engine->GetShadowMapsPass();
+	ShadowPass* pass = engine->GetShadowMapsPass();
 	assert(pass);
 
 	// 定数バッファ
@@ -211,7 +211,7 @@ void M_ShadowRecieverBase::Initialize(Description desc)
 
 void M_ShadowRecieverBase::Bind(UINT materialinstance)
 {
-	std::shared_ptr<RenderingEngine> engine = GetRenderingEngine();
+	RenderingEngine* engine = GetRenderingEngine();
 	assert(engine);
 
 	// 定数バッファの設定
@@ -236,9 +236,9 @@ void M_ShadowRecieverBase::Bind(UINT materialinstance)
 
 void M_ShadowVSMRecieverBase::Initialize(Description desc)
 {
-	std::shared_ptr<RenderingEngine> engine = GetRenderingEngine();
+	RenderingEngine* engine = GetRenderingEngine();
 	assert(engine);
-	std::shared_ptr<ShadowPass> pass = engine->GetShadowMapsPass();
+	ShadowPass* pass = engine->GetShadowMapsPass();
 	assert(pass);
 
 	// 定数バッファ
@@ -269,7 +269,7 @@ void M_ShadowVSMRecieverBase::Initialize(Description desc)
 
 void M_ShadowVSMRecieverBase::Bind(UINT materialinstance)
 {
-	std::shared_ptr<RenderingEngine> engine = GetRenderingEngine();
+	RenderingEngine* engine = GetRenderingEngine();
 	assert(engine);
 
 	// 定数バッファの設定

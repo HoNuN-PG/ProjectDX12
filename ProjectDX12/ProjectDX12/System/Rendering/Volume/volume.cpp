@@ -41,14 +41,14 @@ void Volume::Init(UINT heapNum, UINT rtvNum)
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = heapNum + 1;
-		pHeap = std::make_shared<DescriptorHeap>(desc);
+		pHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// ボリュームディスクリプターヒープ(レンダーターゲット)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		desc.num = rtvNum + 1;
-		pRTVHeap = std::make_shared<DescriptorHeap>(desc);
+		pRTVHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// PostProcessRTV
 	{

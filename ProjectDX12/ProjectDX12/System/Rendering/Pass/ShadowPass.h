@@ -99,7 +99,7 @@ private:
 
 private:
 
-	std::shared_ptr<CameraBase> pCamera;
+	std::weak_ptr<CameraBase> pCamera;
 
 private:
 

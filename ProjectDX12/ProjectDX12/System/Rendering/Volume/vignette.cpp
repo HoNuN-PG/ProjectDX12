@@ -82,7 +82,7 @@ void Vignette::Draw()
 	memcpy(&VignetteParam.color,color,sizeof(DirectX::XMFLOAT4));
 	ImGui::End();
 
-	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 
 	// バッファに書き込み

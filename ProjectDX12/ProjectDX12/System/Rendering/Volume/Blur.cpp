@@ -39,7 +39,7 @@ void Gauss::Create()
 				BlurParam::GAUSS_MAX * GaussRTVType::RTV_MAX +			// RTV数分確保
 				BlurParam::GAUSS_MAX * GaussScreenType::Screen_MAX +	// スクリーン定数バッファ分確保
 				BlurParam::GAUSS_WEIGHTS_TYPE;							// 重み定数バッファ分確保
-			Instance->pHeap = std::make_shared<DescriptorHeap>(desc);
+			Instance->pHeap = std::make_unique<DescriptorHeap>(desc);
 		}
 		// ボリュームディスクリプターヒープ(レンダーターゲット)
 		{
@@ -47,7 +47,7 @@ void Gauss::Create()
 			desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 			desc.num = 
 				BlurParam::GAUSS_MAX * GaussRTVType::RTV_MAX;			// RTV数分確保
-			Instance->pRTVHeap = std::make_shared<DescriptorHeap>(desc);
+			Instance->pRTVHeap = std::make_unique<DescriptorHeap>(desc);
 		}
 
 		// Gauss2-----------------------------------------------------------------------

@@ -68,6 +68,6 @@ void SceneManager::Draw()
 
 std::shared_ptr<CameraBase> SceneManager::GetCamera()
 {
-	RenderingEngine* engine = GetRenderingEngine().get();
+	RenderingEngine* engine = GetRenderingEngine();
 	return engine->GetCamera();
 }

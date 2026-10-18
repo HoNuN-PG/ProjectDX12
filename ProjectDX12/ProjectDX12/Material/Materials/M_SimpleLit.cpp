@@ -52,7 +52,7 @@ void M_SimpleLit::Initialize(Description desc)
 
 void M_SimpleLit::Bind(UINT materialinstance)
 {
-	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 
 	// 定数バッファの設定
@@ -126,7 +126,7 @@ void M_OpaqueSimpleLit::Initialize(Description desc)
 
 void M_OpaqueSimpleLit::Bind(UINT materialinstance)
 {
-	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 
 	// 定数バッファの設定

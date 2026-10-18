@@ -97,7 +97,7 @@ void Model::Draw()
 
 void Model::Rendering()
 {
-	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 	Material::RenderingTiming current = engine->GetCurrentRenderingTiming();
 	std::vector<MaterialRegistry::MeshMaterialInfo> infos = pMaterialRegistry->GetRenderingMaterial(current); // 現在の描画タイミングで描画するマテリアルを取得
@@ -210,7 +210,7 @@ void MeshletModel::Draw()
 
 void MeshletModel::Rendering()
 {
-	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 	Material::RenderingTiming current = engine->GetCurrentRenderingTiming();
 	std::vector<MaterialRegistry::MeshMaterialInfo> infos = pMaterialRegistry->GetRenderingMaterial(current); // 現在の描画タイミングで描画するマテリアルを取得

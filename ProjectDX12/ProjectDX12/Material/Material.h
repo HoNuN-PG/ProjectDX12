@@ -169,7 +169,7 @@ protected:
 protected:
 
 	DescriptorHeap*	pHeap;
-	std::shared_ptr<DescriptorHeap>	pRTVHeap;
+	std::unique_ptr<DescriptorHeap>	pRTVHeap;
 	std::unique_ptr<RootSignature> pRootSignatureData;
 	std::unique_ptr<PipelineState> pPipelineData;
 
@@ -183,7 +183,7 @@ public:
 
 public:
 	
-	std::shared_ptr<class RenderingEngine> GetRenderingEngine();
+	class RenderingEngine* GetRenderingEngine();
 
 };
 

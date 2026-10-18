@@ -12,7 +12,7 @@ void Primitive::Draw()
 
 void Primitive::Rendering()
 {
-	std::shared_ptr<RenderingEngine> engine = SceneManager::GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 	Material::RenderingTiming current = engine->GetCurrentRenderingTiming();
 	std::vector<MaterialRegistry::MeshMaterialInfo> infos = pMaterialRegistry->GetRenderingMaterial(current);

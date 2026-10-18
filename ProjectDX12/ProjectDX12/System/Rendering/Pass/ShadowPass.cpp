@@ -291,6 +291,9 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(
 	DirectX::XMFLOAT4X4 lvp
 )
 {
+	std::shared_ptr<CameraBase> camera = pCamera.lock();
+	assert(camera);
+	
 	// 手前の距離
 	float nearY = tanf(CameraBase::GetViewAngle() * 0.5f) * depth;
 	float nearX = nearY * CameraBase::GetAspect();
@@ -300,9 +303,9 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(
 	float farX = farY * CameraBase::GetAspect();
 
 	// 手前の面の中心位置
-	DirectX::XMFLOAT3 nearPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), depth));
+	DirectX::XMFLOAT3 nearPos = DXFL::Add(camera->GetPosition(), DXFL::Scale(camera->GetForward(), depth));
 	// 奥の面の中心位置
-	DirectX::XMFLOAT3 farPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), CascadeAreas[area]));
+	DirectX::XMFLOAT3 farPos = DXFL::Add(camera->GetPosition(), DXFL::Scale(camera->GetForward(), CascadeAreas[area]));
 
 	// ８頂点の計算
 	DirectX::XMFLOAT3 vertex[8];
@@ -311,7 +314,7 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcCrop(
 	DirectX::XMFLOAT3 nearUp = DXFL::Scale(up, nearY);
 	DirectX::XMFLOAT3 farUp = DXFL::Scale(up, farY);
 
-	DirectX::XMFLOAT3 right = pCamera->GetRight();
+	DirectX::XMFLOAT3 right = camera->GetRight();
 	DirectX::XMFLOAT3 nearRight = DXFL::Scale(right, nearX);
 	DirectX::XMFLOAT3 farRight = DXFL::Scale(right, farX);
 
@@ -366,6 +369,9 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(
 	DirectX::XMFLOAT4X4 lv
 )
 {
+	std::shared_ptr<CameraBase> camera = pCamera.lock();
+	assert(camera);	
+	
 	// 手前の距離
 	float nearY = tanf(CameraBase::GetViewAngle() * 0.5f) * depth;
 	float nearX = nearY * CameraBase::GetAspect();
@@ -375,9 +381,9 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(
 	float farX = farY * CameraBase::GetAspect();
 
 	// 手前の面の中心位置
-	DirectX::XMFLOAT3 nearPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), depth));
+	DirectX::XMFLOAT3 nearPos = DXFL::Add(camera->GetPosition(), DXFL::Scale(camera->GetForward(), depth));
 	// 奥の面の中心位置
-	DirectX::XMFLOAT3 farPos = DXFL::Add(pCamera->GetPosition(), DXFL::Scale(pCamera->GetForward(), CascadeAreas[area]));
+	DirectX::XMFLOAT3 farPos = DXFL::Add(camera->GetPosition(), DXFL::Scale(camera->GetForward(), CascadeAreas[area]));
 
 	// ８頂点の計算
 	DirectX::XMFLOAT3 vertex[8];
@@ -386,7 +392,7 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(
 	DirectX::XMFLOAT3 nearUp = DXFL::Scale(up, nearY);
 	DirectX::XMFLOAT3 farUp = DXFL::Scale(up, farY);
 
-	DirectX::XMFLOAT3 right = pCamera->GetRight();
+	DirectX::XMFLOAT3 right = camera->GetRight();
 	DirectX::XMFLOAT3 nearRight = DXFL::Scale(right, nearX);
 	DirectX::XMFLOAT3 farRight = DXFL::Scale(right, farX);
 
@@ -436,8 +442,8 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(
 	maxX = center.x + radius;
 	minY = center.y - radius;
 	maxY = center.y + radius;
-	minZ = DXFL::Magnitude(DXFL::Subtraction(nearPos, pCamera->GetPosition()));
-	maxZ = DXFL::Magnitude(DXFL::Subtraction(farPos, pCamera->GetPosition()));
+	minZ = DXFL::Magnitude(DXFL::Subtraction(nearPos, camera->GetPosition()));
+	maxZ = DXFL::Magnitude(DXFL::Subtraction(farPos, camera->GetPosition()));
 
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicOffCenterLH(
 		minX,

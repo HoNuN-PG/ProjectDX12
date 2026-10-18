@@ -14,9 +14,6 @@ void Material::Initialize(std::shared_ptr<Material> material, Description desc)
 	material->Timing = desc.Timing;
 	material->PassType = desc.PassType;
 	material->Initialize(desc);
-
-	// レンダリングエンジンにマテリアル本体の参照を登録
-	SceneManager::GetCurrentScene()->GetRenderingEngine()->RegisterMaterialRef(material);
 }
 
 void Material::SetUp(
@@ -43,7 +40,7 @@ void Material::SetUp(
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		desc.num = rtvNum;
-		pRTVHeap = std::make_shared<DescriptorHeap>(desc);
+		pRTVHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 }
 
@@ -138,9 +135,9 @@ void Material::WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDL
 	);
 }
 
-std::shared_ptr<RenderingEngine> Material::GetRenderingEngine()
+RenderingEngine* Material::GetRenderingEngine()
 {
-	std::shared_ptr<RenderingEngine> engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
 	assert(engine);
 	return engine;
 }

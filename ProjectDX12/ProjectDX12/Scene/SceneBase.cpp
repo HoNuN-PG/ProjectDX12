@@ -4,7 +4,7 @@
 
 HRESULT SceneBase::InitBase()
 {
-	pEngine = std::make_shared<RenderingEngine>();
+	pEngine = std::make_unique<RenderingEngine>();
 	pEngine->Init();
 
 	// ディスクリプタヒープ
@@ -12,7 +12,7 @@ HRESULT SceneBase::InitBase()
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = SCENE_HEAP_SIZE;
-		pHeap = std::make_shared<DescriptorHeap>(desc);
+		pHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 
 	return Init();
@@ -80,7 +80,7 @@ void SceneBase::DrawBase()
 	pEngine->Draw();
 }
 
-std::shared_ptr<RenderingEngine> SceneBase::GetRenderingEngine()
+RenderingEngine* SceneBase::GetRenderingEngine()
 {
-	return pEngine;
+	return pEngine.get();
 }

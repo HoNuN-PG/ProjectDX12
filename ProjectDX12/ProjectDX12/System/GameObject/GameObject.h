@@ -92,10 +92,9 @@ public:
 		this->Components.back()->Init();
 
 		// 描画コンポーネントの追加/登録
-		if (std::shared_ptr<class RenderingComponent> c = std::dynamic_pointer_cast<RenderingComponent>(component))
+		if (RenderingComponent* c = dynamic_cast<RenderingComponent*>(component.get()))
 		{
-			RenderingComponents.push_back(c.get());
-			RegisterComponent2RenderingEngine(c);
+			RenderingComponents.push_back(c);
 		}
 
 		return component;
@@ -132,11 +131,6 @@ public:
 
 	// レンダリングエンジンにオブジェクトを描画登録
 	void Add2RenderingEngine(UINT timing, UINT passType);
-
-private:
-
-	// レンダリングコンポーネントの参照をレンダリングエンジンに登録
-	void RegisterComponent2RenderingEngine(std::shared_ptr<class RenderingComponent> comp);
 
 private:
 

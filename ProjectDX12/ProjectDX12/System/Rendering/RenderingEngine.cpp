@@ -18,6 +18,10 @@
 #include "System/DirectX.h"
 #include "System/Input.h"
 
+// ShadowPassの完全な型が必要なためcpp側で定義する
+RenderingEngine::RenderingEngine() = default;
+RenderingEngine::~RenderingEngine() = default;
+
 void RenderingEngine::Init()
 {
 	// グローバル定数バッファディスクリプタヒープ
@@ -26,28 +30,28 @@ void RenderingEngine::Init()
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.staging = TRUE;
 		desc.num = STAGING_HEAP_SIZE;
-		pStagingHeap = std::make_shared<DescriptorHeap>(desc);
+		pStagingHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// グローバルディスクリプタヒープ
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = HEAP_SIZE;
-		pHeap = std::make_shared<DescriptorHeap>(desc);
+		pHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// ディスクリプターヒープ(レンダーターゲット)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		desc.num = RTV_HEAP_SIZE;
-		pRTVHeap = std::make_shared<DescriptorHeap>(desc);
+		pRTVHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// ディスクリプタヒープ（深度バッファ)
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 		desc.num = DSV_HEAP_SIZE;
-		pDSVHeap = std::make_shared<DescriptorHeap>(desc);
+		pDSVHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// グローバル定数バッファリソース
 	{
@@ -166,7 +170,7 @@ void RenderingEngine::Init()
 	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
 
 	// レンダリングパス
-	ShadowMapsPass = std::make_shared<ShadowPass>(*this);
+	ShadowMapsPass = std::make_unique<ShadowPass>(*this);
 	ShadowMapsPass->Init(pRTVHeap.get(), pStagingHeap.get(), pHeap.get(), pDSVHeap.get());
 	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>(*this);
 	ODepthNormalPass->Init(pRTVHeap.get(), pStagingHeap.get(), pHeap.get(), pDSVHeap.get());
@@ -435,23 +439,9 @@ void RenderingEngine::AddRenderObject(
 	}
 }
 
-void RenderingEngine::RegisterRenderingComponentRef(std::shared_ptr<RenderingComponent> component)
+ShadowPass* RenderingEngine::GetShadowMapsPass()
 {
-	// 期限切れの参照を削除してから登録
-	RenderingComponents.remove_if([](const std::weak_ptr<RenderingComponent>& ref) { return ref.expired(); });
-	RenderingComponents.push_back(component);
-}
-
-void RenderingEngine::RegisterMaterialRef(std::shared_ptr<Material> material)
-{
-	// 期限切れの参照を削除してから登録
-	RenderingMaterials.remove_if([](const std::weak_ptr<Material>& ref) { return ref.expired(); });
-	RenderingMaterials.push_back(material);
-}
-
-std::shared_ptr<ShadowPass> RenderingEngine::GetShadowMapsPass()
-{
-	return std::dynamic_pointer_cast<ShadowPass>(ShadowMapsPass);
+	return ShadowMapsPass.get();
 }
 
 void RenderingEngine::CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx)

@@ -25,8 +25,8 @@ class RenderingEngine
 {
 public:
 
-	RenderingEngine() {};
-	~RenderingEngine() {};
+	RenderingEngine();
+	~RenderingEngine();
 	void Init();
 	void Uninit();
 	void Update();
@@ -48,10 +48,10 @@ public:
 
 private:
 
-	std::shared_ptr<DescriptorHeap> pStagingHeap;
-	std::shared_ptr<DescriptorHeap> pHeap;
-	std::shared_ptr<DescriptorHeap>	pRTVHeap;
-	std::shared_ptr<DescriptorHeap>	pDSVHeap;
+	std::unique_ptr<DescriptorHeap> pStagingHeap;
+	std::unique_ptr<DescriptorHeap> pHeap;
+	std::unique_ptr<DescriptorHeap>	pRTVHeap;
+	std::unique_ptr<DescriptorHeap>	pDSVHeap;
 
 	// ディスクリプタヒープの最大数
 	static constexpr UINT STAGING_HEAP_SIZE	= 256;
@@ -193,20 +193,6 @@ private:
 	std::unique_ptr<PostProcess> CanvasPostProcess;	// キャンバス描画後のポストプロセス
 
 	// ====================
-	// コンポーネントやマテリアルの参照
-public:
-
-	// 作成した描画コンポーネントの参照を追加
-	void RegisterRenderingComponentRef(std::shared_ptr<class RenderingComponent> component);
-	// 作成したマテリアルの参照を追加
-	void RegisterMaterialRef(std::shared_ptr<Material> material);
-
-private:
-
-	std::list<std::weak_ptr<class RenderingComponent>> RenderingComponents;	// 作成された描画コンポーネントの参照
-	std::list<std::weak_ptr<Material>> RenderingMaterials;					// 作成されたマテリアルの参照
-
-	// ====================
 	// レンダリングパス
 public:
 
@@ -234,7 +220,7 @@ public:
 		return nullptr;
 	}
 
-	std::shared_ptr<class ShadowPass> GetShadowMapsPass();
+	class ShadowPass* GetShadowMapsPass();
 
 	/// <summary>
 	/// パスのテクスチャの取得
@@ -266,7 +252,7 @@ public:
 
 private:
 
-	std::shared_ptr<RenderingPass> ShadowMapsPass;			// シャドウマップパス
+	std::unique_ptr<class ShadowPass> ShadowMapsPass;			// シャドウマップパス
 	std::unique_ptr<RenderingPass> ODepthNormalPass;		// 不透明深度法線パス
 	std::unordered_map<UINT, PASSES> RenderingPasses;		// key=描画タイミング,value=描画パス群
 

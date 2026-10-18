@@ -57,8 +57,8 @@ protected:
 
 protected:
 
-	std::shared_ptr<DescriptorHeap>	pHeap;
-	std::shared_ptr<DescriptorHeap>	pRTVHeap;
+	std::unique_ptr<DescriptorHeap>	pHeap;
+	std::unique_ptr<DescriptorHeap>	pRTVHeap;
 
 protected:
 

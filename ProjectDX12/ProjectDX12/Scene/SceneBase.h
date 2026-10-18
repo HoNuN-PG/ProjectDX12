@@ -93,20 +93,20 @@ protected:
 	// レンダリングエンジン
 public:
 
-	std::shared_ptr<RenderingEngine> GetRenderingEngine();
+	RenderingEngine* GetRenderingEngine();
 
 private:
 
-	std::shared_ptr<RenderingEngine> pEngine;
+	std::unique_ptr<RenderingEngine> pEngine;
 
 	// シーンヒープ
 public:
 
-	std::shared_ptr<DescriptorHeap> GetHeap() { return pHeap; }
+	DescriptorHeap* GetHeap() { return pHeap.get(); }
 
 protected:
 
-	std::shared_ptr<DescriptorHeap>	pHeap;
+	std::unique_ptr<DescriptorHeap>	pHeap;
 	static constexpr UINT SCENE_HEAP_SIZE = 256;	// シーンヒープの最大数
 
 };

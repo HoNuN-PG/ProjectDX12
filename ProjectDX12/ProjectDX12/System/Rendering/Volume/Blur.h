@@ -128,8 +128,8 @@ private:
 private:
 
 	std::unique_ptr<MeshBuffer>									pScreen;
-	std::shared_ptr<DescriptorHeap>								pHeap;
-	std::shared_ptr<DescriptorHeap>								pRTVHeap;
+	std::unique_ptr<DescriptorHeap>								pHeap;
+	std::unique_ptr<DescriptorHeap>								pRTVHeap;
 	std::vector<std::unique_ptr<RenderTarget>>					GaussRTVs;
 	std::vector<std::unique_ptr<class ConstantBuffer>>			Params;
 
