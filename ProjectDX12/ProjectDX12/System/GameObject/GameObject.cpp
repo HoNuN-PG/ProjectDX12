@@ -5,9 +5,9 @@
 #include "System/GameObject/GameObject.h"
 #include "System/Rendering/RenderingEngine.h"
 
-void GameObject::InitBase()
+void GameObject::InitBase(class RenderingEngine* engine)
 {
-	Engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
+	pEngine = engine;
 	Init();
 }
 
@@ -67,12 +67,9 @@ void GameObject::DrawBase(DirectX::XMFLOAT4X4 ParentMatrix)
 void GameObject::RenderingBase()
 {
 	Rendering();
-	for (const std::weak_ptr<RenderingComponent>& comp : RenderingComponents)
+	for (RenderingComponent* comp : RenderingComponents)
 	{
-		// 描画コンポーネントは自身のComponentsが保持しているため常に有効
-		std::shared_ptr<RenderingComponent> c = comp.lock();
-		assert(c);
-		c->Rendering();
+		comp->Rendering();
 	}
 }
 
@@ -103,16 +100,10 @@ bool GameObject::Destroy()
 
 void GameObject::Add2RenderingEngine(UINT timing, UINT passType)
 {
-	if (auto engine = Engine.lock())
-	{
-		engine->AddRenderObject(*this, timing, passType);
-	}
+	pEngine->AddRenderObject(*this, timing, passType);
 }
 
 void GameObject::RegisterComponent2RenderingEngine(std::shared_ptr<class RenderingComponent> comp)
 {
-	if (auto engine = Engine.lock())
-	{
-		engine->RegisterRenderingComponentRef(comp);
-	}
+	pEngine->RegisterRenderingComponentRef(comp);
 }

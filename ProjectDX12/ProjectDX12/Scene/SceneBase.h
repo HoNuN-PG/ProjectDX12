@@ -51,7 +51,7 @@ public:
 	{
 		std::shared_ptr<T> gameObject = std::make_shared<T>();
 		GameObjects[layer].push_back(gameObject);
-		GameObjects[layer].back()->InitBase();
+		GameObjects[layer].back()->InitBase(pEngine.get());
 		return gameObject;
 	}
 	template <typename T>
@@ -59,7 +59,7 @@ public:
 	{
 		for (auto& objectList : GameObjects)
 		{
-			for (std::shared_ptr<GameObject> object : objectList)
+			for (const std::shared_ptr<GameObject>& object : objectList)
 			{
 				if (std::shared_ptr<T> o = std::dynamic_pointer_cast<T>(object))
 				{
@@ -75,7 +75,7 @@ public:
 		std::vector<std::shared_ptr<T>> objects;
 		for (auto& objectList : GameObjects)
 		{
-			for (std::shared_ptr<GameObject> object : objectList)
+			for (const std::shared_ptr<GameObject>& object : objectList)
 			{
 				if (std::shared_ptr<T> o = std::dynamic_pointer_cast<T>(object))
 				{
@@ -107,6 +107,7 @@ public:
 protected:
 
 	std::shared_ptr<DescriptorHeap>	pHeap;
+	static constexpr UINT SCENE_HEAP_SIZE = 256;	// シーンヒープの最大数
 
 };
 

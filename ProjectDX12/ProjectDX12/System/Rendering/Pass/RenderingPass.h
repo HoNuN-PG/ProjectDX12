@@ -43,10 +43,10 @@ public:
 
 	// 初期化
 	virtual void Init(
-		std::shared_ptr<DescriptorHeap> rtvHeap,
-		std::shared_ptr<DescriptorHeap> stagingHeap,
-		std::shared_ptr<DescriptorHeap> srvHeap,
-		std::shared_ptr<DescriptorHeap> dsvHeap
+		DescriptorHeap* rtvHeap,
+		DescriptorHeap* stagingHeap,
+		DescriptorHeap* srvHeap,
+		DescriptorHeap* dsvHeap
 	) = 0;
 	// パスにオブジェクトを追加
 	virtual void AddObj(GameObject& obj) {};

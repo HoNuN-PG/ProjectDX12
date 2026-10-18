@@ -99,5 +99,5 @@ void Vignette::Draw()
 	ScreenDraw(targets, pHeap->Get(), handle, _countof(handle), pRootSignatureData.get(), pPipelineData[0].get(), pScreen.get());
 
 	// MainTexture‚É’£‚è•t‚¯
-	Copy::ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine->GetGlobalStagingRenderTarget(GlobalTextureResourceKey::MainTexture));
+	Copy::ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine->GetGlobalStagingRenderTarget(GlobalTextureResourceKey::MainTexture).get());
 }

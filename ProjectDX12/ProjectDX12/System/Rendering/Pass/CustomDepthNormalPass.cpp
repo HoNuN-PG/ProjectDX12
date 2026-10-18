@@ -45,10 +45,10 @@ void CustomDepthNormalPass::Execute()
 }
 
 void CustomDepthNormalPass::Init(
-	std::shared_ptr<DescriptorHeap> rtvHeap, 
-	std::shared_ptr<DescriptorHeap> stagingHeap,
-	std::shared_ptr<DescriptorHeap> srvHeap, 
-	std::shared_ptr<DescriptorHeap> dsvHeap
+	DescriptorHeap* rtvHeap, 
+	DescriptorHeap* stagingHeap,
+	DescriptorHeap* srvHeap, 
+	DescriptorHeap* dsvHeap
 )
 {
 	// RTV
@@ -57,8 +57,8 @@ void CustomDepthNormalPass::Init(
 		desc.width		= WINDOW_WIDTH;
 		desc.height		= WINDOW_HEIGHT;
 		desc.format		= DXGI_FORMAT_R16G16_FLOAT;
-		desc.pRTVHeap	= rtvHeap.get();
-		desc.pSRVHeap	= srvHeap.get();
+		desc.pRTVHeap	= rtvHeap;
+		desc.pSRVHeap	= srvHeap;
 		Depth			= std::make_shared<RenderTarget>(desc);
 		desc.format		= DXGI_FORMAT_R8G8B8A8_UNORM;
 		Normal			= std::make_shared<RenderTarget>(desc);
@@ -68,7 +68,7 @@ void CustomDepthNormalPass::Init(
 		DepthStencil::Description desc = {};
 		desc.width		= WINDOW_WIDTH;
 		desc.height		= WINDOW_HEIGHT;
-		desc.pDSVHeap	= dsvHeap.get();
+		desc.pDSVHeap	= dsvHeap;
 		DSV				= std::make_unique<DepthStencil>(desc);
 	}
 }

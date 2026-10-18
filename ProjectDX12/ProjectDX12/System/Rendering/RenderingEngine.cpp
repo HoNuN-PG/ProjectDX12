@@ -167,9 +167,9 @@ void RenderingEngine::Init()
 
 	// レンダリングパス
 	ShadowMapsPass = std::make_shared<ShadowPass>(*this);
-	ShadowMapsPass->Init(pRTVHeap, pStagingHeap, pHeap, pDSVHeap);
+	ShadowMapsPass->Init(pRTVHeap.get(), pStagingHeap.get(), pHeap.get(), pDSVHeap.get());
 	ODepthNormalPass = std::make_unique<OpaqueDepthNormalPass>(*this);
-	ODepthNormalPass->Init(pRTVHeap, pStagingHeap, pHeap, pDSVHeap);
+	ODepthNormalPass->Init(pRTVHeap.get(), pStagingHeap.get(), pHeap.get(), pDSVHeap.get());
 
 	// ポストプロセス
 	ObjectPostProcess = std::make_unique<PostProcess>();

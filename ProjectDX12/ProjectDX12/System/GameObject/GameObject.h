@@ -16,7 +16,7 @@ public:
 	GameObject() {}
 	virtual ~GameObject() {}
 
-	void InitBase();
+	void InitBase(class RenderingEngine* engine);
 	void UninitBase();
 	void UpdateBase();
 	void DrawBase(DirectX::XMFLOAT4X4 ParentMatrix);
@@ -77,7 +77,7 @@ public:
 	{
 		std::shared_ptr<T> child = std::make_shared<T>();
 		ChildGameObjects.push_back(child);
-		ChildGameObjects.back()->InitBase();
+		ChildGameObjects.back()->InitBase(pEngine);
 		return child;
 	}
 
@@ -94,7 +94,7 @@ public:
 		// 描画コンポーネントの追加/登録
 		if (std::shared_ptr<class RenderingComponent> c = std::dynamic_pointer_cast<RenderingComponent>(component))
 		{
-			RenderingComponents.push_back(c);
+			RenderingComponents.push_back(c.get());
 			RegisterComponent2RenderingEngine(c);
 		}
 
@@ -140,8 +140,8 @@ private:
 
 private:
 
-	std::weak_ptr<class RenderingEngine> Engine;
-	std::vector<std::weak_ptr<class RenderingComponent>> RenderingComponents;
+	class RenderingEngine* pEngine; // レンダリングエンジンとゲームオブジェクトはシーン管理でありレンダリングエンジンの方が寿命が長いため参照が保証されている
+	std::vector<class RenderingComponent*> RenderingComponents;	// 描画コンポーネント（Componentsが所有するため参照が保証されている）
 
 };
 

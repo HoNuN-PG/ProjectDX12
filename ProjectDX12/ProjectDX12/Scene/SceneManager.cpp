@@ -8,21 +8,10 @@
 #include "System/DirectX.h"
 
 int SceneManager::CurrentScene = SceneManager::SceneType::SANDBOXDX12;
-std::vector<std::unique_ptr<SceneBase>> SceneManager::Scenes;
-
-SceneManager::SceneManager()
-{
-	// ƒV[ƒ“”z—ñ‚Ì‰Šú‰»
-	Scenes.resize(MAX_SCENES);
-	for(int i = 0;i < Scenes.size();i++)
-	{
-		Scenes[i] = nullptr;
-	}
-}
+std::vector<std::unique_ptr<SceneBase>> SceneManager::Scenes(MAX_SCENES);
 
 HRESULT SceneManager::Init()
 {
-	HRESULT hr = E_FAIL;
 	if (!Scenes[CurrentScene])
 	{
 		switch (CurrentScene) 
@@ -32,6 +21,10 @@ HRESULT SceneManager::Init()
 			break;
 		default:break;
 		}	
+	}
+	if (!Scenes[CurrentScene])
+	{
+		return E_FAIL;
 	}
 	return Scenes[CurrentScene]->InitBase();
 }

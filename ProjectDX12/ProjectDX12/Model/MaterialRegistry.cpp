@@ -6,7 +6,7 @@ MaterialRegistry::~MaterialRegistry()
 {
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
-		std::vector<Material::MaterialInstanceData> instances = item->second;
+		const std::vector<Material::MaterialInstanceData>& instances = item->second;
 		for (int i = 0; i < instances.size(); ++i)
 		{
 			// マテリアルインスタンスの削除
@@ -15,7 +15,7 @@ MaterialRegistry::~MaterialRegistry()
 	}
 }
 
-void MaterialRegistry::SetUp(SetupData materials)
+void MaterialRegistry::SetUp(const SetupData& materials)
 {
 	for (auto&& item = materials.begin(); item != materials.end(); ++item)
 	{
@@ -30,18 +30,14 @@ void MaterialRegistry::SetUp(SetupData materials)
 	}
 }
 
-void MaterialRegistry::Register2RenderingEngine(std::weak_ptr<class GameObject> owner)
+void MaterialRegistry::Register2RenderingEngine(class GameObject* owner)
 {
 	// 登録済み描画タイミング
 	std::vector<Material::RenderingTiming> timing;
 
-	// 描画を登録するのは所有元のGameObject自身なので常に有効
-	std::shared_ptr<GameObject> object = owner.lock();
-	assert(object);
-
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
-		std::vector<Material::MaterialInstanceData> instances = item->second;
+		const std::vector<Material::MaterialInstanceData>& instances = item->second;
 		for (int i = 0; i < instances.size(); ++i)
 		{
 			if(IsRegisted(timing, instances[i].first->GetRenderTiming()))
@@ -51,12 +47,12 @@ void MaterialRegistry::Register2RenderingEngine(std::weak_ptr<class GameObject> 
 			}
 			// 登録
 			timing.push_back(instances[i].first->GetRenderTiming());
-			object->Add2RenderingEngine(timing.back(), instances[i].first->GetPassType());
+			owner->Add2RenderingEngine(timing.back(), instances[i].first->GetPassType());
 		}
 	}
 }
 
-bool MaterialRegistry::IsRegisted(std::vector<Material::RenderingTiming> timing, UINT check)
+bool MaterialRegistry::IsRegisted(const std::vector<Material::RenderingTiming>& timing, UINT check)
 {
 	for(int i = 0; i < timing.size(); ++i)
 	{
@@ -74,7 +70,7 @@ std::vector<MaterialRegistry::MeshMaterialInfo> MaterialRegistry::GetRenderingMa
 
 	for (auto&& item = Materials.begin(); item != Materials.end(); ++item)
 	{
-		std::vector<Material::MaterialInstanceData> instances = item->second;
+		const std::vector<Material::MaterialInstanceData>& instances = item->second;
 		for (int i = 0; i < instances.size(); ++i)
 		{
 			// 描画タイミングが異なれば無効

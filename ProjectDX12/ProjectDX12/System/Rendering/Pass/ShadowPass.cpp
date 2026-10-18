@@ -123,20 +123,20 @@ void ShadowPass::Execute()
 	Gauss::ExecuteScreenGauss8D2(
 		GaussIdx[TextureType::Near],
 		{ VSMShadowMaps[TextureType::Near]->Width,VSMShadowMaps[TextureType::Near]->Height },
-		StagingShadowMaps[TextureType::Near], 
-		StagingVSMShadowMaps[TextureType::Near]
+		StagingShadowMaps[TextureType::Near].get(), 
+		StagingVSMShadowMaps[TextureType::Near].get()
 	);
 	Gauss::ExecuteScreenGauss4D2(
 		GaussIdx[TextureType::Middle],
 		{ VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height },
-		StagingShadowMaps[TextureType::Middle], 
-		StagingVSMShadowMaps[TextureType::Middle]
+		StagingShadowMaps[TextureType::Middle].get(), 
+		StagingVSMShadowMaps[TextureType::Middle].get()
 	);
 	Gauss::ExecuteScreenGauss2D1(
 		GaussIdx[TextureType::Far],
 		{ VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height },
-		StagingShadowMaps[TextureType::Far], 
-		StagingVSMShadowMaps[TextureType::Far]
+		StagingShadowMaps[TextureType::Far].get(), 
+		StagingVSMShadowMaps[TextureType::Far].get()
 	);
 
 	// ステージングから読み取り専用テクスチャへコピー
@@ -150,17 +150,17 @@ void ShadowPass::Execute()
 }
 
 void ShadowPass::Init(
-	std::shared_ptr<DescriptorHeap> rtvHeap, 
-	std::shared_ptr<DescriptorHeap> stagingHeap,
-	std::shared_ptr<DescriptorHeap> srvHeap, 
-	std::shared_ptr<DescriptorHeap> dsvHeap)
+	DescriptorHeap* rtvHeap, 
+	DescriptorHeap* stagingHeap,
+	DescriptorHeap* srvHeap, 
+	DescriptorHeap* dsvHeap)
 {
 	// RTV
 	{
 		RenderTarget::Description desc = {};
 		desc.format = DXGI_FORMAT_R16G16_FLOAT;
-		desc.pRTVHeap = rtvHeap.get();
-		desc.pSRVHeap = stagingHeap.get();
+		desc.pRTVHeap = rtvHeap;
+		desc.pSRVHeap = stagingHeap;
 		desc.clearColor = 1;
 		for (int i = 0; i <= TextureType::Far; ++i)
 		{
@@ -171,7 +171,7 @@ void ShadowPass::Init(
 			desc.height = VSMShadowMapsSize[i].y;
 			StagingVSMShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
 		}
-		desc.pSRVHeap = srvHeap.get();
+		desc.pSRVHeap = srvHeap;
 		for (int i = 0; i <= TextureType::Far; ++i)
 		{
 			desc.width		= ShadowMapsSize[i].x;
@@ -185,7 +185,7 @@ void ShadowPass::Init(
 	// DSV
 	{
 		DepthStencil::Description desc = {};
-		desc.pDSVHeap = dsvHeap.get();
+		desc.pDSVHeap = dsvHeap;
 
 		for (int i = 0; i <= TextureType::Far; ++i)
 		{

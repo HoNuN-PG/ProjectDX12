@@ -105,24 +105,24 @@ public:
 	/// <param name="src"></param>
 	/// <param name="dest"></param>
 	static void ExecuteScreenGauss2D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
-	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	RenderTarget* src, RenderTarget* dest);
 	static void ExecuteScreenGauss4D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
-	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	RenderTarget* src, RenderTarget* dest);
 	static void ExecuteScreenGauss4D2(UINT32 gaussIdx, DirectX::XMFLOAT2 screen,
-		std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+		RenderTarget* src, RenderTarget* dest);
 	static void ExecuteScreenGauss8D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
-	std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	RenderTarget* src, RenderTarget* dest);
 	static void ExecuteScreenGauss8D2(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
-		std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+		RenderTarget* src, RenderTarget* dest);
 	static void ExecuteScreenGauss8D4(UINT32 gaussIdx, DirectX::XMFLOAT2 screen,
-		std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+		RenderTarget* src, RenderTarget* dest);
 	static void CalcWeights(std::weak_ptr<float[]> weights,int num, float blur);
 
 private:
 
-	void ExecuteScreenGauss2(UINT32 gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
-	void ExecuteScreenGauss4(UINT32 gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
-	void ExecuteScreenGauss8(UINT32 gaussIdx, std::shared_ptr<RenderTarget> src, std::shared_ptr<RenderTarget> dest);
+	void ExecuteScreenGauss2(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest);
+	void ExecuteScreenGauss4(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest);
+	void ExecuteScreenGauss8(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest);
 	void MakeGaussData(UINT32 gaussIdx, DirectX::XMFLOAT2 screen ,int split);
 
 private:

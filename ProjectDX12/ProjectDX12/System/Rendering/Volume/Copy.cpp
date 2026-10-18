@@ -117,12 +117,12 @@ void Copy::ExecuteCopy2BBuffer(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE
 	Instance->pScreen->Draw();
 }
 
-void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, std::shared_ptr<RenderTarget> dest)
+void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, RenderTarget* dest)
 {
 	// •\Ž¦—Ìˆæ‚ÌÝ’è
 	SetViewPort(dest->Width,dest->Height);
 
-	std::vector<RenderTarget*> targets = { dest.get() };
+	std::vector<RenderTarget*> targets = { dest };
 	D3D12_GPU_DESCRIPTOR_HANDLE handle[] =
 	{
 		src,

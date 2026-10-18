@@ -11,22 +11,20 @@ HRESULT SceneBase::InitBase()
 	{
 		DescriptorHeap::Description desc = {};
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		desc.num = 256;
+		desc.num = SCENE_HEAP_SIZE;
 		pHeap = std::make_shared<DescriptorHeap>(desc);
 	}
 
-	Init();
-	return E_NOTIMPL;
+	return Init();
 }
 
 void SceneBase::UninitBase()
 {
 	for (auto& objectList : GameObjects)
 	{
-		for (std::shared_ptr<GameObject> object : objectList)
+		for (const std::shared_ptr<GameObject>& object : objectList)
 		{
 			object->UninitBase();
-			object = nullptr;
 		}
 		objectList.clear();
 	}
@@ -44,7 +42,7 @@ void SceneBase::UpdateBase()
 {
 	for (int i = 0; i < MAX_LAYER; i++)
 	{
-		for (std::shared_ptr<GameObject> object : GameObjects[i])
+		for (const std::shared_ptr<GameObject>& object : GameObjects[i])
 		{
 			object->UpdateBase();
 		}
@@ -52,12 +50,11 @@ void SceneBase::UpdateBase()
 	for (auto& objectList : GameObjects)
 	{
 		objectList.remove_if(
-			[](std::shared_ptr<GameObject> object) 
+			[](const std::shared_ptr<GameObject>& object) 
 			{
 				if (object->IsDestroy())
 				{
 					object->Destroy();
-					object = nullptr;
 					return true;
 				}
 				return false;
@@ -74,7 +71,7 @@ void SceneBase::DrawBase()
 	DirectX::XMStoreFloat4x4(&matrix, DirectX::XMMatrixIdentity());
 	for (int i = 0; i < MAX_LAYER; i++)
 	{
-		for (std::shared_ptr<GameObject> object : GameObjects[i])
+		for (const std::shared_ptr<GameObject>& object : GameObjects[i])
 		{
 			object->DrawBase(matrix);
 		}

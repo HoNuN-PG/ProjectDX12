@@ -47,18 +47,18 @@ void OpaqueDepthNormalPass::Execute()
 }
 
 void OpaqueDepthNormalPass::Init(
-	std::shared_ptr<DescriptorHeap> rtvHeap, 
-	std::shared_ptr<DescriptorHeap> stagingHeap,
-	std::shared_ptr<DescriptorHeap> srvHeap, 
-	std::shared_ptr<DescriptorHeap> dsvHeap
+	DescriptorHeap* rtvHeap, 
+	DescriptorHeap* stagingHeap,
+	DescriptorHeap* srvHeap, 
+	DescriptorHeap* dsvHeap
 )
 {
 	// RTV
 	{
 		RenderTarget::Description desc = {};
 		desc.format		= DXGI_FORMAT_R16G16_FLOAT;
-		desc.pRTVHeap	= rtvHeap.get();
-		desc.pSRVHeap	= srvHeap.get();
+		desc.pRTVHeap	= rtvHeap;
+		desc.pSRVHeap	= srvHeap;
 		desc.width		= WINDOW_WIDTH;
 		desc.height		= WINDOW_HEIGHT;
 		desc.format		= PassFormats[TextureType::DepthTexture];

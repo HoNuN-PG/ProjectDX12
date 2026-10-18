@@ -8,7 +8,8 @@
 
 /**
 * @class MaterialRegistry
-* @brief メッシュのマテリアルを管理
+* @brief メッシュのマテリアルを所有する
+* @note RenderingComponentが所有している
 */
 class MaterialRegistry
 {
@@ -42,13 +43,13 @@ public:
 	/// １つのメッシュに対して同じ描画タイミングのマテリアルを複数設定することはできない
 	/// </summary>
 	/// <param name="materials"></param>
-	void SetUp(SetupData materials);
+	void SetUp(const SetupData& materials);
 
 	/// <summary>
 	/// レンダリングエンジンにオブジェクトを描画登録
 	/// </summary>
 	/// <param name="owner"></param>
-	void Register2RenderingEngine(std::weak_ptr<class GameObject> owner);
+	void Register2RenderingEngine(class GameObject* owner);
 
 private:
 
@@ -58,7 +59,7 @@ private:
 	/// <param name="timing">すでに登録したタイミング</param>
 	/// <param name="check">チェックするタイミング</param>
 	/// <returns></returns>
-	bool IsRegisted(std::vector<Material::RenderingTiming> timing, UINT check);
+	bool IsRegisted(const std::vector<Material::RenderingTiming>& timing, UINT check);
 
 public:
 

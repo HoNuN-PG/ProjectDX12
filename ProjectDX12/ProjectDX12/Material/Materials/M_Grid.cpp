@@ -131,7 +131,6 @@ void M_GridShadow::Bind(UINT materialinstance)
 	// 定数バッファの設定
 	WriteParam(&GridParam, 3);
 
-	std::weak_ptr<RenderingEngine> Engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
 		WVP[materialinstance]->GetHandle().hGPU,
@@ -213,7 +212,6 @@ void M_GridShadowVSM::Bind(UINT materialinstance)
 	// 定数バッファの設定
 	WriteParam(&GridParam, 3);
 
-	std::weak_ptr<RenderingEngine> Engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
 		WVP[materialinstance]->GetHandle().hGPU,

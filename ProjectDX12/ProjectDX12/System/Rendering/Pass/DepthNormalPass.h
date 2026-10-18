@@ -27,10 +27,10 @@ public:
 public:
 
 	virtual void Init(
-		std::shared_ptr<DescriptorHeap> rtvHeap,
-		std::shared_ptr<DescriptorHeap> stagingHeap,
-		std::shared_ptr<DescriptorHeap> srvHeap,
-		std::shared_ptr<DescriptorHeap> dsvHeap
+		DescriptorHeap* rtvHeap,
+		DescriptorHeap* stagingHeap,
+		DescriptorHeap* srvHeap,
+		DescriptorHeap* dsvHeap
 	) override;
 	void AddObj(GameObject& obj) override;
 
