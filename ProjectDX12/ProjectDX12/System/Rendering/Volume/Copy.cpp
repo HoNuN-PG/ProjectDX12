@@ -4,23 +4,9 @@
 #include "System/Rendering/Volume/Copy.h"
 #include "System/DirectX.h"
 
-std::unique_ptr<Copy> Copy::Instance;
-
-void Copy::Create()
+Copy::Copy()
 {
-	if (!Instance)
-	{
-		Instance = std::make_unique<Copy>();
-		Instance->Load();
-	}
-}
-
-void Copy::Destroy()
-{
-	if (Instance)
-	{
-		Instance.reset(nullptr);
-	}
+	Load();
 }
 
 void Copy::Load()
@@ -40,7 +26,7 @@ void Copy::Load()
 	desc.vtxSize = sizeof(ScreenVertex);
 	desc.vtxCount = _countof(screenVtx);
 	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-	Instance->pScreen = std::make_unique<MeshBuffer>(desc);
+	pScreen = std::make_unique<MeshBuffer>(desc);
 
 	// ルートシグネチャ
 	{
@@ -54,7 +40,7 @@ void Copy::Load()
 			_countof(param),
 			D3D12_FILTER_MIN_MAG_MIP_LINEAR
 		};
-		Instance->pRootSignatureData = std::make_unique<RootSignature>(rootsignature);
+		pRootSignatureData = std::make_unique<RootSignature>(rootsignature);
 	}
 	// パイプライン
 	{
@@ -63,7 +49,7 @@ void Copy::Load()
 			L"",
 			L"../game/assets/shader/VS_Sprite.cso",
 			L"../game/assets/shader/PS_Copy.cso",
-			Instance->pRootSignatureData->Get(),
+			pRootSignatureData->Get(),
 			PipelineState::IED_POS_TEX,
 			PipelineState::IED_POS_TEX_COUNT,
 			D3D12_CULL_MODE_BACK,
@@ -74,21 +60,21 @@ void Copy::Load()
 
 		desc.RenderTargetFormat.clear();
 		desc.RenderTargetFormat.push_back(DXGI_FORMAT_R16G16B16A16_FLOAT);
-		Instance->pPipelineData[DXGI_FORMAT_R16G16B16A16_FLOAT] = std::make_unique<PipelineState>(desc);
+		pPipelineData[DXGI_FORMAT_R16G16B16A16_FLOAT] = std::make_unique<PipelineState>(desc);
 
 		desc.RenderTargetFormat.clear();
 		desc.RenderTargetFormat.push_back(DXGI_FORMAT_R16G16_FLOAT);
-		Instance->pPipelineData[DXGI_FORMAT_R16G16_FLOAT] = std::make_unique<PipelineState>(desc);
+		pPipelineData[DXGI_FORMAT_R16G16_FLOAT] = std::make_unique<PipelineState>(desc);
 
 		desc.RenderTargetFormat.clear();
 		desc.RenderTargetFormat.push_back(DXGI_FORMAT_R8G8B8A8_UNORM);
-		Instance->pPipelineData[DXGI_FORMAT_R8G8B8A8_UNORM] = std::make_unique<PipelineState>(desc);
+		pPipelineData[DXGI_FORMAT_R8G8B8A8_UNORM] = std::make_unique<PipelineState>(desc);
 	}
 }
 
 void Copy::ExecuteScreenDraw()
 {
-	Instance->pScreen->Draw();
+	pScreen->Draw();
 }
 
 void Copy::ExecuteCopy2BBuffer(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src)
@@ -112,9 +98,9 @@ void Copy::ExecuteCopy2BBuffer(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE
 	{
 		src,
 	};
-	Instance->pRootSignatureData->Bind(hScreen, _countof(hScreen));
-	Instance->pPipelineData[DXGI_FORMAT_R8G8B8A8_UNORM]->Bind();
-	Instance->pScreen->Draw();
+	pRootSignatureData->Bind(hScreen, _countof(hScreen));
+	pPipelineData[DXGI_FORMAT_R8G8B8A8_UNORM]->Bind();
+	pScreen->Draw();
 }
 
 void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, RenderTarget* dest)
@@ -132,9 +118,9 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, Re
 		heap->Get(),
 		handle,
 		_countof(handle),
-		Instance->pRootSignatureData.get(),
-		Instance->pPipelineData[dest->Format].get(),
-		Instance->pScreen.get()
+		pRootSignatureData.get(),
+		pPipelineData[dest->Format].get(),
+		pScreen.get()
 	);
 
 	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);

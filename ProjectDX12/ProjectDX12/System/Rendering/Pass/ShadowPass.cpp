@@ -120,19 +120,19 @@ void ShadowPass::Execute()
 	pEngine->WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowReciever,&ShadowReceiveParam);
 
 	// ぼかし
-	Gauss::ExecuteScreenGauss8D2(
+	pEngine->GetGauss()->ExecuteScreenGauss8D2(
 		GaussIdx[TextureType::Near],
 		{ VSMShadowMaps[TextureType::Near]->Width,VSMShadowMaps[TextureType::Near]->Height },
 		StagingShadowMaps[TextureType::Near].get(), 
 		StagingVSMShadowMaps[TextureType::Near].get()
 	);
-	Gauss::ExecuteScreenGauss4D2(
+	pEngine->GetGauss()->ExecuteScreenGauss4D2(
 		GaussIdx[TextureType::Middle],
 		{ VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height },
 		StagingShadowMaps[TextureType::Middle].get(), 
 		StagingVSMShadowMaps[TextureType::Middle].get()
 	);
-	Gauss::ExecuteScreenGauss2D1(
+	pEngine->GetGauss()->ExecuteScreenGauss2D1(
 		GaussIdx[TextureType::Far],
 		{ VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height },
 		StagingShadowMaps[TextureType::Far].get(), 
@@ -196,9 +196,9 @@ void ShadowPass::Init(
 	}
 
 	// ガウスデータ作成
-	GaussIdx[TextureType::Near] = Gauss::MakeGaussD2Data({ VSMShadowMaps[TextureType::Near]->Width,VSMShadowMaps[TextureType::Near]->Height });
-	GaussIdx[TextureType::Middle] = Gauss::MakeGaussD2Data({ VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height });
-	GaussIdx[TextureType::Far] = Gauss::MakeGaussD1Data({ VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height });
+	GaussIdx[TextureType::Near] = pEngine->GetGauss()->MakeGaussD2Data({ VSMShadowMaps[TextureType::Near]->Width,VSMShadowMaps[TextureType::Near]->Height });
+	GaussIdx[TextureType::Middle] = pEngine->GetGauss()->MakeGaussD2Data({ VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height });
+	GaussIdx[TextureType::Far] = pEngine->GetGauss()->MakeGaussD1Data({ VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height });
 }
 
 void ShadowPass::AddObj(GameObject& obj)

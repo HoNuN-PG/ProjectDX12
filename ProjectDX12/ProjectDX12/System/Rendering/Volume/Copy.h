@@ -15,20 +15,11 @@ class Copy
 {
 public:
 
-	static void Create();
-	static void Destroy();
-
-private:
-
-	static std::unique_ptr<Copy> Instance;
-
-public:
-
-	Copy() {};
+	Copy();
 	~Copy() {};
-	static void ExecuteScreenDraw();
-	static void ExecuteCopy2BBuffer(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src);
-	static void ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, RenderTarget* dest);
+	void ExecuteScreenDraw();
+	void ExecuteCopy2BBuffer(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src);
+	void ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, RenderTarget* dest);
 
 private:
 

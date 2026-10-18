@@ -160,8 +160,8 @@ void RenderingEngine::Init()
 
 	// 汎用クラス作成
 	Volume::Load();
-	Copy::Create();
-	Gauss::Create();
+	pCopy = std::make_unique<Copy>();
+	pGauss = std::make_unique<Gauss>(*pCopy);
 
 	// リソースオブジェクト
 	Camera[CameraType::MAIN] = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
@@ -187,8 +187,8 @@ void RenderingEngine::Uninit()
 	ShadowMapsPass.reset();
 	ObjectPostProcess.reset();
 	CanvasPostProcess.reset();
-	Gauss::Destroy();
-	Copy::Destroy();
+	pGauss.reset();
+	pCopy.reset();
 	Volume::Unload();
 }
 
@@ -281,7 +281,7 @@ void RenderingEngine::Draw()
 	// ステージングから読み取り専用テクスチャへコピー
 	CopyTextureSRV(GlobalTextureStaging[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU, GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU);
 	// メインテクスチャへのコピー
-	Copy::ExecuteCopy2BBuffer(pHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU);
+	pCopy->ExecuteCopy2BBuffer(pHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU);
 	// バッファ描画
 	ViewShadowMaps();
 	ViewDepthNormal();
@@ -681,7 +681,7 @@ void RenderingEngine::DefferedLighting()
 	DefferedLightingShader.pRootSignatureData->Bind(desc, _countof(desc));
 
 	// 描画
-	Copy::ExecuteScreenDraw();
+	pCopy->ExecuteScreenDraw();
 
 	// リソース化
 	GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->RTV2SRV();

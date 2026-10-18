@@ -76,24 +76,15 @@ public:
 
 public:
 
-	static void Create();
-	static void Destroy();
-
-private:
-
-	static std::unique_ptr<Gauss> Instance;
-
-public:
-
-	Gauss() {};
+	explicit Gauss(class Copy& copy);
 	~Gauss() {};
 
 public:
 
 	// ガウスのデータ構築（D1,D2,D4はダウンサンプリングの強さ）
-	static UINT32 MakeGaussD1Data(DirectX::XMFLOAT2 screen);
-	static UINT32 MakeGaussD2Data(DirectX::XMFLOAT2 screen);
-	static UINT32 MakeGaussD4Data(DirectX::XMFLOAT2 screen);
+	UINT32 MakeGaussD1Data(DirectX::XMFLOAT2 screen);
+	UINT32 MakeGaussD2Data(DirectX::XMFLOAT2 screen);
+	UINT32 MakeGaussD4Data(DirectX::XMFLOAT2 screen);
 
 public:
 
@@ -104,17 +95,17 @@ public:
 	/// <param name="screen">テクスチャサイズ</param>
 	/// <param name="src"></param>
 	/// <param name="dest"></param>
-	static void ExecuteScreenGauss2D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
+	void ExecuteScreenGauss2D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
 	RenderTarget* src, RenderTarget* dest);
-	static void ExecuteScreenGauss4D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
+	void ExecuteScreenGauss4D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
 	RenderTarget* src, RenderTarget* dest);
-	static void ExecuteScreenGauss4D2(UINT32 gaussIdx, DirectX::XMFLOAT2 screen,
+	void ExecuteScreenGauss4D2(UINT32 gaussIdx, DirectX::XMFLOAT2 screen,
 		RenderTarget* src, RenderTarget* dest);
-	static void ExecuteScreenGauss8D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
+	void ExecuteScreenGauss8D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
 	RenderTarget* src, RenderTarget* dest);
-	static void ExecuteScreenGauss8D2(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
+	void ExecuteScreenGauss8D2(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
 		RenderTarget* src, RenderTarget* dest);
-	static void ExecuteScreenGauss8D4(UINT32 gaussIdx, DirectX::XMFLOAT2 screen,
+	void ExecuteScreenGauss8D4(UINT32 gaussIdx, DirectX::XMFLOAT2 screen,
 		RenderTarget* src, RenderTarget* dest);
 	static void CalcWeights(std::weak_ptr<float[]> weights,int num, float blur);
 
@@ -127,6 +118,7 @@ private:
 
 private:
 
+	class Copy*													pCopy;	// コピー処理（RenderingEngineが所有しGaussより長生きする）
 	std::unique_ptr<MeshBuffer>									pScreen;
 	std::unique_ptr<DescriptorHeap>								pHeap;
 	std::unique_ptr<DescriptorHeap>								pRTVHeap;

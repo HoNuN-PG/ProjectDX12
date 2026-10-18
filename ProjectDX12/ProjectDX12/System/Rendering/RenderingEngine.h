@@ -18,6 +18,8 @@
 
 class CameraBase;
 class LightBase;
+class Copy;
+class Gauss;
 
 class GameObject;
 
@@ -37,6 +39,13 @@ public:
 public:
 
 	static void CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest);
+	Copy* GetCopy() { return pCopy.get(); }
+	Gauss* GetGauss() { return pGauss.get(); }
+
+private:
+
+	std::unique_ptr<Copy>	pCopy;	// テクスチャのコピー処理
+	std::unique_ptr<Gauss>	pGauss;	// ガウスぼかし処理（pCopyを使用する）
 
 	// ====================
 	// 描画ヒープ
