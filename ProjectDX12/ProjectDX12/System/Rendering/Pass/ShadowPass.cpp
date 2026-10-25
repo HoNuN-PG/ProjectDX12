@@ -142,8 +142,8 @@ void ShadowPass::Execute()
 	// ステージングから読み取り専用テクスチャへコピー
 	for (int i = 0; i <= TextureType::Far; ++i)
 	{
-		RenderingEngine::CopyTextureSRV(StagingShadowMaps[i].get()->GetHandleSRV().hCPU, ShadowMaps[i].get()->GetHandleSRV().hCPU);
-		RenderingEngine::CopyTextureSRV(StagingVSMShadowMaps[i].get()->GetHandleSRV().hCPU, VSMShadowMaps[i].get()->GetHandleSRV().hCPU);
+		RenderingEngine::CopyTexture(StagingShadowMaps[i].get()->GetHandleSRV().hCPU, ShadowMaps[i].get()->GetHandleSRV().hCPU);
+		RenderingEngine::CopyTexture(StagingVSMShadowMaps[i].get()->GetHandleSRV().hCPU, VSMShadowMaps[i].get()->GetHandleSRV().hCPU);
 	}
 
 	RenderObjects.clear();

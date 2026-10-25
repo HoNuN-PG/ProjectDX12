@@ -38,7 +38,7 @@ public:
 	// Utillity
 public:
 
-	static void CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest);
+	static void CopyTexture(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest);
 	Copy* GetCopy() { return pCopy.get(); }
 	Gauss* GetGauss() { return pGauss.get(); }
 
@@ -76,34 +76,26 @@ public:
 	DescriptorHeap::Handle GetGlobalConstantBufferResource(UINT key);
 	void WriteGlobalConstantBufferResource(UINT key, void* data);
 	// グローバルテクスチャ
-	std::shared_ptr<RenderTarget> GetGlobalStagingRenderTarget(UINT key);
-	std::shared_ptr<RenderTarget> GetGlobalRenderTarget(UINT key);
-	DescriptorHeap::Handle GetGlobalTextureStagingRTV(UINT key);
-	DescriptorHeap::Handle GetGlobalTextureRTV(UINT key);
-	DescriptorHeap::Handle GetGlobalTextureStagingSRV(UINT key);
-	DescriptorHeap::Handle GetGlobalTextureSRV(UINT key);
-	void GlobalTextureStagingRTV2SRV(UINT key);
-	void GlobalTextureStagingSRV2RTV(UINT key);
-	void GlobalTextureRTV2SRV(UINT key);
-	void GlobalTextureSRV2RTV(UINT key);
-	void CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key);
+	RenderTarget* GetGlobalStagingRenderTarget(UINT key);
+	RenderTarget* GetGlobalRenderTarget(UINT key);
+	void CopyGlobalTexture(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key);
 
 private:
 
-	std::unordered_map<UINT, std::shared_ptr<ConstantBuffer>> GlobalConstantBuffer;
-	std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTextureStaging;
-	std::unordered_map<UINT, std::shared_ptr<RenderTarget>> GlobalTexture;
+	std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>> GlobalConstantBuffer;
+	std::unordered_map<UINT, std::unique_ptr<RenderTarget>> GlobalTextureStaging;
+	std::unordered_map<UINT, std::unique_ptr<RenderTarget>> GlobalTexture;
 	std::unordered_map<UINT, DXGI_FORMAT> GlobalTextureFormat;
 
 	// ====================
 	// リソース
 public:
 
-	std::shared_ptr<DepthStencil> GetDSV() { return DSV; };
+	DepthStencil* GetDSV() { return DSV.get(); }
 
 private:
 
-	std::shared_ptr<DepthStencil> DSV;
+	std::unique_ptr<DepthStencil> DSV;
 	
 	// ====================
 	// 環境オブジェクト
@@ -222,11 +214,7 @@ public:
 	template<typename T>
 	T* GetRenderingPass(UINT timing, UINT passType)
 	{
-		if (RenderingPasses[timing].contains(passType))
-		{
-			return static_cast<T*>(RenderingPasses[timing][passType].get());
-		}
-		return nullptr;
+		return static_cast<T*>(FindPass(timing, passType));
 	}
 
 	class ShadowPass* GetShadowMapsPass();
@@ -248,7 +236,7 @@ public:
 	/// <param name="timing">描画タイミング</param>
 	/// <param name="type">パスの種類</param>
 	/// <param name="idx">パス内のテクスチャインデックス</param>
-	void CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx);
+	void CopyPassTexture(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx);
 
 	/// <summary>
 	/// パスのテクスチャのフォーマットの取得
@@ -260,6 +248,9 @@ public:
 	std::vector<DXGI_FORMAT> GetPassFormat(UINT timing, UINT type);
 
 private:
+
+	// 描画タイミングとパスの種類からパスを検索（見つからなければnullptr）
+	RenderingPass* FindPass(UINT timing, UINT type);
 
 	std::unique_ptr<class ShadowPass> ShadowMapsPass;			// シャドウマップパス
 	std::unique_ptr<RenderingPass> ODepthNormalPass;		// 不透明深度法線パス

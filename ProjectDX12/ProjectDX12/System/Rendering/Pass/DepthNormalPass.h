@@ -45,7 +45,7 @@ public:
 
 private:
 
-	std::shared_ptr<DepthStencil> DSV;
+	DepthStencil* DSV = nullptr; // RenderingEngine‚ªŠ—L‚µ‚Ä‚¢‚é‚½‚ßQÆ‚ª•ÛØ‚³‚ê‚Ä‚¢‚é
 	std::shared_ptr<RenderTarget> Depth;
 	std::shared_ptr<RenderTarget> Normal;
 

@@ -58,14 +58,14 @@ void RenderingEngine::Init()
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = pStagingHeap.get();
 		desc.size = sizeof(DirectX::XMFLOAT4X4);
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera] = std::make_shared<ConstantBuffer>(desc);
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light] = std::make_shared<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Camera] = std::make_unique<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::Light] = std::make_unique<ConstantBuffer>(desc);
 		desc.size = sizeof(ShadowParam::ShadowMapsParam);
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps1] = std::make_shared<ConstantBuffer>(desc);
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps2] = std::make_shared<ConstantBuffer>(desc);
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps3] = std::make_shared<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps1] = std::make_unique<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps2] = std::make_unique<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowMaps3] = std::make_unique<ConstantBuffer>(desc);
 		desc.size = sizeof(ShadowParam::ShadowReceieverParam);
-		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowReciever] = std::make_shared<ConstantBuffer>(desc);
+		GlobalConstantBuffer[GlobalConstantBufferResourceKey::ShadowReciever] = std::make_unique<ConstantBuffer>(desc);
 	}
 	// グローバルRTV
 	{
@@ -81,9 +81,9 @@ void RenderingEngine::Init()
 			desc.format = GlobalTextureFormat[GlobalTextureResourceKey::MainTexture];
 			desc.pRTVHeap = pRTVHeap.get();
 			desc.pSRVHeap = pStagingHeap.get();
-			GlobalTextureStaging[GlobalTextureResourceKey::MainTexture] = std::make_shared<RenderTarget>(desc);
+			GlobalTextureStaging[GlobalTextureResourceKey::MainTexture] = std::make_unique<RenderTarget>(desc);
 			desc.pSRVHeap = pHeap.get();
-			GlobalTexture[GlobalTextureResourceKey::MainTexture] = std::make_shared<RenderTarget>(desc);
+			GlobalTexture[GlobalTextureResourceKey::MainTexture] = std::make_unique<RenderTarget>(desc);
 		}
 		// GBuffer
 		{
@@ -93,9 +93,9 @@ void RenderingEngine::Init()
 			desc.format = GlobalTextureFormat[GlobalTextureResourceKey::DefferedAlbedoTexture];
 			desc.pRTVHeap = pRTVHeap.get();
 			desc.pSRVHeap = pStagingHeap.get();
-			GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_shared<RenderTarget>(desc);
+			GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_unique<RenderTarget>(desc);
 			desc.pSRVHeap = pHeap.get();
-			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_shared<RenderTarget>(desc);
+			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_unique<RenderTarget>(desc);
 		}
 	}
 	// 深度バッファ
@@ -104,7 +104,7 @@ void RenderingEngine::Init()
 		desc.width = WINDOW_WIDTH;
 		desc.height = WINDOW_HEIGHT;
 		desc.pDSVHeap = pDSVHeap.get();
-		DSV = std::make_shared<DepthStencil>(desc);
+		DSV = std::make_unique<DepthStencil>(desc);
 	}
 
 	// ディファードシェーダー
@@ -279,7 +279,7 @@ void RenderingEngine::Draw()
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
 	// ステージングから読み取り専用テクスチャへコピー
-	CopyTextureSRV(GlobalTextureStaging[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU, GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU);
+	CopyTexture(GlobalTextureStaging[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU, GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU);
 	// メインテクスチャへのコピー
 	pCopy->ExecuteCopy2BBuffer(pHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU);
 	// バッファ描画
@@ -298,7 +298,7 @@ void RenderingEngine::Draw()
 	ForwardObjects.clear();
 }
 
-void RenderingEngine::CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest)
+void RenderingEngine::CopyTexture(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_DESCRIPTOR_HANDLE dest)
 {
 	GetDevice()->CopyDescriptorsSimple(
 		1,
@@ -311,93 +311,36 @@ void RenderingEngine::CopyTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE src, D3D12_CPU_
 DescriptorHeap::Handle RenderingEngine::GetGlobalConstantBufferResource(UINT key)
 {
 	if (!GlobalConstantBuffer.contains(key))
-		return DescriptorHeap::Handle();
+	{
+		return DescriptorHeap::Handle();	
+	}
 	return GlobalConstantBuffer[key]->GetHandle();
 }
 
 void RenderingEngine::WriteGlobalConstantBufferResource(UINT key, void* data)
 {
-	GlobalConstantBuffer[key]->Write(data);
+	auto it = GlobalConstantBuffer.find(key);
+	assert(it != GlobalConstantBuffer.end());
+	it->second->Write(data);
 }
 
-std::shared_ptr<RenderTarget> RenderingEngine::GetGlobalStagingRenderTarget(UINT key)
+RenderTarget* RenderingEngine::GetGlobalStagingRenderTarget(UINT key)
 {
-	if (!GlobalTextureStaging.contains(key))
-		return nullptr;
-	return GlobalTextureStaging[key];
+	auto it = GlobalTextureStaging.find(key);
+	return it != GlobalTextureStaging.end() ? it->second.get() : nullptr;
 }
 
-std::shared_ptr<RenderTarget> RenderingEngine::GetGlobalRenderTarget(UINT key)
+RenderTarget* RenderingEngine::GetGlobalRenderTarget(UINT key)
 {
-	if (!GlobalTexture.contains(key))
-		return nullptr;
-	return GlobalTexture[key];
+	auto it = GlobalTexture.find(key);
+	return it != GlobalTexture.end() ? it->second.get() : nullptr;
 }
 
-DescriptorHeap::Handle RenderingEngine::GetGlobalTextureStagingRTV(UINT key)
+void RenderingEngine::CopyGlobalTexture(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key)
 {
-	if (!GlobalTextureStaging.contains(key))
-		return DescriptorHeap::Handle();
-	return GlobalTextureStaging[key]->GetHandleRTV();
-}
-
-DescriptorHeap::Handle RenderingEngine::GetGlobalTextureRTV(UINT key)
-{
-	if (!GlobalTexture.contains(key))
-		return DescriptorHeap::Handle();
-	return GlobalTexture[key]->GetHandleRTV();
-}
-
-DescriptorHeap::Handle RenderingEngine::GetGlobalTextureStagingSRV(UINT key)
-{
-	if (!GlobalTextureStaging.contains(key))
-		return DescriptorHeap::Handle();
-	return GlobalTextureStaging[key]->GetHandleSRV();
-}
-
-DescriptorHeap::Handle RenderingEngine::GetGlobalTextureSRV(UINT key)
-{
-	if (!GlobalTexture.contains(key))
-		return DescriptorHeap::Handle();
-	return GlobalTexture[key]->GetHandleSRV();
-}
-
-void RenderingEngine::GlobalTextureStagingRTV2SRV(UINT key)
-{
-	if (!GlobalTextureStaging.contains(key))
-		return;
-	GlobalTextureStaging[key]->RTV2SRV();
-}
-
-void RenderingEngine::GlobalTextureStagingSRV2RTV(UINT key)
-{
-	if (!GlobalTextureStaging.contains(key))
-		return;
-	GlobalTextureStaging[key]->SRV2RTV();
-}
-
-void RenderingEngine::GlobalTextureRTV2SRV(UINT key)
-{
-	if (!GlobalTexture.contains(key))
-		return;
-	GlobalTexture[key]->RTV2SRV();
-}
-
-void RenderingEngine::GlobalTextureSRV2RTV(UINT key)
-{
-	if (!GlobalTexture.contains(key))
-		return;
-	GlobalTexture[key]->SRV2RTV();
-}
-
-void RenderingEngine::CopyGlobalTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key)
-{
-	GetDevice()->CopyDescriptorsSimple(
-		1,
-		dest,
-		GetGlobalTextureStagingSRV(key).hCPU,
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
-	);
+	RenderTarget* src = GetGlobalStagingRenderTarget(key);
+	assert(src);
+	CopyTexture(src->GetHandleSRV().hCPU, dest);
 }
 
 void RenderingEngine::AddRenderObject(
@@ -409,16 +352,6 @@ void RenderingEngine::AddRenderObject(
 	RenderingInfo info = { obj };
 	switch (timing)
 	{
-	case Material::Shadow:
-		ShadowMapsPass->AddObj(obj);
-		break;
-	case Material::OpaqueDepthNormal:
-		ODepthNormalPass->AddObj(obj);
-		break;
-	case Material::AfterOpaqueDepthNormal:
-		if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(passType))
-			RenderingPasses[timing][passType]->AddObj(obj);
-		break;
 	case Material::Environment:
 		EnvironmentObjects.push_back(info);
 		break;
@@ -428,13 +361,12 @@ void RenderingEngine::AddRenderObject(
 	case Material::Forward:
 		ForwardObjects.push_back(info);
 		break;
-	case Material::TranslucentDepthNormal:
-		break;
-	case Material::Canvas:
-		break;
-	case Material::Other:
-		break;
 	default:
+		// パスで描画するタイミング
+		if (RenderingPass* pass = FindPass(timing, passType))
+		{
+			pass->AddObj(obj);	
+		}
 		break;
 	}
 }
@@ -444,112 +376,67 @@ ShadowPass* RenderingEngine::GetShadowMapsPass()
 	return ShadowMapsPass.get();
 }
 
-void RenderingEngine::CopyPassTextureSRV(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx)
+RenderingPass* RenderingEngine::FindPass(UINT timing, UINT type)
 {
-	std::shared_ptr<RenderTarget> src = GetPassTextureStaging(timing, type, idx);
-	GetDevice()->CopyDescriptorsSimple(
-		1,
-		dest,
-		src->GetHandleSRV().hCPU,
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
-	);
+	// シャドウと不透明深度法線はタイミングごとに固定のパス（種類は見ない）
+	switch (timing)
+	{
+	case Material::Shadow:
+		return ShadowMapsPass.get();
+	case Material::OpaqueDepthNormal:
+		return ODepthNormalPass.get();
+	default:
+		break;
+	}
+
+	auto passes = RenderingPasses.find(timing);
+	if (passes == RenderingPasses.end())
+	{
+		return nullptr;	
+	}
+	auto pass = passes->second.find(type);
+	return pass != passes->second.end() ? pass->second.get() : nullptr;
 }
 
 std::shared_ptr<RenderTarget> RenderingEngine::GetPassTextureStaging(UINT timing, UINT type, UINT idx)
 {
-	switch (timing)
-	{
-	case Material::Shadow:
-		return ShadowMapsPass->GetTextureStaging(idx);
-	case Material::OpaqueDepthNormal:
-		return ODepthNormalPass->GetTextureStaging(idx);
-	case Material::AfterOpaqueDepthNormal:
-		if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
-			return RenderingPasses[timing][type]->GetTextureStaging(idx);
-		break;
-	case Material::Environment:
-		return nullptr;
-	case Material::Deffered:
-		return nullptr;
-	case Material::Forward:
-		return nullptr;
-	case Material::TranslucentDepthNormal:
-		return nullptr;
-	case Material::Canvas:
-		return nullptr;
-	case Material::Other:
-		return nullptr;
-	default:
-		return nullptr;
-	}
-	return nullptr;
+	RenderingPass* pass = FindPass(timing, type);
+	return pass ? pass->GetTextureStaging(idx) : nullptr;
 }
 
 std::shared_ptr<RenderTarget> RenderingEngine::GetPassTexture(UINT timing, UINT type, UINT idx)
 {
-	switch (timing)
-	{
-	case Material::Shadow:
-		return ShadowMapsPass->GetTexture(idx);
-	case Material::OpaqueDepthNormal:
-		return ODepthNormalPass->GetTexture(idx);
-	case Material::AfterOpaqueDepthNormal:
-		if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
-			return RenderingPasses[timing][type]->GetTexture(idx);
-		break;
-	case Material::Environment:
-		return nullptr;
-	case Material::Deffered:
-		return nullptr;
-	case Material::Forward:
-		return nullptr;
-	case Material::TranslucentDepthNormal:
-		return nullptr;
-	case Material::Canvas:
-		return nullptr;
-	case Material::Other:
-		return nullptr;
-	default:
-		return nullptr;
-	}
-	return nullptr;
+	RenderingPass* pass = FindPass(timing, type);
+	return pass ? pass->GetTexture(idx) : nullptr;
+}
+
+void RenderingEngine::CopyPassTexture(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT timing, UINT type, UINT idx)
+{
+	std::shared_ptr<RenderTarget> src = GetPassTextureStaging(timing, type, idx);
+	assert(src);
+	CopyTexture(src->GetHandleSRV().hCPU, dest);
 }
 
 std::vector<DXGI_FORMAT> RenderingEngine::GetPassFormat(UINT timing, UINT type)
 {
-	std::vector<DXGI_FORMAT> formats;
+	if (RenderingPass* pass = FindPass(timing, type))
+	{
+		return pass->GetPassFormat();	
+	}
+
+	// パスを持たないタイミングはメインテクスチャに描画する
 	switch (timing)
 	{
-	case Material::Shadow:
-		return ShadowMapsPass->GetPassFormat();
-	case Material::OpaqueDepthNormal:
-		return ODepthNormalPass->GetPassFormat();
-	case Material::AfterOpaqueDepthNormal:
-		if (RenderingPasses.contains(timing) && RenderingPasses[timing].contains(type))
-			return RenderingPasses[timing][type]->GetPassFormat();
-		break;
 	case Material::Environment:
-		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
-		return formats;
 	case Material::Deffered:
-		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
-		return formats;
 	case Material::Forward:
-		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
-		return formats;
 	case Material::TranslucentDepthNormal:
-		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
-		return formats;
 	case Material::Canvas:
-		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
-		return formats;
 	case Material::Other:
-		formats.push_back(GlobalTextureFormat[GlobalTextureResourceKey::MainTexture]);
-		return formats;
+		return { GlobalTextureFormat[GlobalTextureResourceKey::MainTexture] };
 	default:
-		return std::vector<DXGI_FORMAT>();
+		return {};
 	}
-	return std::vector<DXGI_FORMAT>();
 }
 
 void RenderingEngine::ShadowMapsRendering()
@@ -564,12 +451,14 @@ void RenderingEngine::OpaqueDepthNormalRendering()
 
 void RenderingEngine::AfterOpaqueDepthNormalRendering()
 {
-	if (!RenderingPasses.contains(Material::RenderingTiming::AfterOpaqueDepthNormal))
-		return;
-	auto it = RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal].begin();
-	for (; it != RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal].end(); it++)
+	auto passes = RenderingPasses.find(Material::RenderingTiming::AfterOpaqueDepthNormal);
+	if (passes == RenderingPasses.end())
 	{
-		it->second->Execute();
+		return;	
+	}
+	for (auto& pass : passes->second)
+	{
+		pass.second->Execute();
 	}
 }
 
@@ -634,7 +523,7 @@ void RenderingEngine::DefferedRendering()
 	// ステージングから読み取り専用テクスチャへコピー
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		CopyTextureSRV(GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture + i].get()->GetHandleSRV().hCPU, GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i].get()->GetHandleSRV().hCPU);
+		CopyTexture(GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture + i].get()->GetHandleSRV().hCPU, GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i].get()->GetHandleSRV().hCPU);
 	}
 }
 

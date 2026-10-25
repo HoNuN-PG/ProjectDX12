@@ -17,7 +17,7 @@
 
 #define WINDOW_WIDTH (1920)
 #define WINDOW_HEIGHT (1080)
-#define BACKBUFFER_COUNT (2)　// バックバッファの数
+#define BACKBUFFER_COUNT (2) // バックバッファの数
 
 #define SAFE_RELEASE(p) do {if(p){p->Release();p = nullptr;}} while(0)
 

@@ -318,7 +318,7 @@ void Gauss::ExecuteScreenGauss2(UINT32 gaussIdx, RenderTarget* src, RenderTarget
 
 	//-------------------------------------------------------------------------------
 	// XBlur
-	RenderingEngine::CopyTextureSRV(src->GetHandleSRV().hCPU, GaussRTVs[bIdx]->GetHandleSRV().hCPU);
+	RenderingEngine::CopyTexture(src->GetHandleSRV().hCPU, GaussRTVs[bIdx]->GetHandleSRV().hCPU);
 	std::vector<RenderTarget*> targets1 = { GaussRTVs[xIdx].get()};
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen1[] =
 	{
@@ -376,7 +376,7 @@ void Gauss::ExecuteScreenGauss4(UINT32 gaussIdx, RenderTarget* src, RenderTarget
 
 	//-------------------------------------------------------------------------------
 	// XBlur
-	RenderingEngine::CopyTextureSRV(src->GetHandleSRV().hCPU, GaussRTVs[bIdx]->GetHandleSRV().hCPU);
+	RenderingEngine::CopyTexture(src->GetHandleSRV().hCPU, GaussRTVs[bIdx]->GetHandleSRV().hCPU);
 	std::vector<RenderTarget*> targets1 = { GaussRTVs[xIdx].get() };
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen1[] =
 	{
@@ -434,7 +434,7 @@ void Gauss::ExecuteScreenGauss8(UINT32 gaussIdx, RenderTarget* src, RenderTarget
 
 	//-------------------------------------------------------------------------------
 	// XBlur
-	RenderingEngine::CopyTextureSRV(src->GetHandleSRV().hCPU, GaussRTVs[bIdx]->GetHandleSRV().hCPU);
+	RenderingEngine::CopyTexture(src->GetHandleSRV().hCPU, GaussRTVs[bIdx]->GetHandleSRV().hCPU);
 	std::vector<RenderTarget*> targets1 = { GaussRTVs[xIdx].get() };
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen1[] =
 	{

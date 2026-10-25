@@ -89,7 +89,7 @@ void Vignette::Draw()
 	Params->Write(&VignetteParam);
 
 	// •`‰æ
-	engine->CopyGlobalTextureSRV(pRTV.get()->GetHandleSRV().hCPU, GlobalTextureResourceKey::MainTexture);
+	engine->CopyGlobalTexture(pRTV.get()->GetHandleSRV().hCPU, GlobalTextureResourceKey::MainTexture);
 	std::vector<RenderTarget*> targets = { pPostProcessRTV.get() };
 	D3D12_GPU_DESCRIPTOR_HANDLE handle[] =
 	{
@@ -99,5 +99,5 @@ void Vignette::Draw()
 	ScreenDraw(targets, pHeap->Get(), handle, _countof(handle), pRootSignatureData.get(), pPipelineData[0].get(), pScreen.get());
 
 	// MainTexture‚É’£‚è•t‚¯
-	engine->GetCopy()->ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine->GetGlobalStagingRenderTarget(GlobalTextureResourceKey::MainTexture).get());
+	engine->GetCopy()->ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine->GetGlobalStagingRenderTarget(GlobalTextureResourceKey::MainTexture));
 }
