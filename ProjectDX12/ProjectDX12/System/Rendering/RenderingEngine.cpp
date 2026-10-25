@@ -731,27 +731,27 @@ void RenderingEngine::ViewShadowMaps()
 	ImGui::Begin("ShadowMaps");
 	{
 		ImGui::Text("ShadowMap1");
-		ImGui::Image(ImGUIImage::GetImage(
+		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::Near).get()), size);
 		ImGui::Text("ShadowMap2");
-		ImGui::Image(ImGUIImage::GetImage(
+		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::Middle).get()), size);
 		ImGui::Text("ShadowMap3");
-		ImGui::Image(ImGUIImage::GetImage(
+		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::Far).get()), size);
 		ImGui::Text("VSMShadowMap1");
-		ImGui::Image(ImGUIImage::GetImage(
+		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::NearVSM).get()), size);
 		ImGui::Text("VSMShadowMap2");
-		ImGui::Image(ImGUIImage::GetImage(
+		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::MiddleVSM).get()), size);
 		ImGui::Text("VSMShadowMap3");
-		ImGui::Image(ImGUIImage::GetImage(
+		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
 			ShadowMapsPass->GetTexture(ShadowPass::FarVSM).get()), size);
 	}
@@ -763,11 +763,11 @@ void RenderingEngine::ViewDepthNormal()
 	ImGui::Begin("DepthNormal");
 	{
 		ImGui::Text("Depth");
-		ImGui::Image(ImGUIImage::GetImage(
+		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
 			ODepthNormalPass->GetTexture(OpaqueDepthNormalPass::DepthTexture).get()), { 240,135 });
 		ImGui::Text("Normal");
-		ImGui::Image(ImGUIImage::GetImage(
+		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
 			ODepthNormalPass->GetTexture(OpaqueDepthNormalPass::NormalTexture).get()), { 240,135 });
 	}
@@ -779,7 +779,7 @@ void RenderingEngine::ViewGBuffers()
 	ImGui::Begin("GBuffers");
 	{
 		ImGui::Text("DefferedAlbedo");
-		ImGui::Image(ImGUIImage::GetImage(
+		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(), 
 			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture].get()), { 240,135 });
 	}
@@ -795,7 +795,7 @@ void RenderingEngine::ViewPasses()
 	{
 		ImGui::Text("CustomDepthNormal");
 		ImGui::Image(
-			ImGUIImage::GetImage(
+			ImGUIImage::GetInstance()->GetImage(
 				pHeap.get(),
 				customDepthNormal->GetTexture(CustomDepthNormalPass::DepthTexture).get()
 				), 

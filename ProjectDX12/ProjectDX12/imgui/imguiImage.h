@@ -1,7 +1,6 @@
 #ifndef __DEBUG_IMGUI_H__
 #define __DEBUG_IMGUI_H__
 
-#include <DirectXMath.h>
 #include <memory>
 #include <vector>
 #include <Windows.h>
@@ -13,67 +12,73 @@
 #include "System/Rendering/Pipeline/RootSignature.h"
 #include "System/Rendering/Texture/RenderTarget.h"
 
+/// <summary>
+/// ImGUIの初期化・描画とImGUI::Imageで表示するテクスチャの管理（シングルトン）
+/// </summary>
 class ImGUIImage
 {
 private:
 
 	/// <summary>
-	/// 必要ヒープ数
+	/// 1フレームで表示できる画像の最大数
 	/// </summary>
-	static const int HEAP_NUM = 32;
+	static const int IMAGE_MAX = 32;
 
+public:
+	
+	static ImGUIImage* GetInstance();
+	static void Destroy();	// Uninitしてから破棄する
+	
 private:
+	
+	ImGUIImage() = default;
+	~ImGUIImage() = default;
+	
+	static ImGUIImage*  instance;
+
+public:
 
 	/// <summary>
-	/// ImGUI描画データ
+	/// ImGUIの初期化
 	/// </summary>
-	struct ImGUIImageData
-	{
-		bool bUsed;
-		std::unique_ptr<RenderTarget> pImage;
-	};
+	/// <returns>失敗したらfalse</returns>
+	bool Init(HWND hwnd);
 
-public:
+	/// <summary>
+	/// ImGUIの終了
+	/// GPUの処理完了後、UninitDirectXより前に呼ぶ
+	/// </summary>
+	void Uninit();
 
-	ImGUIImage();
-	~ImGUIImage();
+	/// <summary>
+	/// フレーム開始
+	/// </summary>
+	void NewFrame();
 
-public:
-
-	static MSG Create(HWND _hwnd);
-	static void Destroy();
-
-public:
-
-	// ImGUIのヒープを取得
-	static DescriptorHeap* GetImGUIDescriptorHeap() { return pHeap.get(); }
-
-private:
-
-	static std::unique_ptr<DescriptorHeap> pHeap;
-	static std::unique_ptr<DescriptorHeap> pRTVHeap;
+	/// <summary>
+	/// ImGUIの描画コマンドを発行
+	/// </summary>
+	void Render();
 
 public:
 
 	/// <summary>
 	/// ImGUI::Imageで表示するリソースの取得
 	/// </summary>
-	/// <param name="_heap">_srvに使用されているヒープ</param>
-	/// <param name="_srv"></param>
-	/// <returns></returns>
-	static ImTextureID GetImage(DescriptorHeap* _heap, RenderTarget* _srv);
-
-	/// <summary>
-	/// 描画終了
-	/// </summary>
-	static void Completed();
+	/// <param name="heap">srvに使用されているヒープ</param>
+	/// <param name="srv">表示するテクスチャ</param>
+	/// <returns>表示用テクスチャ（1フレームの上限を超えたら0）</returns>
+	ImTextureID GetImage(DescriptorHeap* heap, RenderTarget* srv);
 
 private:
 
-	static std::unique_ptr<MeshBuffer> pScreen;
-	static std::unique_ptr<RootSignature> pRootSignatureData;
-	static std::unique_ptr<PipelineState> pPipelineData;
-	static std::vector<ImGUIImageData> ImageData;
+	std::unique_ptr<DescriptorHeap> pHeap;				// フォントと表示画像のSRV
+	std::unique_ptr<DescriptorHeap> pRTVHeap;			// 表示画像のRTV
+	std::unique_ptr<MeshBuffer> pScreen;
+	std::unique_ptr<RootSignature> pRootSignatureData;
+	std::unique_ptr<PipelineState> pPipelineData;
+	std::vector<std::unique_ptr<RenderTarget>> Images;	// 表示画像（必要になった分だけ作成）
+	UINT UsedImageCount = 0;							// 今フレームで使用した表示画像の数
 
 };
 

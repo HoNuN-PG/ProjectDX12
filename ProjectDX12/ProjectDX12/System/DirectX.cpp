@@ -6,8 +6,6 @@
 #include "System/Rendering/Texture/RenderTarget.h"
 #include "System/DirectX.h"
 
-#define BACKBUFFER_COUNT (2)											// バックバッファの数
-
 ComPtr<ID3D12Device8>				g_pDevice;							// DirectX12デバイスオブジェクト
 ComPtr<IDXGIFactory6>				g_pFactory;							// ディスプレイへの出力機能の制御
 ComPtr<ID3D12CommandAllocator>		g_pCmdAllocator[BACKBUFFER_COUNT];	// コマンドアロケータ

@@ -20,7 +20,6 @@ bool bBorderlessed{ false };
 std::unique_ptr<TimerFPS> gTimer;
 std::unique_ptr<TimerFPS> gUpdateTimer;
 std::unique_ptr<TimerFPS> gDrawTimer;
-std::unique_ptr<ImGUIImage> gImGUIImage;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 LRESULT WinProc(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
@@ -77,21 +76,28 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	// 入力初期化
 	Input::Init();
 
-	// シーン初期化
-	if (FAILED(SceneManager::Init()))
+	// デバッグ用ImGUI初期化（レンダリングエンジンが使用するためシーンより先に初期化する）
+	if (!ImGUIImage::GetInstance()->Init(gWindow))
 	{
-		MessageBox(gWindow, TEXT("シーンの初期化に失敗しました"), TEXT("Error"), MB_OK | MB_ICONERROR);
-		WaitForGpu();
-		SceneManager::Uninit();
+		ImGUIImage::Destroy();
 		Input::Uninit();
 		UninitDirectX();
 		UnregisterClass(wc.lpszClassName, hInstance);
 		return -1;
 	}
 
-	// デバッグ用IｍGUI初期化
-	gImGUIImage = std::make_unique<ImGUIImage>();
-	gImGUIImage->Create(gWindow);
+	// シーン初期化
+	if (FAILED(SceneManager::Init()))
+	{
+		MessageBox(gWindow, TEXT("シーンの初期化に失敗しました"), TEXT("Error"), MB_OK | MB_ICONERROR);
+		WaitForGpu();
+		SceneManager::Uninit();
+		ImGUIImage::Destroy();
+		Input::Uninit();
+		UninitDirectX();
+		UnregisterClass(wc.lpszClassName, hInstance);
+		return -1;
+	}
 
 	timeBeginPeriod(1);
 
@@ -122,8 +128,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 			EndRendering();
 			gDrawTimer->et = timeGetTime();
 			float drf = gDrawTimer->GetObservationDbFPS(1);
-
-			gImGUIImage->Completed();
 		}
 	}
 	//------------------------------
@@ -133,15 +137,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 	// GPUの処理完了を待ってから解放する
 	WaitForGpu();
 
-	gImGUIImage->Destroy();
-	gImGUIImage.reset();
-	// Shutdown ImGui backends and destroy context
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-	
 	// Uninit
 	SceneManager::Uninit();
+
+	ImGUIImage::Destroy();
 	
 	Input::Uninit();
 	
@@ -260,9 +259,7 @@ void Update()
 void Draw()
 {
 	// ImGUI開始
-	ImGui_ImplDX12_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
+	ImGUIImage::GetInstance()->NewFrame();
 
 	// シーン描画
 	SceneManager::Draw();
@@ -274,8 +271,5 @@ void Draw()
 	ImGui::End();
 
 	// ImGUI終了
-	ImGui::Render();
-	ID3D12DescriptorHeap* heap = gImGUIImage->GetImGUIDescriptorHeap()->Get();
-	GetCommandList()->SetDescriptorHeaps(1, &heap);
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), GetCommandList());
+	ImGUIImage::GetInstance()->Render();
 }
