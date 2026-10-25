@@ -45,7 +45,7 @@ public:
 private:
 
 	std::unique_ptr<Copy>	pCopy;	// テクスチャのコピー処理
-	std::unique_ptr<Gauss>	pGauss;	// ガウスぼかし処理（pCopyを使用する）
+	std::unique_ptr<Gauss>	pGauss;	// ガウスぼかし処理（Copyクラスを使用する）
 
 	// ====================
 	// 描画ヒープ
@@ -104,6 +104,28 @@ public:
 private:
 
 	std::shared_ptr<DepthStencil> DSV;
+	
+	// ====================
+	// 環境オブジェクト
+private:
+
+	enum CameraType
+	{
+		MAIN = 0,
+		FRUSTUM,
+
+		MAX
+	};
+	CameraType CurrentCameraType = CameraType::MAIN;
+
+public:
+
+	std::shared_ptr<CameraBase> GetCamera() { return Camera[CurrentCameraType]; }
+
+private:
+
+	std::shared_ptr<CameraBase> Camera[CameraType::MAX];
+	std::shared_ptr<LightBase> Light;
 
 	// ====================
 	// DefferedRendering
@@ -134,29 +156,7 @@ public:
 private:
 
 	DefferedData DefferedLightingShader;
-
-	// ====================
-	// 環境オブジェクト
-private:
-
-	enum CameraType
-	{
-		MAIN = 0,
-		FRUSTUM,
-
-		MAX
-	};
-	CameraType CurrentCameraType = CameraType::MAIN;
-
-public:
-
-	std::shared_ptr<CameraBase> GetCamera() { return Camera[CurrentCameraType]; }
-
-private:
-
-	std::shared_ptr<CameraBase> Camera[CameraType::MAX];
-	std::shared_ptr<LightBase> Light;
-
+	
 	// ====================
 	// レンダリングオブジェクト
 public:

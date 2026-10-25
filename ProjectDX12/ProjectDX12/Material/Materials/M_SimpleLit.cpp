@@ -104,8 +104,8 @@ void M_OpaqueSimpleLit::Initialize(Description desc)
 	PipelineState::Description pipeline = {
 		L"",
 		L"",
-		pipeline.VSFile = L"../game/assets/shader/VS_Object.cso",
-		pipeline.PSFile = L"../game/assets/shader/PS_OpaqueSimpleLit.cso",
+		L"../game/assets/shader/VS_Object.cso",
+		L"../game/assets/shader/PS_OpaqueSimpleLit.cso",
 		nullptr,
 		PipelineState::IED_POS_NOR_TEX_COLOR,
 		PipelineState::IED_POS_NOR_TEX_COLOR_COUNT,

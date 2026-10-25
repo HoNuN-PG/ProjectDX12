@@ -8,17 +8,23 @@
 
 ConstantWVP CalcConstantWVP::Calc3DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOAT3 Rot, DirectX::XMFLOAT3 Scale)
 {
-	ConstantWVP wvp;
-
-	// ワールドマトマトリクス設定
+	// ワールドマトリクス計算
 	DirectX::XMMATRIX scale, rot, trans;
 	scale = DirectX::XMMatrixScaling(Scale.x, Scale.y, Scale.z);
 	rot = DirectX::XMMatrixRotationRollPitchYaw(Rot.x, Rot.y, Rot.z);
 	trans = DirectX::XMMatrixTranslation(Pos.x, Pos.y, Pos.z);
-	DirectX::XMMATRIX world = scale * rot * trans;
-	world = DirectX::XMMatrixTranspose(world);
+	DirectX::XMFLOAT4X4 world;
+	DirectX::XMStoreFloat4x4(&world, scale * rot * trans);
 
-	DirectX::XMStoreFloat4x4(&(wvp.world), world);
+	return Calc3DMatrix(world);
+}
+
+ConstantWVP CalcConstantWVP::Calc3DMatrix(const DirectX::XMFLOAT4X4& World)
+{
+	ConstantWVP wvp;
+
+	// ワールドマトリクス設定
+	DirectX::XMStoreFloat4x4(&(wvp.world), DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&World)));
 
 	// ビューマトリクス設定
 	CameraBase* camera = SceneManager::GetCamera().get();

@@ -49,7 +49,7 @@ void Model::CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool invV)
 	// 読み込んだデータから頂点バッファ生成
 	MeshBuffer::Description desc = {};
 	desc.vtxSize	= sizeof(Vtx);
-	desc.idxSize	= DXGI_FORMAT_R16_UINT;
+	desc.idxSize	= DXGI_FORMAT_R32_UINT;
 	desc.topology	= D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	dest.Vertices.resize(src->mNumVertices);
@@ -105,12 +105,7 @@ void Model::Rendering()
 	for(auto&& info : infos)
 	{
 		// マテリアル設定
-		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(
-			Owner->GetPosition(),
-			Owner->GetRotation(),
-			Owner->GetScale()),
-			info.materialInstanceIdx
-		);
+		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(Owner->GetWorldMatrix()), info.materialInstanceIdx);
 		info.material->Bind(info.materialInstanceIdx);
 		// 描画
 		pMesh[info.meshIdx]->Draw();
@@ -159,7 +154,7 @@ void MeshletModel::CreateMesh(Mesh& dest, const aiMesh* src, bool invU, bool inv
 	MeshletBuffer::Description desc = {};
 	desc.pHeap		= heap;
 	desc.vtxSize	= sizeof(Vtx);
-	desc.idxSize	= DXGI_FORMAT_R16_UINT;
+	desc.idxSize	= DXGI_FORMAT_R32_UINT;
 
 	// 頂点データ作成
 	for (int i = 0; i < src->mNumVertices; ++i)
@@ -218,12 +213,7 @@ void MeshletModel::Rendering()
 	for (auto&& info : infos)
 	{
 		// マテリアル設定
-		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(
-			Owner->GetPosition(),
-			Owner->GetRotation(),
-			Owner->GetScale()),
-			info.materialInstanceIdx
-		);
+		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(Owner->GetWorldMatrix()), info.materialInstanceIdx);
 		info.material->WriteMeshletCount(pMesh[info.meshIdx]->GetMeshletCount());
 		info.material->Bind(info.materialInstanceIdx);
 		// 描画

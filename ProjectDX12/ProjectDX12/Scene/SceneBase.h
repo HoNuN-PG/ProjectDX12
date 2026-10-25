@@ -43,6 +43,16 @@ public:
 	virtual void Update()	= 0;
 	virtual void Draw()		= 0;
 
+	// レンダリングエンジン
+public:
+
+	RenderingEngine* GetRenderingEngine();
+
+private:
+
+	std::unique_ptr<RenderingEngine> pEngine;
+
+	
 	// ゲームオブジェクト
 public:
 
@@ -89,16 +99,7 @@ public:
 protected:
 
 	std::array<std::list<std::shared_ptr<GameObject>>, MAX_LAYER> GameObjects;
-
-	// レンダリングエンジン
-public:
-
-	RenderingEngine* GetRenderingEngine();
-
-private:
-
-	std::unique_ptr<RenderingEngine> pEngine;
-
+	
 	// シーンヒープ
 public:
 
@@ -107,7 +108,7 @@ public:
 protected:
 
 	std::unique_ptr<DescriptorHeap>	pHeap;
-	static constexpr UINT SCENE_HEAP_SIZE = 256;	// シーンヒープの最大数
+	static constexpr UINT SCENE_HEAP_SIZE = 256; // シーンヒープの最大数
 
 };
 

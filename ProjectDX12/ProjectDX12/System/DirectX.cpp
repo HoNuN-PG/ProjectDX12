@@ -70,6 +70,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 			}
 		}
 	}
+	if (FAILED(hr)) { return hr; }
 
 	// MeshShaderのサポートを確認
 	D3D12_FEATURE_DATA_D3D12_OPTIONS7 options7 = {};
@@ -78,10 +79,8 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 		&options7,
 		sizeof(options7)
 	);
-	if (FAILED(hr) || options7.MeshShaderTier == D3D12_MESH_SHADER_TIER_NOT_SUPPORTED)
-	{
-		return hr;
-	}
+	if (FAILED(hr)) { return hr; }
+	if (options7.MeshShaderTier == D3D12_MESH_SHADER_TIER_NOT_SUPPORTED) { return E_FAIL; }
 
 	// コマンドの種類
 	D3D12_COMMAND_LIST_TYPE cmdListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -133,8 +132,8 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 			cmdListType,
 			IID_PPV_ARGS(g_pCmdAllocator[i].ReleaseAndGetAddressOf())
 		);
+		if (FAILED(hr)) { return hr; }
 	}
-	if (FAILED(hr)) { return hr; }
 
 	// コマンドリスト
 	hr = g_pDevice->CreateCommandList(
@@ -162,6 +161,7 @@ HRESULT InitDirectX(HWND hWnd, UINT width, UINT height, bool fullscreen)
 	{
 		// ディスプレイに紐づいたリソースから、ディスクリプタを作成
 		hr = g_pSwapChain->GetBuffer(i, IID_PPV_ARGS(g_pBackBuf[i].ReleaseAndGetAddressOf()));
+		if (FAILED(hr)) { return hr; }
 		g_pDevice->CreateRenderTargetView(g_pBackBuf[i].Get(), nullptr, handle);
 
 		// ヒープ内の次の位置へ移動
@@ -190,8 +190,8 @@ void WaitForGpu()
 	// コマンドの完了をチェック
 	if (g_pFence->GetCompletedValue() < fence)
 	{
-		g_pFence->SetEventOnCompletion(fence, g_fenceEvent);	// 終了値に到達した際に通知するイベントを設定
-		WaitForSingleObject(g_fenceEvent, INFINITE);			// イベントが発行されるまで待機
+		g_pFence->SetEventOnCompletion(fence, g_fenceEvent);	 // 終了値に到達した際に通知するイベントを設定
+		WaitForSingleObject(g_fenceEvent, INFINITE); // イベントが発行されるまで待機
 	}
 }
 
@@ -236,8 +236,8 @@ void BeginRendering()
 {
 	float clearColor[4] = { 0, 0, 0, 0 };
 
-	g_pCmdAllocator[g_BackBufferIdx]->Reset();										// コマンドアロケーターのクリア
-	g_pCmdList->Reset(g_pCmdAllocator[g_BackBufferIdx].Get(), nullptr);				// コマンドリストのクリア
+	g_pCmdAllocator[g_BackBufferIdx]->Reset(); // コマンドアロケーターのクリア
+	g_pCmdList->Reset(g_pCmdAllocator[g_BackBufferIdx].Get(), nullptr); // コマンドリストのクリア
 
 	// バックバッファに対するリソースバリア
 	D3D12_RESOURCE_BARRIER barrierDesc = {};
@@ -273,8 +273,8 @@ void EndRendering()
 	g_pCmdList->ResourceBarrier(1, &barrierDesc);
 
 	// 描画命令発行停止
-	g_pCmdList->Close();							// コマンドリストの停止
-	g_pCmdQueue->ExecuteCommandLists(1, pCmdList);	// コマンドリストの内容を発行
+	g_pCmdList->Close(); // コマンドリストの停止
+	g_pCmdQueue->ExecuteCommandLists(1, pCmdList); // コマンドリストの内容を発行
 
 	// 画面出力
 	g_pSwapChain->Present(1, 0);

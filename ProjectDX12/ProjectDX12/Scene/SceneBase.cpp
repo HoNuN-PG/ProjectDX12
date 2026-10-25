@@ -20,6 +20,8 @@ HRESULT SceneBase::InitBase()
 
 void SceneBase::UninitBase()
 {
+	Uninit();
+	
 	for (auto& objectList : GameObjects)
 	{
 		for (const std::shared_ptr<GameObject>& object : objectList)
@@ -28,8 +30,6 @@ void SceneBase::UninitBase()
 		}
 		objectList.clear();
 	}
-
-	Uninit();
 
 	if (pEngine)
 	{

@@ -73,7 +73,7 @@ DescriptorHeap::Handle DescriptorHeap::Allocate()
 
 void DescriptorHeap::Bind()
 {
-	GetCommandList()->SetDescriptorHeaps(1, &Heap);
+	GetCommandList()->SetDescriptorHeaps(1, Heap.GetAddressOf());
 }
 
 void DescriptorHeap::Bind(ID3D12DescriptorHeap** _heaps, UINT _num)

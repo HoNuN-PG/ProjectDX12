@@ -134,7 +134,7 @@ public:
 
 private:
 
-	class RenderingEngine* pEngine; // レンダリングエンジンとゲームオブジェクトはシーン管理でありレンダリングエンジンの方が寿命が長いため参照が保証されている
+	class RenderingEngine* pEngine = nullptr; // レンダリングエンジンとゲームオブジェクトはシーン管理でありレンダリングエンジンの方が寿命が長いため参照が保証されている
 	std::vector<class RenderingComponent*> RenderingComponents;	// 描画コンポーネント（Componentsが所有するため参照が保証されている）
 
 };

@@ -49,8 +49,8 @@ MeshBuffer::MeshBuffer(Description desc)
 	if (SUCCEEDED(hr)) 
 	{
 		memcpy_s(pVtxMap, resDesc.Width, desc.pVtx, resDesc.Width);
+		Vtx->Unmap(0, nullptr);
 	}
-	Vtx->Unmap(0, nullptr);
 
 	// 頂点バッファビューの設定
 	Vbv.BufferLocation	= Vtx->GetGPUVirtualAddress();
@@ -77,6 +77,7 @@ MeshBuffer::MeshBuffer(Description desc)
 		nullptr,
 		IID_PPV_ARGS(Idx.GetAddressOf())
 	);
+	if (FAILED(hr)) { return; }
 
 	// インデックスバッファの初期値設定
 	void* pIdxMap	= nullptr;
@@ -84,8 +85,8 @@ MeshBuffer::MeshBuffer(Description desc)
 	if (SUCCEEDED(hr)) 
 	{
 		memcpy_s(pIdxMap, resDesc.Width, desc.pIdx, resDesc.Width);
+		Idx->Unmap(0, nullptr);
 	}
-	Idx->Unmap(0, nullptr);
 
 	// インデックスバッファビューの設定
 	Ibv.BufferLocation	= Idx->GetGPUVirtualAddress();
@@ -159,8 +160,8 @@ MeshletBuffer::MeshletBuffer(Description desc)
 	if (SUCCEEDED(hr))
 	{
 		memcpy_s(pVtxMap, resDesc.Width, desc.pVtx, resDesc.Width);
+		Vtx->Unmap(0, nullptr);
 	}
-	Vtx->Unmap(0, nullptr);
 
 	// シェーダーリソースビューの作成
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -207,8 +208,8 @@ MeshletBuffer::MeshletBuffer(Description desc)
 	if (SUCCEEDED(hr))
 	{
 		memcpy_s(pMeshletMap, resDesc.Width, meshlets.data(), resDesc.Width);
+		pMeshlets->Unmap(0, nullptr);
 	}
-	pMeshlets->Unmap(0, nullptr);
 
 	// シェーダーリソースビューの作成
 	srvDesc.Buffer.NumElements = meshlets.size();
@@ -236,8 +237,8 @@ MeshletBuffer::MeshletBuffer(Description desc)
 	if (SUCCEEDED(hr))
 	{
 		memcpy_s(pUniqueVIBMap, resDesc.Width, uniqueVertexIndices.data(), resDesc.Width);
+		pUniqueVertexIndices->Unmap(0, nullptr);
 	}
-	pUniqueVertexIndices->Unmap(0, nullptr);
 
 	// シェーダーリソースビューの作成
 	srvDesc.Buffer.NumElements = uniqueVertexIndices.size();
@@ -265,8 +266,8 @@ MeshletBuffer::MeshletBuffer(Description desc)
 	if (SUCCEEDED(hr))
 	{
 		memcpy_s(pPrimitiveIndicesMap, resDesc.Width, primitiveIndices.data(), resDesc.Width);
+		pPrimitiveIndices->Unmap(0, nullptr);
 	}
-	pPrimitiveIndices->Unmap(0, nullptr);
 
 	// シェーダーリソースビューの作成
 	srvDesc.Buffer.NumElements = primitiveIndices.size();
@@ -303,8 +304,8 @@ MeshletBuffer::MeshletBuffer(Description desc)
 	if (SUCCEEDED(hr))
 	{
 		memcpy_s(pCullDatasMap, resDesc.Width, cullDatas.data(), resDesc.Width);
+		pCullDatas->Unmap(0, nullptr);
 	}
-	pCullDatas->Unmap(0, nullptr);
 
 	// シェーダーリソースビューの作成
 	srvDesc.Buffer.NumElements = cullDatas.size();

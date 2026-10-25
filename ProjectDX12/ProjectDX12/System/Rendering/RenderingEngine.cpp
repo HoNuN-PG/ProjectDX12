@@ -183,10 +183,10 @@ void RenderingEngine::Init()
 void RenderingEngine::Uninit()
 {
 	RenderingPasses.clear();
+	CanvasPostProcess.reset();
+	ObjectPostProcess.reset();
 	ODepthNormalPass.reset();
 	ShadowMapsPass.reset();
-	ObjectPostProcess.reset();
-	CanvasPostProcess.reset();
 	pGauss.reset();
 	pCopy.reset();
 	Volume::Unload();
@@ -789,12 +789,18 @@ void RenderingEngine::ViewGBuffers()
 void RenderingEngine::ViewPasses()
 {
 	ImGui::Begin("Passes");
+	RenderingPass* customDepthNormal = 
+		GetRenderingPass<RenderingPass>(Material::RenderingTiming::AfterOpaqueDepthNormal, RenderingPass::CustomDepthNormal);
+	if (customDepthNormal)
 	{
-		ImGui::Text("CustomDepth");
-		ImGui::Image(ImGUIImage::GetImage(
-			pHeap.get(),
-			RenderingPasses[Material::RenderingTiming::AfterOpaqueDepthNormal][RenderingPass::CustomDepthNormal]->
-			GetTexture(CustomDepthNormalPass::DepthTexture).get()), {240,135});
+		ImGui::Text("CustomDepthNormal");
+		ImGui::Image(
+			ImGUIImage::GetImage(
+				pHeap.get(),
+				customDepthNormal->GetTexture(CustomDepthNormalPass::DepthTexture).get()
+				), 
+{240,135}
+			);
 	}
 	ImGui::End();
 }

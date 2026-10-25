@@ -22,7 +22,7 @@ public:
 	struct Mesh
 	{
 		std::vector<Vtx> Vertices;
-		std::vector<WORD> Indices;
+		std::vector<uint32_t> Indices;
 	};
 
 public:

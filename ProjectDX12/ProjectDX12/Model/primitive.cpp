@@ -20,12 +20,7 @@ void Primitive::Rendering()
 	for (auto&& info : infos)
 	{
 		// ƒ}ƒeƒŠƒAƒ‹Ý’è
-		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(
-			Owner->GetPosition(),
-			Owner->GetRotation(),
-			Owner->GetScale()),
-			info.materialInstanceIdx
-		);
+		info.material->WriteWVP(CalcConstantWVP::Calc3DMatrix(Owner->GetWorldMatrix()), info.materialInstanceIdx);
 		info.material->Bind(info.materialInstanceIdx);
 		// •`‰æ
 		pMesh[info.meshIdx]->Draw();
