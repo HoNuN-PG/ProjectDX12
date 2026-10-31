@@ -32,6 +32,7 @@ Gauss::Gauss(Copy& copy)
 		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.num = 
 			BlurParam::GAUSS_MAX * GaussRTVType::RTV_MAX +			// RTV数分確保
+			BlurParam::GAUSS_MAX +									// 入力SRV分確保
 			BlurParam::GAUSS_MAX * GaussScreenType::Screen_MAX +	// スクリーン定数バッファ分確保
 			BlurParam::GAUSS_WEIGHTS_TYPE;							// 重み定数バッファ分確保
 		pHeap = std::make_unique<DescriptorHeap>(desc);
@@ -308,7 +309,6 @@ void Gauss::CalcWeights(std::weak_ptr<float[]> weights, int num, float blur)
 
 void Gauss::ExecuteScreenGauss2(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest)
 {
-	UINT bIdx = GaussRTVType::Buffer + (gaussIdx * GaussRTVType::RTV_MAX);
 	UINT xIdx = GaussRTVType::XBlur + (gaussIdx * GaussRTVType::RTV_MAX);
 	UINT yIdx = GaussRTVType::YBlur + (gaussIdx * GaussRTVType::RTV_MAX);
 
@@ -318,12 +318,12 @@ void Gauss::ExecuteScreenGauss2(UINT32 gaussIdx, RenderTarget* src, RenderTarget
 
 	//-------------------------------------------------------------------------------
 	// XBlur
-	RenderingEngine::CopyTexture(src->GetHandleSRV().hCPU, GaussRTVs[bIdx]->GetHandleSRV().hCPU);
+	RenderingEngine::CopyTexture(src->GetHandleSRV().hCPU, SrcSRVs[gaussIdx].hCPU);
 	std::vector<RenderTarget*> targets1 = { GaussRTVs[xIdx].get()};
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen1[] =
 	{
 		Params[gaussIdx * 2]->GetHandle().hGPU,
-		GaussRTVs[bIdx]->GetHandleSRV().hGPU,
+		SrcSRVs[gaussIdx].hGPU,
 		Gauss2Param->GetHandle().hGPU,
 	};
 	ScreenDraw(
@@ -366,7 +366,6 @@ void Gauss::ExecuteScreenGauss2(UINT32 gaussIdx, RenderTarget* src, RenderTarget
 
 void Gauss::ExecuteScreenGauss4(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest)
 {
-	UINT bIdx = GaussRTVType::Buffer + (gaussIdx * GaussRTVType::RTV_MAX);
 	UINT xIdx = GaussRTVType::XBlur + (gaussIdx * GaussRTVType::RTV_MAX);
 	UINT yIdx = GaussRTVType::YBlur + (gaussIdx * GaussRTVType::RTV_MAX);
 
@@ -376,12 +375,12 @@ void Gauss::ExecuteScreenGauss4(UINT32 gaussIdx, RenderTarget* src, RenderTarget
 
 	//-------------------------------------------------------------------------------
 	// XBlur
-	RenderingEngine::CopyTexture(src->GetHandleSRV().hCPU, GaussRTVs[bIdx]->GetHandleSRV().hCPU);
+	RenderingEngine::CopyTexture(src->GetHandleSRV().hCPU, SrcSRVs[gaussIdx].hCPU);
 	std::vector<RenderTarget*> targets1 = { GaussRTVs[xIdx].get() };
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen1[] =
 	{
 		Params[gaussIdx * 2]->GetHandle().hGPU,
-		GaussRTVs[bIdx]->GetHandleSRV().hGPU,
+		SrcSRVs[gaussIdx].hGPU,
 		Gauss4Param->GetHandle().hGPU,
 	};
 	ScreenDraw(
@@ -424,7 +423,6 @@ void Gauss::ExecuteScreenGauss4(UINT32 gaussIdx, RenderTarget* src, RenderTarget
 
 void Gauss::ExecuteScreenGauss8(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest)
 {
-	UINT bIdx = GaussRTVType::Buffer + (gaussIdx * GaussRTVType::RTV_MAX);
 	UINT xIdx = GaussRTVType::XBlur + (gaussIdx * GaussRTVType::RTV_MAX);
 	UINT yIdx = GaussRTVType::YBlur + (gaussIdx * GaussRTVType::RTV_MAX);
 
@@ -434,12 +432,12 @@ void Gauss::ExecuteScreenGauss8(UINT32 gaussIdx, RenderTarget* src, RenderTarget
 
 	//-------------------------------------------------------------------------------
 	// XBlur
-	RenderingEngine::CopyTexture(src->GetHandleSRV().hCPU, GaussRTVs[bIdx]->GetHandleSRV().hCPU);
+	RenderingEngine::CopyTexture(src->GetHandleSRV().hCPU, SrcSRVs[gaussIdx].hCPU);
 	std::vector<RenderTarget*> targets1 = { GaussRTVs[xIdx].get() };
 	D3D12_GPU_DESCRIPTOR_HANDLE hScreen1[] =
 	{
 		Params[gaussIdx * 2]->GetHandle().hGPU,
-		GaussRTVs[bIdx]->GetHandleSRV().hGPU,
+		SrcSRVs[gaussIdx].hGPU,
 		Gauss8Param->GetHandle().hGPU,
 	};
 	ScreenDraw(
@@ -482,16 +480,15 @@ void Gauss::ExecuteScreenGauss8(UINT32 gaussIdx, RenderTarget* src, RenderTarget
 
 void Gauss::MakeGaussData(UINT32 gaussIdx, DirectX::XMFLOAT2 screen, int split)
 {
+	// 入力SRV（実行時に入力テクスチャのSRVをコピーする）
+	SrcSRVs.push_back(pHeap->Allocate());
+
 	// RTV
 	{
 		RenderTarget::Description desc = {};
 		desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		desc.pRTVHeap = pRTVHeap.get();
 		desc.pSRVHeap = pHeap.get();
-
-		desc.width = screen.x;
-		desc.height = screen.y;
-		GaussRTVs.push_back(std::make_unique<RenderTarget>(desc));
 
 		desc.width = screen.x / split;
 		desc.height = screen.y;

@@ -116,8 +116,7 @@ void M_GridShadow::Initialize(Description desc)
 	Material::SetUp(
 		desc.pHeap,
 		rootsignature,
-		pipeline,
-		3
+		pipeline
 	);
 	M_ShadowRecieverBase::Initialize(desc);
 
@@ -136,9 +135,9 @@ void M_GridShadow::Bind(UINT materialinstance)
 		WVP[materialinstance]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 		Params[2]->GetHandle().hGPU,
-		ShadowMaps[ShadowPass::TextureType::Near]->GetHandleSRV().hGPU,
-		ShadowMaps[ShadowPass::TextureType::Middle]->GetHandleSRV().hGPU,
-		ShadowMaps[ShadowPass::TextureType::Far]->GetHandleSRV().hGPU,
+		ShadowMapSRVs[ShadowPass::TextureType::Near].hGPU,
+		ShadowMapSRVs[ShadowPass::TextureType::Middle].hGPU,
+		ShadowMapSRVs[ShadowPass::TextureType::Far].hGPU,
 		Params[0]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 		Params[2]->GetHandle().hGPU,
@@ -197,8 +196,7 @@ void M_GridShadowVSM::Initialize(Description desc)
 	Material::SetUp(
 		desc.pHeap,
 		rootsignature,
-		pipeline,
-		3
+		pipeline
 	);
 	M_ShadowVSMRecieverBase::Initialize(desc);
 
@@ -217,9 +215,9 @@ void M_GridShadowVSM::Bind(UINT materialinstance)
 		WVP[materialinstance]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 		Params[2]->GetHandle().hGPU,
-		ShadowMaps[ShadowPass::TextureType::Near]->GetHandleSRV().hGPU,
-		ShadowMaps[ShadowPass::TextureType::Middle]->GetHandleSRV().hGPU,
-		ShadowMaps[ShadowPass::TextureType::Far]->GetHandleSRV().hGPU,
+		ShadowMapSRVs[ShadowPass::TextureType::Near].hGPU,
+		ShadowMapSRVs[ShadowPass::TextureType::Middle].hGPU,
+		ShadowMapSRVs[ShadowPass::TextureType::Far].hGPU,
 		Params[0]->GetHandle().hGPU,
 		Params[1]->GetHandle().hGPU,
 		Params[2]->GetHandle().hGPU,

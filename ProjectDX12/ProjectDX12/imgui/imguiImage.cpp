@@ -175,6 +175,11 @@ void ImGUIImage::Render()
 
 ImTextureID ImGUIImage::GetImage(DescriptorHeap* heap, RenderTarget* srv)
 {
+	return GetImage(heap, srv->GetHandleSRV().hGPU);
+}
+
+ImTextureID ImGUIImage::GetImage(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE srv)
+{
 	// 使用する表示画像を決定（足りなければ作成）
 	if (UsedImageCount >= IMAGE_MAX) return (ImTextureID)0;
 	
@@ -197,7 +202,7 @@ ImTextureID ImGUIImage::GetImage(DescriptorHeap* heap, RenderTarget* srv)
 	std::vector<RenderTarget*> targets = { target };
 	D3D12_GPU_DESCRIPTOR_HANDLE handle[] =
 	{
-		srv->GetHandleSRV().hGPU,
+		srv,
 	};
 	ScreenDraw(targets, heap->Get(), handle, _countof(handle), pRootSignatureData.get(), pPipelineData.get(), pScreen.get());
 

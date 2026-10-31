@@ -60,8 +60,7 @@ public:
 	};
 	enum GaussRTVType
 	{
-		Buffer = 0,
-		XBlur,
+		XBlur = 0,
 		YBlur,
 
 		RTV_MAX
@@ -118,11 +117,12 @@ private:
 
 private:
 
-	class Copy*													pCopy;	// コピー処理（RenderingEngineが所有しGaussより長生きする）
+	class Copy*													pCopy; // コピー処理（RenderingEngineが所有しGaussより長生きする）
 	std::unique_ptr<MeshBuffer>									pScreen;
 	std::unique_ptr<DescriptorHeap>								pHeap;
 	std::unique_ptr<DescriptorHeap>								pRTVHeap;
 	std::vector<std::unique_ptr<RenderTarget>>					GaussRTVs;
+	std::vector<DescriptorHeap::Handle>							SrcSRVs; // 入力テクスチャのSRVのコピー先
 	std::vector<std::unique_ptr<class ConstantBuffer>>			Params;
 
 private:

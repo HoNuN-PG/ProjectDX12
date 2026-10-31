@@ -54,7 +54,7 @@ public:
 	virtual void Bind(UINT materialinstance) override;
 
 protected:
-	std::vector<std::shared_ptr<RenderTarget>> ShadowMaps;
+	std::vector<DescriptorHeap::Handle> ShadowMapSRVs;	// パスのシャドウマップのSRVのコピー先
 
 };
 
@@ -65,7 +65,7 @@ public:
 	virtual void Bind(UINT materialinstance) override;
 
 protected:
-	std::vector<std::shared_ptr<RenderTarget>> ShadowMaps;
+	std::vector<DescriptorHeap::Handle> ShadowMapSRVs;	// パスのシャドウマップのSRVのコピー先
 
 };
 

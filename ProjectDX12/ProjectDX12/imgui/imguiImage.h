@@ -70,6 +70,14 @@ public:
 	/// <returns>表示用テクスチャ（1フレームの上限を超えたら0）</returns>
 	ImTextureID GetImage(DescriptorHeap* heap, RenderTarget* srv);
 
+	/// <summary>
+	/// ImGUI::Imageで表示するリソースの取得
+	/// </summary>
+	/// <param name="heap">srvに使用されているヒープ</param>
+	/// <param name="srv">表示するテクスチャのSRV</param>
+	/// <returns>表示用テクスチャ（1フレームの上限を超えたら0）</returns>
+	ImTextureID GetImage(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE srv);
+
 private:
 
 	std::unique_ptr<DescriptorHeap> pHeap;				// フォントと表示画像のSRV

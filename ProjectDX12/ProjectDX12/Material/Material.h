@@ -88,8 +88,7 @@ protected:
 	void SetUp(
 		DescriptorHeap* heap,
 		RootSignature::Description rootsignature,
-		PipelineState::Description pipeline,
-		UINT rtvNum = 0
+		PipelineState::Description pipeline
 	);
 
 	// =============================================
@@ -169,7 +168,6 @@ protected:
 protected:
 
 	DescriptorHeap*	pHeap;
-	std::unique_ptr<DescriptorHeap>	pRTVHeap;
 	std::unique_ptr<RootSignature> pRootSignatureData;
 	std::unique_ptr<PipelineState> pPipelineData;
 

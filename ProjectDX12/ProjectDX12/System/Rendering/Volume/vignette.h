@@ -29,11 +29,11 @@ public:
 
 private:
 
-	std::shared_ptr<RenderTarget>	pRTV;
+	std::shared_ptr<RenderTarget> pRTV;
 
 private:
 
-	VignetteParams					VignetteParam;
+	VignetteParams VignetteParam;
 
 };
 

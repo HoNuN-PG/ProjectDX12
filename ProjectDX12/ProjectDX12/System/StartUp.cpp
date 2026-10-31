@@ -139,7 +139,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPUTSTR lpCmd
 
 	// Uninit
 	SceneManager::Uninit();
-
+	
 	ImGUIImage::Destroy();
 	
 	Input::Uninit();

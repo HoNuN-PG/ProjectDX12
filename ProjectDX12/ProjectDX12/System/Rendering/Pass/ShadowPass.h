@@ -90,9 +90,10 @@ private:
 	// テクスチャ
 	std::vector<std::unique_ptr<DepthStencil>> DSVs;
 	std::vector<std::shared_ptr<RenderTarget>> StagingShadowMaps;
-	std::vector<std::shared_ptr<RenderTarget>> ShadowMaps;
 	std::vector<std::shared_ptr<RenderTarget>> StagingVSMShadowMaps;
-	std::vector<std::shared_ptr<RenderTarget>> VSMShadowMaps;
+	// シェーダーから参照するSRV（ステージングのSRVをコピーしたもの）
+	std::vector<DescriptorHeap::Handle> ShadowMapSRVs;
+	std::vector<DescriptorHeap::Handle> VSMShadowMapSRVs;
 
 	// ガウスパラメータ
 	int GaussIdx[TextureType::NearVSM];

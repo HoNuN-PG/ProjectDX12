@@ -27,8 +27,8 @@ private:
 
 private:
 
-	std::unique_ptr<MeshBuffer>		pScreen;
-	std::unique_ptr<RootSignature>	pRootSignatureData;
+	std::unique_ptr<MeshBuffer>	pScreen;
+	std::unique_ptr<RootSignature> pRootSignatureData;
 	std::unordered_map<DXGI_FORMAT,std::unique_ptr<PipelineState>> pPipelineData;
 
 };

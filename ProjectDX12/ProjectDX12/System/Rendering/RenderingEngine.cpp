@@ -82,8 +82,9 @@ void RenderingEngine::Init()
 			desc.pRTVHeap = pRTVHeap.get();
 			desc.pSRVHeap = pStagingHeap.get();
 			GlobalTextureStaging[GlobalTextureResourceKey::MainTexture] = std::make_unique<RenderTarget>(desc);
-			desc.pSRVHeap = pHeap.get();
-			GlobalTexture[GlobalTextureResourceKey::MainTexture] = std::make_unique<RenderTarget>(desc);
+			// SRV（ステージングのリソースは作り直さないため初期化時に一度だけコピーする）
+			GlobalTextureSRV[GlobalTextureResourceKey::MainTexture] = pHeap->Allocate();
+			CopyTexture(GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->GetHandleSRV().hCPU, GlobalTextureSRV[GlobalTextureResourceKey::MainTexture].hCPU);
 		}
 		// GBuffer
 		{
@@ -94,8 +95,8 @@ void RenderingEngine::Init()
 			desc.pRTVHeap = pRTVHeap.get();
 			desc.pSRVHeap = pStagingHeap.get();
 			GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_unique<RenderTarget>(desc);
-			desc.pSRVHeap = pHeap.get();
-			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_unique<RenderTarget>(desc);
+			GlobalTextureSRV[GlobalTextureResourceKey::DefferedAlbedoTexture] = pHeap->Allocate();
+			CopyTexture(GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture]->GetHandleSRV().hCPU, GlobalTextureSRV[GlobalTextureResourceKey::DefferedAlbedoTexture].hCPU);
 		}
 	}
 	// 深度バッファ
@@ -278,10 +279,8 @@ void RenderingEngine::Draw()
 	CurrentRenderingTiming = Material::RenderingTiming::Other;
 	ObjectPostProcessRendering();
 	CanvasPostProcessRendering();
-	// ステージングから読み取り専用テクスチャへコピー
-	CopyTexture(GlobalTextureStaging[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU, GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hCPU);
 	// メインテクスチャへのコピー
-	pCopy->ExecuteCopy2BBuffer(pHeap.get(), GlobalTexture[GlobalTextureResourceKey::MainTexture].get()->GetHandleSRV().hGPU);
+	pCopy->ExecuteCopy2BBuffer(pHeap.get(), GlobalTextureSRV[GlobalTextureResourceKey::MainTexture].hGPU);
 	// バッファ描画
 	ViewShadowMaps();
 	ViewDepthNormal();
@@ -328,12 +327,6 @@ RenderTarget* RenderingEngine::GetGlobalStagingRenderTarget(UINT key)
 {
 	auto it = GlobalTextureStaging.find(key);
 	return it != GlobalTextureStaging.end() ? it->second.get() : nullptr;
-}
-
-RenderTarget* RenderingEngine::GetGlobalRenderTarget(UINT key)
-{
-	auto it = GlobalTexture.find(key);
-	return it != GlobalTexture.end() ? it->second.get() : nullptr;
 }
 
 void RenderingEngine::CopyGlobalTexture(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key)
@@ -519,12 +512,6 @@ void RenderingEngine::DefferedRendering()
 	{
 		GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->RTV2SRV();
 	}
-
-	// ステージングから読み取り専用テクスチャへコピー
-	for (int i = 0; i < MAX_GBUFFER; i++)
-	{
-		CopyTexture(GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture + i].get()->GetHandleSRV().hCPU, GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture + i].get()->GetHandleSRV().hCPU);
-	}
 }
 
 void RenderingEngine::DefferedLighting()
@@ -560,7 +547,7 @@ void RenderingEngine::DefferedLighting()
 	// MainTextureを取得
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = 
 	{
-		GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture].get()->GetHandleSRV().hGPU,
+		GlobalTextureSRV[GlobalTextureResourceKey::DefferedAlbedoTexture].hGPU,
 		ODepthNormalPass->GetTextureSRV(OpaqueDepthNormalPass::NormalTexture).hGPU,
 		ODepthNormalPass->GetTextureSRV(OpaqueDepthNormalPass::DepthTexture).hGPU,
 		DefferedLightingShader.Params[0].get()->GetHandle().hGPU,
@@ -622,27 +609,27 @@ void RenderingEngine::ViewShadowMaps()
 		ImGui::Text("ShadowMap1");
 		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::Near).get()), size);
+			ShadowMapsPass->GetTextureSRV(ShadowPass::Near).hGPU), size);
 		ImGui::Text("ShadowMap2");
 		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::Middle).get()), size);
+			ShadowMapsPass->GetTextureSRV(ShadowPass::Middle).hGPU), size);
 		ImGui::Text("ShadowMap3");
 		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::Far).get()), size);
+			ShadowMapsPass->GetTextureSRV(ShadowPass::Far).hGPU), size);
 		ImGui::Text("VSMShadowMap1");
 		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::NearVSM).get()), size);
+			ShadowMapsPass->GetTextureSRV(ShadowPass::NearVSM).hGPU), size);
 		ImGui::Text("VSMShadowMap2");
 		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::MiddleVSM).get()), size);
+			ShadowMapsPass->GetTextureSRV(ShadowPass::MiddleVSM).hGPU), size);
 		ImGui::Text("VSMShadowMap3");
 		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(),
-			ShadowMapsPass->GetTexture(ShadowPass::FarVSM).get()), size);
+			ShadowMapsPass->GetTextureSRV(ShadowPass::FarVSM).hGPU), size);
 	}
 	ImGui::End();
 }
@@ -670,7 +657,7 @@ void RenderingEngine::ViewGBuffers()
 		ImGui::Text("DefferedAlbedo");
 		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(), 
-			GlobalTexture[GlobalTextureResourceKey::DefferedAlbedoTexture].get()), { 240,135 });
+			GlobalTextureSRV[GlobalTextureResourceKey::DefferedAlbedoTexture].hGPU), { 240,135 });
 	}
 	ImGui::End();
 }

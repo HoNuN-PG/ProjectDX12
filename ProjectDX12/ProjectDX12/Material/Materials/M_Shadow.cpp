@@ -178,11 +178,6 @@ void M_OpaqueSimpleShadowMaps::Bind(UINT materialinstance)
 
 void M_ShadowRecieverBase::Initialize(Description desc)
 {
-	RenderingEngine* engine = SceneManager::GetRenderingEngine();
-	assert(engine);
-	ShadowPass* pass = engine->GetShadowMapsPass();
-	assert(pass);
-
 	// 定数バッファ
 	{
 		ConstantBuffer::Description constant = {};
@@ -194,18 +189,10 @@ void M_ShadowRecieverBase::Initialize(Description desc)
 		constant.size = sizeof(ShadowParam::ShadowReceieverParam);
 		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
-	// RTV
+	// シャドウマップのSRV（Bindでパスのシャドウマップをコピーする）
+	for (int i = 0; i <= ShadowPass::TextureType::Far; ++i)
 	{
-		RenderTarget::Description rtv = {};
-		rtv.format = pass->GetPassFormat()[0];
-		rtv.pRTVHeap = pRTVHeap.get();
-		rtv.pSRVHeap = desc.pHeap;
-		for (int i = 0; i <= ShadowPass::TextureType::Far; ++i)
-		{
-			rtv.width = pass->ShadowMapsSize[i].x;
-			rtv.height = pass->ShadowMapsSize[i].y;
-			ShadowMaps.push_back(std::make_shared<RenderTarget>(rtv));
-		}
+		ShadowMapSRVs.push_back(desc.pHeap->Allocate());
 	}
 }
 
@@ -229,18 +216,13 @@ void M_ShadowRecieverBase::Bind(UINT materialinstance)
 	);
 
 	// テクスチャコピー
-	engine->CopyPassTexture(ShadowMaps[ShadowPass::Near].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Near);
-	engine->CopyPassTexture(ShadowMaps[ShadowPass::Middle].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Middle);
-	engine->CopyPassTexture(ShadowMaps[ShadowPass::Far].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::Far);
+	engine->CopyPassTexture(ShadowMapSRVs[ShadowPass::Near].hCPU, Material::Shadow, 0, ShadowPass::Near);
+	engine->CopyPassTexture(ShadowMapSRVs[ShadowPass::Middle].hCPU, Material::Shadow, 0, ShadowPass::Middle);
+	engine->CopyPassTexture(ShadowMapSRVs[ShadowPass::Far].hCPU, Material::Shadow, 0, ShadowPass::Far);
 }
 
 void M_ShadowVSMRecieverBase::Initialize(Description desc)
 {
-	RenderingEngine* engine = GetRenderingEngine();
-	assert(engine);
-	ShadowPass* pass = engine->GetShadowMapsPass();
-	assert(pass);
-
 	// 定数バッファ
 	{
 		ConstantBuffer::Description constant = {};
@@ -252,18 +234,10 @@ void M_ShadowVSMRecieverBase::Initialize(Description desc)
 		constant.size = sizeof(ShadowParam::ShadowReceieverParam);
 		Params.push_back(std::make_unique<ConstantBuffer>(constant));
 	}
-	// RTV
+	// シャドウマップのSRV（Bindでパスのシャドウマップをコピーする）
+	for (int i = 0; i <= ShadowPass::TextureType::Far; ++i)
 	{
-		RenderTarget::Description rtv = {};
-		rtv.format = pass->GetPassFormat()[0];
-		rtv.pRTVHeap = pRTVHeap.get();
-		rtv.pSRVHeap = desc.pHeap;
-		for (int i = 0; i <= ShadowPass::TextureType::Far; ++i)
-		{
-			rtv.width = pass->VSMShadowMapsSize[i].x / 2;
-			rtv.height = pass->VSMShadowMapsSize[i].y / 2;
-			ShadowMaps.push_back(std::make_shared<RenderTarget>(rtv));
-		}
+		ShadowMapSRVs.push_back(desc.pHeap->Allocate());
 	}
 }
 
@@ -287,7 +261,7 @@ void M_ShadowVSMRecieverBase::Bind(UINT materialinstance)
 	);
 
 	// テクスチャコピー
-	engine->CopyPassTexture(ShadowMaps[ShadowPass::Near].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::NearVSM);
-	engine->CopyPassTexture(ShadowMaps[ShadowPass::Middle].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::MiddleVSM);
-	engine->CopyPassTexture(ShadowMaps[ShadowPass::Far].get()->GetHandleSRV().hCPU, Material::Shadow, 0, ShadowPass::FarVSM);
+	engine->CopyPassTexture(ShadowMapSRVs[ShadowPass::Near].hCPU, Material::Shadow, 0, ShadowPass::NearVSM);
+	engine->CopyPassTexture(ShadowMapSRVs[ShadowPass::Middle].hCPU, Material::Shadow, 0, ShadowPass::MiddleVSM);
+	engine->CopyPassTexture(ShadowMapSRVs[ShadowPass::Far].hCPU, Material::Shadow, 0, ShadowPass::FarVSM);
 }

@@ -122,29 +122,22 @@ void ShadowPass::Execute()
 	// ぼかし
 	pEngine->GetGauss()->ExecuteScreenGauss8D2(
 		GaussIdx[TextureType::Near],
-		{ VSMShadowMaps[TextureType::Near]->Width,VSMShadowMaps[TextureType::Near]->Height },
+		{ StagingVSMShadowMaps[TextureType::Near]->Width,StagingVSMShadowMaps[TextureType::Near]->Height },
 		StagingShadowMaps[TextureType::Near].get(), 
 		StagingVSMShadowMaps[TextureType::Near].get()
 	);
 	pEngine->GetGauss()->ExecuteScreenGauss4D2(
 		GaussIdx[TextureType::Middle],
-		{ VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height },
+		{ StagingVSMShadowMaps[TextureType::Middle]->Width,StagingVSMShadowMaps[TextureType::Middle]->Height },
 		StagingShadowMaps[TextureType::Middle].get(), 
 		StagingVSMShadowMaps[TextureType::Middle].get()
 	);
 	pEngine->GetGauss()->ExecuteScreenGauss2D1(
 		GaussIdx[TextureType::Far],
-		{ VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height },
+		{ StagingVSMShadowMaps[TextureType::Far]->Width,StagingVSMShadowMaps[TextureType::Far]->Height },
 		StagingShadowMaps[TextureType::Far].get(), 
 		StagingVSMShadowMaps[TextureType::Far].get()
 	);
-
-	// ステージングから読み取り専用テクスチャへコピー
-	for (int i = 0; i <= TextureType::Far; ++i)
-	{
-		RenderingEngine::CopyTexture(StagingShadowMaps[i].get()->GetHandleSRV().hCPU, ShadowMaps[i].get()->GetHandleSRV().hCPU);
-		RenderingEngine::CopyTexture(StagingVSMShadowMaps[i].get()->GetHandleSRV().hCPU, VSMShadowMaps[i].get()->GetHandleSRV().hCPU);
-	}
 
 	RenderObjects.clear();
 }
@@ -171,15 +164,15 @@ void ShadowPass::Init(
 			desc.height = VSMShadowMapsSize[i].y;
 			StagingVSMShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
 		}
-		desc.pSRVHeap = srvHeap;
+	}
+	// SRV（ステージングのリソースは作り直さないため初期化時に一度だけコピーする）
+	{
 		for (int i = 0; i <= TextureType::Far; ++i)
 		{
-			desc.width		= ShadowMapsSize[i].x;
-			desc.height		= ShadowMapsSize[i].y;
-			ShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
-			desc.width		= VSMShadowMapsSize[i].x;
-			desc.height		= VSMShadowMapsSize[i].y;
-			VSMShadowMaps.push_back(std::make_shared<RenderTarget>(desc));
+			ShadowMapSRVs.push_back(srvHeap->Allocate());
+			RenderingEngine::CopyTexture(StagingShadowMaps[i]->GetHandleSRV().hCPU, ShadowMapSRVs[i].hCPU);
+			VSMShadowMapSRVs.push_back(srvHeap->Allocate());
+			RenderingEngine::CopyTexture(StagingVSMShadowMaps[i]->GetHandleSRV().hCPU, VSMShadowMapSRVs[i].hCPU);
 		}
 	}
 	// DSV
@@ -196,9 +189,9 @@ void ShadowPass::Init(
 	}
 
 	// ガウスデータ作成
-	GaussIdx[TextureType::Near] = pEngine->GetGauss()->MakeGaussD2Data({ VSMShadowMaps[TextureType::Near]->Width,VSMShadowMaps[TextureType::Near]->Height });
-	GaussIdx[TextureType::Middle] = pEngine->GetGauss()->MakeGaussD2Data({ VSMShadowMaps[TextureType::Middle]->Width,VSMShadowMaps[TextureType::Middle]->Height });
-	GaussIdx[TextureType::Far] = pEngine->GetGauss()->MakeGaussD1Data({ VSMShadowMaps[TextureType::Far]->Width,VSMShadowMaps[TextureType::Far]->Height });
+	GaussIdx[TextureType::Near] = pEngine->GetGauss()->MakeGaussD2Data({ StagingVSMShadowMaps[TextureType::Near]->Width,StagingVSMShadowMaps[TextureType::Near]->Height });
+	GaussIdx[TextureType::Middle] = pEngine->GetGauss()->MakeGaussD2Data({ StagingVSMShadowMaps[TextureType::Middle]->Width,StagingVSMShadowMaps[TextureType::Middle]->Height });
+	GaussIdx[TextureType::Far] = pEngine->GetGauss()->MakeGaussD1Data({ StagingVSMShadowMaps[TextureType::Far]->Width,StagingVSMShadowMaps[TextureType::Far]->Height });
 }
 
 void ShadowPass::AddObj(GameObject& obj)
@@ -222,15 +215,8 @@ std::shared_ptr<RenderTarget> ShadowPass::GetTextureStaging(UINT idx)
 
 std::shared_ptr<RenderTarget> ShadowPass::GetTexture(UINT idx)
 {
-	if (idx < NearVSM)
-	{
-		return ShadowMaps[idx];
-	}
-	else if (idx <= FarVSM)
-	{
-		return VSMShadowMaps[idx - NearVSM];
-	}
-	return nullptr;
+	// 読み取り用の別リソースは持たない（SRVだけをシェーダー可視ヒープにコピーしている）
+	return GetTextureStaging(idx);
 }
 
 DescriptorHeap::Handle ShadowPass::GetTextureStagingRTV(UINT idx)
@@ -248,15 +234,7 @@ DescriptorHeap::Handle ShadowPass::GetTextureStagingRTV(UINT idx)
 
 DescriptorHeap::Handle ShadowPass::GetTextureRTV(UINT idx)
 {
-	if (idx < NearVSM)
-	{
-		return ShadowMaps[idx]->GetHandleRTV();
-	}
-	else if (idx <= FarVSM)
-	{
-		return VSMShadowMaps[idx - NearVSM]->GetHandleRTV();
-	}
-	return DescriptorHeap::Handle();
+	return GetTextureStagingRTV(idx);
 }
 
 DescriptorHeap::Handle ShadowPass::GetTextureStagingSRV(UINT idx)
@@ -276,11 +254,11 @@ DescriptorHeap::Handle ShadowPass::GetTextureSRV(UINT idx)
 {
 	if (idx < NearVSM)
 	{
-		return ShadowMaps[idx]->GetHandleSRV();
+		return ShadowMapSRVs[idx];
 	}
 	else if (idx <= FarVSM)
 	{
-		return VSMShadowMaps[idx - NearVSM]->GetHandleSRV();
+		return VSMShadowMapSRVs[idx - NearVSM];
 	}
 	return DescriptorHeap::Handle();
 }
@@ -442,16 +420,18 @@ DirectX::XMFLOAT4X4 ShadowPass::CalcTexelSnappedCrop(
 	maxX = center.x + radius;
 	minY = center.y - radius;
 	maxY = center.y + radius;
-	minZ = DXFL::Magnitude(DXFL::Subtraction(nearPos, camera->GetPosition()));
-	maxZ = DXFL::Magnitude(DXFL::Subtraction(farPos, camera->GetPosition()));
+	// 奥行きはライトビュー空間での中心を基準にする
+	// 範囲外のキャスターも影を落とせるよう手前側はライト位置まで広げる
+	minZ = 0.0f;
+	maxZ = (std::max)(center.z + radius, minZ + 1.0f);
 
 	DirectX::XMMATRIX lightProj = DirectX::XMMatrixOrthographicOffCenterLH(
 		minX,
 		maxX,
 		minY,
 		maxY,
-		-radius,
-		radius
+		minZ,
+		maxZ
 	);
 
 	DirectX::XMFLOAT4X4 crop;

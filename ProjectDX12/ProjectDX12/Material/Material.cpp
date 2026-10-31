@@ -19,8 +19,7 @@ void Material::Initialize(std::shared_ptr<Material> material, Description desc)
 void Material::SetUp(
 	DescriptorHeap* heap, 
 	RootSignature::Description rootsignature,
-	PipelineState::Description pipeline,
-	UINT rtvNum
+	PipelineState::Description pipeline
 )
 {
 	pHeap = heap;
@@ -33,14 +32,6 @@ void Material::SetUp(
 	{
 		pipeline.pRootSignature = pRootSignatureData->Get();
 		pPipelineData = std::make_unique<PipelineState>(pipeline);
-	}
-	// マテリアルディスクリプターヒープ(レンダーターゲット)
-	if(rtvNum > 0)
-	{
-		DescriptorHeap::Description desc = {};
-		desc.heapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-		desc.num = rtvNum;
-		pRTVHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 }
 

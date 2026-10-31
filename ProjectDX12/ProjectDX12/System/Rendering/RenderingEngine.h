@@ -77,14 +77,13 @@ public:
 	void WriteGlobalConstantBufferResource(UINT key, void* data);
 	// グローバルテクスチャ
 	RenderTarget* GetGlobalStagingRenderTarget(UINT key);
-	RenderTarget* GetGlobalRenderTarget(UINT key);
 	void CopyGlobalTexture(D3D12_CPU_DESCRIPTOR_HANDLE dest, UINT key);
 
 private:
 
 	std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>> GlobalConstantBuffer;
 	std::unordered_map<UINT, std::unique_ptr<RenderTarget>> GlobalTextureStaging;
-	std::unordered_map<UINT, std::unique_ptr<RenderTarget>> GlobalTexture;
+	std::unordered_map<UINT, DescriptorHeap::Handle> GlobalTextureSRV;	// シェーダーから参照するSRV（ステージングのSRVをコピーしたもの）
 	std::unordered_map<UINT, DXGI_FORMAT> GlobalTextureFormat;
 
 	// ====================
