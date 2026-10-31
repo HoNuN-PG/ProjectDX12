@@ -16,7 +16,7 @@ protected:
 	void CalcMeshShaderStartSlot_SRV(RootSignature::Parameter* parameters, UINT num);
 
 private:
-	int MeshShaderSRVStartSlot;
+	int MeshShaderSRVStartSlot = -1;
 
 };
 
@@ -41,8 +41,8 @@ protected:
 	void CalcMeshShaderStartSlotSRV(RootSignature::Parameter* parameters, UINT num);
 
 private:
-	int AmpShaderSRVStartSlot;
-	int MeshShaderSRVStartSlot;
+	int AmpShaderSRVStartSlot = -1;
+	int MeshShaderSRVStartSlot = -1;
 
 };
 

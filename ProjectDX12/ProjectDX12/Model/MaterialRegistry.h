@@ -8,7 +8,7 @@
 
 /**
 * @class MaterialRegistry
-* @brief メッシュのマテリアルを所有する
+* @brief メッシュのマテリアルを所有/管理する
 * @note RenderingComponentが所有している
 */
 class MaterialRegistry
