@@ -30,7 +30,7 @@ namespace
 	}
 
 	/// <summary>
-	/// メッシュシェーダー/通常パイプライン共通の設定
+	/// 通常パイプライン/メッシュシェーダー共通の設定
 	/// </summary>
 	template<typename T>
 	void SetCommonDesc(T& pipelineDesc, const PipelineState::Description& desc,
@@ -92,13 +92,13 @@ PipelineState::PipelineState(const Description& desc)
 	dsDesc.DepthWriteMask	= desc.DepthWrite ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
 	dsDesc.DepthFunc		= D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
-	if (HasFile(desc.ASFile) || HasFile(desc.MSFile))
+	if (!HasFile(desc.ASFile) && !HasFile(desc.MSFile))
 	{
-		CreateMeshShaderPipelineState(desc, rasterDesc, blendDesc, dsDesc);
+		CreateDefaultPipelineState(desc, rasterDesc, blendDesc, dsDesc);
 	}
 	else
 	{
-		CreateDefaultPipelineState(desc, rasterDesc, blendDesc, dsDesc);
+		CreateMeshShaderPipelineState(desc, rasterDesc, blendDesc, dsDesc);
 	}
 }
 
