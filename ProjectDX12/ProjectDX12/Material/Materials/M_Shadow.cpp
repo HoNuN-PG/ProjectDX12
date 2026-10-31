@@ -48,12 +48,11 @@ void M_SimpleShadowMaps::Initialize(Description desc)
 		PipelineState::IED_POS_NOR_TEX_COLOR,
 		PipelineState::IED_POS_NOR_TEX_COLOR_COUNT,
 		desc.CullMode,
-		1,
 		formats,
 		desc.DepthTest,
 		desc.DepthWrite,
 	};
-	pipeline.DepthClip = FALSE;		// 範囲外のキャスターも深度をクランプして描く
+	pipeline.DepthClip = FALSE;	// 範囲外のキャスターも深度をクランプして描く
 	pipeline.Blend = PipelineState::BlendMode::None;
 
 	Material::SetUp(
@@ -134,12 +133,11 @@ void M_OpaqueSimpleShadowMaps::Initialize(Description desc)
 		PipelineState::IED_POS_NOR_TEX_COLOR,
 		PipelineState::IED_POS_NOR_TEX_COLOR_COUNT,
 		desc.CullMode,
-		1,
 		formats,
 		desc.DepthTest,
 		desc.DepthWrite,
 	};
-	pipeline.DepthClip = FALSE;		// 範囲外のキャスターも深度をクランプして描く
+	pipeline.DepthClip = FALSE;	// 範囲外のキャスターも深度をクランプして描く
 	pipeline.Blend = PipelineState::BlendMode::None;
 
 	Material::SetUp(

@@ -67,7 +67,7 @@ protected:
 
 protected:
 
-	std::vector<DXGI_FORMAT> PassFormats;
+	std::vector<DXGI_FORMAT> PassFormats; // パスが描画するRTのフォーマット群
 
 };
 

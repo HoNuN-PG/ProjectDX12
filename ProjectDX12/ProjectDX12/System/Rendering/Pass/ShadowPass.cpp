@@ -22,10 +22,7 @@ ShadowPass::ShadowPass(RenderingEngine& engine)
 	VSMShadowMapsSize[TextureType::Near] = { 4096,4096 };
 	VSMShadowMapsSize[TextureType::Middle] = { 2048 ,2048 };
 	VSMShadowMapsSize[TextureType::Far] = { 1024,1024 };
-	for (int i = 0; i < TextureType::MAX; ++i)
-	{
-		PassFormats.push_back(DXGI_FORMAT_R16G16_FLOAT);
-	}
+	PassFormats.push_back(DXGI_FORMAT_R16G16_FLOAT);
 
 	// カスケード設定
 	CascadeAreas.resize(SHADOW_MAP_COUNT);

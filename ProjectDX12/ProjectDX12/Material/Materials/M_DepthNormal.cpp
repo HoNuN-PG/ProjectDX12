@@ -27,7 +27,6 @@ void M_DepthNormal::Initialize(Description desc)
 		PipelineState::IED_POS_NOR_TEX_COLOR,
 		PipelineState::IED_POS_NOR_TEX_COLOR_COUNT,
 		desc.CullMode,
-		2,
 		formats,
 		desc.DepthTest,
 		desc.DepthWrite,

@@ -20,26 +20,48 @@ namespace
 		assert(!"PipelineState creation failed");
 		return false;
 	}
+
+	/// <summary>
+	/// シェーダーファイルが指定されているか
+	/// </summary>
+	bool HasFile(const wchar_t* file)
+	{
+		return file != nullptr && file[0] != L'\0';
+	}
+
+	/// <summary>
+	/// メッシュシェーダー/通常パイプライン共通の設定
+	/// </summary>
+	template<typename T>
+	void SetCommonDesc(T& pipelineDesc, const PipelineState::Description& desc,
+		const D3D12_RASTERIZER_DESC& rasterizer, const D3D12_BLEND_DESC& blend, const D3D12_DEPTH_STENCIL_DESC& stencil)
+	{
+		// ルートシグネチャ
+		pipelineDesc.pRootSignature = desc.pRootSignature;
+		// サンプリング
+		pipelineDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+		pipelineDesc.SampleDesc.Count = 1;
+		pipelineDesc.SampleDesc.Quality = 0;
+		// ラスタライザ
+		pipelineDesc.RasterizerState = rasterizer;
+		// ブレンド
+		pipelineDesc.BlendState = blend;
+		// レンダーターゲット
+		pipelineDesc.NumRenderTargets = static_cast<UINT>(desc.RenderTargetFormat.size());
+		for (UINT i = 0; i < pipelineDesc.NumRenderTargets; ++i)
+		{
+			pipelineDesc.RTVFormats[i] = desc.RenderTargetFormat[i];
+		}
+		// 深度バッファ
+		pipelineDesc.DepthStencilState = stencil;
+		pipelineDesc.DSVFormat = stencil.DepthEnable ? desc.DSVFormat : DXGI_FORMAT_UNKNOWN;
+	}
 }
 
-PipelineState::InputLayout PipelineState::IED_POS_TEX[] =
+PipelineState::PipelineState(const Description& desc)
 {
-	{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-	{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-};
-UINT PipelineState::IED_POS_TEX_COUNT = 2;
+	assert(desc.RenderTargetFormat.size() <= D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT);
 
-PipelineState::InputLayout PipelineState::IED_POS_NOR_TEX_COLOR[] =
-{
-	{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT},
-	{"NORMAL",   0,DXGI_FORMAT_R32G32B32_FLOAT},
-	{"TEXCOORD", 0,DXGI_FORMAT_R32G32_FLOAT},
-	{"COLOR",    0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-};
-UINT PipelineState::IED_POS_NOR_TEX_COLOR_COUNT = 4;
-
-PipelineState::PipelineState(Description desc)
-{
 	// ラスタライザ
 	D3D12_RASTERIZER_DESC rasterDesc	= CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	rasterDesc.CullMode					= desc.CullMode;
@@ -70,11 +92,7 @@ PipelineState::PipelineState(Description desc)
 	dsDesc.DepthWriteMask	= desc.DepthWrite ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
 	dsDesc.DepthFunc		= D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
-	if (desc.ASFile != nullptr && desc.ASFile[0] != L'\0')
-	{
-		CreateAmplificationShaderPipelineState(desc, rasterDesc, blendDesc, dsDesc);
-	}
-	else if (desc.MSFile != nullptr && desc.MSFile[0] != L'\0')
+	if (HasFile(desc.ASFile) || HasFile(desc.MSFile))
 	{
 		CreateMeshShaderPipelineState(desc, rasterDesc, blendDesc, dsDesc);
 	}
@@ -88,124 +106,8 @@ PipelineState::~PipelineState()
 {
 }
 
-void PipelineState::CreateAmplificationShaderPipelineState(Description desc, 
-	D3D12_RASTERIZER_DESC rasterizer, D3D12_BLEND_DESC blend, D3D12_DEPTH_STENCIL_DESC stencil)
-{
-	// シェーダー
-	HRESULT hr;
-	ComPtr<ID3DBlob> pAS, pMS, pPS;
-	hr = D3DReadFileToBlob(desc.ASFile, pAS.GetAddressOf());
-	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.ASFile)) { return; }
-	hr = D3DReadFileToBlob(desc.MSFile, pMS.GetAddressOf());
-	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.MSFile)) { return; }
-	hr = D3DReadFileToBlob(desc.PSFile, pPS.GetAddressOf());
-	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.PSFile)) { return; }
-	assert(pAS != nullptr);
-	assert(pMS != nullptr);
-	assert(pPS != nullptr);
-
-	// パイプラインステートの設定
-	D3DX12_MESH_SHADER_PIPELINE_STATE_DESC pipelineDesc = {};
-	// ルートシグネチャ
-	pipelineDesc.pRootSignature = desc.pRootSignature;
-	// シェーダ
-	pipelineDesc.AS = { pAS->GetBufferPointer(), pAS->GetBufferSize() };
-	pipelineDesc.MS = { pMS->GetBufferPointer(), pMS->GetBufferSize() };
-	pipelineDesc.PS = { pPS->GetBufferPointer(), pPS->GetBufferSize() };
-	// サンプリング
-	pipelineDesc.SampleMask = UINT_MAX;
-	pipelineDesc.SampleDesc.Count = 1;
-	pipelineDesc.SampleDesc.Quality = 0;
-	// ラスタライザ
-	pipelineDesc.RasterizerState = rasterizer;
-	// ブレンド
-	pipelineDesc.BlendState = blend;
-	// レンダーターゲット
-	pipelineDesc.NumRenderTargets = desc.RenderTargetNum;
-	for (int i = 0; i < desc.RenderTargetNum; ++i)
-	{
-		pipelineDesc.RTVFormats[i] = desc.RenderTargetFormat[i];
-	}
-	// 深度バッファ
-	pipelineDesc.DepthStencilState = stencil;
-	if (stencil.DepthEnable)
-	{
-		pipelineDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
-	}
-	else
-	{
-		pipelineDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;;
-	}
-
-	CD3DX12_PIPELINE_MESH_STATE_STREAM psoStream = CD3DX12_PIPELINE_MESH_STATE_STREAM(pipelineDesc);
-
-	D3D12_PIPELINE_STATE_STREAM_DESC streamDesc = {};
-	streamDesc.SizeInBytes = sizeof(psoStream);
-	streamDesc.pPipelineStateSubobjectStream = &psoStream;
-
-	// パイプラインの生成
-	hr = GetDevice()->CreatePipelineState(&streamDesc, IID_PPV_ARGS(PipelineData.GetAddressOf()));
-	CheckResult(hr, L"パイプラインステートの作成に失敗しました", desc.MSFile);
-}
-
-void PipelineState::CreateMeshShaderPipelineState(Description desc, 
-	D3D12_RASTERIZER_DESC rasterizer, D3D12_BLEND_DESC blend, D3D12_DEPTH_STENCIL_DESC stencil)
-{
-	// シェーダー
-	HRESULT hr;
-	ComPtr<ID3DBlob> pMS, pPS;
-	hr = D3DReadFileToBlob(desc.MSFile, pMS.GetAddressOf());
-	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.MSFile)) { return; }
-	hr = D3DReadFileToBlob(desc.PSFile, pPS.GetAddressOf());
-	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.PSFile)) { return; }
-	assert(pMS != nullptr);
-	assert(pPS != nullptr);
-
-	// パイプラインステートの設定
-	D3DX12_MESH_SHADER_PIPELINE_STATE_DESC pipelineDesc = {};
-	// ルートシグネチャ
-	pipelineDesc.pRootSignature = desc.pRootSignature;
-	// シェーダ
-	pipelineDesc.MS = { pMS->GetBufferPointer(), pMS->GetBufferSize() };
-	pipelineDesc.PS = { pPS->GetBufferPointer(), pPS->GetBufferSize() };
-	// サンプリング
-	pipelineDesc.SampleMask = UINT_MAX;
-	pipelineDesc.SampleDesc.Count = 1;
-	pipelineDesc.SampleDesc.Quality = 0;
-	// ラスタライザ
-	pipelineDesc.RasterizerState = rasterizer;
-	// ブレンド
-	pipelineDesc.BlendState = blend;
-	// レンダーターゲット
-	pipelineDesc.NumRenderTargets = desc.RenderTargetNum;
-	for (int i = 0; i < desc.RenderTargetNum; ++i)
-	{
-		pipelineDesc.RTVFormats[i] = desc.RenderTargetFormat[i];
-	}
-	// 深度バッファ
-	pipelineDesc.DepthStencilState = stencil;
-	if (stencil.DepthEnable)
-	{
-		pipelineDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
-	}
-	else
-	{
-		pipelineDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;;
-	}
-
-	CD3DX12_PIPELINE_MESH_STATE_STREAM psoStream = CD3DX12_PIPELINE_MESH_STATE_STREAM(pipelineDesc);
-
-	D3D12_PIPELINE_STATE_STREAM_DESC streamDesc = {};
-	streamDesc.SizeInBytes = sizeof(psoStream);
-	streamDesc.pPipelineStateSubobjectStream = &psoStream;
-
-	// パイプラインの生成
-	hr = GetDevice()->CreatePipelineState(&streamDesc, IID_PPV_ARGS(PipelineData.GetAddressOf()));
-	CheckResult(hr, L"パイプラインステートの作成に失敗しました", desc.MSFile);
-}
-
-void PipelineState::CreateDefaultPipelineState(Description desc, 
-	D3D12_RASTERIZER_DESC rasterizer, D3D12_BLEND_DESC blend, D3D12_DEPTH_STENCIL_DESC stencil)
+void PipelineState::CreateDefaultPipelineState(const Description& desc,
+	const D3D12_RASTERIZER_DESC& rasterizer, const D3D12_BLEND_DESC& blend, const D3D12_DEPTH_STENCIL_DESC& stencil)
 {
 	// シェーダー
 	HRESULT hr;
@@ -214,13 +116,10 @@ void PipelineState::CreateDefaultPipelineState(Description desc,
 	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.VSFile)) { return; }
 	hr = D3DReadFileToBlob(desc.PSFile, pPS.GetAddressOf());
 	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.PSFile)) { return; }
-	assert(pVS != nullptr);
-	assert(pPS != nullptr);
 
 	// インプットレイアウト
-	std::vector<D3D12_INPUT_ELEMENT_DESC> element;
-	element.resize(desc.InputLayoutNum);
-	for (int i = 0; i < desc.InputLayoutNum; ++i)
+	std::vector<D3D12_INPUT_ELEMENT_DESC> element(desc.InputLayoutNum);
+	for (UINT i = 0; i < desc.InputLayoutNum; ++i)
 	{
 		element[i].SemanticName = desc.pInputLayout[i].name;
 		element[i].SemanticIndex = desc.pInputLayout[i].index;
@@ -233,41 +132,55 @@ void PipelineState::CreateDefaultPipelineState(Description desc,
 
 	// パイプラインステートの設定
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc = {};
-	// ルートシグネチャ
-	pipelineDesc.pRootSignature = desc.pRootSignature;
+	SetCommonDesc(pipelineDesc, desc, rasterizer, blend, stencil);
 	// シェーダ
 	pipelineDesc.VS = { pVS->GetBufferPointer(), pVS->GetBufferSize() };
 	pipelineDesc.PS = { pPS->GetBufferPointer(), pPS->GetBufferSize() };
 	// 頂点レイアウト
 	pipelineDesc.InputLayout = { element.data(), desc.InputLayoutNum };
-	// サンプリング
-	pipelineDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-	pipelineDesc.SampleDesc.Count = 1;
-	pipelineDesc.SampleDesc.Quality = 0;
-	// ラスタライザ
-	pipelineDesc.RasterizerState = rasterizer;
-	// ブレンド
-	pipelineDesc.BlendState = blend;
 	// プリミティブ
 	pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	// レンダーターゲット
-	pipelineDesc.NumRenderTargets = desc.RenderTargetNum;
-	for (int i = 0; i < desc.RenderTargetNum; ++i)
-	{
-		pipelineDesc.RTVFormats[i] = desc.RenderTargetFormat[i];
-	}
-	// 深度バッファ
-	pipelineDesc.DepthStencilState = stencil;
-	if (stencil.DepthEnable)
-	{
-		pipelineDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
-	}
-	else
-	{
-		pipelineDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;;
-	}
 
 	// パイプラインの生成
 	hr = GetDevice()->CreateGraphicsPipelineState(&pipelineDesc, IID_PPV_ARGS(PipelineData.GetAddressOf()));
 	CheckResult(hr, L"パイプラインステートの作成に失敗しました", desc.VSFile);
+}
+
+
+void PipelineState::CreateMeshShaderPipelineState(const Description& desc,
+	const D3D12_RASTERIZER_DESC& rasterizer, const D3D12_BLEND_DESC& blend, const D3D12_DEPTH_STENCIL_DESC& stencil)
+{
+	// シェーダー（ASは任意）
+	HRESULT hr;
+	ComPtr<ID3DBlob> pAS, pMS, pPS;
+	if (HasFile(desc.ASFile))
+	{
+		hr = D3DReadFileToBlob(desc.ASFile, pAS.GetAddressOf());
+		if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.ASFile)) { return; }
+	}
+	hr = D3DReadFileToBlob(desc.MSFile, pMS.GetAddressOf());
+	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.MSFile)) { return; }
+	hr = D3DReadFileToBlob(desc.PSFile, pPS.GetAddressOf());
+	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.PSFile)) { return; }
+
+	// パイプラインステートの設定
+	D3DX12_MESH_SHADER_PIPELINE_STATE_DESC pipelineDesc = {};
+	SetCommonDesc(pipelineDesc, desc, rasterizer, blend, stencil);
+	// シェーダ
+	if (pAS)
+	{
+		pipelineDesc.AS = { pAS->GetBufferPointer(), pAS->GetBufferSize() };
+	}
+	pipelineDesc.MS = { pMS->GetBufferPointer(), pMS->GetBufferSize() };
+	pipelineDesc.PS = { pPS->GetBufferPointer(), pPS->GetBufferSize() };
+
+	CD3DX12_PIPELINE_MESH_STATE_STREAM psoStream = CD3DX12_PIPELINE_MESH_STATE_STREAM(pipelineDesc);
+
+	D3D12_PIPELINE_STATE_STREAM_DESC streamDesc = {};
+	streamDesc.SizeInBytes = sizeof(psoStream);
+	streamDesc.pPipelineStateSubobjectStream = &psoStream;
+
+	// パイプラインの生成
+	hr = GetDevice()->CreatePipelineState(&streamDesc, IID_PPV_ARGS(PipelineData.GetAddressOf()));
+	CheckResult(hr, L"パイプラインステートの作成に失敗しました", desc.MSFile);
 }

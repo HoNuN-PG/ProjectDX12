@@ -53,7 +53,6 @@ void Copy::Load()
 			PipelineState::IED_POS_TEX,
 			PipelineState::IED_POS_TEX_COUNT,
 			D3D12_CULL_MODE_BACK,
-			1,
 			std::vector<DXGI_FORMAT>(),
 			FALSE,
 		};
