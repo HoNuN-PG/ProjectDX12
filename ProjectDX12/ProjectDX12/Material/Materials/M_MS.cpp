@@ -33,7 +33,8 @@ void M_MS::Initialize(Description desc)
 		desc.CullMode,
 		1,
 		GetRenderingEngine()->GetPassFormat(Timing, PassType),
-		desc.WriteDepth,
+		desc.DepthTest,
+		desc.DepthWrite,
 	};
 
 	Material::SetUp(
@@ -117,7 +118,8 @@ void M_MSCulling::Initialize(Description desc)
 		desc.CullMode,
 		1,
 		formats,
-		desc.WriteDepth,
+		desc.DepthTest,
+		desc.DepthWrite,
 	};
 
 	Material::SetUp(

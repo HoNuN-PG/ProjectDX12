@@ -1,8 +1,26 @@
 
 #include <d3dcompiler.h>
+#include <cstdio>
 #include <vector>
 
 #include "System/Rendering/Pipeline/PipelineState.h"
+
+namespace
+{
+	/// <summary>
+	/// 失敗時に内容をデバッグ出力して停止する
+	/// </summary>
+	bool CheckResult(HRESULT hr, const wchar_t* message, const wchar_t* file)
+	{
+		if (SUCCEEDED(hr)) { return true; }
+
+		wchar_t text[512];
+		swprintf_s(text, L"[PipelineState] %ls (hr=0x%08X) %ls\n", message, static_cast<unsigned int>(hr), file ? file : L"");
+		OutputDebugStringW(text);
+		assert(!"PipelineState creation failed");
+		return false;
+	}
+}
 
 PipelineState::InputLayout PipelineState::IED_POS_TEX[] =
 {
@@ -25,33 +43,32 @@ PipelineState::PipelineState(Description desc)
 	// ラスタライザ
 	D3D12_RASTERIZER_DESC rasterDesc	= CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	rasterDesc.CullMode					= desc.CullMode;
-	rasterDesc.DepthClipEnable			= FALSE;
+	rasterDesc.DepthClipEnable			= desc.DepthClip;
 
 	// ブレンド
+	// IndependentBlendEnableがfalseなのでRenderTarget[0]の設定が全レンダーターゲットに適用される
 	D3D12_BLEND_DESC blendDesc			= CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	blendDesc.AlphaToCoverageEnable		= false;
 	blendDesc.IndependentBlendEnable	= false;
-	for (int i = 0; i < desc.RenderTargetNum; ++i)
+	if (desc.Blend == BlendMode::Alpha)
 	{
-		blendDesc.RenderTarget[i].BlendEnable				= TRUE;
-		blendDesc.RenderTarget[i].SrcBlend					= D3D12_BLEND_SRC_ALPHA;
-		blendDesc.RenderTarget[i].DestBlend					= D3D12_BLEND_INV_SRC_ALPHA;
-		blendDesc.RenderTarget[i].BlendOp					= D3D12_BLEND_OP_ADD;
-		blendDesc.RenderTarget[i].SrcBlendAlpha				= D3D12_BLEND_ONE;
-		blendDesc.RenderTarget[i].DestBlendAlpha			= D3D12_BLEND_ZERO;
-		blendDesc.RenderTarget[i].BlendOpAlpha				= D3D12_BLEND_OP_ADD;
-		blendDesc.RenderTarget[i].RenderTargetWriteMask		= D3D12_COLOR_WRITE_ENABLE_ALL;
-		blendDesc.RenderTarget[i].LogicOpEnable				= false;
+		D3D12_RENDER_TARGET_BLEND_DESC& rt = blendDesc.RenderTarget[0];
+		rt.BlendEnable				= TRUE;
+		rt.SrcBlend					= D3D12_BLEND_SRC_ALPHA;
+		rt.DestBlend				= D3D12_BLEND_INV_SRC_ALPHA;
+		rt.BlendOp					= D3D12_BLEND_OP_ADD;
+		rt.SrcBlendAlpha			= D3D12_BLEND_ONE;
+		rt.DestBlendAlpha			= D3D12_BLEND_ZERO;
+		rt.BlendOpAlpha				= D3D12_BLEND_OP_ADD;
+		rt.RenderTargetWriteMask	= D3D12_COLOR_WRITE_ENABLE_ALL;
+		rt.LogicOpEnable			= false;
 	}
 
 	// 深度
 	D3D12_DEPTH_STENCIL_DESC dsDesc = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	dsDesc.DepthEnable = desc.WriteDepth;
-	if (dsDesc.DepthEnable)
-	{
-		dsDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-		dsDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-	}
+	dsDesc.DepthEnable		= desc.DepthTest;
+	dsDesc.DepthWriteMask	= desc.DepthWrite ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
+	dsDesc.DepthFunc		= D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
 	if (desc.ASFile != nullptr && desc.ASFile[0] != L'\0')
 	{
@@ -78,11 +95,11 @@ void PipelineState::CreateAmplificationShaderPipelineState(Description desc,
 	HRESULT hr;
 	ComPtr<ID3DBlob> pAS, pMS, pPS;
 	hr = D3DReadFileToBlob(desc.ASFile, pAS.GetAddressOf());
-	if (FAILED(hr)) { return; }
+	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.ASFile)) { return; }
 	hr = D3DReadFileToBlob(desc.MSFile, pMS.GetAddressOf());
-	if (FAILED(hr)) { return; }
+	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.MSFile)) { return; }
 	hr = D3DReadFileToBlob(desc.PSFile, pPS.GetAddressOf());
-	if (FAILED(hr)) { return; }
+	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.PSFile)) { return; }
 	assert(pAS != nullptr);
 	assert(pMS != nullptr);
 	assert(pPS != nullptr);
@@ -128,7 +145,7 @@ void PipelineState::CreateAmplificationShaderPipelineState(Description desc,
 
 	// パイプラインの生成
 	hr = GetDevice()->CreatePipelineState(&streamDesc, IID_PPV_ARGS(PipelineData.GetAddressOf()));
-	if (FAILED(hr)) { return; }
+	CheckResult(hr, L"パイプラインステートの作成に失敗しました", desc.MSFile);
 }
 
 void PipelineState::CreateMeshShaderPipelineState(Description desc, 
@@ -138,9 +155,9 @@ void PipelineState::CreateMeshShaderPipelineState(Description desc,
 	HRESULT hr;
 	ComPtr<ID3DBlob> pMS, pPS;
 	hr = D3DReadFileToBlob(desc.MSFile, pMS.GetAddressOf());
-	if (FAILED(hr)) { return; }
+	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.MSFile)) { return; }
 	hr = D3DReadFileToBlob(desc.PSFile, pPS.GetAddressOf());
-	if (FAILED(hr)) { return; }
+	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.PSFile)) { return; }
 	assert(pMS != nullptr);
 	assert(pPS != nullptr);
 
@@ -184,7 +201,7 @@ void PipelineState::CreateMeshShaderPipelineState(Description desc,
 
 	// パイプラインの生成
 	hr = GetDevice()->CreatePipelineState(&streamDesc, IID_PPV_ARGS(PipelineData.GetAddressOf()));
-	if (FAILED(hr)) { return; }
+	CheckResult(hr, L"パイプラインステートの作成に失敗しました", desc.MSFile);
 }
 
 void PipelineState::CreateDefaultPipelineState(Description desc, 
@@ -194,9 +211,9 @@ void PipelineState::CreateDefaultPipelineState(Description desc,
 	HRESULT hr;
 	ComPtr<ID3DBlob> pVS, pPS;
 	hr = D3DReadFileToBlob(desc.VSFile, pVS.GetAddressOf());
-	if (FAILED(hr)) { return; }
+	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.VSFile)) { return; }
 	hr = D3DReadFileToBlob(desc.PSFile, pPS.GetAddressOf());
-	if (FAILED(hr)) { return; }
+	if (!CheckResult(hr, L"シェーダーの読み込みに失敗しました", desc.PSFile)) { return; }
 	assert(pVS != nullptr);
 	assert(pPS != nullptr);
 
@@ -252,5 +269,5 @@ void PipelineState::CreateDefaultPipelineState(Description desc,
 
 	// パイプラインの生成
 	hr = GetDevice()->CreateGraphicsPipelineState(&pipelineDesc, IID_PPV_ARGS(PipelineData.GetAddressOf()));
-	if (FAILED(hr)) { return; }
+	CheckResult(hr, L"パイプラインステートの作成に失敗しました", desc.VSFile);
 }

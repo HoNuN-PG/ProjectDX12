@@ -80,6 +80,7 @@ Gauss::Gauss(Copy& copy)
 			foarmats,
 			FALSE,
 		};
+		desc.Blend = PipelineState::BlendMode::None;
 
 		desc.VSFile = L"../game/assets/shader/VS_Blur2X.cso";
 		desc.PSFile = L"../game/assets/shader/PS_Blur2.cso";
@@ -141,6 +142,7 @@ Gauss::Gauss(Copy& copy)
 			formats,
 			FALSE,
 		};
+		desc.Blend = PipelineState::BlendMode::None;
 
 		desc.VSFile = L"../game/assets/shader/VS_Blur4X.cso";
 		desc.PSFile = L"../game/assets/shader/PS_Blur4.cso";
@@ -202,6 +204,7 @@ Gauss::Gauss(Copy& copy)
 			formats,
 			FALSE,
 		};
+		desc.Blend = PipelineState::BlendMode::None;
 
 		desc.VSFile = L"../game/assets/shader/VS_Blur8X.cso";
 		desc.PSFile = L"../game/assets/shader/PS_Blur8.cso";

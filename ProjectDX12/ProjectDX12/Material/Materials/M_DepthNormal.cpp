@@ -29,8 +29,10 @@ void M_DepthNormal::Initialize(Description desc)
 		desc.CullMode,
 		2,
 		formats,
-		desc.WriteDepth,
+		desc.DepthTest,
+		desc.DepthWrite,
 	};
+	pipeline.Blend = PipelineState::BlendMode::None;
 
 	Material::SetUp(
 		desc.pHeap,

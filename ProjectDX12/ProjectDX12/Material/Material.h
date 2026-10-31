@@ -50,7 +50,8 @@ public:
 	{
 		DescriptorHeap* pHeap = nullptr;
 		D3D12_CULL_MODE CullMode = D3D12_CULL_MODE_BACK;
-		BOOL WriteDepth = TRUE;
+		BOOL DepthTest = TRUE;
+		BOOL DepthWrite = TRUE;
 		RenderingTiming Timing = RenderingTiming::Forward;
 		RenderingPass::RenderingPassType PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 	};

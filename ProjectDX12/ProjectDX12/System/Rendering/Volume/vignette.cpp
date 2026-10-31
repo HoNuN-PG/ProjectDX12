@@ -9,7 +9,7 @@
 
 void Vignette::Init()
 {
-	Volume::Init(4,2);
+	Volume::Init(3,1);
 
 	// ルートシグネチャ
 	{
@@ -41,18 +41,15 @@ void Vignette::Init()
 			formats,
 			FALSE,
 		};
-
+		desc.Blend = PipelineState::BlendMode::None;
 		pPipelineData.push_back(std::make_unique<PipelineState>(desc));
 	}
-	// RTV
+	// MainTextureのSRV（ステージングは作り直されないので1回だけコピー）
 	{
-		RenderTarget::Description desc = {};
-		desc.width = WINDOW_WIDTH;
-		desc.height = WINDOW_HEIGHT;
-		desc.format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		desc.pRTVHeap = pRTVHeap.get();
-		desc.pSRVHeap = pHeap.get();
-		pRTV = std::make_shared<RenderTarget>(desc);
+		MainTextureSRV = pHeap->Allocate();
+		RenderingEngine* engine = SceneManager::GetRenderingEngine();
+		assert(engine);
+		engine->CopyGlobalTexture(MainTextureSRV.hCPU, GlobalTextureResourceKey::MainTexture);
 	}
 	// パラメーター定数バッファ
 	{
@@ -89,11 +86,10 @@ void Vignette::Draw()
 	Params->Write(&VignetteParam);
 
 	// 描画
-	engine->CopyGlobalTexture(pRTV.get()->GetHandleSRV().hCPU, GlobalTextureResourceKey::MainTexture);
 	std::vector<RenderTarget*> targets = { pPostProcessRTV.get() };
 	D3D12_GPU_DESCRIPTOR_HANDLE handle[] =
 	{
-		pRTV.get()->GetHandleSRV().hGPU,
+		MainTextureSRV.hGPU,
 		Params.get()->GetHandle().hGPU,
 	};
 	ScreenDraw(targets, pHeap->Get(), handle, _countof(handle), pRootSignatureData.get(), pPipelineData[0].get(), pScreen.get());

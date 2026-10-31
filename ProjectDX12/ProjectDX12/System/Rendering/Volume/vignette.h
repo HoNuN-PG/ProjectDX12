@@ -29,7 +29,7 @@ public:
 
 private:
 
-	std::shared_ptr<RenderTarget> pRTV;
+	DescriptorHeap::Handle MainTextureSRV; // MainTexture‚ÌSRV
 
 private:
 

@@ -27,7 +27,8 @@ void M_SkyBox::Initialize(Description desc)
 		desc.CullMode,
 		1,
 		formats,
-		desc.WriteDepth,
+		desc.DepthTest,
+		desc.DepthWrite,
 	};
 
 	Material::SetUp(

@@ -40,7 +40,8 @@ void M_SimpleLit::Initialize(Description desc)
 		desc.CullMode,
 		1,
 		formats,
-		desc.WriteDepth,
+		desc.DepthTest,
+		desc.DepthWrite,
 	};
 
 	Material::SetUp(
@@ -112,7 +113,8 @@ void M_OpaqueSimpleLit::Initialize(Description desc)
 		desc.CullMode,
 		1,
 		formats,
-		desc.WriteDepth,
+		desc.DepthTest,
+		desc.DepthWrite,
 	};
 
 	Material::SetUp(

@@ -29,7 +29,8 @@ void M_Deffered_Albedo::Initialize(Description desc)
 		desc.CullMode,
 		1,
 		formats,
-		desc.WriteDepth,
+		desc.DepthTest,
+		desc.DepthWrite,
 	};
 
 	Material::SetUp(

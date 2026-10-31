@@ -37,7 +37,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_SkyBox> sky_box = std::make_shared<M_SkyBox>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_FRONT;
-		desc.WriteDepth = FALSE;
+		desc.DepthTest = FALSE;
 		desc.Timing = Material::RenderingTiming::Environment;
 		
 		Material::Initialize(sky_box, desc);
@@ -47,7 +47,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_SimpleShadowMaps> shadow_map = std::make_shared<M_SimpleShadowMaps>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::Shadow;
 
 		Material::Initialize(shadow_map, desc);
@@ -56,7 +56,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_OpaqueSimpleShadowMaps> leaf_shadow_map = std::make_shared<M_OpaqueSimpleShadowMaps>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_NONE;
-		desc.WriteDepth = FALSE;
+		desc.DepthTest = FALSE;
 
 		Material::Initialize(leaf_shadow_map, desc);
 		leaf_shadow_map->AddTexture("../game/assets/model/tree/T_Leaves_Round_01_C.dds");
@@ -65,7 +65,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_DepthNormal> opaque_depth_normal = std::make_shared<M_DepthNormal>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::OpaqueDepthNormal;
 
 		Material::Initialize(opaque_depth_normal, desc);
@@ -74,7 +74,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_DepthNormal> custom_opaque_depth_normal = std::make_shared<M_DepthNormal>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::AfterOpaqueDepthNormal;
 		desc.PassType = RenderingPass::RenderingPassType::CustomDepthNormal;
 
@@ -84,7 +84,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_Grid> grid = std::make_shared<M_Grid>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::Forward;
 		desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 
@@ -96,7 +96,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_GridShadow> grid_shadow = std::make_shared<M_GridShadow>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::Forward;
 		desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 
@@ -108,7 +108,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_GridShadowVSM> grid_shadow_vsm = std::make_shared<M_GridShadowVSM>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::Forward;
 		desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 
@@ -120,7 +120,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<Material> deffered_albedo_normal = std::make_shared<M_Deffered_Albedo>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::Deffered;
 		desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 
@@ -131,7 +131,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_SimpleLit> simple_lit = std::make_shared<M_SimpleLit>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::Forward;
 		desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 
@@ -141,7 +141,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_OpaqueSimpleLit> tree_simple_lit = std::make_shared<M_OpaqueSimpleLit>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::Forward;
 		desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 
@@ -152,7 +152,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_OpaqueSimpleLit> leaf_simple_lit = std::make_shared<M_OpaqueSimpleLit>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_NONE;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::Forward;
 		desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 
@@ -163,7 +163,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_MS> ms = std::make_shared<M_MS>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::Forward;
 		desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 
@@ -173,7 +173,7 @@ HRESULT SceneSandBoxDX12::Init()
 	std::shared_ptr<M_MSCulling> ms_culling = std::make_shared<M_MSCulling>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
-		desc.WriteDepth = TRUE;
+		desc.DepthTest = TRUE;
 		desc.Timing = Material::RenderingTiming::Forward;
 		desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 

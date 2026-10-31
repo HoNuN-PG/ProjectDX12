@@ -50,8 +50,11 @@ void M_SimpleShadowMaps::Initialize(Description desc)
 		desc.CullMode,
 		1,
 		formats,
-		desc.WriteDepth,
+		desc.DepthTest,
+		desc.DepthWrite,
 	};
+	pipeline.DepthClip = FALSE;		// 範囲外のキャスターも深度をクランプして描く
+	pipeline.Blend = PipelineState::BlendMode::None;
 
 	Material::SetUp(
 		desc.pHeap,
@@ -133,8 +136,11 @@ void M_OpaqueSimpleShadowMaps::Initialize(Description desc)
 		desc.CullMode,
 		1,
 		formats,
-		desc.WriteDepth,
+		desc.DepthTest,
+		desc.DepthWrite,
 	};
+	pipeline.DepthClip = FALSE;		// 範囲外のキャスターも深度をクランプして描く
+	pipeline.Blend = PipelineState::BlendMode::None;
 
 	Material::SetUp(
 		desc.pHeap,
