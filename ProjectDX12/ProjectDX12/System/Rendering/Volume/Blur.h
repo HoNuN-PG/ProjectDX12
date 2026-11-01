@@ -67,7 +67,7 @@ public:
 	/// <summary>
 	/// カーネルサイズ（片側のサンプル数）
 	/// </summary>
-	enum class Kernel
+	enum KernelType
 	{
 		Tap2 = 0,
 		Tap4,
@@ -90,7 +90,7 @@ public:
 	/// <param name="kernel">カーネルサイズ</param>
 	/// <param name="downSample">ダウンサンプリングの強さ（1,2,4）</param>
 	/// <returns>ガウススロット</returns>
-	UINT32 MakeGaussData(DirectX::XMFLOAT2 screen, Kernel kernel, UINT downSample);
+	UINT32 MakeGaussData(DirectX::XMFLOAT2 screen, KernelType kernel, UINT downSample);
 
 	/// <summary>
 	/// ガウスの実行（カーネルサイズとダウンサンプリングはMakeGaussDataで指定したものを使う）
@@ -126,13 +126,13 @@ private:
 		std::unique_ptr<ConstantBuffer>		Weights;
 	};
 
-	// MakeGaussDataで作るガウス1回分のデータ
+	// ガウス1回分のデータ
 	struct Slot
 	{
-		Kernel								KernelType;
+		KernelType							KernelType;
 		DescriptorHeap::Handle				SrcSRV;	// 入力テクスチャのSRVのコピー先
 		std::unique_ptr<RenderTarget>		RTVs[GaussRTVType::RTV_MAX];
-		std::unique_ptr<ConstantBuffer>		Screen[GaussScreenType::Screen_MAX];
+		std::unique_ptr<ConstantBuffer>		Screens[GaussScreenType::Screen_MAX];
 	};
 	
 private:
@@ -142,7 +142,7 @@ private:
 	std::unique_ptr<DescriptorHeap>		pHeap;
 	std::unique_ptr<DescriptorHeap>		pRTVHeap;
 	std::unique_ptr<RootSignature>		RootSignatureData; // 全カーネル共通
-	KernelData							Kernels[static_cast<int>(Kernel::MAX)];
+	KernelData							Kernels[static_cast<int>(KernelType::MAX)];
 	std::vector<Slot>					Slots;
 
 };

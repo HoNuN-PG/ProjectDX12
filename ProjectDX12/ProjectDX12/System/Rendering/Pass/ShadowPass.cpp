@@ -172,9 +172,9 @@ void ShadowPass::Init(
 	}
 
 	// ガウスデータ作成
-	GaussIdx[TextureType::Near] = pEngine->GetGauss()->MakeGaussData({ StagingVSMShadowMaps[TextureType::Near]->Width,StagingVSMShadowMaps[TextureType::Near]->Height }, Gauss::Kernel::Tap8, 2);
-	GaussIdx[TextureType::Middle] = pEngine->GetGauss()->MakeGaussData({ StagingVSMShadowMaps[TextureType::Middle]->Width,StagingVSMShadowMaps[TextureType::Middle]->Height }, Gauss::Kernel::Tap4, 2);
-	GaussIdx[TextureType::Far] = pEngine->GetGauss()->MakeGaussData({ StagingVSMShadowMaps[TextureType::Far]->Width,StagingVSMShadowMaps[TextureType::Far]->Height }, Gauss::Kernel::Tap2, 1);
+	GaussIdx[TextureType::Near] = pEngine->GetGauss()->MakeGaussData({ StagingVSMShadowMaps[TextureType::Near]->Width,StagingVSMShadowMaps[TextureType::Near]->Height }, Gauss::KernelType::Tap8, 2);
+	GaussIdx[TextureType::Middle] = pEngine->GetGauss()->MakeGaussData({ StagingVSMShadowMaps[TextureType::Middle]->Width,StagingVSMShadowMaps[TextureType::Middle]->Height }, Gauss::KernelType::Tap4, 2);
+	GaussIdx[TextureType::Far] = pEngine->GetGauss()->MakeGaussData({ StagingVSMShadowMaps[TextureType::Far]->Width,StagingVSMShadowMaps[TextureType::Far]->Height }, Gauss::KernelType::Tap2, 1);
 }
 
 void ShadowPass::AddObj(GameObject& obj)

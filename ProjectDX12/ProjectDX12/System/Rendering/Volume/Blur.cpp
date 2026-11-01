@@ -8,9 +8,6 @@
 
 namespace
 {
-	// 重みの最大数
-	constexpr UINT GAUSS_WEIGHTS_MAX = 8;
-
 	// カーネルサイズごとの設定
 	struct KernelSetting
 	{
@@ -26,7 +23,10 @@ namespace
 		{ 4, 10.0f, L"../game/assets/shader/VS_Blur4X.cso", L"../game/assets/shader/VS_Blur4Y.cso", L"../game/assets/shader/PS_Blur4.cso" },
 		{ 8,  1.0f, L"../game/assets/shader/VS_Blur8X.cso", L"../game/assets/shader/VS_Blur8Y.cso", L"../game/assets/shader/PS_Blur8.cso" },
 	};
-	static_assert(_countof(KernelSettings) == static_cast<size_t>(Gauss::Kernel::MAX));
+	static_assert(_countof(KernelSettings) == static_cast<size_t>(Gauss::KernelType::MAX));
+	
+	// 重みの最大数
+	constexpr UINT GAUSS_WEIGHTS_MAX = 8;
 }
 
 Gauss::Gauss(Copy& copy)
@@ -57,7 +57,7 @@ Gauss::Gauss(Copy& copy)
 			BlurParam::GAUSS_MAX +									// 入力SRV分確保
 			BlurParam::GAUSS_MAX * GaussRTVType::RTV_MAX +			// RTV数分確保
 			BlurParam::GAUSS_MAX * GaussScreenType::Screen_MAX +	// スクリーン定数バッファ分確保
-			static_cast<UINT>(Kernel::MAX);							// 重み定数バッファ分確保
+			static_cast<UINT>(KernelType::MAX);						// 重み定数バッファ分確保
 		pHeap = std::make_unique<DescriptorHeap>(desc);
 	}
 	// ボリュームディスクリプターヒープ(レンダーターゲット)
@@ -98,7 +98,7 @@ Gauss::Gauss(Copy& copy)
 	};
 	pipeline.Blend = PipelineState::BlendMode::None;
 
-	for (int i = 0; i < static_cast<int>(Kernel::MAX); ++i)
+	for (int i = 0; i < static_cast<int>(KernelType::MAX); ++i)
 	{
 		const KernelSetting& setting = KernelSettings[i];
 		KernelData& kernel = Kernels[i];
@@ -122,10 +122,10 @@ Gauss::Gauss(Copy& copy)
 	}
 }
 
-UINT32 Gauss::MakeGaussData(DirectX::XMFLOAT2 screen, Kernel kernel, UINT downSample)
+UINT32 Gauss::MakeGaussData(DirectX::XMFLOAT2 screen, KernelType kernel, UINT downSample)
 {
 	assert(Slots.size() < BlurParam::GAUSS_MAX);
-	assert(kernel < Kernel::MAX);
+	assert(kernel < KernelType::MAX);
 	assert(downSample > 0);
 
 	UINT32 gaussIdx = static_cast<UINT32>(Slots.size());
@@ -155,14 +155,14 @@ UINT32 Gauss::MakeGaussData(DirectX::XMFLOAT2 screen, Kernel kernel, UINT downSa
 		ConstantBuffer::Description desc = {};
 		desc.pHeap = pHeap.get();
 		desc.size = sizeof(BlurParam::ScreenParam);
-		slot.Screen[GaussScreenType::ScreenX] = std::make_unique<ConstantBuffer>(desc);
-		slot.Screen[GaussScreenType::ScreenY] = std::make_unique<ConstantBuffer>(desc);
+		slot.Screens[GaussScreenType::ScreenX] = std::make_unique<ConstantBuffer>(desc);
+		slot.Screens[GaussScreenType::ScreenY] = std::make_unique<ConstantBuffer>(desc);
 
 		// スクリーンサイズ
 		BlurParam::ScreenParam x(width, screen.y, 1);
 		BlurParam::ScreenParam y(width, height, 1);
-		slot.Screen[GaussScreenType::ScreenX]->Write(&x);
-		slot.Screen[GaussScreenType::ScreenY]->Write(&y);
+		slot.Screens[GaussScreenType::ScreenX]->Write(&x);
+		slot.Screens[GaussScreenType::ScreenY]->Write(&y);
 	}
 
 	return gaussIdx;
@@ -180,7 +180,7 @@ void Gauss::Execute(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest)
 	RenderingEngine::CopyTexture(src->GetHandleSRV().hCPU, slot.SrcSRV.hCPU);
 	DrawBlur(
 		xBlur,
-		slot.Screen[GaussScreenType::ScreenX]->GetHandle().hGPU,
+		slot.Screens[GaussScreenType::ScreenX]->GetHandle().hGPU,
 		slot.SrcSRV.hGPU,
 		kernel.Weights->GetHandle().hGPU,
 		kernel.Pipeline[GaussPipelineType::XBlurPipeline].get()
@@ -189,7 +189,7 @@ void Gauss::Execute(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest)
 	// YBlur
 	DrawBlur(
 		yBlur,
-		slot.Screen[GaussScreenType::ScreenY]->GetHandle().hGPU,
+		slot.Screens[GaussScreenType::ScreenY]->GetHandle().hGPU,
 		xBlur->GetHandleSRV().hGPU,
 		kernel.Weights->GetHandle().hGPU,
 		kernel.Pipeline[GaussPipelineType::YBlurPipeline].get()
