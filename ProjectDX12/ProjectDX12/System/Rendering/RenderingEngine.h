@@ -112,6 +112,7 @@ private:
 public:
 
 	std::shared_ptr<CameraBase> GetCamera() { return Camera[CurrentCameraType]; }
+	CameraBase* GetMainCamera() { return Camera[CameraType::MAIN].get(); } // デバッグ用にカメラを切り替えても変わらないメインカメラ
 
 private:
 

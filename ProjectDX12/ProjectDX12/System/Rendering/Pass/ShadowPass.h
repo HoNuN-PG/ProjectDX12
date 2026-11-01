@@ -11,8 +11,6 @@
 #include "System/Rendering/Texture/RenderTarget.h"
 #include "System/Rendering/RenderingEngine.h"
 
-#define SHADOW_MAP_COUNT (3)
-
 class CameraBase;
 
 class ShadowPass : public RenderingPass
@@ -30,6 +28,7 @@ public:
 
 		MAX
 	};
+	static_assert(TextureType::NearVSM == ShadowParam::CASCADE_COUNT, "シャドウマップの種類とカスケード数が一致していない");
 
 public:
 
@@ -59,15 +58,25 @@ public:
 private:
 
 	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
-	
+
 private:
 
+	// カメラの視錐台のうち nearDepth～farDepth の範囲
+	struct FrustumSlice
+	{
+		DirectX::XMFLOAT3 vertex[8];
+		DirectX::XMFLOAT3 center;	// 手前の面と奥の面の中心の中点
+	};
+	FrustumSlice CalcFrustumSlice(CameraBase& camera, float nearDepth, float farDepth);
+
 	DirectX::XMFLOAT4X4 CalcCrop(
+		CameraBase& camera,
 		float depth,
 		int area,
 		DirectX::XMFLOAT4X4 lvp
 	);
 	DirectX::XMFLOAT4X4 CalcTexelSnappedCrop(
+		CameraBase& camera,
 		float depth,
 		int area,
 		float res,
@@ -76,16 +85,17 @@ private:
 
 public:
 
-	void SetCascadeAreas(UINT idx, float value) { CascadeAreas[idx] = value; };
+	void SetCascadeAreas(UINT idx, float value) { assert(idx < ShadowParam::CASCADE_COUNT); CascadeAreas[idx] = value; };
 
-public:
-
-	DirectX::XMFLOAT2 ShadowMapsSize[TextureType::NearVSM];
-	DirectX::XMFLOAT2 VSMShadowMapsSize[TextureType::NearVSM];
+	/// <summary>
+	/// 描画中のカスケード番号（シャドウマップ用マテリアルがBindで参照する）
+	/// </summary>
+	UINT GetCurrentCascade() const { return CurrentCascade; }
 
 private:
 
-	std::vector<float> CascadeAreas;
+	float CascadeAreas[ShadowParam::CASCADE_COUNT];
+	UINT CurrentCascade = 0;
 	ShadowParam::ShadowMapsParam ShadowMapsParam;
 	ShadowParam::ShadowReceieverParam ShadowReceiveParam;
 
@@ -100,11 +110,7 @@ private:
 	std::vector<DescriptorHeap::Handle> VSMShadowMapSRVs;
 
 	// ガウスパラメータ
-	int GaussIdx[TextureType::NearVSM];
-
-private:
-
-	std::weak_ptr<CameraBase> pCamera;
+	UINT32 GaussIdx[ShadowParam::CASCADE_COUNT];
 
 };
 

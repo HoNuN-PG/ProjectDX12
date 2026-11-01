@@ -6,8 +6,6 @@
 #include "System/Rendering/GlobalResourceKey.h"
 #include "System/Rendering/RenderingEngine.h"
 
-UINT M_ShadowMapsBase::CurrentShadowMapsNo = 0;
-
 void M_SimpleShadowMaps::Initialize(Description desc)
 {
 	// 定数バッファ
@@ -67,6 +65,11 @@ void M_SimpleShadowMaps::Bind(UINT materialinstance)
 	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 
+	// 描画中のカスケード番号はシャドウパスが持っている
+	ShadowPass* pass = engine->GetRenderingPass<ShadowPass>(Timing, PassType);
+	assert(pass);
+	const UINT cascade = pass->GetCurrentCascade();
+
 	// 定数バッファの設定
 	WriteParams(
 		(UINT)1, 
@@ -76,8 +79,8 @@ void M_SimpleShadowMaps::Bind(UINT materialinstance)
 	);
 	WriteParams(
 		(UINT)1, 
-		1 + CurrentShadowMapsNo,
-		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + CurrentShadowMapsNo).hCPU, 
+		1 + cascade,
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + cascade).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 
@@ -85,7 +88,7 @@ void M_SimpleShadowMaps::Bind(UINT materialinstance)
 	{
 		WVP[materialinstance]->GetHandle().hGPU,
 		Params[0]->GetHandle().hGPU,
-		Params[1 + CurrentShadowMapsNo]->GetHandle().hGPU,
+		Params[1 + cascade]->GetHandle().hGPU,
 	};
 	Material::BindBase(desc, _countof(desc));
 }
@@ -154,6 +157,11 @@ void M_OpaqueSimpleShadowMaps::Bind(UINT materialinstance)
 	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 
+	// 描画中のカスケード番号はシャドウパスが持っている
+	ShadowPass* pass = engine->GetRenderingPass<ShadowPass>(Timing, PassType);
+	assert(pass);
+	const UINT cascade = pass->GetCurrentCascade();
+
 	// 定数バッファの設定
 	WriteParams(
 		(UINT)1, 
@@ -163,19 +171,19 @@ void M_OpaqueSimpleShadowMaps::Bind(UINT materialinstance)
 	);
 	WriteParams(
 		(UINT)1, 
-		1 + CurrentShadowMapsNo,
-		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + CurrentShadowMapsNo).hCPU, 
+		1 + cascade,
+		engine->GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::ShadowMaps1 + cascade).hCPU, 
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
-	Params[1 + SHADOW_MAP_COUNT]->Write(&common);
+	Params[1 + ShadowParam::CASCADE_COUNT]->Write(&common);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{
 		WVP[materialinstance]->GetHandle().hGPU,
 		Params[0]->GetHandle().hGPU,
-		Params[1 + CurrentShadowMapsNo]->GetHandle().hGPU,
+		Params[1 + cascade]->GetHandle().hGPU,
 		Textures[0]->GetHandle().hGPU,
-		Params[1 + SHADOW_MAP_COUNT]->GetHandle().hGPU,
+		Params[1 + ShadowParam::CASCADE_COUNT]->GetHandle().hGPU,
 	};
 	Material::BindBase(desc, _countof(desc));
 }

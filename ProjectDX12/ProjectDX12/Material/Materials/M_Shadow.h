@@ -5,13 +5,16 @@
 
 namespace ShadowParam
 {
+	// シャドウマップのカスケード数（シェーダー側の配列数と合わせる）
+	constexpr UINT CASCADE_COUNT = 3;
+
 	struct ShadowMapsParam
 	{
 		DirectX::XMFLOAT4X4 LVP;
 	};
 	struct ShadowReceieverParam
 	{
-		DirectX::XMFLOAT4X4 LVP[3];
+		DirectX::XMFLOAT4X4 LVP[CASCADE_COUNT];
 		DirectX::XMFLOAT4 CascadeAreas;
 	};
 }
@@ -21,10 +24,6 @@ class M_ShadowMapsBase : public Material
 public:
 	virtual void Initialize(Description desc) override {};
 	virtual void Bind(UINT materialinstance) override {};
-
-public:
-	// 現在設定されているシャドウマップの番号
-	static UINT CurrentShadowMapsNo;
 
 };
 
