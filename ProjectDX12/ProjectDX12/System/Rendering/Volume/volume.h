@@ -11,6 +11,10 @@
 #include "System/Rendering/Pipeline/RootSignature.h"
 #include "System/Rendering/Texture/RenderTarget.h"
 
+/**
+ * @class Volume
+ * @brief ポストプロセス本体
+ */
 class Volume
 {
 public:
@@ -49,8 +53,8 @@ private:
 
 protected:
 
-	void BindPostProcessRTV();
 	void BindHeap();
+	void BindPostProcessRTV();
 	void BindRootSignature(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num);
 	void BindPipeline(UINT idx);
 	void Rendering();
@@ -59,17 +63,10 @@ protected:
 
 	std::unique_ptr<DescriptorHeap>	pHeap;
 	std::unique_ptr<DescriptorHeap>	pRTVHeap;
-
-protected:
-
 	static std::unique_ptr<MeshBuffer> pScreen;
-
 	std::unique_ptr<RenderTarget> pPostProcessRTV;
 	std::unique_ptr<RootSignature> pRootSignatureData;
 	std::vector<std::unique_ptr<PipelineState>> pPipelineData;
-
-protected:
-
 	std::unique_ptr<ConstantBuffer> Params;
 
 };

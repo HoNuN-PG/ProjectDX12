@@ -36,9 +36,6 @@ public:
 
 	static SceneBase* GetCurrentScene(){ return Scenes[CurrentScene].get(); }
 	static class RenderingEngine* GetRenderingEngine(){ return Scenes[CurrentScene]->GetRenderingEngine(); }
-
-public:
-
 	static std::shared_ptr<CameraBase> GetCamera();
 
 };

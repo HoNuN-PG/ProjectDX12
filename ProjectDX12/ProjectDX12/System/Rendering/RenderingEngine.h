@@ -16,12 +16,11 @@
 #include "System/Rendering/Texture/RenderTarget.h"
 #include "System/Rendering/Volume/PostProcess.h"
 
+class GameObject;
 class CameraBase;
 class LightBase;
 class Copy;
 class Gauss;
-
-class GameObject;
 
 class RenderingEngine
 {
@@ -83,7 +82,7 @@ private:
 
 	std::unordered_map<UINT, std::unique_ptr<ConstantBuffer>> GlobalConstantBuffer;
 	std::unordered_map<UINT, std::unique_ptr<RenderTarget>> GlobalTextureStaging;
-	std::unordered_map<UINT, DescriptorHeap::Handle> GlobalTextureSRV;	// シェーダーから参照するSRV（ステージングのSRVをコピーしたもの）
+	std::unordered_map<UINT, DescriptorHeap::Handle> GlobalTextureSRV; // シェーダーから参照するSRV（ステージングのSRVをコピーしたもの）
 	std::unordered_map<UINT, DXGI_FORMAT> GlobalTextureFormat;
 
 	// ====================

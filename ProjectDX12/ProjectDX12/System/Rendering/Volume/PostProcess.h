@@ -6,6 +6,10 @@
 
 #include "System/Rendering/Volume/volume.h"
 
+/**
+ * @class PostProcess
+ * @brief ポストプロセス群
+ */
 class PostProcess
 {
 public:

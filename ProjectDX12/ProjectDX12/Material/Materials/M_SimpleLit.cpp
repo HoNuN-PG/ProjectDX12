@@ -28,7 +28,7 @@ void M_SimpleLit::Initialize(Description desc)
 		_countof(param)
 	};
 
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { SceneManager::GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",
@@ -100,7 +100,7 @@ void M_OpaqueSimpleLit::Initialize(Description desc)
 		_countof(param)
 	};
 
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { SceneManager::GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",

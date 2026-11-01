@@ -1,5 +1,6 @@
 
 #include "Material/Materials/M_DepthNormal.h"
+#include "Scene/SceneManager.h"
 #include "System/Rendering/Pass/DepthNormalPass.h"
 #include "System/Rendering/RenderingEngine.h"
 
@@ -17,7 +18,7 @@ void M_DepthNormal::Initialize(Description desc)
 	};
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { SceneManager::GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",

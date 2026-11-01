@@ -11,6 +11,10 @@ class GameObject;
 class RenderTarget;
 class RenderingEngine;
 
+/**
+* @class RenderingPass
+* @brief 描画パス
+*/
 class RenderingPass
 {
 public:
@@ -64,9 +68,6 @@ public:
 protected:
 
 	RenderingEngine* pEngine; // パスはRenderingEngineが所有しているため必ずRenderingEngineの参照が保証される
-
-protected:
-
 	std::vector<DXGI_FORMAT> PassFormats; // パスが描画するRTのフォーマット群
 
 };

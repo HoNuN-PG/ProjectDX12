@@ -49,13 +49,13 @@ public:
 
 private:
 
+	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
+	
+private:
+
 	std::unique_ptr<DepthStencil> DSV;
 	std::shared_ptr<RenderTarget> Depth;
 	std::shared_ptr<RenderTarget> Normal;
-
-private:
-
-	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
 
 };
 

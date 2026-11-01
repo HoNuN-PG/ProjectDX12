@@ -58,6 +58,10 @@ public:
 
 private:
 
+	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
+	
+private:
+
 	DirectX::XMFLOAT4X4 CalcCrop(
 		float depth,
 		int area,
@@ -101,10 +105,6 @@ private:
 private:
 
 	std::weak_ptr<CameraBase> pCamera;
-
-private:
-
-	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
 
 };
 

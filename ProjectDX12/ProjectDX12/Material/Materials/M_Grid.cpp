@@ -29,7 +29,7 @@ void M_Grid::Initialize(Description desc)
 	};
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { SceneManager::GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",
@@ -98,7 +98,7 @@ void M_GridShadow::Initialize(Description desc)
 	};
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { SceneManager::GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",
@@ -178,7 +178,7 @@ void M_GridShadowVSM::Initialize(Description desc)
 	};
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { SceneManager::GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",

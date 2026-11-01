@@ -30,9 +30,6 @@ public:
 private:
 
 	DescriptorHeap::Handle MainTextureSRV; // MainTexture‚ÌSRV
-
-private:
-
 	VignetteParams VignetteParam;
 
 };

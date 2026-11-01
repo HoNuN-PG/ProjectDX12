@@ -35,28 +35,6 @@ void Material::SetUp(
 	}
 }
 
-void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
-{
-	ID3D12DescriptorHeap* heaps[] =
-	{
-		pHeap->Get(),
-	};
-	DescriptorHeap::Bind(heaps,1);
-	pRootSignatureData->Bind(handle, handleNum);
-	pPipelineData->Bind();
-}
-
-void Material::BindBase(RootSignature::BindSetting* setting, UINT handleNum)
-{
-	ID3D12DescriptorHeap* heaps[] =
-	{
-		pHeap->Get(),
-	};
-	DescriptorHeap::Bind(heaps, 1);
-	pRootSignatureData->Bind(setting, handleNum);
-	pPipelineData->Bind();
-}
-
 UINT Material::AddMaterialInstance()
 {
 	// マテリアルインデックス計算
@@ -126,9 +104,25 @@ void Material::WriteParams(UINT range, UINT startIdx, D3D12_CPU_DESCRIPTOR_HANDL
 	);
 }
 
-RenderingEngine* Material::GetRenderingEngine()
+
+void Material::BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum)
 {
-	RenderingEngine* engine = SceneManager::GetCurrentScene()->GetRenderingEngine();
-	assert(engine);
-	return engine;
+	ID3D12DescriptorHeap* heaps[] =
+	{
+		pHeap->Get(),
+	};
+	DescriptorHeap::Bind(heaps,1);
+	pRootSignatureData->Bind(handle, handleNum);
+	pPipelineData->Bind();
+}
+
+void Material::BindBase(RootSignature::BindSetting* setting, UINT handleNum)
+{
+	ID3D12DescriptorHeap* heaps[] =
+	{
+		pHeap->Get(),
+	};
+	DescriptorHeap::Bind(heaps, 1);
+	pRootSignatureData->Bind(setting, handleNum);
+	pPipelineData->Bind();
 }

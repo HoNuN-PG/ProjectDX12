@@ -45,13 +45,13 @@ public:
 
 private:
 
+	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
+	
+private:
+
 	DepthStencil* DSV = nullptr; // RenderingEngine‚ªŠ—L‚µ‚Ä‚¢‚é‚½‚ßQÆ‚ª•ÛØ‚³‚ê‚Ä‚¢‚é
 	std::shared_ptr<RenderTarget> Depth;
 	std::shared_ptr<RenderTarget> Normal;
-
-private:
-
-	std::vector<RenderingEngine::RenderingInfo> RenderObjects;
 
 };
 

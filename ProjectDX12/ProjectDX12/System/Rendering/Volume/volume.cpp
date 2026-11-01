@@ -62,6 +62,15 @@ void Volume::Init(UINT heapNum, UINT rtvNum)
 	}
 }
 
+void Volume::BindHeap()
+{
+	ID3D12DescriptorHeap* heaps[] =
+	{
+		pHeap->Get(),
+	};
+	DescriptorHeap::Bind(heaps, 1);
+}
+
 void Volume::BindPostProcessRTV()
 {
 	// RTV‚ÌÝ’è
@@ -73,15 +82,6 @@ void Volume::BindPostProcessRTV()
 		pPostProcessRTV->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs);
-}
-
-void Volume::BindHeap()
-{
-	ID3D12DescriptorHeap* heaps[] =
-	{
-		pHeap->Get(),
-	};
-	DescriptorHeap::Bind(heaps, 1);
 }
 
 void Volume::BindRootSignature(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT num)

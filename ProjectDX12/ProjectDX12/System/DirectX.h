@@ -56,7 +56,7 @@ void ScreenDraw(
 	class MeshBuffer* screen
 );
 
-void ScreenDraw_NoClear(
+void ScreenDrawNoClear(
 	const std::vector<class RenderTarget*>& rts,
 	ID3D12DescriptorHeap* heap,
 	D3D12_GPU_DESCRIPTOR_HANDLE* handle,

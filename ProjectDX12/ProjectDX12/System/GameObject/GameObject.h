@@ -19,8 +19,8 @@ public:
 	void InitBase(class RenderingEngine* engine);
 	void UninitBase();
 	void UpdateBase();
-	void DrawBase(DirectX::XMFLOAT4X4 ParentMatrix);
-	void RenderingBase();
+	void DrawBase(DirectX::XMFLOAT4X4 ParentMatrix); // •`‰æ€”õ
+	void RenderingBase(); // •`‰æ
 
 	virtual void Init() {}
 	virtual void Uninit() {}

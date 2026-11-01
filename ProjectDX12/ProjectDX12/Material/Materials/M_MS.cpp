@@ -1,6 +1,7 @@
 
 #include "GameObject/Camera/CameraBase.h"
 #include "Material/Materials/M_MS.h"
+#include "Scene/SceneManager.h"
 #include "System/Rendering/RenderingEngine.h"
 
 void M_MS::Initialize(Description desc)
@@ -31,7 +32,7 @@ void M_MS::Initialize(Description desc)
 		PipelineState::IED_POS_TEX,
 		PipelineState::IED_POS_TEX_COUNT,
 		desc.CullMode,
-		GetRenderingEngine()->GetPassFormat(Timing, PassType),
+		SceneManager::GetRenderingEngine()->GetPassFormat(Timing, PassType),
 		desc.DepthTest,
 		desc.DepthWrite,
 	};
@@ -105,7 +106,7 @@ void M_MSCulling::Initialize(Description desc)
 	CalcMeshShaderStartSlotSRV(param, _countof(param));
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { SceneManager::GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"../game/assets/shader/AS_CullingObject.cso",
 		L"../game/assets/shader/MS_CullingObject.cso",

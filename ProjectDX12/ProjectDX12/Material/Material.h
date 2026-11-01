@@ -93,16 +93,6 @@ protected:
 	);
 
 	// =============================================
-	// バインド
-public:
-
-	virtual void Bind(UINT materialinstance) = 0;
-protected:
-
-	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
-	void BindBase(RootSignature::BindSetting* setting, UINT handleNum);
-
-	// =============================================
 	// マテリアルインスタンス
 public:
 
@@ -165,6 +155,16 @@ protected:
 	RenderingPass::RenderingPassType PassType;
 
 	// =============================================
+	// バインド
+public:
+
+	virtual void Bind(UINT materialinstance) = 0;
+protected:
+
+	void BindBase(D3D12_GPU_DESCRIPTOR_HANDLE* handle, UINT handleNum);
+	void BindBase(RootSignature::BindSetting* setting, UINT handleNum);
+	
+	// =============================================
 	// 描画パイプライン
 protected:
 
@@ -179,10 +179,6 @@ public:
 	virtual int GetAmpShaderSRVStartSlot() const { return -1; }
 	virtual int GetMeshShaderSRVStartSlot() const { return -1; }
 	virtual void WriteMeshletCount(int count) {}
-
-public:
-	
-	class RenderingEngine* GetRenderingEngine();
 
 };
 

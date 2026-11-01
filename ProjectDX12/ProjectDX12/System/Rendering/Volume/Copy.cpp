@@ -112,7 +112,7 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, Re
 	{
 		src,
 	};
-	ScreenDraw_NoClear(
+	ScreenDrawNoClear(
 		targets,
 		heap->Get(),
 		handle,

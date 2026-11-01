@@ -2,21 +2,22 @@
 #define ___BLUR_H___
 
 #include <memory>
+#include <span>
 #include <vector>
 
 #include "Model/MeshBuffer.h"
 #include "System/Rendering/ConstantBuffer/ConstantBuffer.h"
+#include "System/Rendering/Pipeline/DescriptorHeap.h"
 #include "System/Rendering/Pipeline/RootSignature.h"
 #include "System/Rendering/Pipeline/PipelineState.h"
 #include "System/Rendering/Texture/RenderTarget.h"
-
-class DescriptorHeap;
 
 namespace BlurParam
 {
 	// ブラースクリーン情報
 	struct ScreenParam
 	{
+	public:
 		float width;
 		float height;
 		float uvScale;
@@ -31,16 +32,6 @@ namespace BlurParam
 			height = h;
 			uvScale = scale;
 		}
-	};
-
-	// ガウスの重さ
-	enum{GAUSS_WEIGHTS_TYPE = 3};
-	enum{GAUSS2_WEIGHTS = 2};
-	enum{GAUSS4_WEIGHTS = 4};
-	enum{GAUSS8_WEIGHTS = 8};
-	struct GaussParam
-	{
-		std::shared_ptr<float[]> weights;
 	};
 
 	// ガウスを実行できる最大数
@@ -73,6 +64,18 @@ public:
 		Screen_MAX
 	};
 
+	/// <summary>
+	/// カーネルサイズ（片側のサンプル数）
+	/// </summary>
+	enum class Kernel
+	{
+		Tap2 = 0,
+		Tap4,
+		Tap8,
+
+		MAX
+	};
+	
 public:
 
 	explicit Gauss(class Copy& copy);
@@ -80,69 +83,67 @@ public:
 
 public:
 
-	// ガウスのデータ構築（D1,D2,D4はダウンサンプリングの強さ）
-	UINT32 MakeGaussD1Data(DirectX::XMFLOAT2 screen);
-	UINT32 MakeGaussD2Data(DirectX::XMFLOAT2 screen);
-	UINT32 MakeGaussD4Data(DirectX::XMFLOAT2 screen);
-
-public:
+	/// <summary>
+	/// ガウスのデータ構築
+	/// </summary>
+	/// <param name="screen">入力テクスチャのサイズ</param>
+	/// <param name="kernel">カーネルサイズ</param>
+	/// <param name="downSample">ダウンサンプリングの強さ（1,2,4）</param>
+	/// <returns>ガウススロット</returns>
+	UINT32 MakeGaussData(DirectX::XMFLOAT2 screen, Kernel kernel, UINT downSample);
 
 	/// <summary>
-	/// ガウスの実行
+	/// ガウスの実行（カーネルサイズとダウンサンプリングはMakeGaussDataで指定したものを使う）
 	/// </summary>
 	/// <param name="gaussIdx">ガウススロット</param>
-	/// <param name="screen">テクスチャサイズ</param>
-	/// <param name="src"></param>
-	/// <param name="dest"></param>
-	void ExecuteScreenGauss2D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
-	RenderTarget* src, RenderTarget* dest);
-	void ExecuteScreenGauss4D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
-	RenderTarget* src, RenderTarget* dest);
-	void ExecuteScreenGauss4D2(UINT32 gaussIdx, DirectX::XMFLOAT2 screen,
-		RenderTarget* src, RenderTarget* dest);
-	void ExecuteScreenGauss8D1(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
-	RenderTarget* src, RenderTarget* dest);
-	void ExecuteScreenGauss8D2(UINT32 gaussIdx,DirectX::XMFLOAT2 screen,
-		RenderTarget* src, RenderTarget* dest);
-	void ExecuteScreenGauss8D4(UINT32 gaussIdx, DirectX::XMFLOAT2 screen,
-		RenderTarget* src, RenderTarget* dest);
-	static void CalcWeights(std::weak_ptr<float[]> weights,int num, float blur);
+	/// <param name="src">入力テクスチャ</param>
+	/// <param name="dest">出力先</param>
+	void Execute(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest);
+
+	/// <summary>
+	/// ガウスの重みを計算（合計が1になるように正規化する）
+	/// </summary>
+	/// <param name="weights">書き込み先（要素数がサンプル数）</param>
+	/// <param name="blur">ガウス関数の分散</param>
+	static void CalcWeights(std::span<float> weights, float blur);
 
 private:
 
-	void ExecuteScreenGauss2(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest);
-	void ExecuteScreenGauss4(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest);
-	void ExecuteScreenGauss8(UINT32 gaussIdx, RenderTarget* src, RenderTarget* dest);
-	void MakeGaussData(UINT32 gaussIdx, DirectX::XMFLOAT2 screen ,int split);
+	void DrawBlur(
+		RenderTarget* target,
+		D3D12_GPU_DESCRIPTOR_HANDLE screen,
+		D3D12_GPU_DESCRIPTOR_HANDLE src,
+		D3D12_GPU_DESCRIPTOR_HANDLE weights,
+		PipelineState* pipeline
+	);
 
 private:
 
-	class Copy*													pCopy; // コピー処理（RenderingEngineが所有しGaussより長生きする）
-	std::unique_ptr<MeshBuffer>									pScreen;
-	std::unique_ptr<DescriptorHeap>								pHeap;
-	std::unique_ptr<DescriptorHeap>								pRTVHeap;
-	std::vector<std::unique_ptr<RenderTarget>>					GaussRTVs;
-	std::vector<DescriptorHeap::Handle>							SrcSRVs; // 入力テクスチャのSRVのコピー先
-	std::vector<std::unique_ptr<class ConstantBuffer>>			Params;
+	// カーネルサイズごとのパイプラインと重み
+	struct KernelData
+	{
+		std::unique_ptr<PipelineState>		Pipeline[GaussPipelineType::Pipeline_MAX];
+		std::unique_ptr<ConstantBuffer>		Weights;
+	};
 
+	// MakeGaussDataで作るガウス1回分のデータ
+	struct Slot
+	{
+		Kernel								KernelType;
+		DescriptorHeap::Handle				SrcSRV;	// 入力テクスチャのSRVのコピー先
+		std::unique_ptr<RenderTarget>		RTVs[GaussRTVType::RTV_MAX];
+		std::unique_ptr<ConstantBuffer>		Screen[GaussScreenType::Screen_MAX];
+	};
+	
 private:
 
-	// Gauss2
-	std::unique_ptr<RootSignature>								Gauss2RootSignatureData;
-	std::vector<std::unique_ptr<PipelineState>>					Gauss2PipelineData;
-	// Gauss4
-	std::unique_ptr<RootSignature>								Gauss4RootSignatureData;
-	std::vector<std::unique_ptr<PipelineState>>					Gauss4PipelineData;
-	// Gauss8
-	std::unique_ptr<RootSignature>								Gauss8RootSignatureData;
-	std::vector<std::unique_ptr<PipelineState>>					Gauss8PipelineData;
-
-	std::unique_ptr<ConstantBuffer>								Gauss2Param;
-	std::unique_ptr<ConstantBuffer>								Gauss4Param;
-	std::unique_ptr<ConstantBuffer>								Gauss8Param;
-	BlurParam::GaussParam										Weights2;
-	BlurParam::GaussParam										Weights4;
-	BlurParam::GaussParam										Weights8;
+	class Copy*							pCopy; // コピー処理（RenderingEngineが所有しGaussより長生きする）
+	std::unique_ptr<MeshBuffer>			pScreen;
+	std::unique_ptr<DescriptorHeap>		pHeap;
+	std::unique_ptr<DescriptorHeap>		pRTVHeap;
+	std::unique_ptr<RootSignature>		RootSignatureData; // 全カーネル共通
+	KernelData							Kernels[static_cast<int>(Kernel::MAX)];
+	std::vector<Slot>					Slots;
 
 };
 

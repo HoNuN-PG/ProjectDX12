@@ -78,14 +78,9 @@ void Vignette::Draw()
 	memcpy(&VignetteParam.color,color,sizeof(DirectX::XMFLOAT4));
 	ImGui::End();
 
-	RenderingEngine* engine = SceneManager::GetRenderingEngine();
-	assert(engine);
-
-	// バッファに書き込み
-	Params->Write(&VignetteParam);
-
 	// 描画
 	std::vector<RenderTarget*> targets = { pPostProcessRTV.get() };
+	Params->Write(&VignetteParam);
 	D3D12_GPU_DESCRIPTOR_HANDLE handle[] =
 	{
 		MainTextureSRV.hGPU,
@@ -94,5 +89,7 @@ void Vignette::Draw()
 	ScreenDraw(targets, pHeap->Get(), handle, _countof(handle), pRootSignatureData.get(), pPipelineData[0].get(), pScreen.get());
 
 	// MainTextureに張り付け
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
+	assert(engine);
 	engine->GetCopy()->ExecuteCopy(pHeap.get(), pPostProcessRTV.get()->GetHandleSRV().hGPU, engine->GetGlobalStagingRenderTarget(GlobalTextureResourceKey::MainTexture));
 }

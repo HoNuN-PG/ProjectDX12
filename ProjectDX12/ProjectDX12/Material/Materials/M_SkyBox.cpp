@@ -1,5 +1,6 @@
 
 #include "Material/Materials/M_SkyBox.h"
+#include "Scene/SceneManager.h"
 #include "System/Rendering/RenderingEngine.h"
 
 void M_SkyBox::Initialize(Description desc)
@@ -15,7 +16,7 @@ void M_SkyBox::Initialize(Description desc)
 		_countof(param)
 	};
 
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { SceneManager::GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",

@@ -8,6 +8,9 @@
 #include "Model/MeshBuffer.h"
 #include "System/Component/Component.h"
 
+/// <summary>
+/// 描画コンポーネント
+/// </summary>
 class RenderingComponent : public Component
 {
 public:

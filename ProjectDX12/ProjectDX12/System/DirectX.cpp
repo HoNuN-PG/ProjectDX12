@@ -362,7 +362,7 @@ void ScreenDraw(const std::vector<class RenderTarget*>& rts, ID3D12DescriptorHea
 	}
 }
 
-void ScreenDraw_NoClear(const std::vector<class RenderTarget*>& rts, ID3D12DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE* handle, int handlecount, RootSignature* rootsigunature, PipelineState* pipeline, MeshBuffer* screen)
+void ScreenDrawNoClear(const std::vector<class RenderTarget*>& rts, ID3D12DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE* handle, int handlecount, RootSignature* rootsigunature, PipelineState* pipeline, MeshBuffer* screen)
 {
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtHandles;
 

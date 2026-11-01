@@ -38,7 +38,7 @@ void M_SimpleShadowMaps::Initialize(Description desc)
 	};
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { SceneManager::GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",
@@ -123,7 +123,7 @@ void M_OpaqueSimpleShadowMaps::Initialize(Description desc)
 	};
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { SceneManager::GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",
@@ -202,7 +202,7 @@ void M_ShadowRecieverBase::Initialize(Description desc)
 
 void M_ShadowRecieverBase::Bind(UINT materialinstance)
 {
-	RenderingEngine* engine = GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 
 	// 定数バッファの設定
@@ -247,7 +247,7 @@ void M_ShadowVSMRecieverBase::Initialize(Description desc)
 
 void M_ShadowVSMRecieverBase::Bind(UINT materialinstance)
 {
-	RenderingEngine* engine = GetRenderingEngine();
+	RenderingEngine* engine = SceneManager::GetRenderingEngine();
 	assert(engine);
 
 	// 定数バッファの設定

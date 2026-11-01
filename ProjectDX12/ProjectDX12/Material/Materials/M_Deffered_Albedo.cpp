@@ -1,5 +1,6 @@
 
 #include "Material/Materials/M_Deffered_Albedo.h"
+#include "Scene/SceneManager.h"
 #include "System/Rendering/RenderingEngine.h"
 
 void M_Deffered_Albedo::Initialize(Description desc)
@@ -17,7 +18,7 @@ void M_Deffered_Albedo::Initialize(Description desc)
 	};
 
 	// パイプライン
-	std::vector<DXGI_FORMAT> formats = { GetRenderingEngine()->GetPassFormat(Timing,PassType) };
+	std::vector<DXGI_FORMAT> formats = { SceneManager::GetRenderingEngine()->GetPassFormat(Timing,PassType) };
 	PipelineState::Description pipeline = {
 		L"",
 		L"",
