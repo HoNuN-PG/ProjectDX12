@@ -378,11 +378,6 @@ void RenderingEngine::AddRenderObject(
 	}
 }
 
-ShadowPass* RenderingEngine::GetShadowMapsPass()
-{
-	return ShadowMapsPass.get();
-}
-
 RenderingPass* RenderingEngine::FindPass(UINT timing, UINT type)
 {
 	// シャドウと不透明深度法線はタイミングごとに固定のパス（種類は見ない）

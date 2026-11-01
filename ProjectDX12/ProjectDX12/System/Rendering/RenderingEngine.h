@@ -216,8 +216,6 @@ public:
 		return static_cast<T*>(FindPass(timing, passType));
 	}
 
-	class ShadowPass* GetShadowMapsPass();
-
 	/// <summary>
 	/// パスのテクスチャの取得
 	/// </summary>
