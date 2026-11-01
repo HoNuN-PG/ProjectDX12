@@ -3,38 +3,7 @@
 #include "System/Rendering/GlobalResourceKey.h"
 #include "System/Rendering/RenderingEngine.h"
 
-std::unique_ptr<MeshBuffer>	Volume::pScreen;
-
-void Volume::Load()
-{
-	// スクリーン頂点
-	ScreenVertex screenVtx[] =
-	{
-		{{-0.5f, 0.5f,0} ,{0,0}} ,
-		{{ 0.5f, 0.5f,0} ,{1,0}} ,
-		{{-0.5f,-0.5f,0} ,{0,1}} ,
-		{{ 0.5f,-0.5f,0} ,{1,1}} ,
-	};
-	// スクリーン
-	{
-		MeshBuffer::Description desc = {};
-		desc.pVtx = screenVtx;
-		desc.vtxSize = sizeof(ScreenVertex);
-		desc.vtxCount = _countof(screenVtx);
-		desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-		pScreen = std::make_unique<MeshBuffer>(desc);
-	}
-}
-
-void Volume::Unload()
-{
-	if (pScreen)
-	{
-		pScreen.reset(nullptr);
-	}
-}
-
-void Volume::Init(UINT heapNum, UINT rtvNum)
+void Volume::InitResources(UINT heapNum, UINT rtvNum)
 {
 	// ボリュームディスクリプタヒープ
 	{

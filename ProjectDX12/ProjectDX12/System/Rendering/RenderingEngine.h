@@ -43,6 +43,7 @@ public:
 
 private:
 
+	std::unique_ptr<MeshBuffer>	pScreen;	// 全画面描画用の四角形（Copy・Gauss・ポストプロセスで共有するため先に宣言する）
 	std::unique_ptr<Copy>	pCopy;	// テクスチャのコピー処理
 	std::unique_ptr<Gauss>	pGauss;	// ガウスぼかし処理（Copyクラスを使用する）
 
@@ -163,22 +164,22 @@ public:
 	void AddRenderObject(GameObject& obj, UINT timing, UINT passType);
 	// ポストプロセスの追加や取得
 	template <typename T>
-	std::shared_ptr<T> AddVolume()
+	T* AddVolume()
 	{
 		return ObjectPostProcess->AddVolume<T>();
 	}
 	template <typename T>
-	std::shared_ptr<T> GetVolume()
+	T* GetVolume()
 	{
 		return ObjectPostProcess->GetVolume<T>();
 	}
 	template <typename T>
-	std::shared_ptr<T> AddCanvasVolume()
+	T* AddCanvasVolume()
 	{
 		return CanvasPostProcess->AddVolume<T>();
 	}
 	template <typename T>
-	std::shared_ptr<T> GetCanvasVolume()
+	T* GetCanvasVolume()
 	{
 		return CanvasPostProcess->GetVolume<T>();
 	}

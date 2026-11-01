@@ -14,7 +14,7 @@ class PostProcess
 {
 public:
 
-	PostProcess() {};
+	explicit PostProcess(MeshBuffer& screen) : pScreen(&screen) {};
 	~PostProcess();
 	void Update();
 	void Draw();
@@ -22,19 +22,21 @@ public:
 public:
 
 	template <typename T> 
-	std::shared_ptr<T> AddVolume()
+	T* AddVolume()
 	{
-		std::shared_ptr<T> volume = std::make_shared<T>();
-		Volumes.push_back(volume);
-		Volumes.back()->Init();
-		return volume;
+		std::unique_ptr<T> volume = std::make_unique<T>();
+		T* ptr = volume.get();
+		ptr->SetScreen(*pScreen);
+		ptr->Init();
+		Volumes.push_back(std::move(volume));
+		return ptr;
 	}
 	template <typename T>
-	std::shared_ptr<T> GetVolume()
+	T* GetVolume()
 	{
-		for (const std::shared_ptr<Volume>& volume : Volumes)
+		for (const std::unique_ptr<Volume>& volume : Volumes)
 		{
-			if (std::shared_ptr<T> v = std::dynamic_pointer_cast<T>(volume))
+			if (T* v = dynamic_cast<T*>(volume.get()))
 			{
 				return v;
 			}
@@ -44,7 +46,8 @@ public:
 
 private:
 
-	std::list<std::shared_ptr<Volume>> Volumes;
+	MeshBuffer* pScreen; // 全画面描画用の四角形（RenderingEngineが所有しPostProcessより長生きする）
+	std::list<std::unique_ptr<Volume>> Volumes;
 
 };
 

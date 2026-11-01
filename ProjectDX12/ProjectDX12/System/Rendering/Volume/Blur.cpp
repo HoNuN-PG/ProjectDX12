@@ -29,26 +29,10 @@ namespace
 	constexpr UINT GAUSS_WEIGHTS_MAX = 8;
 }
 
-Gauss::Gauss(Copy& copy)
+Gauss::Gauss(Copy& copy, MeshBuffer& screen)
 	: pCopy(&copy)
+	, pScreen(&screen)
 {
-	// スクリーン頂点
-	ScreenVertex screenVtx[] =
-	{
-		{{-0.5f, 0.5f,0} ,{0,0}} ,
-		{{ 0.5f, 0.5f,0} ,{1,0}} ,
-		{{-0.5f,-0.5f,0} ,{0,1}} ,
-		{{ 0.5f,-0.5f,0} ,{1,1}} ,
-	};
-
-	// スクリーン
-	MeshBuffer::Description desc = {};
-	desc.pVtx = screenVtx;
-	desc.vtxSize = sizeof(ScreenVertex);
-	desc.vtxCount = _countof(screenVtx);
-	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-	pScreen = std::make_unique<MeshBuffer>(desc);
-
 	// ボリュームディスクリプタヒープ
 	{
 		DescriptorHeap::Description desc = {};
@@ -243,6 +227,6 @@ void Gauss::DrawBlur(
 		_countof(handle),
 		RootSignatureData.get(),
 		pipeline,
-		pScreen.get()
+		pScreen
 	);
 }

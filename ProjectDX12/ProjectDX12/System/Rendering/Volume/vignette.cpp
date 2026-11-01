@@ -9,7 +9,7 @@
 
 void Vignette::Init()
 {
-	Volume::Init(3,1);
+	InitResources(3,1);
 
 	// ルートシグネチャ
 	{
@@ -86,7 +86,7 @@ void Vignette::Draw()
 		MainTextureSRV.hGPU,
 		Params.get()->GetHandle().hGPU,
 	};
-	ScreenDraw(targets, pHeap->Get(), handle, _countof(handle), pRootSignatureData.get(), pPipelineData[0].get(), pScreen.get());
+	ScreenDraw(targets, pHeap->Get(), handle, _countof(handle), pRootSignatureData.get(), pPipelineData[0].get(), pScreen);
 
 	// MainTextureに張り付け
 	RenderingEngine* engine = SceneManager::GetRenderingEngine();

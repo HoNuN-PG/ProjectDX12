@@ -159,9 +159,24 @@ void RenderingEngine::Init()
 	}
 
 	// 汎用クラス作成
-	Volume::Load();
-	pCopy = std::make_unique<Copy>();
-	pGauss = std::make_unique<Gauss>(*pCopy);
+	{
+		// 全画面描画用の四角形
+		ScreenVertex screenVtx[] =
+		{
+			{{-0.5f, 0.5f,0} ,{0,0}} ,
+			{{ 0.5f, 0.5f,0} ,{1,0}} ,
+			{{-0.5f,-0.5f,0} ,{0,1}} ,
+			{{ 0.5f,-0.5f,0} ,{1,1}} ,
+		};
+		MeshBuffer::Description desc = {};
+		desc.pVtx = screenVtx;
+		desc.vtxSize = sizeof(ScreenVertex);
+		desc.vtxCount = _countof(screenVtx);
+		desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+		pScreen = std::make_unique<MeshBuffer>(desc);
+	}
+	pCopy = std::make_unique<Copy>(*pScreen);
+	pGauss = std::make_unique<Gauss>(*pCopy, *pScreen);
 
 	// リソースオブジェクト
 	Camera[CameraType::MAIN] = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
@@ -176,8 +191,8 @@ void RenderingEngine::Init()
 	ODepthNormalPass->Init(pRTVHeap.get(), pStagingHeap.get(), pHeap.get(), pDSVHeap.get());
 
 	// ポストプロセス
-	ObjectPostProcess = std::make_unique<PostProcess>();
-	CanvasPostProcess = std::make_unique<PostProcess>();
+	ObjectPostProcess = std::make_unique<PostProcess>(*pScreen);
+	CanvasPostProcess = std::make_unique<PostProcess>(*pScreen);
 }
 
 void RenderingEngine::Uninit()
@@ -189,7 +204,7 @@ void RenderingEngine::Uninit()
 	ShadowMapsPass.reset();
 	pGauss.reset();
 	pCopy.reset();
-	Volume::Unload();
+	pScreen.reset();
 }
 
 void RenderingEngine::Update()
@@ -556,7 +571,7 @@ void RenderingEngine::DefferedLighting()
 	DefferedLightingShader.pRootSignatureData->Bind(desc, _countof(desc));
 
 	// 描画
-	pCopy->ExecuteScreenDraw();
+	pScreen->Draw();
 
 	// リソース化
 	GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->RTV2SRV();

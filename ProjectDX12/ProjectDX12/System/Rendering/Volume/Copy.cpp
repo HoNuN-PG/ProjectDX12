@@ -4,30 +4,14 @@
 #include "System/Rendering/Volume/Copy.h"
 #include "System/DirectX.h"
 
-Copy::Copy()
+Copy::Copy(MeshBuffer& screen)
+	: pScreen(&screen)
 {
 	Load();
 }
 
 void Copy::Load()
 {
-	// スクリーン頂点
-	ScreenVertex screenVtx[] =
-	{
-		{{-0.5f, 0.5f,0} ,{0,0}} ,
-		{{ 0.5f, 0.5f,0} ,{1,0}} ,
-		{{-0.5f,-0.5f,0} ,{0,1}} ,
-		{{ 0.5f,-0.5f,0} ,{1,1}} ,
-	};
-	
-	// スクリーン
-	MeshBuffer::Description desc = {};
-	desc.pVtx = screenVtx;
-	desc.vtxSize = sizeof(ScreenVertex);
-	desc.vtxCount = _countof(screenVtx);
-	desc.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-	pScreen = std::make_unique<MeshBuffer>(desc);
-
 	// ルートシグネチャ
 	{
 		RootSignature::Parameter param[] = 
@@ -69,11 +53,6 @@ void Copy::Load()
 		desc.RenderTargetFormat.push_back(DXGI_FORMAT_R8G8B8A8_UNORM);
 		pPipelineData[DXGI_FORMAT_R8G8B8A8_UNORM] = std::make_unique<PipelineState>(desc);
 	}
-}
-
-void Copy::ExecuteScreenDraw()
-{
-	pScreen->Draw();
 }
 
 void Copy::ExecuteCopy2BBuffer(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src)
@@ -119,7 +98,7 @@ void Copy::ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, Re
 		_countof(handle),
 		pRootSignatureData.get(),
 		pPipelineData[dest->Format].get(),
-		pScreen.get()
+		pScreen
 	);
 
 	SetViewPort(WINDOW_WIDTH,WINDOW_HEIGHT);

@@ -8,14 +8,9 @@ PostProcess::~PostProcess()
 void PostProcess::Update()
 {
 	Volumes.remove_if(
-		[](const std::shared_ptr<Volume>& object) 
+		[](const std::unique_ptr<Volume>& object) 
 		{
-			if (object->IsDestroy())
-			{
-				object->Destroy();
-				return true;
-			}
-			return false; 
+			return object->IsDestroy();
 		}
 	);
 }

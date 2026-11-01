@@ -78,7 +78,7 @@ public:
 	
 public:
 
-	explicit Gauss(class Copy& copy);
+	Gauss(class Copy& copy, MeshBuffer& screen);
 	~Gauss() {};
 
 public:
@@ -138,7 +138,7 @@ private:
 private:
 
 	class Copy*							pCopy; // コピー処理（RenderingEngineが所有しGaussより長生きする）
-	std::unique_ptr<MeshBuffer>			pScreen;
+	MeshBuffer*							pScreen; // 全画面描画用の四角形（RenderingEngineが所有しGaussより長生きする）
 	std::unique_ptr<DescriptorHeap>		pHeap;
 	std::unique_ptr<DescriptorHeap>		pRTVHeap;
 	std::unique_ptr<RootSignature>		RootSignatureData; // 全カーネル共通

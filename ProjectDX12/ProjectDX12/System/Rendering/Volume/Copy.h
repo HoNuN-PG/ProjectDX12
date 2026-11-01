@@ -15,9 +15,8 @@ class Copy
 {
 public:
 
-	Copy();
+	explicit Copy(MeshBuffer& screen);
 	~Copy() {};
-	void ExecuteScreenDraw();
 	void ExecuteCopy2BBuffer(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src);
 	void ExecuteCopy(DescriptorHeap* heap, D3D12_GPU_DESCRIPTOR_HANDLE src, RenderTarget* dest);
 
@@ -27,7 +26,7 @@ private:
 
 private:
 
-	std::unique_ptr<MeshBuffer>	pScreen;
+	MeshBuffer* pScreen; // 全画面描画用の四角形（RenderingEngineが所有しCopyより長生きする）
 	std::unique_ptr<RootSignature> pRootSignatureData;
 	std::unordered_map<DXGI_FORMAT,std::unique_ptr<PipelineState>> pPipelineData;
 
