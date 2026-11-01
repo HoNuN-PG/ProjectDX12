@@ -11,6 +11,9 @@
 #include "System/GameObject/GameObject.h"
 #include "System/Rendering/RenderingEngine.h"
 
+class CameraBase;
+class LightBase;
+
 class SceneBase
 {
 public:
@@ -51,6 +54,20 @@ public:
 private:
 
 	std::unique_ptr<RenderingEngine> pEngine;
+
+	// カメラとライト（シーンが所有しレンダリングエンジンには参照を渡す）
+public:
+
+	std::shared_ptr<CameraBase> GetMainCamera() { return MainCamera; }
+	std::shared_ptr<LightBase> GetLight() { return Light; }
+
+private:
+
+	void UpdateDebugCamera();
+
+	std::shared_ptr<CameraBase> MainCamera;	// メインカメラ（カリングや影の基準）
+	std::shared_ptr<CameraBase> DebugCamera; // 視錐台確認用のカメラ（Shiftを押している間はこちらで描画する）
+	std::shared_ptr<LightBase> Light;
 
 	
 	// ゲームオブジェクト

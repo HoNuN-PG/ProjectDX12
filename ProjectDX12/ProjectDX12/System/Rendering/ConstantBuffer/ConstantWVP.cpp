@@ -27,7 +27,7 @@ ConstantWVP CalcConstantWVP::Calc3DMatrix(const DirectX::XMFLOAT4X4& World)
 	DirectX::XMStoreFloat4x4(&(wvp.world), DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&World)));
 
 	// ビューマトリクス設定
-	CameraBase* camera = SceneManager::GetCamera().get();
+	CameraBase* camera = SceneManager::GetCamera();
 	DirectX::XMFLOAT3 pos = camera->GetPosition();
 	DirectX::XMFLOAT3 target = camera->GetTarget();
 	DirectX::XMFLOAT3 up = camera->GetUp();
@@ -90,7 +90,7 @@ ConstantWVP CalcConstantWVP::Calc2DMatrix(DirectX::XMFLOAT3 Pos, DirectX::XMFLOA
 DirectX::XMFLOAT4X4 CalcConstantWVP::CalcInversVPMatrix()
 {
 	// ビューマトリクス
-	CameraBase* camera = SceneManager::GetCamera().get();
+	CameraBase* camera = SceneManager::GetCamera();
 	DirectX::XMFLOAT3 pos = camera->GetPosition();
 	DirectX::XMFLOAT3 target = camera->GetTarget();
 	DirectX::XMFLOAT3 up = camera->GetUp();

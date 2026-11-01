@@ -3,9 +3,6 @@
 #include "GameObject/Light/LightBase.h"
 #include "System/Input.h"
 
-DirectX::XMFLOAT4X4 LightBase::m_ViewMatrix;
-DirectX::XMFLOAT4X4 LightBase::m_ProjectionMatrix;
-
 const float LIG_SPEED_X			= 3.0f;		// ‰ñ“]‘¬“x
 const float LIG_SPEED_Y			= 2.5f;
 const float LIG_LATE_SPEED_X	= 1.0f;		// •âŠÔ‹­“x
@@ -86,7 +83,7 @@ void LightBase::Draw()
 	ImGui::End();
 }
 
-DirectX::XMFLOAT4X4 LightBase::GetLightViewProjectionMat()
+DirectX::XMFLOAT4X4 LightBase::GetLightViewProjectionMat() const
 {
 	DirectX::XMMATRIX lvp;
 	DirectX::XMMATRIX vM = DirectX::XMLoadFloat4x4(&m_ViewMatrix);

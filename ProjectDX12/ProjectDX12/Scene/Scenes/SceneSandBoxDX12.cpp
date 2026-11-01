@@ -192,7 +192,7 @@ HRESULT SceneSandBoxDX12::Init()
 		obj->SetRotation({ 0,0,0 });
 		obj->SetScale({ 100,100,100 });
 		std::shared_ptr<FollowActorComponent> cmp = obj->AddComponent<FollowActorComponent>();
-		cmp->SetFollowActor(GetRenderingEngine()->GetCamera());
+		cmp->SetFollowActor(GetMainCamera());
 		std::shared_ptr<Sphere> model = obj->AddComponent<Sphere>();
 		model->Create(materials);
 	}

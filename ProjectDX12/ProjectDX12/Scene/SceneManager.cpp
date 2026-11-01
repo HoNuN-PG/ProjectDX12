@@ -66,8 +66,9 @@ void SceneManager::Draw()
 	if (Scenes[CurrentScene]) Scenes[CurrentScene]->DrawBase();
 }
 
-std::shared_ptr<CameraBase> SceneManager::GetCamera()
+CameraBase* SceneManager::GetCamera()
 {
 	RenderingEngine* engine = GetRenderingEngine();
+	assert(engine);
 	return engine->GetCamera();
 }

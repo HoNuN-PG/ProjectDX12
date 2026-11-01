@@ -178,12 +178,6 @@ void RenderingEngine::Init()
 	pCopy = std::make_unique<Copy>(*pScreen);
 	pGauss = std::make_unique<Gauss>(*pCopy, *pScreen);
 
-	// リソースオブジェクト
-	Camera[CameraType::MAIN] = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
-	Camera[CameraType::MAIN]->SetIsMain(true);
-	Camera[CameraType::FRUSTUM] = SceneManager::GetCurrentScene()->AddGameObject<CameraDebug>(SceneBase::Layer::Camera);
-	Light = SceneManager::GetCurrentScene()->AddGameObject<LightBase>(SceneBase::Layer::Environment);
-
 	// レンダリングパス
 	ShadowMapsPass = std::make_unique<ShadowPass>(*this);
 	ShadowMapsPass->Init(pRTVHeap.get(), pStagingHeap.get(), pHeap.get(), pDSVHeap.get());
@@ -209,17 +203,6 @@ void RenderingEngine::Uninit()
 
 void RenderingEngine::Update()
 {
-	if (Input::GetKeyTrigger(VK_SHIFT))
-	{
-		CurrentCameraType = CameraType::FRUSTUM;
-		Camera[CameraType::MAIN]->SetIsMain(false);
-	}
-	else if(Input::GetKeyRelease(VK_SHIFT))
-	{
-		CurrentCameraType = CameraType::MAIN;
-		Camera[CameraType::MAIN]->SetIsMain(true);
-	}
-
 	ObjectPostProcess->Update();
 	CanvasPostProcess->Update();
 }
@@ -234,14 +217,16 @@ void RenderingEngine::Draw()
 
 	// 環境情報の設定
 	{
+		assert(pRenderCamera && pLight);
+
 		// カメラ
-		Camera[CurrentCameraType]->DrawImGUI();
+		pRenderCamera->DrawImGUI();
 		DirectX::XMFLOAT4X4 camera;
-		camera._11 = Camera[CurrentCameraType]->GetPosition().x;
-		camera._12 = Camera[CurrentCameraType]->GetPosition().y;
-		camera._13 = Camera[CurrentCameraType]->GetPosition().z;
+		camera._11 = pRenderCamera->GetPosition().x;
+		camera._12 = pRenderCamera->GetPosition().y;
+		camera._13 = pRenderCamera->GetPosition().z;
 		camera._14 = 0.0f;
-		DirectX::XMFLOAT3 cameraForward = Camera[CurrentCameraType]->GetForward();
+		DirectX::XMFLOAT3 cameraForward = pRenderCamera->GetForward();
 		camera._21 = cameraForward.x;
 		camera._22 = cameraForward.y;
 		camera._23 = cameraForward.z;
@@ -250,20 +235,20 @@ void RenderingEngine::Draw()
 
 		// ライト
 		DirectX::XMFLOAT4X4 light;
-		light._11 = Light->GetPosition().x;
-		light._12 = Light->GetPosition().y;
-		light._13 = Light->GetPosition().z;
+		light._11 = pLight->GetPosition().x;
+		light._12 = pLight->GetPosition().y;
+		light._13 = pLight->GetPosition().z;
 		light._14 = 0;
-		light._21 = Light->GetDirection().x;
-		light._22 = Light->GetDirection().y;
-		light._23 = Light->GetDirection().z;
+		light._21 = pLight->GetDirection().x;
+		light._22 = pLight->GetDirection().y;
+		light._23 = pLight->GetDirection().z;
 		light._24 = 0;
-		light._31 = Light->GetColor().x;
-		light._32 = Light->GetColor().y;
-		light._33 = Light->GetColor().z;
-		light._34 = Light->GetColor().w;
-		light._41 = Light->GetPower();
-		light._42 = Light->GetAmbient();
+		light._31 = pLight->GetColor().x;
+		light._32 = pLight->GetColor().y;
+		light._33 = pLight->GetColor().z;
+		light._34 = pLight->GetColor().w;
+		light._41 = pLight->GetPower();
+		light._42 = pLight->GetAmbient();
 		WriteGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Light, &light);
 	}
 

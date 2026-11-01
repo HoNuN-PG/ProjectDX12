@@ -49,6 +49,8 @@ void ShadowPass::Execute()
 	// デバッグ用にカメラを切り替えても、影はメインカメラの視錐台を基準にする
 	CameraBase* camera = pEngine->GetMainCamera();
 	assert(camera);
+	LightBase* light = pEngine->GetLight();
+	assert(light);
 
 	// シャドウマップの描画
 	float nearDepth = CAM_NEAR;
@@ -56,7 +58,7 @@ void ShadowPass::Execute()
 	{
 #if 0
 		// クロップ行列の計算
-		DirectX::XMFLOAT4X4 LVP = LightBase::GetLightViewProjectionMat();
+		DirectX::XMFLOAT4X4 LVP = light->GetLightViewProjectionMat();
 		DirectX::XMFLOAT4X4 crop = CalcCrop(*camera, nearDepth, i, LVP);
 
 		// ライトビュープロジェクション行列とクロップ行列を乗算
@@ -73,7 +75,7 @@ void ShadowPass::Execute()
 		);
 #else
 		// 行列の計算
-		DirectX::XMFLOAT4X4 LV = LightBase::GetLightViewMat();
+		DirectX::XMFLOAT4X4 LV = light->GetLightViewMat();
 		DirectX::XMFLOAT4X4 crop = CalcTexelSnappedCrop(*camera, nearDepth, i, static_cast<float>(CascadeSettings[i].smSize), LV);
 
 		// ライトビュー行列とクロップ行列を乗算

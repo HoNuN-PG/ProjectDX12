@@ -41,14 +41,14 @@ public:
 	// マトリクス
 public:
 
-	static DirectX::XMFLOAT4X4 GetLightViewMat() { return m_ViewMatrix; }
-	static DirectX::XMFLOAT4X4 GetLightProjectionMat() { return m_ProjectionMatrix; }
-	static DirectX::XMFLOAT4X4 GetLightViewProjectionMat();
+	DirectX::XMFLOAT4X4 GetLightViewMat() const { return m_ViewMatrix; }
+	DirectX::XMFLOAT4X4 GetLightProjectionMat() const { return m_ProjectionMatrix; }
+	DirectX::XMFLOAT4X4 GetLightViewProjectionMat() const;
 
 private:
 
-	static DirectX::XMFLOAT4X4 m_ViewMatrix;
-	static DirectX::XMFLOAT4X4 m_ProjectionMatrix;
+	DirectX::XMFLOAT4X4 m_ViewMatrix;
+	DirectX::XMFLOAT4X4 m_ProjectionMatrix;
 
 	// ===================================================
 	// ライトパラメータ

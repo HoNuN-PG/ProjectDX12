@@ -98,26 +98,29 @@ private:
 	
 	// ====================
 	// 環境オブジェクト
-private:
-
-	enum CameraType
-	{
-		MAIN = 0,
-		FRUSTUM,
-
-		MAX
-	};
-	CameraType CurrentCameraType = CameraType::MAIN;
-
 public:
 
-	std::shared_ptr<CameraBase> GetCamera() { return Camera[CurrentCameraType]; }
-	CameraBase* GetMainCamera() { return Camera[CameraType::MAIN].get(); } // デバッグ用にカメラを切り替えても変わらないメインカメラ
+	/// <summary>
+	/// カメラの設定（カメラはシーンが所有する）
+	/// </summary>
+	/// <param name="main">カリングや影の基準になるカメラ</param>
+	/// <param name="render">描画に使うカメラ（デバッグで視錐台を確認するときだけmainと異なる）</param>
+	void SetCamera(CameraBase* main, CameraBase* render) { pMainCamera = main; pRenderCamera = render; }
+	/// <summary>
+	/// ライトの設定（ライトはシーンが所有する）
+	/// </summary>
+	void SetLight(LightBase* light) { pLight = light; }
+
+	CameraBase* GetMainCamera() { return pMainCamera; }
+	CameraBase* GetCamera() { return pRenderCamera; }
+	LightBase* GetLight() { return pLight; }
 
 private:
 
-	std::shared_ptr<CameraBase> Camera[CameraType::MAX];
-	std::shared_ptr<LightBase> Light;
+	// シーンが所有しエンジンより長生きする
+	CameraBase* pMainCamera = nullptr;
+	CameraBase* pRenderCamera = nullptr;
+	LightBase* pLight = nullptr;
 
 	// ====================
 	// DefferedRendering
