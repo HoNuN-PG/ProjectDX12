@@ -32,7 +32,7 @@ public:
 		OpaqueDepthNormal,			// 不透明深度法線
 		AfterOpaqueDepthNormal,		// 不透明深度法線描画後
 		Environment,				// 環境（スカイボックス等）
-		Deffered,					// ディファード
+		Deferred,					// ディファード
 		Forward,					// フォワード
 		TranslucentDepthNormal,		// 透明深度法線
 		Canvas,						// キャンバス

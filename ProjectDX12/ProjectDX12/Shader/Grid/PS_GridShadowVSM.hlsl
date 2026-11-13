@@ -1,6 +1,6 @@
 
-#include "CommonLighting.hlsl"
-#include "CommonShadowVSM.hlsl"
+#include "../Common/CommonLighting.hlsl"
+#include "../Common/CommonShadowVSM.hlsl"
 
 struct PS_IN
 {

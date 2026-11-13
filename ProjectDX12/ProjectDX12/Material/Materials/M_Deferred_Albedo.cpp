@@ -1,9 +1,9 @@
 
-#include "Material/Materials/M_Deffered_Albedo.h"
+#include "Material/Materials/M_Deferred_Albedo.h"
 #include "Scene/SceneManager.h"
 #include "System/Rendering/RenderingEngine.h"
 
-void M_Deffered_Albedo::Initialize(Description desc)
+void M_Deferred_Albedo::Initialize(Description desc)
 {
 	// ルートシグネチャ
 	RootSignature::Parameter param[] = 
@@ -23,7 +23,7 @@ void M_Deffered_Albedo::Initialize(Description desc)
 		L"",
 		L"",
 		L"../game/assets/shader/VS_Object.cso",
-		L"../game/assets/shader/PS_Deffered.cso",
+		L"../game/assets/shader/PS_Deferred.cso",
 		nullptr,
 		PipelineState::IED_POS_NOR_TEX_COLOR,
 		PipelineState::IED_POS_NOR_TEX_COLOR_COUNT,
@@ -40,7 +40,7 @@ void M_Deffered_Albedo::Initialize(Description desc)
 	);
 }
 
-void M_Deffered_Albedo::Bind(UINT materialinstance)
+void M_Deferred_Albedo::Bind(UINT materialinstance)
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] =
 	{

@@ -2,7 +2,7 @@
 // https://logicalbeat.co.jp/blog/8242/
 // https://shikihuiku.github.io/post/wave_intrinsics1/
 
-#include "CommonMeshlet.hlsl"
+#include "../Common/CommonMeshlet.hlsl"
 
 struct MatrixWVP
 {

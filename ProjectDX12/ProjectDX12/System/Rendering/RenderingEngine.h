@@ -123,7 +123,7 @@ private:
 	LightBase* pLight = nullptr;
 
 	// ====================
-	// DefferedRendering
+	// DeferredRendering
 private:
 
 	/// <summary>
@@ -141,7 +141,7 @@ public:
 	/// <summary>
 	/// ディファードデータ
 	/// </summary>
-	struct DefferedData
+	struct DeferredData
 	{
 		std::unique_ptr<RootSignature> pRootSignatureData;
 		std::unique_ptr<PipelineState> pPipelineData;
@@ -150,7 +150,7 @@ public:
 
 private:
 
-	DefferedData DefferedLightingShader;
+	DeferredData DeferredLightingShader;
 	
 	// ====================
 	// レンダリングオブジェクト
@@ -191,7 +191,7 @@ public:
 private:
 
 	std::vector<RenderingInfo> EnvironmentObjects;	// 環境描画オブジェクト
-	std::vector<RenderingInfo> DefferedObjects;		// ディファードライティングオブジェクト
+	std::vector<RenderingInfo> DeferredObjects;		// ディファードライティングオブジェクト
 	std::vector<RenderingInfo> ForwardObjects;		// フォワードライティングオブジェクト
 	std::unique_ptr<PostProcess> ObjectPostProcess;	// オブジェクト描画後のポストプロセス
 	std::unique_ptr<PostProcess> CanvasPostProcess;	// キャンバス描画後のポストプロセス
@@ -273,8 +273,8 @@ private:
 	void OpaqueDepthNormalRendering();
 	void AfterOpaqueDepthNormalRendering();
 	void EnvironmentRendering();
-	void DefferedRendering();
-	void DefferedLighting();
+	void DeferredRendering();
+	void DeferredLighting();
 	void ForwardRendering();
 	void TranslucentDepthNormalRendering();
 	void ObjectPostProcessRendering();

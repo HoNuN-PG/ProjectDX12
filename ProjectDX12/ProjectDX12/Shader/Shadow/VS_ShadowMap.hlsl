@@ -1,6 +1,6 @@
 
-#include "CommonDefine.hlsl"
-#include "CommonLighting.hlsl"
+#include "../Common/CommonDefine.hlsl"
+#include "../Common/CommonLighting.hlsl"
 
 struct VS_IN
 {

@@ -1,5 +1,5 @@
 
-#include "CommonLighting.hlsl"
+#include "../Common/CommonLighting.hlsl"
 
 struct PS_IN
 {

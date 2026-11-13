@@ -1,7 +1,7 @@
 
 #include "Component/FollowActorComponent.h"
 #include "GameObject/Camera/CameraBase.h"
-#include "Material/Materials/M_Deffered_Albedo.h"
+#include "Material/Materials/M_Deferred_Albedo.h"
 #include "Material/Materials/M_DepthNormal.h"
 #include "Material/Materials/M_Grid.h"
 #include "Material/Materials/M_MS.h"
@@ -116,16 +116,16 @@ HRESULT SceneSandBoxDX12::Init()
 		grid_shadow_vsm->SetGridSize(1);
 		grid_shadow_vsm->SetSubGridSize(5);
 	}
-	// Deffered
-	std::shared_ptr<Material> deffered_albedo_normal = std::make_shared<M_Deffered_Albedo>();
+	// Deferred
+	std::shared_ptr<Material> deferred_albedo_normal = std::make_shared<M_Deferred_Albedo>();
 	{
 		desc.CullMode = D3D12_CULL_MODE_BACK;
 		desc.DepthTest = TRUE;
-		desc.Timing = Material::RenderingTiming::Deffered;
+		desc.Timing = Material::RenderingTiming::Deferred;
 		desc.PassType = RenderingPass::RenderingPassType::MAX_RENDERING_PASS_TYPE;
 
-		Material::Initialize(deffered_albedo_normal, desc);
-		deffered_albedo_normal->AddTexture("../game/assets/model/spot/spot_texture.png");
+		Material::Initialize(deferred_albedo_normal, desc);
+		deferred_albedo_normal->AddTexture("../game/assets/model/spot/spot_texture.png");
 	}
 	// SimpleLit
 	std::shared_ptr<M_SimpleLit> simple_lit = std::make_shared<M_SimpleLit>();
@@ -233,7 +233,7 @@ HRESULT SceneSandBoxDX12::Init()
 		MaterialRegistry::SetupData materials;
 
 		materials[0].push_back(opaque_depth_normal);
-		materials[0].push_back(deffered_albedo_normal);
+		materials[0].push_back(deferred_albedo_normal);
 		
 		std::shared_ptr<GameObject> obj = AddGameObject<GameObject>();
 		obj->SetPosition({ 0,0,10 });

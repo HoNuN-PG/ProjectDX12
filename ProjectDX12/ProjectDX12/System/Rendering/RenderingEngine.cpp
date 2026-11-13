@@ -70,7 +70,7 @@ void RenderingEngine::Init()
 	// グローバルRTV
 	{
 		GlobalTextureFormat[GlobalTextureResourceKey::MainTexture] = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		GlobalTextureFormat[GlobalTextureResourceKey::DefferedAlbedoTexture] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		GlobalTextureFormat[GlobalTextureResourceKey::DeferredAlbedoTexture] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	}
 	{
 		// Main
@@ -91,12 +91,12 @@ void RenderingEngine::Init()
 			RenderTarget::Description desc = {};
 			desc.width = WINDOW_WIDTH;
 			desc.height = WINDOW_HEIGHT;
-			desc.format = GlobalTextureFormat[GlobalTextureResourceKey::DefferedAlbedoTexture];
+			desc.format = GlobalTextureFormat[GlobalTextureResourceKey::DeferredAlbedoTexture];
 			desc.pRTVHeap = pRTVHeap.get();
 			desc.pSRVHeap = pStagingHeap.get();
-			GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture] = std::make_unique<RenderTarget>(desc);
-			GlobalTextureSRV[GlobalTextureResourceKey::DefferedAlbedoTexture] = pHeap->Allocate();
-			CopyTexture(GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture]->GetHandleSRV().hCPU, GlobalTextureSRV[GlobalTextureResourceKey::DefferedAlbedoTexture].hCPU);
+			GlobalTextureStaging[GlobalTextureResourceKey::DeferredAlbedoTexture] = std::make_unique<RenderTarget>(desc);
+			GlobalTextureSRV[GlobalTextureResourceKey::DeferredAlbedoTexture] = pHeap->Allocate();
+			CopyTexture(GlobalTextureStaging[GlobalTextureResourceKey::DeferredAlbedoTexture]->GetHandleSRV().hCPU, GlobalTextureSRV[GlobalTextureResourceKey::DeferredAlbedoTexture].hCPU);
 		}
 	}
 	// 深度バッファ
@@ -126,17 +126,17 @@ void RenderingEngine::Init()
 				param,
 				_countof(param)
 			};
-			DefferedLightingShader.pRootSignatureData = std::make_unique<RootSignature>(rootsignature);
+			DeferredLightingShader.pRootSignatureData = std::make_unique<RootSignature>(rootsignature);
 		}
 		// パイプライン
 		{
-			std::vector<DXGI_FORMAT> formats = { GlobalTextureFormat[GlobalTextureResourceKey::DefferedAlbedoTexture] };
+			std::vector<DXGI_FORMAT> formats = { GlobalTextureFormat[GlobalTextureResourceKey::DeferredAlbedoTexture] };
 			PipelineState::Description desc = {
 				L"",
 				L"",
 				L"../game/assets/shader/VS_Sprite.cso",
-				L"../game/assets/shader/PS_DefferedLighting.cso",
-				DefferedLightingShader.pRootSignatureData->Get(),
+				L"../game/assets/shader/PS_DeferredLighting.cso",
+				DeferredLightingShader.pRootSignatureData->Get(),
 				PipelineState::IED_POS_TEX,
 				PipelineState::IED_POS_TEX_COUNT,
 				D3D12_CULL_MODE_BACK,
@@ -144,7 +144,7 @@ void RenderingEngine::Init()
 				FALSE,
 			};
 
-			DefferedLightingShader.pPipelineData = std::make_unique<PipelineState>(desc);
+			DeferredLightingShader.pPipelineData = std::make_unique<PipelineState>(desc);
 		}
 		// パラメーター定数バッファ
 		{
@@ -152,9 +152,9 @@ void RenderingEngine::Init()
 			desc.pHeap = pHeap.get();
 			// Params
 			desc.size = sizeof(DirectX::XMFLOAT4X4);
-			DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
-			DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
-			DefferedLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // VPINV
+			DeferredLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // カメラ
+			DeferredLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // ライト
+			DeferredLightingShader.Params.push_back(std::make_unique<ConstantBuffer>(desc)); // VPINV
 		}
 	}
 
@@ -265,9 +265,9 @@ void RenderingEngine::Draw()
 	CurrentRenderingTiming = Material::Environment;
 	EnvironmentRendering();
 	// ディファード描画
-	CurrentRenderingTiming = Material::Deffered;
-	DefferedRendering();
-	DefferedLighting();
+	CurrentRenderingTiming = Material::Deferred;
+	DeferredRendering();
+	DeferredLighting();
 	// フォワード描画
 	CurrentRenderingTiming = Material::Forward;
 	ForwardRendering();
@@ -292,7 +292,7 @@ void RenderingEngine::Draw()
 
 	// 登録された情報をクリア
 	EnvironmentObjects.clear();
-	DefferedObjects.clear();
+	DeferredObjects.clear();
 	ForwardObjects.clear();
 }
 
@@ -347,8 +347,8 @@ void RenderingEngine::AddRenderObject(
 	case Material::Environment:
 		EnvironmentObjects.push_back(info);
 		break;
-	case Material::Deffered:
-		DefferedObjects.push_back(info);
+	case Material::Deferred:
+		DeferredObjects.push_back(info);
 		break;
 	case Material::Forward:
 		ForwardObjects.push_back(info);
@@ -415,7 +415,7 @@ std::vector<DXGI_FORMAT> RenderingEngine::GetPassFormat(UINT timing, UINT type)
 	switch (timing)
 	{
 	case Material::Environment:
-	case Material::Deffered:
+	case Material::Deferred:
 	case Material::Forward:
 	case Material::TranslucentDepthNormal:
 	case Material::Canvas:
@@ -474,41 +474,41 @@ void RenderingEngine::EnvironmentRendering()
 	GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->RTV2SRV();
 }
 
-void RenderingEngine::DefferedRendering()
+void RenderingEngine::DeferredRendering()
 {
 	static const float clearColor[4] = { 0, 0, 0, 0 };
 
 	// ターゲット化
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->SRV2RTV();
+		GlobalTextureStaging[GlobalTextureResourceKey::DeferredAlbedoTexture + i]->SRV2RTV();
 	}
 
 	// RTVの設定
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->Clear(clearColor);
+		GlobalTextureStaging[GlobalTextureResourceKey::DeferredAlbedoTexture + i]->Clear(clearColor);
 	}
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = 
 	{
-		GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture]->GetHandleRTV().hCPU,
+		GlobalTextureStaging[GlobalTextureResourceKey::DeferredAlbedoTexture]->GetHandleRTV().hCPU,
 	};
 	SetRenderTarget(_countof(rtvs), rtvs, DSV->GetHandleDSV().hCPU);
 
 	// ディファードレンダリング
-	for (int i = 0; i < DefferedObjects.size(); ++i)
+	for (int i = 0; i < DeferredObjects.size(); ++i)
 	{
-		DefferedObjects[i].obj.RenderingBase();
+		DeferredObjects[i].obj.RenderingBase();
 	}
 
 	// リソース化
 	for (int i = 0; i < MAX_GBUFFER; i++)
 	{
-		GlobalTextureStaging[GlobalTextureResourceKey::DefferedAlbedoTexture + i]->RTV2SRV();
+		GlobalTextureStaging[GlobalTextureResourceKey::DeferredAlbedoTexture + i]->RTV2SRV();
 	}
 }
 
-void RenderingEngine::DefferedLighting()
+void RenderingEngine::DeferredLighting()
 {
 	// ターゲット化
 	GlobalTextureStaging[GlobalTextureResourceKey::MainTexture]->SRV2RTV();
@@ -523,12 +523,12 @@ void RenderingEngine::DefferedLighting()
 	// 定数バッファ構築
 	GetDevice()->CopyDescriptorsSimple(
 		(UINT)2,
-		DefferedLightingShader.Params[0]->GetHandle().hCPU,
+		DeferredLightingShader.Params[0]->GetHandle().hCPU,
 		GetGlobalConstantBufferResource(GlobalConstantBufferResourceKey::Camera).hCPU,
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
 	);
 	DirectX::XMFLOAT4X4 vpInv = CameraBase::GetMainViewProjectionInvMatrix();
-	DefferedLightingShader.Params[2]->Write(&vpInv);
+	DeferredLightingShader.Params[2]->Write(&vpInv);
 
 	// 各種オブジェクトをバインド
 	ID3D12DescriptorHeap* heaps[] =
@@ -536,19 +536,19 @@ void RenderingEngine::DefferedLighting()
 		pHeap->Get(),
 	};
 	DescriptorHeap::Bind(heaps, 1);
-	DefferedLightingShader.pPipelineData->Bind();
+	DeferredLightingShader.pPipelineData->Bind();
 
 	// MainTextureを取得
 	D3D12_GPU_DESCRIPTOR_HANDLE desc[] = 
 	{
-		GlobalTextureSRV[GlobalTextureResourceKey::DefferedAlbedoTexture].hGPU,
+		GlobalTextureSRV[GlobalTextureResourceKey::DeferredAlbedoTexture].hGPU,
 		ODepthNormalPass->GetTextureSRV(OpaqueDepthNormalPass::NormalTexture).hGPU,
 		ODepthNormalPass->GetTextureSRV(OpaqueDepthNormalPass::DepthTexture).hGPU,
-		DefferedLightingShader.Params[0].get()->GetHandle().hGPU,
-		DefferedLightingShader.Params[1].get()->GetHandle().hGPU,
-		DefferedLightingShader.Params[2].get()->GetHandle().hGPU,
+		DeferredLightingShader.Params[0].get()->GetHandle().hGPU,
+		DeferredLightingShader.Params[1].get()->GetHandle().hGPU,
+		DeferredLightingShader.Params[2].get()->GetHandle().hGPU,
 	};
-	DefferedLightingShader.pRootSignatureData->Bind(desc, _countof(desc));
+	DeferredLightingShader.pRootSignatureData->Bind(desc, _countof(desc));
 
 	// 描画
 	pScreen->Draw();
@@ -648,10 +648,10 @@ void RenderingEngine::ViewGBuffers()
 {
 	ImGui::Begin("GBuffers");
 	{
-		ImGui::Text("DefferedAlbedo");
+		ImGui::Text("DeferredAlbedo");
 		ImGui::Image(ImGUIImage::GetInstance()->GetImage(
 			pHeap.get(), 
-			GlobalTextureSRV[GlobalTextureResourceKey::DefferedAlbedoTexture].hGPU), { 240,135 });
+			GlobalTextureSRV[GlobalTextureResourceKey::DeferredAlbedoTexture].hGPU), { 240,135 });
 	}
 	ImGui::End();
 }

@@ -1,5 +1,5 @@
 
-#include "CommonParam.hlsl"
+#include "../Common/CommonParam.hlsl"
 
 struct PS_IN
 {

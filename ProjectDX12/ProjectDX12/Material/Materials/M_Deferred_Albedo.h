@@ -1,9 +1,9 @@
-#ifndef ___M_DEFFERED_ALBEDO_H___
-#define ___M_DEFFERED_ALBEDO_H___
+#ifndef ___M_DEFERRED_ALBEDO_H___
+#define ___M_DEFERRED_ALBEDO_H___
 
 #include "Material/Material.h"
 
-class M_Deffered_Albedo : public Material
+class M_Deferred_Albedo : public Material
 {
 public:
 	virtual void Initialize(Description desc) override;

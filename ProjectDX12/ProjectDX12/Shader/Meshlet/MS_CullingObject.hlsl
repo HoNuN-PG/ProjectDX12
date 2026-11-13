@@ -1,5 +1,5 @@
 
-#include "CommonMeshlet.hlsl"
+#include "../Common/CommonMeshlet.hlsl"
 
 struct MatrixWVP
 {
