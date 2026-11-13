@@ -184,7 +184,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Material\Material.cpp" />
-    <ClCompile Include="Material\Materials\M_Deffered_Albedo.cpp" />
+    <ClCompile Include="Material\Materials\M_Deferred_Albedo.cpp" />
     <ClCompile Include="Material\Materials\M_DepthNormal.cpp" />
     <ClCompile Include="Material\Materials\M_Grid.cpp" />
     <ClCompile Include="Material\Materials\M_MS.cpp" />
@@ -231,7 +231,7 @@
     <ClInclude Include="GameObject\Light\LightBase.h" />
     <ClInclude Include="imgui\imguiImage.h" />
     <ClInclude Include="Material\Material.h" />
-    <ClInclude Include="Material\Materials\M_Deffered_Albedo.h" />
+    <ClInclude Include="Material\Materials\M_Deferred_Albedo.h" />
     <ClInclude Include="Material\Materials\M_DepthNormal.h" />
     <ClInclude Include="Material\Materials\M_Grid.h" />
     <ClInclude Include="Material\Materials\M_MS.h" />
@@ -277,7 +277,7 @@
     <ClInclude Include="System\timer.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="AS_CullingObject.hlsl">
+    <FxCompile Include="Shader\Meshlet\AS_CullingObject.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
@@ -289,7 +289,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Tas_6_5 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Tas_6_5 %(AdditionalOptions)</AdditionalOptions>
     </FxCompile>
-    <FxCompile Include="CommonFunction.hlsl">
+    <FxCompile Include="Shader\Common\CommonFunction.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -303,7 +303,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="CommonDefine.hlsl">
+    <FxCompile Include="Shader\Common\CommonDefine.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
@@ -315,7 +315,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="CommonLighting.hlsl">
+    <FxCompile Include="Shader\Common\CommonLighting.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -329,7 +329,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="CommonParam.hlsl">
+    <FxCompile Include="Shader\Common\CommonParam.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -337,7 +337,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="CommonShadow.hlsl">
+    <FxCompile Include="Shader\Common\CommonShadow.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
@@ -347,7 +347,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="CommonShadowParam.hlsl">
+    <FxCompile Include="Shader\Common\CommonShadowParam.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -357,7 +357,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="CommonShadowVSM.hlsl">
+    <FxCompile Include="Shader\Common\CommonShadowVSM.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -367,7 +367,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="CommonMeshlet.hlsl">
+    <FxCompile Include="Shader\Common\CommonMeshlet.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
@@ -381,7 +381,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="MS_CullingObject.hlsl">
+    <FxCompile Include="Shader\Meshlet\MS_CullingObject.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Mesh</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.5</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Mesh</ShaderType>
@@ -389,7 +389,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Tms_6_5 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Tms_6_5 %(AdditionalOptions)</AdditionalOptions>
     </FxCompile>
-    <FxCompile Include="MS_Object.hlsl">
+    <FxCompile Include="Shader\Meshlet\MS_Object.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Mesh</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -399,7 +399,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Tms_6_5 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Tms_6_5 %(AdditionalOptions)</AdditionalOptions>
     </FxCompile>
-    <FxCompile Include="PS_Blur2.hlsl">
+    <FxCompile Include="Shader\Volume\Blur\PS_Blur2.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -408,7 +408,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_Blur4.hlsl">
+    <FxCompile Include="Shader\Volume\Blur\PS_Blur4.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -417,7 +417,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_Blur8.hlsl">
+    <FxCompile Include="Shader\Volume\Blur\PS_Blur8.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -426,23 +426,14 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_Copy.hlsl">
+    <FxCompile Include="Shader\Volume\PS_Copy.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_Deffered.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
-      <FileType>Document</FileType>
-    </FxCompile>
-    <FxCompile Include="PS_DefferedLighting.hlsl">
+    <FxCompile Include="Shader\Deferred\PS_Deferred.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -451,7 +442,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_DepthNormal.hlsl">
+    <FxCompile Include="Shader\Deferred\PS_DeferredLighting.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -460,7 +451,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_Grid.hlsl">
+    <FxCompile Include="Shader\DepthNormal\PS_DepthNormal.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -469,7 +460,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_GridShadow.hlsl">
+    <FxCompile Include="Shader\Grid\PS_Grid.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -478,7 +469,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_GridShadowVSM.hlsl">
+    <FxCompile Include="Shader\Grid\PS_GridShadow.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -487,7 +478,16 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_MS.hlsl">
+    <FxCompile Include="Shader\Grid\PS_GridShadowVSM.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
+      <FileType>Document</FileType>
+    </FxCompile>
+    <FxCompile Include="Shader\Meshlet\PS_MS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -495,7 +495,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="PS_OpaqueSimpleLit.hlsl">
+    <FxCompile Include="Shader\Object\PS_OpaqueSimpleLit.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -504,7 +504,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_OpaqueSimpleShadowMap.hlsl">
+    <FxCompile Include="Shader\Shadow\PS_OpaqueSimpleShadowMap.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -512,16 +512,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_SimpleShadowMap.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
-      <FileType>Document</FileType>
-    </FxCompile>
-    <FxCompile Include="PS_SimpleLit.hlsl">
+    <FxCompile Include="Shader\Shadow\PS_SimpleShadowMap.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -530,7 +521,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_UnLit.hlsl">
+    <FxCompile Include="Shader\Object\PS_SimpleLit.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -539,7 +530,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="PS_Vignette.hlsl">
+    <FxCompile Include="Shader\Object\PS_UnLit.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -548,7 +539,16 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_Blur2X.hlsl">
+    <FxCompile Include="Shader\Volume\PS_Vignette.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
+      <FileType>Document</FileType>
+    </FxCompile>
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur2X.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -557,7 +557,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_Blur2Y.hlsl">
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur2Y.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -566,7 +566,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_Blur4X.hlsl">
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur4X.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -575,7 +575,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_Blur4Y.hlsl">
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur4Y.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -584,7 +584,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_Blur8X.hlsl">
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur8X.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -593,7 +593,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_Blur8Y.hlsl">
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur8Y.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -602,7 +602,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_DepthNormal.hlsl">
+    <FxCompile Include="Shader\DepthNormal\VS_DepthNormal.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -611,7 +611,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_Object.hlsl">
+    <FxCompile Include="Shader\Object\VS_Object.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -626,7 +626,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_ShadowMap.hlsl">
+    <FxCompile Include="Shader\Shadow\VS_ShadowMap.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -635,7 +635,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_ShadowReciever.hlsl">
+    <FxCompile Include="Shader\Shadow\VS_ShadowReciever.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -644,7 +644,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_Sprite.hlsl">
+    <FxCompile Include="Shader\Volume\VS_Sprite.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -657,7 +657,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjctDir)../game/assets\shader\%(Filename).cso</ObjectFileOutput>
       <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="VS_WorldObject.hlsl">
+    <FxCompile Include="Shader\Object\VS_WorldObject.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>

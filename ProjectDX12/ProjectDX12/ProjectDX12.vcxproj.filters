@@ -13,56 +13,35 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="リソース ファイル\VS">
-      <UniqueIdentifier>{c6b67b83-b1e3-495c-853c-07033cfe0524}</UniqueIdentifier>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{3593c601-a0ff-4652-8224-c2dc32db0305}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\PS">
-      <UniqueIdentifier>{d865ba8c-3d1e-49a2-8858-9a00aaf35e3f}</UniqueIdentifier>
+    <Filter Include="Shader\Common">
+      <UniqueIdentifier>{44b3d349-1656-43b2-bda9-9fec2bee0043}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\Common">
-      <UniqueIdentifier>{15aad25b-7e7f-4701-b5b0-b9e22788245e}</UniqueIdentifier>
+    <Filter Include="Shader\Deferred">
+      <UniqueIdentifier>{a0f8f395-2904-49ec-b60a-8a120a43d5bf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\PS\Lit">
-      <UniqueIdentifier>{15aabc8b-5dc5-41b7-9cb4-4751e0f7940f}</UniqueIdentifier>
+    <Filter Include="Shader\DepthNormal">
+      <UniqueIdentifier>{bb11b6ba-e9f5-478d-b4a1-5f16e3bb3e08}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\PS\Deffered">
-      <UniqueIdentifier>{97472983-d64e-45a2-9716-855aa7b81ce2}</UniqueIdentifier>
+    <Filter Include="Shader\Grid">
+      <UniqueIdentifier>{2663868a-657d-412b-9694-0c1d1b8e4252}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\PS\Common">
-      <UniqueIdentifier>{fcbb99d6-5423-4ff4-aab3-9f45a43918a8}</UniqueIdentifier>
+    <Filter Include="Shader\Meshlet">
+      <UniqueIdentifier>{fc3f48f5-d78c-4a3f-978f-becf1fce6086}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\PS\Depth">
-      <UniqueIdentifier>{305a46b2-d608-4624-a50a-1353292ca469}</UniqueIdentifier>
+    <Filter Include="Shader\Object">
+      <UniqueIdentifier>{90816926-2789-4ead-8dd5-04bbffbd4f4f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\PS\ShadowMap">
-      <UniqueIdentifier>{c5fce56f-6b50-4e20-b8bf-b96f42f8b85c}</UniqueIdentifier>
+    <Filter Include="Shader\Shadow">
+      <UniqueIdentifier>{7c15ac94-900e-4a70-abc7-a93918f95862}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\PS\Common\Grid">
-      <UniqueIdentifier>{ca5af76f-2696-4ed5-9e12-2d20ea779ae0}</UniqueIdentifier>
+    <Filter Include="Shader\Volume">
+      <UniqueIdentifier>{9fe15f62-47b1-471d-98ec-4a158b6ab206}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\Volume">
-      <UniqueIdentifier>{20042cb3-e1e4-4f04-8eab-0113371faf0c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="リソース ファイル\Volume\Blur">
-      <UniqueIdentifier>{1b4c8a7f-b891-4e31-8c7b-2b26c4a6610b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="リソース ファイル\Volume\Blur\Blur8">
-      <UniqueIdentifier>{71fca452-b89b-4b6c-8ad9-3d07bd3ea052}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="リソース ファイル\Volume\Blur\Blur4">
-      <UniqueIdentifier>{7a471adb-2a84-4dd7-a690-593972b80f7c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="リソース ファイル\Volume\Blur\Blur2">
-      <UniqueIdentifier>{eab2913d-d286-4bed-9dfc-e4fe91019ed8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="リソース ファイル\PS\Deffered\DefferedLighting">
-      <UniqueIdentifier>{c31d6886-f288-4e84-a0fd-b478543bad29}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="リソース ファイル\MS">
-      <UniqueIdentifier>{f2b810e8-05bc-4ab1-9822-4da285c2d181}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="リソース ファイル\AS">
-      <UniqueIdentifier>{0546c993-cf4d-46ba-9435-5e7e21190339}</UniqueIdentifier>
+    <Filter Include="Shader\Volume\Blur">
+      <UniqueIdentifier>{cb382c9c-75b5-4756-8611-83ea3d49fb11}</UniqueIdentifier>
     </Filter>
     <Filter Include="System">
       <UniqueIdentifier>{76379fc3-1641-4d6d-8e58-698c0ea3b77c}</UniqueIdentifier>
@@ -237,7 +216,7 @@
     <ClCompile Include="Model\sphere.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="Material\Materials\M_Deffered_Albedo.cpp">
+    <ClCompile Include="Material\Materials\M_Deferred_Albedo.cpp">
       <Filter>Material\Materials</Filter>
     </ClCompile>
     <ClCompile Include="Material\Materials\M_DepthNormal.cpp">
@@ -392,7 +371,7 @@
     <ClInclude Include="Model\sphere.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Material\Materials\M_Deffered_Albedo.h">
+    <ClInclude Include="Material\Materials\M_Deferred_Albedo.h">
       <Filter>Material\Materials</Filter>
     </ClInclude>
     <ClInclude Include="Material\Materials\M_DepthNormal.h">
@@ -436,125 +415,125 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="CommonLighting.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
+    <FxCompile Include="Shader\Common\CommonLighting.hlsl">
+      <Filter>Shader\Common</Filter>
     </FxCompile>
-    <FxCompile Include="CommonFunction.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
+    <FxCompile Include="Shader\Common\CommonFunction.hlsl">
+      <Filter>Shader\Common</Filter>
     </FxCompile>
-    <FxCompile Include="CommonDefine.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
+    <FxCompile Include="Shader\Common\CommonDefine.hlsl">
+      <Filter>Shader\Common</Filter>
     </FxCompile>
-    <FxCompile Include="CommonShadow.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
+    <FxCompile Include="Shader\Common\CommonShadow.hlsl">
+      <Filter>Shader\Common</Filter>
     </FxCompile>
-    <FxCompile Include="CommonShadowParam.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
+    <FxCompile Include="Shader\Common\CommonShadowParam.hlsl">
+      <Filter>Shader\Common</Filter>
     </FxCompile>
-    <FxCompile Include="CommonShadowVSM.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
+    <FxCompile Include="Shader\Common\CommonShadowVSM.hlsl">
+      <Filter>Shader\Common</Filter>
     </FxCompile>
-    <FxCompile Include="CommonParam.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
+    <FxCompile Include="Shader\Common\CommonParam.hlsl">
+      <Filter>Shader\Common</Filter>
     </FxCompile>
-    <FxCompile Include="VS_WorldObject.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
+    <FxCompile Include="Shader\Object\VS_WorldObject.hlsl">
+      <Filter>Shader\Object</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Grid.hlsl">
-      <Filter>リソース ファイル\PS\Common\Grid</Filter>
+    <FxCompile Include="Shader\Grid\PS_Grid.hlsl">
+      <Filter>Shader\Grid</Filter>
     </FxCompile>
-    <FxCompile Include="PS_GridShadow.hlsl">
-      <Filter>リソース ファイル\PS\Common\Grid</Filter>
+    <FxCompile Include="Shader\Grid\PS_GridShadow.hlsl">
+      <Filter>Shader\Grid</Filter>
     </FxCompile>
-    <FxCompile Include="PS_GridShadowVSM.hlsl">
-      <Filter>リソース ファイル\PS\Common\Grid</Filter>
+    <FxCompile Include="Shader\Grid\PS_GridShadowVSM.hlsl">
+      <Filter>Shader\Grid</Filter>
     </FxCompile>
-    <FxCompile Include="PS_DefferedLighting.hlsl">
-      <Filter>リソース ファイル\PS\Deffered\DefferedLighting</Filter>
+    <FxCompile Include="Shader\Deferred\PS_DeferredLighting.hlsl">
+      <Filter>Shader\Deferred</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Deffered.hlsl">
-      <Filter>リソース ファイル\PS\Deffered</Filter>
+    <FxCompile Include="Shader\Deferred\PS_Deferred.hlsl">
+      <Filter>Shader\Deferred</Filter>
     </FxCompile>
-    <FxCompile Include="PS_DepthNormal.hlsl">
-      <Filter>リソース ファイル\PS\Depth</Filter>
+    <FxCompile Include="Shader\DepthNormal\PS_DepthNormal.hlsl">
+      <Filter>Shader\DepthNormal</Filter>
     </FxCompile>
-    <FxCompile Include="PS_OpaqueSimpleLit.hlsl">
-      <Filter>リソース ファイル\PS\Lit</Filter>
+    <FxCompile Include="Shader\Object\PS_OpaqueSimpleLit.hlsl">
+      <Filter>Shader\Object</Filter>
     </FxCompile>
-    <FxCompile Include="PS_SimpleLit.hlsl">
-      <Filter>リソース ファイル\PS\Lit</Filter>
+    <FxCompile Include="Shader\Object\PS_SimpleLit.hlsl">
+      <Filter>Shader\Object</Filter>
     </FxCompile>
-    <FxCompile Include="PS_OpaqueSimpleShadowMap.hlsl">
-      <Filter>リソース ファイル\PS\ShadowMap</Filter>
+    <FxCompile Include="Shader\Shadow\PS_OpaqueSimpleShadowMap.hlsl">
+      <Filter>Shader\Shadow</Filter>
     </FxCompile>
-    <FxCompile Include="PS_SimpleShadowMap.hlsl">
-      <Filter>リソース ファイル\PS\ShadowMap</Filter>
+    <FxCompile Include="Shader\Shadow\PS_SimpleShadowMap.hlsl">
+      <Filter>Shader\Shadow</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Blur2.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    <FxCompile Include="Shader\Volume\Blur\PS_Blur2.hlsl">
+      <Filter>Shader\Volume\Blur</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Blur2X.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur2X.hlsl">
+      <Filter>Shader\Volume\Blur</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Blur2Y.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur2</Filter>
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur2Y.hlsl">
+      <Filter>Shader\Volume\Blur</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Blur4.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
+    <FxCompile Include="Shader\Volume\Blur\PS_Blur4.hlsl">
+      <Filter>Shader\Volume\Blur</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Blur4X.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur4X.hlsl">
+      <Filter>Shader\Volume\Blur</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Blur4Y.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur4</Filter>
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur4Y.hlsl">
+      <Filter>Shader\Volume\Blur</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Blur8.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur8</Filter>
+    <FxCompile Include="Shader\Volume\Blur\PS_Blur8.hlsl">
+      <Filter>Shader\Volume\Blur</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Blur8X.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur8</Filter>
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur8X.hlsl">
+      <Filter>Shader\Volume\Blur</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Blur8Y.hlsl">
-      <Filter>リソース ファイル\Volume\Blur\Blur8</Filter>
+    <FxCompile Include="Shader\Volume\Blur\VS_Blur8Y.hlsl">
+      <Filter>Shader\Volume\Blur</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Vignette.hlsl">
-      <Filter>リソース ファイル\Volume</Filter>
+    <FxCompile Include="Shader\Volume\PS_Vignette.hlsl">
+      <Filter>Shader\Volume</Filter>
     </FxCompile>
-    <FxCompile Include="VS_DepthNormal.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
+    <FxCompile Include="Shader\DepthNormal\VS_DepthNormal.hlsl">
+      <Filter>Shader\DepthNormal</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Object.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
+    <FxCompile Include="Shader\Object\VS_Object.hlsl">
+      <Filter>Shader\Object</Filter>
     </FxCompile>
-    <FxCompile Include="VS_ShadowMap.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
+    <FxCompile Include="Shader\Shadow\VS_ShadowMap.hlsl">
+      <Filter>Shader\Shadow</Filter>
     </FxCompile>
-    <FxCompile Include="VS_ShadowReciever.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
+    <FxCompile Include="Shader\Shadow\VS_ShadowReciever.hlsl">
+      <Filter>Shader\Shadow</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Sprite.hlsl">
-      <Filter>リソース ファイル\VS</Filter>
+    <FxCompile Include="Shader\Volume\VS_Sprite.hlsl">
+      <Filter>Shader\Volume</Filter>
     </FxCompile>
-    <FxCompile Include="PS_UnLit.hlsl">
-      <Filter>リソース ファイル\PS\Lit</Filter>
+    <FxCompile Include="Shader\Object\PS_UnLit.hlsl">
+      <Filter>Shader\Object</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Copy.hlsl">
-      <Filter>リソース ファイル\Volume</Filter>
+    <FxCompile Include="Shader\Volume\PS_Copy.hlsl">
+      <Filter>Shader\Volume</Filter>
     </FxCompile>
-    <FxCompile Include="MS_Object.hlsl">
-      <Filter>リソース ファイル\MS</Filter>
+    <FxCompile Include="Shader\Meshlet\MS_Object.hlsl">
+      <Filter>Shader\Meshlet</Filter>
     </FxCompile>
-    <FxCompile Include="PS_MS.hlsl">
-      <Filter>リソース ファイル\PS\Common</Filter>
+    <FxCompile Include="Shader\Meshlet\PS_MS.hlsl">
+      <Filter>Shader\Meshlet</Filter>
     </FxCompile>
-    <FxCompile Include="AS_CullingObject.hlsl">
-      <Filter>リソース ファイル\AS</Filter>
+    <FxCompile Include="Shader\Meshlet\AS_CullingObject.hlsl">
+      <Filter>Shader\Meshlet</Filter>
     </FxCompile>
-    <FxCompile Include="MS_CullingObject.hlsl">
-      <Filter>リソース ファイル\MS</Filter>
+    <FxCompile Include="Shader\Meshlet\MS_CullingObject.hlsl">
+      <Filter>Shader\Meshlet</Filter>
     </FxCompile>
-    <FxCompile Include="CommonMeshlet.hlsl">
-      <Filter>リソース ファイル\Common</Filter>
+    <FxCompile Include="Shader\Common\CommonMeshlet.hlsl">
+      <Filter>Shader\Common</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
